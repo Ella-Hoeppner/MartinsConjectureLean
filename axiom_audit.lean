@@ -89,3 +89,5 @@ import MartinsConjecture
 #print axioms OracleCode.limit_lemma
 #print axioms Cantor.le_jump_iff_limitApprox
 #print axioms Cantor.jump_limit
+#print axioms OracleCode.smn
+#print axioms OracleCode.infinite_indices

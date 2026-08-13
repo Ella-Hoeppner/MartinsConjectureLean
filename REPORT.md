@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13 (five work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, ~1050 jobs, 35 files, ~7.4k lines.
-**Sorry count: 0. Custom axioms: 0** (113 headline theorems audited; every one uses only
+`lake-manifest.json`). Full `lake build`: green, ~1051 jobs, 36 files, ~7.5k lines.
+**Sorry count: 0. Custom axioms: 0** (117 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
@@ -507,6 +507,12 @@ foundations built and proved (`UniformFunctionals.lean`, `ReOperator.lean`):
 * **`OracleCode.reReal_le_jump`** — **`Wˣ ≤ᵀ X′` for every r.e. operator** (Post's `Σ₁`
   theorem for operators): the determinacy-free easy half of Lachlan's local dichotomy
   (Lutz Cor. 3.11).  Plus `reReal_eq_of_reduces` (operator-level composition transport).
+* **`OracleCode.mem_reReal_iff_haltsOn_prefix`** — **the use principle for r.e. operators**:
+  `n ∈ Wˣ ⟺ machine e halts on n under some finite prefix of X`'s bit-graph; with
+  `haltsOn_mono` (monotone in the prefix) and **`isOpen_reReal`** (r.e. operators are open
+  /continuous in the oracle).  This is the continuity-in-the-oracle cornerstone of Lachlan's
+  *continuous* case, from `evaln` soundness/completeness against the prefix table
+  `graphOf (bitg X)`.
 
 A key finding: the modern proof needs **no recursion theorem** (contrary to the folklore
 framing), and its heaviest ingredient (computable composition) was already in the codebase.

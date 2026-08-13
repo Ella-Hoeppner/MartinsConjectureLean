@@ -259,6 +259,46 @@ turned out to be exactly that infrastructure.
 **Final session-2 totals: 8 new files, full build 1026 jobs, 0 sorries,
 0 custom axioms (41-line `axiom_audit.lean`, every line standard).**
 
+## Session 3 (2026-08-13, ~1h): the direct attack on the conjecture
+
+Four new files (`MartinMeasure`, `Reduction`, `BoundedCase`,
+`OrderPreservingCase`) plus `ATTACK.md`; all sorry-free, standard axioms
+(audit now 55 lines, all clean); full build 1030 jobs.  All results take
+`TuringDeterminacy` as an explicit hypothesis (AD-style for the class of all
+sets; the Borel restriction is Martin's ZFC Borel-determinacy theorem, not
+yet in Lean).
+
+* **σ-pigeonhole** (`exists_onCone_of_cover`): Martin measure is formally a
+  countably complete ultrafilter on invariant determined sets.
+* **Comparability trichotomy** (`comparability_on_cone`) and **the
+  reduction** (`partI_of_cores`): Part I of Martin's conjecture is formally
+  reduced to two open cores — `RegressiveImpliesConstant` and
+  `IncomparableImpliesConstant`; in the other two comparability regimes
+  Part I is proved outright.
+* **Index stabilization** (`exists_uniform_index_on_cone`): the classical
+  first step of Lachlan/Steel/Slaman–Steel, formalized.
+* **Boundedness lemma** (`bounded_implies_constant`): degree-bounded
+  invariant functions are constant on a cone — Part I holds outright for
+  them (`partI_of_bounded`).
+* **Escape theorem** (`counterexample_escapes`) + sharpened cores: any
+  counterexample must escape every fixed degree on a cone.
+* **Order-preserving skeleton**: the determinacy-free dichotomy
+  (`orderPreserving_measurePreserving_or_avoids`, with `MeasurePreserving` =
+  Lutz Def 1.37) and the formal Lutz–Siskind proof skeleton
+  (`partI_orderPreserving_of_lemmas`).
+* **Counterexample profile** (`counterexample_profile`): the combined
+  formal description of what any Part I counterexample must be.
+
+**Honest outcome of the direct attempts on the open cores** (full log in
+`ATTACK.md`): four genuine lines of attack (join-limit coding, Baire/density
+arguments, Posner–Robinson leverage, post-stabilization comparison) each die
+at one of three precisely identified missing pillars — pointed perfect
+trees, Posner–Robinson/Kumabe–Slaman forcing, or Steel's comparison games.
+These are the same pillars the human proofs of the known partial results
+rest on.  The conjecture itself remains open; what changed is that its open
+content is now *formally isolated* — the escaping cores — with everything
+around them machine-checked.
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

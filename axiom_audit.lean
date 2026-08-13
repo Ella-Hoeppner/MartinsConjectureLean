@@ -40,3 +40,17 @@ import MartinsConjecture
 #print axioms KleenePost.kleene_post
 #print axioms TuringDegree.exists_incomparable
 #print axioms TuringDegree.not_isTotal_le
+#print axioms Martin.exists_onCone_of_cover
+#print axioms Martin.comparability_on_cone
+#print axioms Martin.partI_of_cores
+#print axioms Martin.partI_Borel_of_cores
+#print axioms Martin.exists_uniform_index_on_cone
+#print axioms Martin.bounded_implies_constant
+#print axioms Martin.partI_of_bounded
+#print axioms Martin.counterexample_escapes
+#print axioms Martin.regressive_core_iff_escaping
+#print axioms Martin.incomparable_core_iff_escaping
+#print axioms Martin.orderPreserving_measurePreserving_or_avoids
+#print axioms Martin.orderPreserving_trichotomy
+#print axioms Martin.partI_orderPreserving_of_lemmas
+#print axioms Martin.counterexample_profile

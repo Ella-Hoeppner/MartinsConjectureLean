@@ -492,4 +492,47 @@ theorem srchTest_prim :
     (Primrec.const 0) (Primrec.const 1)).of_eq fun v => by
     simp only [srchTest, fuelOf]
 
+/-- The rfind predicate for the search. -/
+def srchPred (q : ℕ) : ℕ →. Bool :=
+  fun w => (fun m => decide (m = 0)) <$> (Part.some (srchTest q w) : Part ℕ)
+
+/-- The least-witness search: halts on `q` iff a witness exists. -/
+noncomputable def srch (q : ℕ) : Part ℕ := Nat.rfind (srchPred q)
+
+theorem srch_partrec : Nat.Partrec srch := by
+  have h1 : Nat.Partrec (fun v : ℕ =>
+      (Part.some (srchTest (Nat.unpair v).1 (Nat.unpair v).2) : Part ℕ)) :=
+    Nat.Partrec.of_primrec srchTest_prim
+  refine (Nat.Partrec.rfind h1).of_eq fun q => ?_
+  simp only [Nat.unpair_pair]
+  rfl
+
+theorem srchPred_dom (q w : ℕ) : (srchPred q w).Dom := by
+  rw [srchPred, Part.map_eq_map, Part.map_some]; trivial
+
+theorem true_mem_srchPred (q w : ℕ) : true ∈ srchPred q w ↔ srchTest q w = 0 := by
+  rw [srchPred, Part.map_eq_map, Part.mem_map_iff]
+  constructor
+  · rintro ⟨x, hx, hx0⟩
+    rw [Part.mem_some_iff.mp hx] at hx0
+    exact of_decide_eq_true hx0
+  · intro h
+    exact ⟨srchTest q w, Part.mem_some _, by simp [h]⟩
+
+theorem srch_dom (q : ℕ) : (srch q).Dom ↔ ∃ w, srchTest q w = 0 := by
+  rw [srch, Nat.rfind_dom]
+  constructor
+  · rintro ⟨w, hw, -⟩
+    exact ⟨w, (true_mem_srchPred q w).mp hw⟩
+  · rintro ⟨w, hw⟩
+    exact ⟨w, (true_mem_srchPred q w).mpr hw, fun {m} _ => srchPred_dom q m⟩
+
+theorem srchTest_zero_iff (q w : ℕ) :
+    srchTest q w = 0 ↔ (evaln (fuelOf w)
+      (((Encodable.decode (α := List ℕ) (Nat.unpair q).1).getD []) ++ extOf w)
+      (ofNatCode (Nat.unpair (Nat.unpair q).2).1)
+      (Nat.unpair (Nat.unpair q).2).2).isSome = true := by
+  rw [srchTest]
+  cases (evaln (fuelOf w) _ _ _).isSome <;> simp
+
 end KleenePostJump

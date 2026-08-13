@@ -423,4 +423,16 @@ theorem defeat_odd (e : ℕ) : eval (toPFun A) (ofNatCode e) ≠ toPFun B := by
     rw [haltsAt, fuelOf, Nat.unpair_pair, hroundtrip, ← hsplit, hmono]
     rfl
 
+/-! ### Incomparability -/
+
+theorem not_A_le_B : ¬ (A ≤ₜ B) := by
+  intro h
+  obtain ⟨c, hc⟩ := exists_code_of_recursiveIn (RecursiveIn.iff_nat.mp h)
+  exact defeat_even (encodeCode c) (by rw [ofNatCode_encodeCode]; exact hc)
+
+theorem not_B_le_A : ¬ (B ≤ₜ A) := by
+  intro h
+  obtain ⟨c, hc⟩ := exists_code_of_recursiveIn (RecursiveIn.iff_nat.mp h)
+  exact defeat_odd (encodeCode c) (by rw [ofNatCode_encodeCode]; exact hc)
+
 end KleenePostJump

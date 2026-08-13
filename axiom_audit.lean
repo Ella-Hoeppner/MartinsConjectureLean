@@ -84,3 +84,6 @@ import MartinsConjecture
 #print axioms OracleCode.jumpApproxN_recursiveIn
 #print axioms OracleCode.jumpApproxN_limit
 #print axioms OracleCode.jump_limitApprox
+#print axioms OracleCode.exists_tableEnc
+#print axioms OracleCode.recursiveIn_of_jumpApprox
+#print axioms OracleCode.limit_lemma

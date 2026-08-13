@@ -434,7 +434,14 @@ limit lemma.  Seven new files, all sorry-free, standard axioms only.
 * **`CantorLimit.lean`** — the limit lemma repackaged for Cantor points and degrees
   (`le_jump_iff_limitApprox`), with the capstone `jump_jump_not_limitApprox`: the double
   jump has no `X`-limit-computable approximation (so the jump hierarchy is genuinely
-  proper).  `Martin.EquivVia` gains `refl`/`symm`.
+  proper).  `Martin.EquivVia` gains `refl`/`symm`; jump-join degree relations.
+* **`PostDomain.lean`** — **Post's theorem, Σ₁ direction**: the domain of any partial
+  `O`-recursive function is `≤ₘ O′` (`domain_manyOne_jump`) and decidable in `O′`
+  (`domain_recursiveIn_jump`).
+* **`ExtHalting.lean`** — **the extension-halting problem is `0′`-decidable**
+  (`extHalting_recursiveIn_jump`) — the recursion-theoretic crux of the finite-extension
+  (Kleene–Post-below-`0′`) method.  The remaining `0′`-recursive construction is scoped in
+  `ATTACK.md`.
 
 These are, to our knowledge, the first machine-checked Lean proofs of the universal oracle
 machine, the relativized recursion theorem, and the (relativized) Shoenfield limit lemma.

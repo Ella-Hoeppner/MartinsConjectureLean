@@ -262,7 +262,17 @@ theorem cond_snd_eq_graph (r : ℕ) :
   rw [List.mem_range] at hi
   rw [bitg_B r i hi]
 
-/-! ### The defeat lemma (even requirements): `Φₑᴮ ≠ A` -/
+/-- `σ` (the stage-`r` left string) is exactly `A`'s first `|σ|` bits. -/
+theorem cond_fst_eq_graph (r : ℕ) :
+    (cond r).1 = graphOf (bitg A) (cond r).1.length := by
+  conv_lhs => rw [← list_getD_range (cond r).1]
+  rw [graphOf]
+  apply List.map_congr_left
+  intro i hi
+  rw [List.mem_range] at hi
+  rw [bitg_A r i hi]
+
+/-! ### The defeat lemmas -/
 
 theorem defeat_even (e : ℕ) : eval (toPFun B) (ofNatCode e) ≠ toPFun A := by
   intro heq
@@ -322,6 +332,80 @@ theorem defeat_even (e : ℕ) : eval (toPFun B) (ofNatCode e) ≠ toPFun A := by
       rw [graphOf, List.mem_map] at this
       obtain ⟨i, -, rfl⟩ := this
       exact bitg_le_one B i
+    set extBool : List Bool := ext'.map (fun x => x = 1) with hextBool
+    have hroundtrip : extOf (Nat.pair (Encodable.encode extBool) K) = ext' := by
+      rw [extOf, Nat.unpair_pair, Encodable.encodek, Option.getD_some, hextBool,
+        List.map_map]
+      refine (List.map_congr_left ?_).trans (List.map_id ext')
+      intro x hx
+      have hx1 := hext'_le x hx
+      simp only [Function.comp]
+      by_cases h : x = 1
+      · simp [h]
+      · have : x = 0 := by omega
+        simp [this]
+    apply hh
+    refine ⟨Nat.pair (Encodable.encode extBool) K, ?_⟩
+    rw [haltsAt, fuelOf, Nat.unpair_pair, hroundtrip, ← hsplit, hmono]
+    rfl
+
+
+/-- Defeat lemma (odd requirements): `Φₑᴬ ≠ B`. -/
+theorem defeat_odd (e : ℕ) : eval (toPFun A) (ofNatCode e) ≠ toPFun B := by
+  intro heq
+  have hstep : cond (2 * e + 2)
+      = ((reqStep (cond (2 * e + 1)).2 (cond (2 * e + 1)).1 e).2,
+         (reqStep (cond (2 * e + 1)).2 (cond (2 * e + 1)).1 e).1) := by
+    conv_lhs => rw [show 2 * e + 2 = (2 * e + 1) + 1 from rfl, cond]
+    rw [if_neg (show ¬ (2 * e + 1) % 2 = 0 by omega), show (2 * e + 1) / 2 = e by omega]
+  set act := (cond (2 * e + 1)).2 with hact
+  set pas := (cond (2 * e + 1)).1 with hpas
+  have hAtab : ∀ (s : ℕ), ∀ i, (hi : i < (cond s).1.length) →
+      toPFun A i = Part.some ((cond s).1)[i] := by
+    intro s i hi
+    rw [toPFun_eq_bitg, bitg_A s i hi, List.getD_eq_getElem?_getD,
+      List.getElem?_eq_getElem hi, Option.getD_some]
+  by_cases hh : ∃ w, haltsAt pas e act.length w
+  · obtain ⟨v, hv⟩ := Option.isSome_iff_exists.mp (Nat.find_spec hh)
+    have hlv : (evaln (fuelOf (Nat.find hh)) (pas ++ extOf (Nat.find hh))
+        (ofNatCode e) act.length).getD 0 = v := by rw [hv]; rfl
+    have hcond1 : cond (2 * e + 2)
+        = (pas ++ extOf (Nat.find hh), act ++ [diagBit v]) := by
+      rw [hstep, reqStep, dif_pos hh]; simp only [hlv]
+    have hL : pas ++ extOf (Nat.find hh) = (cond (2 * e + 2)).1 :=
+      (congrArg Prod.fst hcond1).symm
+    have hBlen : bitg B act.length = diagBit v := by
+      have hlt : act.length < (cond (2 * e + 2)).2.length := by
+        rw [hcond1]; simp
+      rw [bitg_B (2 * e + 2) act.length hlt, hcond1]
+      simp only []
+      rw [List.getD_eq_getElem?_getD, List.getElem?_append_right (le_refl _)]
+      simp
+    have hAval : v ∈ eval (toPFun A) (ofNatCode e) act.length := by
+      have hev : evaln (fuelOf (Nat.find hh)) (cond (2 * e + 2)).1
+          (ofNatCode e) act.length = some v := hL ▸ hv
+      exact evaln_sound (fun i hi => hAtab (2 * e + 2) i hi) hev
+    rw [heq] at hAval
+    rw [toPFun_eq_bitg, hBlen, Part.mem_some_iff] at hAval
+    exact diagBit_ne v hAval.symm
+  · have hBdom : (toPFun B act.length).Dom := trivial
+    rw [← heq] at hBdom
+    obtain ⟨vv, hvv⟩ := Part.dom_iff_mem.mp hBdom
+    obtain ⟨k, hk⟩ := evaln_complete (toPFun_eq_bitg A) hvv
+    set K := max k pas.length with hK
+    have hmono : evaln K (graphOf (bitg A) K) (ofNatCode e) act.length = some vv :=
+      evaln_mono (le_max_left _ _) (graphOf_prefix (le_max_left _ _)) hk
+    set ext' := (graphOf (bitg A) K).drop pas.length with hext'
+    have hsplit : graphOf (bitg A) K = pas ++ ext' := by
+      conv_lhs => rw [← List.take_append_drop pas.length (graphOf (bitg A) K)]
+      rw [hext', graphOf_take (bitg A) (le_max_right _ _),
+        ← cond_fst_eq_graph (2 * e + 1), ← hpas]
+    have hext'_le : ∀ x ∈ ext', x ≤ 1 := by
+      intro x hx
+      have := List.mem_of_mem_drop (hext' ▸ hx)
+      rw [graphOf, List.mem_map] at this
+      obtain ⟨i, -, rfl⟩ := this
+      exact bitg_le_one A i
     set extBool : List Bool := ext'.map (fun x => x = 1) with hextBool
     have hroundtrip : extOf (Nat.pair (Encodable.encode extBool) K) = ext' := by
       rw [extOf, Nat.unpair_pair, Encodable.encodek, Option.getD_some, hextBool,

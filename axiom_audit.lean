@@ -80,3 +80,7 @@ import MartinsConjecture
 #print axioms OracleCode.exists_fixedPoint
 #print axioms OracleCode.dom_iff_jumpP
 #print axioms OracleCode.recursiveIn_jump_of_limit
+#print axioms OracleCode.exists_quine
+#print axioms OracleCode.jumpApproxN_recursiveIn
+#print axioms OracleCode.jumpApproxN_limit
+#print axioms OracleCode.jump_limitApprox

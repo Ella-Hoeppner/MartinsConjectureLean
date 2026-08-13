@@ -990,7 +990,32 @@ theorem effective_kleene_post :
       ¬ (A ≤ₜ B) ∧ ¬ (B ≤ₜ A) :=
   ⟨A, B, A_le_jump, B_le_jump, not_A_le_B, not_B_le_A⟩
 
+/-! ### Corollary: an intermediate degree (Post's problem, via Kleene–Post) -/
+
+/-- The empty point is computable, hence Turing-below everything. -/
+theorem emptyPt_le (Y : ℕ → Bool) : emptyPt ≤ₜ Y :=
+  Cantor.le_of_computable (by unfold emptyPt; exact Computable.const false)
+
+/-- `A` is not computable: else `A ≤ᵀ B` (through `∅`), contradicting incomparability. -/
+theorem A_not_computable : ¬ (A ≤ₜ emptyPt) :=
+  fun h => not_A_le_B (h.trans (emptyPt_le B))
+
+/-- `0′ ⋠ A`, i.e. `A <ᵀ 0′` strictly: else `B ≤ᵀ 0′ ≤ᵀ A`, contradicting
+incomparability. -/
+theorem jump_not_le_A : ¬ (Cantor.jump emptyPt ≤ₜ A) :=
+  fun h => not_B_le_A (B_le_jump.trans h)
+
+/-- **Post's problem, solved via Kleene–Post.**  There is an *intermediate*
+Turing degree: a real `A` with `∅ <ᵀ A <ᵀ 0′` — non-computable, below the
+halting problem, but not computing it.  (This `A` is not r.e.; the r.e. version
+is Friedberg–Muchnik.) -/
+theorem exists_intermediate_degree :
+    ∃ A : ℕ → Bool,
+      ¬ (A ≤ₜ emptyPt) ∧ A ≤ₜ Cantor.jump emptyPt ∧ ¬ (Cantor.jump emptyPt ≤ₜ A) :=
+  ⟨A, A_not_computable, A_le_jump, jump_not_le_A⟩
+
 #print axioms effective_kleene_post
+#print axioms exists_intermediate_degree
 
 
 end KleenePostJump

@@ -106,3 +106,4 @@ import MartinsConjecture
 #print axioms KleenePostJump.A_le_jump
 #print axioms KleenePostJump.B_le_jump
 #print axioms KleenePostJump.effective_kleene_post
+#print axioms KleenePostJump.exists_intermediate_degree

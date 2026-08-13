@@ -482,11 +482,15 @@ completing the finite-extension-below-`0′` method end to end.  One new file,
   `bitgA/bitgB_recursiveIn` extract the reals' bits; `A_le_jump`/`B_le_jump` bridge to the
   Cantor-point/jump representation (`toPFun (jump ∅) = jumpFn ∅`).
 
+* **`exists_intermediate_degree`** — an immediate corollary: since `A, B ≤ᵀ 0′` are
+  incomparable, `A` is a **non-computable intermediate degree** `∅ <ᵀ A <ᵀ 0′` — Post's
+  problem solved (non-uniformly, via Kleene–Post; the r.e. version is Friedberg–Muchnik).
+
 This is, to our knowledge, the first machine-checked Lean proof that incomparable degrees
 exist *below the halting problem* (a strictly stronger statement than plain Kleene–Post),
 and the first fully `0′`-computable finite-extension construction in Lean.  It closes the
 last item scoped in `ATTACK.md` and completes T1's optional Kleene–Post target at full
-strength.
+strength, and yields an intermediate degree as a one-line corollary.
 
 ## Concrete next steps for a future run
 

@@ -45,6 +45,15 @@ theorem mem_reReal_iff_haltsOn_prefix (e n : ℕ) (X : ℕ → Bool) :
       (graphOf_sound (fun i => toPFun_eq_some_bitg X i) ℓ) hv
     exact Part.dom_iff_mem.mpr ⟨v, hmem⟩
 
+/-- **Monotonicity of the operator on finite strings**: `n ∈ W^σ` persists when
+`σ` is extended (more oracle information only creates halting, never destroys
+it). -/
+theorem haltsOn_mono {σ σ' : List ℕ} (h : σ <+: σ') {e n : ℕ}
+    (hh : haltsOn σ e n) : haltsOn σ' e n := by
+  obtain ⟨s, hs⟩ := hh
+  obtain ⟨v, hv⟩ := Option.isSome_iff_exists.mp hs
+  exact ⟨s, by rw [evaln_mono (le_refl s) h hv]; rfl⟩
+
 /-- Reformulation in terms of `reReal`: `Wˣ n = 1` iff a finite prefix forces
 halting. -/
 theorem reReal_eq_true_iff (e n : ℕ) (X : ℕ → Bool) :

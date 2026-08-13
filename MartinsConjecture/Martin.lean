@@ -192,6 +192,12 @@ def ComputablyUniformlyTuringInvariant (F : (ℕ → Bool) → ℕ → Bool) : P
   ∃ u : ℕ × ℕ → ℕ × ℕ, Computable u ∧ ∀ X Y i j, EquivVia X Y i j →
     EquivVia (F X) (F Y) (u (i, j)).1 (u (i, j)).2
 
+/-- The computable-uniformity notion is a strengthening of uniformity. -/
+theorem ComputablyUniformlyTuringInvariant.toUniformly {F}
+    (h : ComputablyUniformlyTuringInvariant F) : UniformlyTuringInvariant F := by
+  obtain ⟨u, -, hu⟩ := h
+  exact ⟨u, hu⟩
+
 /-- The identity is uniformly invariant (transformer = identity). -/
 theorem uniformlyTuringInvariant_id :
     UniformlyTuringInvariant (fun X : ℕ → Bool => X) :=

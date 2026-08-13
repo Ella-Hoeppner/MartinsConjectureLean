@@ -95,3 +95,24 @@ theorem join_jump_le_jump_join (X Y : ℕ → Bool) :
 #print axioms join_jump_le_jump_join
 
 end Cantor
+
+namespace Martin
+
+/-- The jump is uniformly Turing invariant (from the computable version). -/
+theorem uniformlyTuringInvariant_jump : UniformlyTuringInvariant Cantor.jump :=
+  computablyUniformlyTuringInvariant_jump.toUniformly
+
+/-- Every finite jump iterate is uniformly Turing invariant — so the whole
+Martin-order chain `id <ₘ (·′) <ₘ (·″) <ₘ ⋯` consists of uniformly invariant
+functions (the class Steel's theorem prewellorders). -/
+theorem uniformlyTuringInvariant_jumpIterate :
+    ∀ n, UniformlyTuringInvariant (fun X => Cantor.jump^[n] X)
+  | 0 => uniformlyTuringInvariant_id
+  | n + 1 => by
+      have h := uniformlyTuringInvariant_jump.comp (uniformlyTuringInvariant_jumpIterate n)
+      have heq : (fun X => Cantor.jump^[n + 1] X)
+          = (fun X => Cantor.jump (Cantor.jump^[n] X)) := by
+        funext X; rw [Function.iterate_succ_apply']
+      rw [heq]; exact h
+
+end Martin

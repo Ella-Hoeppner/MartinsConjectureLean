@@ -435,4 +435,61 @@ theorem not_B_le_A : ¬ (B ≤ₜ A) := by
   obtain ⟨c, hc⟩ := exists_code_of_recursiveIn (RecursiveIn.iff_nat.mp h)
   exact defeat_odd (encodeCode c) (by rw [ofNatCode_encodeCode]; exact hc)
 
+/-! ### Phase 2: the construction is recursive in `0′` -/
+
+/-- The empty oracle; its jump is `0′`. -/
+def emptyO : ℕ →. ℕ := fun _ => Part.some 0
+
+/-- `extOf` is primitive recursive. -/
+theorem extOf_prim : Primrec extOf := by
+  have hd : Primrec (fun w : ℕ =>
+      (Encodable.decode (α := List Bool) (Nat.unpair w).1).getD []) :=
+    Primrec.option_getD.comp
+      ((Primrec.decode (α := List Bool)).comp (Primrec.fst.comp Primrec.unpair))
+      (Primrec.const ([] : List Bool))
+  have hg : Primrec₂ (fun (_ : ℕ) (b : Bool) => if b then (1 : ℕ) else 0) :=
+    Primrec₂.of_eq (Primrec.cond Primrec.snd (Primrec.const 1) (Primrec.const 0)).to₂
+      (fun _ b => by cases b <;> rfl)
+  exact (Primrec.list_map hd hg).of_eq fun w => rfl
+
+/-- The step-test on `q = ⟪encode pas, ⟪e, len⟫⟫`: `0` iff `w` witnesses a
+halt. -/
+def srchTest (q w : ℕ) : ℕ :=
+  bif (evaln (fuelOf w)
+      (((Encodable.decode (α := List ℕ) (Nat.unpair q).1).getD []) ++ extOf w)
+      (ofNatCode (Nat.unpair (Nat.unpair q).2).1)
+      (Nat.unpair (Nat.unpair q).2).2).isSome then 0 else 1
+
+theorem srchTest_prim :
+    Nat.Primrec (fun v => srchTest (Nat.unpair v).1 (Nat.unpair v).2) := by
+  refine Primrec.nat_iff.mp ?_
+  have hev : Primrec fun v : ℕ =>
+      evaln (fuelOf (Nat.unpair v).2)
+        (((Encodable.decode (α := List ℕ) (Nat.unpair (Nat.unpair v).1).1).getD [])
+          ++ extOf (Nat.unpair v).2)
+        (ofNatCode (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).1)
+        (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).2 := by
+    have hfuel : Primrec fun v : ℕ => fuelOf (Nat.unpair v).2 :=
+      (Primrec.snd.comp Primrec.unpair).comp (Primrec.snd.comp Primrec.unpair)
+    have hpas : Primrec fun v : ℕ =>
+        (Encodable.decode (α := List ℕ) (Nat.unpair (Nat.unpair v).1).1).getD [] :=
+      Primrec.option_getD.comp
+        (Primrec.decode.comp (Primrec.fst.comp (Primrec.unpair.comp
+          (Primrec.fst.comp Primrec.unpair)))) (Primrec.const ([] : List ℕ))
+    have hext : Primrec fun v : ℕ => extOf (Nat.unpair v).2 :=
+      extOf_prim.comp (Primrec.snd.comp Primrec.unpair)
+    have hcode : Primrec fun v : ℕ =>
+        ofNatCode (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).1 :=
+      (Primrec.ofNat OracleCode).comp (Primrec.fst.comp (Primrec.unpair.comp
+        (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+    have hlen : Primrec fun v : ℕ =>
+        (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).2 :=
+      Primrec.snd.comp (Primrec.unpair.comp
+        (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+    exact evaln_prim.comp (Primrec.pair (Primrec.pair (Primrec.pair hfuel
+      (Primrec.list_append.comp hpas hext)) hcode) hlen)
+  exact (Primrec.cond (Primrec.option_isSome.comp hev)
+    (Primrec.const 0) (Primrec.const 1)).of_eq fun v => by
+    simp only [srchTest, fuelOf]
+
 end KleenePostJump

@@ -299,6 +299,15 @@ rest on.  The conjecture itself remains open; what changed is that its open
 content is now *formally isolated* — the escaping cores — with everything
 around them machine-checked.
 
+### Session 3 addendum: first stone of pillar (i)
+
+`UniformJoin.lean`: the **uniformly pointed join-cone** package —
+`join_realizes`, `equivVia_join_uniform` (controlled congruence of canonical
+representatives via a computable index transformation, built from explicit
+mixer/projection codes and the `trOracle` splice), and
+`uniformlyTuringInvariant_comp_join`.  Full build 1031 jobs, audit 58 lines
+all standard, 0 sorries.
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

@@ -54,3 +54,6 @@ import MartinsConjecture
 #print axioms Martin.orderPreserving_trichotomy
 #print axioms Martin.partI_orderPreserving_of_lemmas
 #print axioms Martin.counterexample_profile
+#print axioms Martin.equivVia_join_uniform
+#print axioms Martin.uniformlyTuringInvariant_comp_join
+#print axioms Martin.join_realizes

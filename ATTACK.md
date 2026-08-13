@@ -71,6 +71,26 @@ produced by stabilization varies with the degree, and controlling `Φ_e` across
 *different representatives of the same degree* is exactly the content of Steel's
 game analysis. Without pointed trees there is no handle.
 
+## Progress on pillar (i) after this log was first written
+
+`UniformJoin.lean` (sorry-free) lays the foundation of the pointed-tree pillar in the
+"uniformly pointed join-cone" formulation, which avoids tree combinatorics entirely:
+
+* `join_realizes` — above the base, canonical representatives `join W X` realize every
+  degree;
+* `equivVia_join_uniform` — **controlled congruence**: a computable index
+  transformation, independent of `W, X, X'`, turning witnesses for `X ≡ₜ X'` into
+  witnesses for `join W X ≡ₜ join W X'` (proved by explicit code construction: a fixed
+  even/odd mixer code, the right-projection code, and the `trOracle` splice of the given
+  index through the projection);
+* `uniformlyTuringInvariant_comp_join` — composing a uniformly invariant function with
+  the canonical-representative map preserves uniform invariance, with a computed
+  uniformity function.
+
+This is precisely the mechanism by which Steel-style arguments control a function
+across representatives of the same degree.  What remains for Steel's uniform case is
+the comparison-game analysis itself (pillar iii).
+
 ## Assessment
 
 The mathematical wall is real and precisely located: all four attempts die at one of

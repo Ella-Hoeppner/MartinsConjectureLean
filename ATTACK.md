@@ -253,16 +253,33 @@ fully-specified formalization plan rather than research.
    `EvalnPrim.lean` (`evaln_prim`), `Universal.lean` (`eval_universal`,
    `exists_fixedPoint`).  The oracle recursion theorem, s-m-n, padding, Σ₁-completeness
    of the jump, and the full Shoenfield limit lemma are all now proved.
-3. **Lachlan's theorem** and **Steel's uniform case** (Attempt-E blueprint) — the
-   recursion-theorem blocker is gone; these are now concrete formalization plans.  (Not
-   yet attempted: the exact combinatorial argument of each still needs careful
-   transcription — deferred rather than risk an incorrect proof.)
-4. **Posner–Robinson** (Kumabe–Slaman forcing) — the remaining pillar for the
+3. **Lachlan's theorem** — the modern Bard–Lutz proof, now scoped precisely (session-5
+   research + groundwork).  **Key correction:** it needs *no* recursion theorem; the core
+   is s-m-n + the universal machine + join + Post's Σ₁ theorem — all present.  Determinacy
+   enters only in the final "on a cone" wrapper.  Three pieces:
+   - **(L1) computable uniformity** (Bard Lemma 3.4): its linchpin — computable composition
+     of functionals `Φ_i^{Φ_j^X} = Φ_{i∗j}^X` — is **already in the codebase** as
+     `trOracle`/`eval_trOracle` (`Jump.lean`) with the index map primrec (`trE_primrec`),
+     now packaged as `OracleCode.eval_trE_comp` (`UniformFunctionals.lean`).  What remains
+     of L1 is the fixed-word semigroup calculation with a handful of concrete machines.
+   - **(L2) local dichotomy** (Lutz Thm 3.10): the `y_e` diagonalization — build a real
+     `y_e ≡ᵀ X` (via bounded simulation: `y_e(m)` copies `X(m)` unless `Φ_e^X(e)` halts
+     within `m` steps, then splices a `τ`-witness) with `n∈W^{y_e} ⟺ Φ_e^X(e)↓`, so a
+     computable uniformity function lets `Wˣ` decide `X′`.  **This is the irreducible hard
+     core** — a genuine oracle-machine construction on the scale of the effective-KP build.
+   - **(L3) assembly**: the easy half `Wˣ ≤ᵀ X′` is **done** (`ReOperator.reReal_le_jump`,
+     Post Σ₁); the continuous case `Wˣ ≤ᵀ X⊕0′` reuses `ExtHalting` (the `Π₁` test
+     `∀τ, n∉W^{σ⌢τ}` is `0′`-decidable); Bard Fact 3.1 is **done** (`Cantor.joinFam_le`).
+   Groundwork complete this session: `eval_trE_comp`, `joinFam_le`, `le_iff_bitg`,
+   `reReal`/`reReal_le_jump`/`reReal_eq_of_reduces`.  Honest path: thread computable
+   uniformity as an explicit hypothesis (like determinacy) and prove L2+L3; then discharge
+   it via L1.  Refs: Lutz thesis Ch. 3; Bard arXiv:1907.10766; Nakid-Cordero
+   arXiv:2510.19147 Lemma 4.2.
+4. **Steel's uniform case** — extends Lachlan to arbitrary (non-r.e.) uniformly-invariant
+   functions; genuinely needs determinacy (a prewellordering/rank argument).  Larger.
+5. **Posner–Robinson** (Kumabe–Slaman forcing) — the remaining pillar for the
    Slaman–Steel and Lutz–Siskind theorems in full.
-5. **Effective Kleene–Post** (incomparable degrees `≤ᵀ 0′`): the crux — that the
-   extension-halting question "does `e` halt on `k` under some finite extension of a given
-   prefix?" is `0′`-decidable — is now **proved** (`ExtHalting.extHalting_recursiveIn_jump`,
-   via Post's theorem `domain_recursiveIn_jump`).  What remains is the `0′`-recursive
-   finite-extension construction (stages via `prec` querying this oracle, a `0′`-computable
-   canonical-witness selector, bit read-off) and the incomparability proof — an intricate
-   but conceptually clear next-session build; the recursion-theoretic content is done.
+6. ~~**Effective Kleene–Post** (incomparable degrees `≤ᵀ 0′`)~~ **DONE (session 5)** —
+   `EffectiveKP.effective_kleene_post`; the `0′`-recursive finite-extension construction is
+   fully built (`condN` via `prec` over the encoded step `reqStepEnc`), with the
+   intermediate-degree corollary `∅ <ᵀ A <ᵀ 0′` (`exists_intermediate_degree`).

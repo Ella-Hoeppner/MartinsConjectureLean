@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13 (five work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, ~1048 jobs, 33 files, ~7.2k lines.
-**Sorry count: 0. Custom axioms: 0** (107 headline theorems audited; every one uses only
+`lake-manifest.json`). Full `lake build`: green, ~1050 jobs, 35 files, ~7.4k lines.
+**Sorry count: 0. Custom axioms: 0** (113 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
@@ -491,6 +491,28 @@ exist *below the halting problem* (a strictly stronger statement than plain Klee
 and the first fully `0′`-computable finite-extension construction in Lean.  It closes the
 last item scoped in `ATTACK.md` and completes T1's optional Kleene–Post target at full
 strength, and yields an intermediate degree as a one-line corollary.
+
+**Groundwork toward Lachlan's theorem (T4).**  After literature research (Bard 2019 /
+Lutz thesis Ch. 3), the modern proof of Lachlan's theorem was scoped and its reusable
+foundations built and proved (`UniformFunctionals.lean`, `ReOperator.lean`):
+
+* **`OracleCode.eval_trE_comp`** — **computable composition of Turing functionals**:
+  `Φ_i^A = Φ_{trE j·i}^X` whenever `Φ_j^X = A`, with the index map primitive recursive
+  (`trE_primrec`).  This packages the existing `trOracle`/`eval_trOracle` oracle-substitution
+  operator as Bard's `∗` — the linchpin of his computable-uniformity lemma, and the reason
+  Turing functionals form a computable monoid under composition.
+* **`Cantor.joinFam_le`** — **Bard's Fact 3.1**: a family of reals uniformly computable
+  from `A` (via a primrec index function) has join `≤ᵀ A`.  With `Cantor.le_iff_bitg`, the
+  general `X ≤ᵀ Y ↔ bit-graph of X recursive in Y` bridge.
+* **`OracleCode.reReal_le_jump`** — **`Wˣ ≤ᵀ X′` for every r.e. operator** (Post's `Σ₁`
+  theorem for operators): the determinacy-free easy half of Lachlan's local dichotomy
+  (Lutz Cor. 3.11).  Plus `reReal_eq_of_reduces` (operator-level composition transport).
+
+A key finding: the modern proof needs **no recursion theorem** (contrary to the folklore
+framing), and its heaviest ingredient (computable composition) was already in the codebase.
+What remains is the `y_e` diagonalization (Lutz Thm 3.10) — an oracle-machine construction
+on the scale of the effective-KP build — and the fixed-word part of computable uniformity;
+see `ATTACK.md` "Next formal milestones" for the precise plan.
 
 ## Concrete next steps for a future run
 

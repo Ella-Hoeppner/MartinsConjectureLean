@@ -535,4 +535,24 @@ theorem srchTest_zero_iff (q w : ℕ) :
   rw [srchTest]
   cases (evaln (fuelOf w) _ _ _).isSome <;> simp
 
+/-- The query encoding a `haltsAt pas e len` question. -/
+def query (pasEnc e len : ℕ) : ℕ := Nat.pair pasEnc (Nat.pair e len)
+
+/-- `srch (query …)` halts iff the construction's step-search succeeds. -/
+theorem srch_query_dom (pas : List ℕ) (e len : ℕ) :
+    (srch (query (Encodable.encode pas) e len)).Dom ↔ ∃ w, haltsAt pas e len w := by
+  rw [srch_dom]
+  have hqeq : ∀ w, srchTest (query (Encodable.encode pas) e len) w = 0 ↔
+      haltsAt pas e len w := by
+    intro w
+    rw [srchTest_zero_iff]
+    simp only [haltsAt, query, Nat.unpair_pair, Encodable.encodek, Option.getD_some]
+  exact ⟨fun ⟨w, hw⟩ => ⟨w, (hqeq w).mp hw⟩, fun ⟨w, hw⟩ => ⟨w, (hqeq w).mpr hw⟩⟩
+
+/-- **The construction's step is `0′`-decidable.** -/
+theorem decision_recursiveIn_jump :
+    Nat.RecursiveIn {jumpFn emptyO}
+      (fun q : ℕ => ((if (srch q).Dom then 1 else 0 : ℕ) : Part ℕ)) :=
+  domain_recursiveIn_jump srch_partrec.recursiveIn
+
 end KleenePostJump

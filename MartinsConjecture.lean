@@ -6,3 +6,6 @@ import MartinsConjecture.CantorPoints
 import MartinsConjecture.Martin
 import MartinsConjecture.ConeTheorem
 import MartinsConjecture.JumpInvariance
+import MartinsConjecture.Hierarchy
+import MartinsConjecture.TopologicalTriviality
+import MartinsConjecture.UniformJump

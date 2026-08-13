@@ -65,3 +65,6 @@ import MartinsConjecture
 #print axioms Martin.martinConjecture_of_cores
 #print axioms Martin.turingDeterminacy_isOpen
 #print axioms Martin.turingDeterminacy_isClosed
+#print axioms Martin.not_constant_and_incomparable
+#print axioms Martin.incomparable_core_iff_never
+#print axioms Martin.partI_iff_cores

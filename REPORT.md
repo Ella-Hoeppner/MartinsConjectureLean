@@ -340,6 +340,20 @@ template for the real future target, `TuringDeterminacy MeasurableSet`
 (= Martin's Borel determinacy).  Final build: 1035 jobs, 66-line audit, all
 standard axioms, 0 sorries.
 
+### Session 3 final result: the reduction is exact (`CoreAnalysis.lean`)
+
+* **`incomparable_core_iff_never`**: the incomparable core is secretly an
+  *impossibility statement* — its hypothesis and conclusion are jointly
+  contradictory (`not_constant_and_incomparable`: a constant value lies
+  below `join C B`, refuting incomparability there), so the core asserts
+  exactly that the fourth comparability regime never occurs.
+* **`partI_iff_cores`**: under Turing determinacy the reduction of Part I to
+  the two cores is an **equivalence** — the isolated open content is exact,
+  with no loss in either direction.
+
+Grand totals for session 3: 8 new theorem files + `ATTACK.md`; build 1036
+jobs; 69-line axiom audit, every line standard; 0 sorries anywhere.
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

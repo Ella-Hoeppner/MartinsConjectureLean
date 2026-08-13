@@ -37,6 +37,15 @@ Items 1–6 constitute, to our knowledge, the first machine-checked formalizatio
 standard structural analysis surrounding Martin's conjecture. The open problem is now
 formally *isolated*: it is exactly the two escaping cores.
 
+## Exact analysis of the cores (added at session end)
+
+`CoreAnalysis.lean`: the incomparable core is an *impossibility statement*
+(`incomparable_core_iff_never` — its hypothesis and conclusion are jointly
+contradictory), and the reduction of Part I to the two cores is an **exact
+equivalence** (`partI_iff_cores`).  So the formal isolation of the open content is
+lossless: Part I (AD-style, mod Turing determinacy) *is* the conjunction
+"regressive ⟹ constant" ∧ "invariant functions are never ⊥-with-id on a cone".
+
 ## Direct attempts on the escaping cores, and where they died
 
 **Attempt A — join-limit coding (regressive/avoiding case).** Given escaping `F`, build

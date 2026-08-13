@@ -196,6 +196,13 @@ are nested, so `A = ⋃ σ`, `B = ⋃ τ` are well-defined limits; `A, B ≤ᵀ 
   contradicting the NO decision.  So `Φₑᴮ(|σ|_r)↑ ≠ A` (total).
 Hence no `e` computes `A` from `B`; symmetric for `B` from `A`.
 
+Implementation note (the one non-obvious combinator): the "if the `0′` bit says *halts*,
+run the `∅`-partrec witness search, else return a default" conditional is expressible in
+`Nat.RecursiveIn` **via the `prec` constructor recursing on the oracle bit** `b`:
+`Nat.rec (Part.some default) (fun _ _ => searchValue p) b` — the partial search is only
+evaluated in the `b ≥ 1` (successor) branch, so it is never run when the bit is `0`.  This
+sidesteps the usual "can't multiply out a partial function" obstruction.
+
 Every ingredient (`extHalting_recursiveIn_jump`, `ehFun`, `evaln_sound/complete/mono`, `prec`,
 the encodings) is already in the repository.  The obstacle is purely the length/friction of the
 `Nat.RecursiveIn {jump ∅}` step term and the limit bookkeeping — estimated one focused session.

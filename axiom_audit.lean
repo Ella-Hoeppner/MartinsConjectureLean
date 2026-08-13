@@ -87,3 +87,5 @@ import MartinsConjecture
 #print axioms OracleCode.exists_tableEnc
 #print axioms OracleCode.recursiveIn_of_jumpApprox
 #print axioms OracleCode.limit_lemma
+#print axioms Cantor.le_jump_iff_limitApprox
+#print axioms Cantor.jump_limit

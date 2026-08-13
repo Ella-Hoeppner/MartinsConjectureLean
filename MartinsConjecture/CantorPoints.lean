@@ -88,6 +88,18 @@ theorem le_bot_iff {X : ℕ → Bool} : X ≤ₜ (fun _ => false) ↔ Partrec (t
   · intro h
     exact h.turingReducible
 
+/-- If `X` is obtained from `Z` by precomposition with a primitive recursive
+index transformation, then `X ≤ₜ Z`. -/
+theorem le_of_precomp {X Z : ℕ → Bool} {g : ℕ → ℕ} (hg : Nat.Primrec g)
+    (h : ∀ n, X n = Z (g n)) : X ≤ₜ Z := by
+  refine RecursiveIn.iff_nat.mpr ?_
+  have h1 : Nat.RecursiveIn {toPFun Z} (fun n : ℕ => ((g n : ℕ) : Part ℕ) >>= toPFun Z) :=
+    Nat.RecursiveIn.comp (.oracle _ rfl) hg.recursiveIn
+  refine h1.of_eq fun n => ?_
+  rw [Part.coe_some,
+    show (Part.some (g n) >>= toPFun Z) = toPFun Z (g n) from Part.bind_some _ _]
+  simp [toPFun, h n]
+
 /-- Computable points are in the bottom degree. -/
 theorem le_of_computable {X Y : ℕ → Bool} (h : Computable X) : X ≤ₜ Y := by
   have h1 : Computable fun n => (cond (X n) 1 0 : ℕ) :=

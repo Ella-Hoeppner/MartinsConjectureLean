@@ -358,6 +358,47 @@ five-core isolation of the whole conjecture is lossless in both directions.
 Grand totals for session 3: 8 new theorem files + `ATTACK.md`; build 1036
 jobs; 69-line axiom audit, every line standard; 0 sorries anywhere.
 
+## Session 4 (2026-08-13, ~1h): the universal machine and its harvest
+
+The single blocker identified in `ATTACK.md` — the step-indexed universal machine for
+`OracleCode` — is now **built and fully proved**, unlocking the recursion theorem and the
+limit lemma.  Seven new files, all sorry-free, standard axioms only.
+
+* **`Evaln.lean`** — `evaln k L c n`: step-indexed evaluation of oracle code `c` on input
+  `n` with fuel `k` and finite oracle table `L`.  Proved: `evaln_sound` (bounded answers
+  are correct), `evaln_complete` (every converging computation is captured at some stage,
+  via `graphOf`), `evaln_mono` (answers persist as fuel/table grow), and a bounded search
+  `searchList` with exact spec for the `rfind` case.
+* **`EvalnPrim.lean`** — **`evaln_prim`**: `evaln` is *primitive recursive* jointly in
+  `(k, L, c, n)`.  The proof: the `n ≤ k` guard makes each stage a finite table
+  (`stageTable`), which satisfies a course-of-values recursion over the packed index
+  `pair k (encode c)` (`stageStep`, correctness `stageStep_spec` by the full code-number
+  case analysis), discharged by `Primrec.nat_strong_rec`.
+* **`Universal.lean`** — **`eval_universal`**: relative to any total 0/1 oracle, the
+  two-argument evaluator `(e, n) ↦ eval O (ofNatCode e) n` is itself recursive in the
+  oracle, by dovetailing `evaln` over stages using the oracle's own graph
+  (`graphEnc_recursiveIn`).  Then **`exists_fixedPoint`**: Kleene's second recursion
+  theorem, relativized — every computable code transformation has an oracle-relative fixed
+  point (diagonal `curryEnc x x`).
+* **`RecursionTheorem.lean`** — named corollaries: **`exists_quine`** (a self-outputting
+  code), `no_fixedPointFree`, `exists_selfHalting_code`.
+* **`LimitLemma.lean`** — **`dom_iff_jumpP`**: Σ₁-completeness of the jump (halting
+  questions reduce primitively to diagonal jump questions).  **`recursiveIn_jump_of_limit`**:
+  the substantive direction of the Shoenfield limit lemma (`X`-computable pointwise-convergent
+  approximations have `X′`-computable limits).
+* **`JumpApprox.lean`** — **`jump_limitApprox`**: the jump is Δ⁰₂-in-`X` — it has an
+  `X`-computable, monotone, pointwise-convergent stage approximation (`jumpApproxN`).
+* **`LimitLemmaFull.lean`** — **`limit_lemma`**: the **full Shoenfield Limit Lemma**,
+  relativized — `f ≤ᵀ X′ ↔ f has an X-computable stage approximation converging pointwise`.
+  The `→` direction runs the reduction under the jump's stage approximation via the reusable
+  table-builder `exists_tableEnc`, closed by `evaln_mono`.
+
+These are, to our knowledge, the first machine-checked Lean proofs of the universal oracle
+machine, the relativized recursion theorem, and the (relativized) Shoenfield limit lemma.
+The recursion theorem was the exact artifact all four attack lines in `ATTACK.md` funneled
+through; with it, Lachlan's theorem and Steel's uniform case become concrete formalization
+plans rather than research (see `ATTACK.md`, "next milestones").
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

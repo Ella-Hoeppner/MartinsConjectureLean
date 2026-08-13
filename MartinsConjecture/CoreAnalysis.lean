@@ -74,8 +74,63 @@ theorem partI_iff_cores (hTD : TuringDeterminacy fun _ => True) :
   · intro ⟨h1, h2⟩
     exact partI_of_cores hTD h1 h2
 
+/-! ### Exactness of the Part II reductions -/
+
+/-- The totality reduction is exact. -/
+theorem partII_total_iff_core (hTD : TuringDeterminacy fun _ => True) :
+    PartII_Borel_Total ↔ ComparisonCore := by
+  constructor
+  · intro htot F G hF hG hinc
+    obtain ⟨B, hB⟩ | ⟨B, hB⟩ := htot F G hF hG
+    · obtain ⟨B', hB'⟩ := onCone_and ⟨B, hB⟩ hinc
+      obtain ⟨hle, hnle, -⟩ := hB' B' (le.refl B')
+      exact hnle hle
+    · obtain ⟨B', hB'⟩ := onCone_and ⟨B, hB⟩ hinc
+      obtain ⟨hle, -, hnle⟩ := hB' B' (le.refl B')
+      exact hnle hle
+  · exact partII_total_of_core hTD
+
+/-- The well-foundedness reduction is exact. -/
+theorem partII_WF_iff_core : PartII_Borel_WF ↔ DescendingChainCore := by
+  constructor
+  · intro hWF Fs hreg hchain
+    letI : IsIrrefl {F // Regular F} (fun F G => MartinLT F.1 G.1) :=
+      ⟨fun F h => h.2 h.1⟩
+    letI : IsTrans {F // Regular F} (fun F G => MartinLT F.1 G.1) :=
+      ⟨fun F G H h1 h2 => ⟨h1.1.trans h2.1, fun hc => h2.2 (hc.trans h1.1)⟩⟩
+    letI : IsStrictOrder {F // Regular F} (fun F G => MartinLT F.1 G.1) := ⟨⟩
+    exact (RelEmbedding.natGT (fun n => (⟨Fs n, hreg n⟩ : {F // Regular F}))
+      (fun n => hchain n)).not_wellFounded hWF
+  · exact partII_WF_of_core
+
+/-- The successor reduction is exact (given the proved half
+`martinLT_jump`). -/
+theorem partII_succ_iff_core : PartII_Borel_Succ ↔ JumpMinimalityCore := by
+  constructor
+  · intro hsucc F G hF hG hFG
+    exact (hsucc F hF).2 G hG hFG
+  · exact partII_succ_of_core
+
+/-- **The full exactness theorem**: under Turing determinacy, Part II of the
+Borel Martin conjecture is *equivalent* to the conjunction of its three
+cores.  Together with `partI_iff_cores`, the isolation of the conjecture's
+open content is lossless in both directions. -/
+theorem partII_iff_cores (hTD : TuringDeterminacy fun _ => True) :
+    PartII_Borel ↔ (ComparisonCore ∧ DescendingChainCore ∧ JumpMinimalityCore) := by
+  constructor
+  · rintro ⟨h1, h2, h3⟩
+    exact ⟨(partII_total_iff_core hTD).mp h1, partII_WF_iff_core.mp h2,
+      partII_succ_iff_core.mp h3⟩
+  · rintro ⟨h1, h2, h3⟩
+    exact ⟨partII_total_of_core hTD h1, partII_WF_of_core h2,
+      partII_succ_of_core h3⟩
+
 #print axioms not_constant_and_incomparable
 #print axioms incomparable_core_iff_never
 #print axioms partI_iff_cores
+#print axioms partII_total_iff_core
+#print axioms partII_WF_iff_core
+#print axioms partII_succ_iff_core
+#print axioms partII_iff_cores
 
 end Martin

@@ -351,6 +351,10 @@ standard axioms, 0 sorries.
   the two cores is an **equivalence** — the isolated open content is exact,
   with no loss in either direction.
 
+Also `partII_total_iff_core`, `partII_WF_iff_core`, `partII_succ_iff_core`,
+and `partII_iff_cores`: the Part II reductions are likewise exact — the
+five-core isolation of the whole conjecture is lossless in both directions.
+
 Grand totals for session 3: 8 new theorem files + `ATTACK.md`; build 1036
 jobs; 69-line axiom audit, every line standard; 0 sorries anywhere.
 

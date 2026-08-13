@@ -68,3 +68,7 @@ import MartinsConjecture
 #print axioms Martin.not_constant_and_incomparable
 #print axioms Martin.incomparable_core_iff_never
 #print axioms Martin.partI_iff_cores
+#print axioms Martin.partII_total_iff_core
+#print axioms Martin.partII_WF_iff_core
+#print axioms Martin.partII_succ_iff_core
+#print axioms Martin.partII_iff_cores

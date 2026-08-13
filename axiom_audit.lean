@@ -100,3 +100,9 @@ import MartinsConjecture
 #print axioms Martin.uniformlyTuringInvariant_jumpIterate
 #print axioms Martin.uniform_jump_chain
 #print axioms Martin.MartinEquiv.symm
+#print axioms KleenePostJump.not_A_le_B
+#print axioms KleenePostJump.not_B_le_A
+#print axioms KleenePostJump.condN_spec
+#print axioms KleenePostJump.A_le_jump
+#print axioms KleenePostJump.B_le_jump
+#print axioms KleenePostJump.effective_kleene_post

@@ -30,3 +30,4 @@ import MartinsConjecture.CantorLimit
 import MartinsConjecture.SmnPadding
 import MartinsConjecture.PostDomain
 import MartinsConjecture.ExtHalting
+import MartinsConjecture.EffectiveKP

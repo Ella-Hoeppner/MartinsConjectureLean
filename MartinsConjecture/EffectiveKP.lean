@@ -14,6 +14,7 @@ Phase 1 (this section): the construction and the defeat/incomparability
 lemmas (mathematical, `Classical` where convenient).
 -/
 import MartinsConjecture.ExtHalting
+import MartinsConjecture.CantorLimit
 
 open scoped Computability
 open OracleCode Cantor
@@ -623,6 +624,373 @@ theorem reqStepEnc_spec (act pas : List ℕ) (e : ℕ) :
     rw [if_neg hdom, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
     show Part.some (encPair (act ++ [0]) (pas ++ [0])) = _
     rw [reqStep, dif_neg hh]
+
+
+/-! ### `reqStepEnc` is recursive in `0′` -/
+
+theorem decL_prim : Primrec decL :=
+  Primrec.option_getD.comp (Primrec.decode (α := List ℕ)) (Primrec.const ([] : List ℕ))
+
+/-- The query as a primrec function of `arg`. -/
+theorem qFn_prim : Primrec (fun arg : ℕ =>
+    query (Nat.unpair (Nat.unpair arg).2).1 (Nat.unpair (Nat.unpair arg).2).2
+      (decL (Nat.unpair arg).1).length) := by
+  unfold query
+  exact Primrec₂.natPair.comp
+    (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))
+    (Primrec₂.natPair.comp
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))
+      (Primrec.list_length.comp (decL_prim.comp (Primrec.fst.comp Primrec.unpair))))
+
+theorem baseFn_prim : Primrec (fun arg : ℕ =>
+    encPair (decL (Nat.unpair arg).1 ++ [0])
+      (decL (Nat.unpair (Nat.unpair arg).2).1 ++ [0])) := by
+  unfold encPair
+  exact Primrec₂.natPair.comp
+    (Primrec.encode.comp (Primrec.list_append.comp
+      (decL_prim.comp (Primrec.fst.comp Primrec.unpair)) (Primrec.const [0])))
+    (Primrec.encode.comp (Primrec.list_append.comp
+      (decL_prim.comp (Primrec.fst.comp (Primrec.unpair.comp
+        (Primrec.snd.comp Primrec.unpair)))) (Primrec.const [0])))
+
+theorem diagBit_prim : Primrec diagBit := by
+  unfold diagBit
+  exact Primrec.ite (Primrec.eq.comp Primrec.id (Primrec.const 0))
+    (Primrec.const 1) (Primrec.const 0)
+
+/-- The `yes`-assembly on `p = ⟪arg, w⟫`. -/
+def assembleFn (p : ℕ) : ℕ :=
+  let arg := (Nat.unpair p).1
+  let w := (Nat.unpair p).2
+  encPair
+    (decL (Nat.unpair arg).1
+      ++ [diagBit (valAt (decL (Nat.unpair (Nat.unpair arg).2).1)
+        (Nat.unpair (Nat.unpair arg).2).2 (decL (Nat.unpair arg).1).length w)])
+    (decL (Nat.unpair (Nat.unpair arg).2).1 ++ extOf w)
+
+/-- The `yes`-assembly is primitive recursive. -/
+theorem assembleFn_prim : Primrec assembleFn := by
+  unfold assembleFn
+  have harg : Primrec fun p : ℕ => (Nat.unpair p).1 := Primrec.fst.comp Primrec.unpair
+  have hw : Primrec fun p : ℕ => (Nat.unpair p).2 := Primrec.snd.comp Primrec.unpair
+  have hact : Primrec fun p : ℕ => decL (Nat.unpair (Nat.unpair p).1).1 :=
+    decL_prim.comp (Primrec.fst.comp (Primrec.unpair.comp harg))
+  have hpas : Primrec fun p : ℕ => decL (Nat.unpair (Nat.unpair (Nat.unpair p).1).2).1 :=
+    decL_prim.comp (Primrec.fst.comp (Primrec.unpair.comp
+      (Primrec.snd.comp (Primrec.unpair.comp harg))))
+  have he : Primrec fun p : ℕ => (Nat.unpair (Nat.unpair (Nat.unpair p).1).2).2 :=
+    Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp (Primrec.unpair.comp harg)))
+  have hev : Primrec fun p : ℕ =>
+      valAt (decL (Nat.unpair (Nat.unpair (Nat.unpair p).1).2).1)
+        (Nat.unpair (Nat.unpair (Nat.unpair p).1).2).2
+        (decL (Nat.unpair (Nat.unpair p).1).1).length (Nat.unpair p).2 := by
+    unfold valAt fuelOf
+    have hfuel : Primrec fun p : ℕ => (Nat.unpair (Nat.unpair p).2).2 :=
+      Primrec.snd.comp (Primrec.unpair.comp hw)
+    have htable : Primrec fun p : ℕ =>
+        decL (Nat.unpair (Nat.unpair (Nat.unpair p).1).2).1 ++ extOf (Nat.unpair p).2 :=
+      Primrec.list_append.comp hpas (extOf_prim.comp hw)
+    have hcode : Primrec fun p : ℕ =>
+        ofNatCode (Nat.unpair (Nat.unpair (Nat.unpair p).1).2).2 :=
+      (Primrec.ofNat OracleCode).comp he
+    have hlen : Primrec fun p : ℕ => (decL (Nat.unpair (Nat.unpair p).1).1).length :=
+      Primrec.list_length.comp hact
+    exact Primrec.option_getD.comp
+      (evaln_prim.comp (Primrec.pair (Primrec.pair (Primrec.pair hfuel htable) hcode) hlen))
+      (Primrec.const 0)
+  unfold encPair
+  exact Primrec₂.natPair.comp
+    (Primrec.encode.comp (Primrec.list_append.comp hact
+      (Primrec.list_cons.comp (diagBit_prim.comp hev) (Primrec.const []))))
+    (Primrec.encode.comp (Primrec.list_append.comp hpas (extOf_prim.comp hw)))
+
+/-- `reqStepEnc` is recursive in `0′`. -/
+theorem reqStepEnc_recursiveIn : Nat.RecursiveIn {jumpFn emptyO} reqStepEnc := by
+  -- abbreviations
+  set qF : ℕ → ℕ := fun arg => query (Nat.unpair (Nat.unpair arg).2).1
+    (Nat.unpair (Nat.unpair arg).2).2 (decL (Nat.unpair arg).1).length with hqF
+  -- decision oracle at `qF arg`
+  have hdec : Nat.RecursiveIn {jumpFn emptyO}
+      (fun arg : ℕ => ((if (srch (qF arg)).Dom then 1 else 0 : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp decision_recursiveIn_jump
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp qFn_prim))).of_eq fun arg => by
+      rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  -- base branch
+  have hbase : Nat.RecursiveIn {jumpFn emptyO}
+      (fun arg : ℕ => ((encPair (decL (Nat.unpair arg).1 ++ [0])
+        (decL (Nat.unpair (Nat.unpair arg).2).1 ++ [0]) : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp baseFn_prim)
+  -- srch at `qF ((unpair p).1)`
+  have hsrchp : Nat.RecursiveIn {jumpFn emptyO}
+      (fun p : ℕ => srch (qF (Nat.unpair p).1)) :=
+    (Nat.RecursiveIn.comp srch_partrec.recursiveIn
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (qFn_prim.comp (Primrec.fst.comp Primrec.unpair))))).of_eq fun p => by
+      rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  -- pair `p` with the search result, then assemble
+  have hstep : Nat.RecursiveIn {jumpFn emptyO} (fun p : ℕ =>
+      (Nat.pair <$> ((p : ℕ) : Part ℕ) <*> srch (qF (Nat.unpair p).1))
+        >>= fun pw : ℕ =>
+          ((assembleFn (Nat.pair (Nat.unpair (Nat.unpair pw).1).1 (Nat.unpair pw).2) : ℕ)
+            : Part ℕ)) :=
+    Nat.RecursiveIn.comp
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (assembleFn_prim.comp
+        (Primrec₂.natPair.comp
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+          (Primrec.snd.comp Primrec.unpair)))))
+      (Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hsrchp)
+  -- the prec fold
+  have hprec := Nat.RecursiveIn.prec hbase hstep
+  -- pair `arg` with the decision, feed to the prec
+  have hpairing : Nat.RecursiveIn {jumpFn emptyO} (fun arg : ℕ =>
+      Nat.pair <$> ((arg : ℕ) : Part ℕ) <*>
+        ((if (srch (qF arg)).Dom then 1 else 0 : ℕ) : Part ℕ)) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hdec
+  have hfinal := Nat.RecursiveIn.comp hprec hpairing
+  refine hfinal.of_eq fun arg => ?_
+  -- reduce the pairing/comp and case on the decision
+  simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, Seq.seq,
+    Part.map_eq_map, Part.map_some, Nat.unpair_pair]
+  rw [reqStepEnc, hqF]
+  by_cases hd : (srch (query (Nat.unpair (Nat.unpair arg).2).1
+      (Nat.unpair (Nat.unpair arg).2).2 (decL (Nat.unpair arg).1).length)).Dom
+  · rw [if_pos hd]
+    simp [Part.bind_some, Part.bind_eq_bind, Part.bind_some_eq_map, Part.map_map,
+      Function.comp_def, Nat.unpair_pair, assembleFn]
+  · rw [if_neg hd]
+    simp [Part.bind_some, Part.bind_eq_bind, Nat.unpair_pair, assembleFn]
+
+/-! ### The encoded construction is recursive in `0′`
+
+We now show the entire finite-extension construction `cond` is recursive in
+`jump ∅`, by encoding each stage's pair `(σ, τ)` as a single natural number
+`encPair σ τ` and running the stage recursion with `reqStepEnc` (which is
+recursive in `0′`) as the step. -/
+
+/-- The encoded empty pair `([], [])`. -/
+def baseEnc : ℕ := encPair [] []
+
+/-- The argument fed to `reqStepEnc` at a stage: on `q = ⟪a, ⟪y, c⟫⟫` (where
+`y` is the stage and `c = encPair σ τ` the current pair), builds
+`⟪encode σ, ⟪encode τ, y/2⟫⟫` on even `y`, and the swapped version on odd `y`. -/
+def condArg (q : ℕ) : ℕ :=
+  let y := (Nat.unpair (Nat.unpair q).2).1
+  let c := (Nat.unpair (Nat.unpair q).2).2
+  if y % 2 = 0 then
+    Nat.pair (Nat.unpair c).1 (Nat.pair (Nat.unpair c).2 (y / 2))
+  else
+    Nat.pair (Nat.unpair c).2 (Nat.pair (Nat.unpair c).1 (y / 2))
+
+theorem condArg_prim : Primrec condArg := by
+  unfold condArg
+  have hy : Primrec fun q : ℕ => (Nat.unpair (Nat.unpair q).2).1 :=
+    Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+  have hc : Primrec fun q : ℕ => (Nat.unpair (Nat.unpair q).2).2 :=
+    Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+  have hc1 : Primrec fun q : ℕ => (Nat.unpair (Nat.unpair (Nat.unpair q).2).2).1 :=
+    Primrec.fst.comp (Primrec.unpair.comp hc)
+  have hc2 : Primrec fun q : ℕ => (Nat.unpair (Nat.unpair (Nat.unpair q).2).2).2 :=
+    Primrec.snd.comp (Primrec.unpair.comp hc)
+  have hhalf : Primrec fun q : ℕ => (Nat.unpair (Nat.unpair q).2).1 / 2 :=
+    Primrec.nat_div.comp hy (Primrec.const 2)
+  exact Primrec.ite (Primrec.eq.comp (Primrec.nat_mod.comp hy (Primrec.const 2)) (Primrec.const 0))
+    (Primrec₂.natPair.comp hc1 (Primrec₂.natPair.comp hc2 hhalf))
+    (Primrec₂.natPair.comp hc2 (Primrec₂.natPair.comp hc1 hhalf))
+
+/-- Post-processing of `reqStepEnc`'s output at a stage: identity on even `y`,
+swap the two encoded halves on odd `y`. -/
+def condPost (q enc : ℕ) : ℕ :=
+  if (Nat.unpair (Nat.unpair q).2).1 % 2 = 0 then enc
+  else Nat.pair (Nat.unpair enc).2 (Nat.unpair enc).1
+
+theorem condPostN_prim : Primrec (fun p : ℕ => condPost (Nat.unpair p).1 (Nat.unpair p).2) := by
+  unfold condPost
+  have hq : Primrec fun p : ℕ => (Nat.unpair p).1 := Primrec.fst.comp Primrec.unpair
+  have henc : Primrec fun p : ℕ => (Nat.unpair p).2 := Primrec.snd.comp Primrec.unpair
+  have hy : Primrec fun p : ℕ => (Nat.unpair (Nat.unpair (Nat.unpair p).1).2).1 :=
+    Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp (Primrec.unpair.comp hq)))
+  have hswap : Primrec fun p : ℕ =>
+      Nat.pair (Nat.unpair (Nat.unpair p).2).2 (Nat.unpair (Nat.unpair p).2).1 :=
+    Primrec₂.natPair.comp (Primrec.snd.comp (Primrec.unpair.comp henc))
+      (Primrec.fst.comp (Primrec.unpair.comp henc))
+  exact Primrec.ite (Primrec.eq.comp (Primrec.nat_mod.comp hy (Primrec.const 2)) (Primrec.const 0))
+    henc hswap
+
+/-- The encoded stage step: on `q = ⟪a, ⟪y, c⟫⟫`, run `reqStepEnc` and
+post-process. -/
+noncomputable def condStepEnc (q : ℕ) : Part ℕ :=
+  (reqStepEnc (condArg q)).map (condPost q)
+
+theorem condStepEnc_recursiveIn : Nat.RecursiveIn {jumpFn emptyO} condStepEnc := by
+  have hreq : Nat.RecursiveIn {jumpFn emptyO} (fun q : ℕ => reqStepEnc (condArg q)) :=
+    (Nat.RecursiveIn.comp reqStepEnc_recursiveIn
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp condArg_prim))).of_eq fun q => by
+      rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hpair : Nat.RecursiveIn {jumpFn emptyO}
+      (fun q : ℕ => Nat.pair <$> ((q : ℕ) : Part ℕ) <*> reqStepEnc (condArg q)) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hreq
+  have hpost : Nat.RecursiveIn {jumpFn emptyO}
+      (fun p : ℕ => ((condPost (Nat.unpair p).1 (Nat.unpair p).2 : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp condPostN_prim)
+  refine (Nat.RecursiveIn.comp hpost hpair).of_eq fun q => ?_
+  rw [condStepEnc]
+  simp [Seq.seq, Part.map_eq_map, Part.bind_eq_bind, Part.map_some, Part.bind_some,
+    Part.bind_some_eq_map, Part.map_map, Function.comp_def, Nat.unpair_pair]
+
+/-- The stage-`r` encoded pair, built by prec on `p = ⟪a, r⟫` (the `a` is a
+dummy first coordinate demanded by the `prec` shape). -/
+noncomputable def condRec (p : ℕ) : Part ℕ :=
+  let a := (Nat.unpair p).1
+  let n := (Nat.unpair p).2
+  Nat.rec (((baseEnc : ℕ) : Part ℕ))
+    (fun y IH => IH >>= fun i => condStepEnc (Nat.pair a (Nat.pair y i))) n
+
+theorem condRec_recursiveIn : Nat.RecursiveIn {jumpFn emptyO} condRec := by
+  have hbase : Nat.RecursiveIn {jumpFn emptyO} (fun _ : ℕ => ((baseEnc : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.const baseEnc))
+  exact (Nat.RecursiveIn.prec hbase condStepEnc_recursiveIn).of_eq fun p => rfl
+
+/-- The encoded stage pair, indexed by stage alone. -/
+noncomputable def condN (r : ℕ) : Part ℕ := condRec (Nat.pair 0 r)
+
+theorem condN_recursiveIn : Nat.RecursiveIn {jumpFn emptyO} condN := by
+  have hpc : Nat.RecursiveIn {jumpFn emptyO} (fun r : ℕ => ((Nat.pair 0 r : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+      (Primrec₂.natPair.comp (Primrec.const 0) Primrec.id))
+  refine (Nat.RecursiveIn.comp condRec_recursiveIn hpc).of_eq fun r => ?_
+  rw [condN, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+
+/-- `cond (r+1)` on an even stage. -/
+theorem cond_succ_even (r : ℕ) (h : r % 2 = 0) :
+    cond (r + 1) = reqStep (cond r).1 (cond r).2 (r / 2) := by
+  simp only [cond, if_pos h]
+
+/-- `cond (r+1)` on an odd stage. -/
+theorem cond_succ_odd (r : ℕ) (h : r % 2 ≠ 0) :
+    cond (r + 1) =
+      ((reqStep (cond r).2 (cond r).1 (r / 2)).2, (reqStep (cond r).2 (cond r).1 (r / 2)).1) := by
+  simp only [cond, if_neg h]
+
+/-- Correctness of the encoded stage step at a real pair. -/
+theorem condStepEnc_spec (a r : ℕ) :
+    condStepEnc (Nat.pair a (Nat.pair r (encPair (cond r).1 (cond r).2)))
+      = Part.some (encPair (cond (r + 1)).1 (cond (r + 1)).2) := by
+  have hC1 : (Nat.unpair (encPair (cond r).1 (cond r).2)).1 = Encodable.encode (cond r).1 := by
+    rw [encPair, Nat.unpair_pair]
+  have hC2 : (Nat.unpair (encPair (cond r).1 (cond r).2)).2 = Encodable.encode (cond r).2 := by
+    rw [encPair, Nat.unpair_pair]
+  rw [condStepEnc, condArg]
+  simp only [Nat.unpair_pair, hC1, hC2]
+  by_cases hpar : r % 2 = 0
+  · rw [if_pos hpar, reqStepEnc_spec, Part.map_some]
+    simp only [condPost, Nat.unpair_pair, if_pos hpar]
+    rw [cond_succ_even r hpar]
+  · rw [if_neg hpar, reqStepEnc_spec, Part.map_some]
+    simp only [condPost, Nat.unpair_pair, if_neg hpar]
+    rw [cond_succ_odd r hpar, encPair, encPair, Nat.unpair_pair]
+
+/-- **Correctness of the encoded construction**: `condN r` is total and equals
+the encoded stage-`r` pair. -/
+theorem condN_spec (r : ℕ) : condN r = Part.some (encPair (cond r).1 (cond r).2) := by
+  rw [condN]
+  induction r with
+  | zero => rw [condRec]; simp only [Nat.unpair_pair]; rfl
+  | succ r ih =>
+    have hunf : condRec (Nat.pair 0 (r + 1))
+        = condRec (Nat.pair 0 r) >>= fun i => condStepEnc (Nat.pair 0 (Nat.pair r i)) := by
+      rw [condRec, condRec]; simp only [Nat.unpair_pair]
+    rw [hunf, ih, Part.bind_eq_bind, Part.bind_some, condStepEnc_spec]
+
+/-! ### The reals `A`, `B` are computable from `0′` -/
+
+/-- Bit-extraction primrec helper: on `p = ⟪n, v⟫` with `v = encPair σ τ`,
+reads `σ.getD n 0` (left) . -/
+theorem bitExtractFst_prim :
+    Primrec (fun p : ℕ => (decL (Nat.unpair (Nat.unpair p).2).1).getD (Nat.unpair p).1 0) :=
+  (Primrec.option_getD.comp
+    (Primrec.list_getElem?.comp
+      (decL_prim.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))))
+      (Primrec.fst.comp Primrec.unpair))
+    (Primrec.const 0)).of_eq fun _ => List.getD_eq_getElem?_getD.symm
+
+theorem bitExtractSnd_prim :
+    Primrec (fun p : ℕ => (decL (Nat.unpair (Nat.unpair p).2).2).getD (Nat.unpair p).1 0) :=
+  (Primrec.option_getD.comp
+    (Primrec.list_getElem?.comp
+      (decL_prim.comp (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))))
+      (Primrec.fst.comp Primrec.unpair))
+    (Primrec.const 0)).of_eq fun _ => List.getD_eq_getElem?_getD.symm
+
+theorem bitgA_recursiveIn :
+    Nat.RecursiveIn {jumpFn emptyO} (fun n : ℕ => ((bitg A n : ℕ) : Part ℕ)) := by
+  have hcond : Nat.RecursiveIn {jumpFn emptyO} (fun n : ℕ => condN (2 * (n + 1))) :=
+    (Nat.RecursiveIn.comp condN_recursiveIn
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (Primrec.nat_mul.comp (Primrec.const 2)
+          (Primrec.nat_add.comp Primrec.id (Primrec.const 1)))))).of_eq fun n => by
+      simp only [id_eq, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hpair : Nat.RecursiveIn {jumpFn emptyO}
+      (fun n : ℕ => Nat.pair <$> ((n : ℕ) : Part ℕ) <*> condN (2 * (n + 1))) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hcond
+  have hext : Nat.RecursiveIn {jumpFn emptyO}
+      (fun p : ℕ => (((decL (Nat.unpair (Nat.unpair p).2).1).getD (Nat.unpair p).1 0 : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp bitExtractFst_prim)
+  refine (Nat.RecursiveIn.comp hext hpair).of_eq fun n => ?_
+  rw [condN_spec]
+  simp only [Part.coe_some, Seq.seq, Part.map_eq_map, Part.bind_eq_bind, Part.map_some,
+    Part.bind_some, Nat.unpair_pair]
+  rw [show (Nat.unpair (encPair (cond (2 * (n + 1))).1 (cond (2 * (n + 1))).2)).1
+        = Encodable.encode (cond (2 * (n + 1))).1 from by rw [encPair, Nat.unpair_pair],
+    decL_encode, ← bitg_A (2 * (n + 1)) n (cond_fst_len_gt n)]
+
+theorem bitgB_recursiveIn :
+    Nat.RecursiveIn {jumpFn emptyO} (fun n : ℕ => ((bitg B n : ℕ) : Part ℕ)) := by
+  have hcond : Nat.RecursiveIn {jumpFn emptyO} (fun n : ℕ => condN (2 * (n + 1))) :=
+    (Nat.RecursiveIn.comp condN_recursiveIn
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (Primrec.nat_mul.comp (Primrec.const 2)
+          (Primrec.nat_add.comp Primrec.id (Primrec.const 1)))))).of_eq fun n => by
+      simp only [id_eq, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hpair : Nat.RecursiveIn {jumpFn emptyO}
+      (fun n : ℕ => Nat.pair <$> ((n : ℕ) : Part ℕ) <*> condN (2 * (n + 1))) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hcond
+  have hext : Nat.RecursiveIn {jumpFn emptyO}
+      (fun p : ℕ => (((decL (Nat.unpair (Nat.unpair p).2).2).getD (Nat.unpair p).1 0 : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp bitExtractSnd_prim)
+  refine (Nat.RecursiveIn.comp hext hpair).of_eq fun n => ?_
+  rw [condN_spec]
+  simp only [Part.coe_some, Seq.seq, Part.map_eq_map, Part.bind_eq_bind, Part.map_some,
+    Part.bind_some, Nat.unpair_pair]
+  rw [show (Nat.unpair (encPair (cond (2 * (n + 1))).1 (cond (2 * (n + 1))).2)).2
+        = Encodable.encode (cond (2 * (n + 1))).2 from by rw [encPair, Nat.unpair_pair],
+    decL_encode, ← bitg_B (2 * (n + 1)) n (cond_snd_len_gt n)]
+
+/-! ### The `0′`-bound, via the point representation -/
+
+/-- The empty point of Cantor space. -/
+def emptyPt : ℕ → Bool := fun _ => false
+
+theorem toPFun_emptyPt : Cantor.toPFun emptyPt = emptyO := by
+  funext n; rfl
+
+/-- `A ≤ᵀ 0′`. -/
+theorem A_le_jump : A ≤ₜ Cantor.jump emptyPt := by
+  rw [Cantor.le_jump_iff_bitg, Cantor.toPFun_jump, toPFun_emptyPt]
+  exact bitgA_recursiveIn
+
+/-- `B ≤ᵀ 0′`. -/
+theorem B_le_jump : B ≤ₜ Cantor.jump emptyPt := by
+  rw [Cantor.le_jump_iff_bitg, Cantor.toPFun_jump, toPFun_emptyPt]
+  exact bitgB_recursiveIn
+
+/-- **The effective Kleene–Post theorem.**  There is a pair of reals, each
+Turing-below `0′` (the jump of the empty set), that are Turing-incomparable. -/
+theorem effective_kleene_post :
+    ∃ A B : ℕ → Bool, A ≤ₜ Cantor.jump emptyPt ∧ B ≤ₜ Cantor.jump emptyPt ∧
+      ¬ (A ≤ₜ B) ∧ ¬ (B ≤ₜ A) :=
+  ⟨A, B, A_le_jump, B_le_jump, not_A_le_B, not_B_le_A⟩
+
+#print axioms effective_kleene_post
 
 
 end KleenePostJump

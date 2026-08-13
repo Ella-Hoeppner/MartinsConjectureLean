@@ -329,6 +329,17 @@ Final session-3 totals: 7 new files (`MartinMeasure`, `Reduction`,
 `ATTACK.md`), full build 1034 jobs, **0 sorries, 0 custom axioms** (64-line
 audit, every line standard).
 
+### Session 3 coda: first discharged determinacy instances
+
+`DeterminacyInstances.lean`: **`turingDeterminacy_isOpen`** and
+**`turingDeterminacy_isClosed`** — the `TuringDeterminacy` hypothesis is
+*proved* for open and for closed sets, via topological triviality (such
+invariant sets are `∅` or everything).  Degenerate by nature, but they make
+the conditional framework unconditional at the clopen level and are the
+template for the real future target, `TuringDeterminacy MeasurableSet`
+(= Martin's Borel determinacy).  Final build: 1035 jobs, 66-line audit, all
+standard axioms, 0 sorries.
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

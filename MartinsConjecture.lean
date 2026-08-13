@@ -19,3 +19,4 @@ import MartinsConjecture.BoundedCase
 import MartinsConjecture.OrderPreservingCase
 import MartinsConjecture.UniformJoin
 import MartinsConjecture.FullReduction
+import MartinsConjecture.DeterminacyInstances

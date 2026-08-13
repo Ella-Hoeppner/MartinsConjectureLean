@@ -63,3 +63,5 @@ import MartinsConjecture
 #print axioms Martin.partII_WF_of_core
 #print axioms Martin.partII_succ_of_core
 #print axioms Martin.martinConjecture_of_cores
+#print axioms Martin.turingDeterminacy_isOpen
+#print axioms Martin.turingDeterminacy_isClosed

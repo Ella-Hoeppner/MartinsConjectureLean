@@ -34,3 +34,4 @@ import MartinsConjecture.EffectiveKP
 import MartinsConjecture.UniformFunctionals
 import MartinsConjecture.ReOperator
 import MartinsConjecture.OperatorLocal
+import MartinsConjecture.ContinuousCase

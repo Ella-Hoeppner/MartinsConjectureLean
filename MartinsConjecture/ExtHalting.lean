@@ -23,11 +23,11 @@ namespace OracleCode
 attribute [local instance] Classical.propDecidable
 
 /-- The empty oracle. -/
-private def emptyO : ℕ →. ℕ := fun _ => Part.some 0
+def emptyO : ℕ →. ℕ := fun _ => Part.some 0
 
 /-- `p = pair (encode base) (pair e k)`; `w = pair (encode ext) fuel`.
 `ehTest p w = 0` iff `evaln fuel (base ++ ext) (ofNatCode e) k` halts. -/
-private def ehTest (p w : ℕ) : ℕ :=
+def ehTest (p w : ℕ) : ℕ :=
   if (evaln (Nat.unpair w).2
       (((Encodable.decode (α := List ℕ) (Nat.unpair p).1).getD [])
         ++ ((Encodable.decode (α := List ℕ) (Nat.unpair w).1).getD []))

@@ -116,3 +116,4 @@ import MartinsConjecture
 #print axioms OracleCode.reReal_eq_true_iff
 #print axioms OracleCode.haltsOn_mono
 #print axioms OracleCode.isOpen_reReal
+#print axioms OracleCode.extHaltsFrom_recursiveIn_jump

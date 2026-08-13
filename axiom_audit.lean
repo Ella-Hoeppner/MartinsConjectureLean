@@ -58,3 +58,8 @@ import MartinsConjecture
 #print axioms Martin.uniformlyTuringInvariant_comp_join
 #print axioms Martin.join_realizes
 #print axioms Martin.exists_pointed_family_of_onCone
+#print axioms Martin.comparison_on_cone
+#print axioms Martin.partII_total_of_core
+#print axioms Martin.partII_WF_of_core
+#print axioms Martin.partII_succ_of_core
+#print axioms Martin.martinConjecture_of_cores

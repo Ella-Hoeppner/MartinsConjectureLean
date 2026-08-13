@@ -308,6 +308,27 @@ mixer/projection codes and the `trOracle` splice), and
 `uniformlyTuringInvariant_comp_join`.  Full build 1031 jobs, audit 58 lines
 all standard, 0 sorries.
 
+### Session 3 capstone: the full reduction (`FullReduction.lean`)
+
+**`martinConjecture_of_cores`**: under Turing determinacy, the Borel Martin
+conjecture — Part I *and* Part II — follows from **five precisely isolated
+open cores**: (1) regressive ⟹ constant, (2) incomparable ⟹ constant,
+(3) no pointwise-incomparable pairs of regular functions, (4) no strictly
+descending ω-chains of regular functions, (5) jump minimality.  Supporting
+new theorems: `comparison_on_cone` (pairwise trichotomy),
+`partII_total_of_core`, `partII_WF_of_core` (via the descending-chain
+characterization of well-foundedness, with `MartinLT` proved a strict
+order), `partII_succ_of_core`.  Each core is a known theorem for uniformly
+invariant (Steel; Slaman–Steel) and order-preserving (Lutz–Siskind)
+functions and open in general.  Everything outside the cores is now
+machine-checked: **the open content of Martin's conjecture is formally
+isolated, with a single assembly theorem**.
+
+Final session-3 totals: 7 new files (`MartinMeasure`, `Reduction`,
+`BoundedCase`, `OrderPreservingCase`, `UniformJoin`, `FullReduction`, plus
+`ATTACK.md`), full build 1034 jobs, **0 sorries, 0 custom axioms** (64-line
+audit, every line standard).
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

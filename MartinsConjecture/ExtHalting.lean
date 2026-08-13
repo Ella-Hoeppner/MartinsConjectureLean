@@ -34,7 +34,7 @@ def ehTest (p w : ℕ) : ℕ :=
       (ofNatCode (Nat.unpair (Nat.unpair p).2).1)
       (Nat.unpair (Nat.unpair p).2).2).isSome then 0 else 1
 
-private theorem ehTest_prim : Nat.Primrec (fun v => ehTest (Nat.unpair v).1 (Nat.unpair v).2) := by
+theorem ehTest_prim : Nat.Primrec (fun v => ehTest (Nat.unpair v).1 (Nat.unpair v).2) := by
   refine Primrec.nat_iff.mp ?_
   have hbase : Primrec fun v : ℕ =>
       (Encodable.decode (α := List ℕ) (Nat.unpair (Nat.unpair v).1).1).getD [] :=

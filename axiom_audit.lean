@@ -99,3 +99,4 @@ import MartinsConjecture
 #print axioms Cantor.join_jump_le_jump_join
 #print axioms Martin.uniformlyTuringInvariant_jumpIterate
 #print axioms Martin.uniform_jump_chain
+#print axioms Martin.MartinEquiv.symm

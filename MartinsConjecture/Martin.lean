@@ -84,6 +84,25 @@ def MartinEquiv (F G : (ℕ → Bool) → ℕ → Bool) : Prop := OnCone fun X =
 /-- Strict Martin order. -/
 def MartinLT (F G : (ℕ → Bool) → ℕ → Bool) : Prop := MartinLE F G ∧ ¬ MartinLE G F
 
+/-- The Martin order is reflexive. -/
+theorem MartinLE.refl (F : (ℕ → Bool) → ℕ → Bool) : MartinLE F F :=
+  ⟨fun _ => false, fun X _ => Cantor.le.refl (F X)⟩
+
+/-- Martin equivalence is reflexive. -/
+theorem MartinEquiv.refl (F : (ℕ → Bool) → ℕ → Bool) : MartinEquiv F F :=
+  ⟨fun _ => false, fun X _ => Cantor.equiv.refl (F X)⟩
+
+/-- Martin equivalence is symmetric. -/
+theorem MartinEquiv.symm {F G} (h : MartinEquiv F G) : MartinEquiv G F :=
+  h.imp fun _ hY X hX => (hY X hX).symm
+
+/-- Martin equivalence implies both Martin inequalities. -/
+theorem MartinEquiv.le {F G} (h : MartinEquiv F G) : MartinLE F G :=
+  h.imp fun _ hY X hX => (hY X hX).1
+
+theorem MartinEquiv.ge {F G} (h : MartinEquiv F G) : MartinLE G F :=
+  h.imp fun _ hY X hX => (hY X hX).2
+
 /-- `F` is Martin equivalent to a constant function. -/
 def ConstantOnCone (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
   ∃ C, MartinEquiv F (fun _ => C)

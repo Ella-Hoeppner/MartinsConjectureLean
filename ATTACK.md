@@ -101,14 +101,43 @@ proofs of the *known* partial results rest on. No shortcut around them was found
 (honestly) none was expected: the escaping cores as isolated here are exactly the
 50-year-open content.
 
+## Attempt E — Steel's dichotomy game, formulated in this framework
+
+The last direct attempt of the session was to formulate Steel's
+boundedness-or-domination game for a uniformly invariant `F` inside the game
+framework of `ConeTheorem.lean` (players alternate bits; II's real codes a triple
+`(k, l, Y)`; payoff: *if* `Y ≡ₜ X` via `(k, l)` *then* `X ≤ₜ F Y`), aiming at:
+
+* II wins ⟹ `F ≥ id` on a cone — this direction is executable with existing tools:
+  the play is computable from the players' data (`gamePlay_le`), and uniformity
+  transports `X ≤ₜ F Y` to `X ≤ₜ F X` via `u (k, l)`;
+* I wins ⟹ `F` is bounded on a cone (⟹ constant, by the boundedness lemma).
+
+**Failure point, and a structural discovery.**  The "I wins" analysis requires II to
+play indices `(k, l)` witnessing `Y ≡ₜ X` where `X` is I's response *to that very
+play*: the honest-play indices are a fixed point of a computable index
+transformation.  This is exactly the **Kleene recursion theorem for oracle codes**
+(`∀ computable g, ∃ c, ∀ O, eval O (g c) = eval O c`), whose proof requires the
+self-application `Φ_x(x)` — i.e. the **step-indexed universal machine** (`evaln`),
+the one infrastructure layer this project deliberately skipped.
+
+The same missing artifact blocks Attempt D (Steel's comparison analysis), Lachlan's
+theorem (recursion-theorem trickery), and the effective refinement of Kleene–Post.
+**Conclusion: every remaining path — all three pillars — funnels through a single
+missing artifact: the universal machine for `OracleCode`.**  It is a large mechanical
+port (Mathlib's `evaln` + `evaln_prim` development, relativized, est. 300–600 lines
+of hard primrec proofs) but requires no new ideas.  It is unambiguously the next
+target; with it, Steel's uniform case per the blueprint above becomes a concrete,
+fully-specified formalization plan rather than research.
+
 ## Next formal milestones (in dependency order)
 
-1. **Pointed perfect trees**: definition, `[T] ∋` branch computability lemmas, and the
-   refinement "invariant determined set containing a cone contains a pointed tree"
-   (this is a cone-theorem-style game argument — plausibly within a session or two on
-   top of the existing game infrastructure).
-2. With pointed trees: **Steel's uniform case** of the cores (first real conquest of a
-   named Martin's-conjecture partial result beyond skeletons).
-3. **Posner–Robinson** (Kumabe–Slaman forcing) — a large standalone formalization.
-4. With 1–3: the Slaman–Steel and Lutz–Siskind theorems in full, i.e. every known
-   partial result of Part I.
+1. ~~Pointed perfect trees~~ **Done in the join-cone formulation** (`UniformJoin.lean`:
+   realization, controlled congruence, `exists_pointed_family_of_onCone`).
+2. **The universal machine for `OracleCode`** (`evaln` + its primitive recursiveness,
+   relativized) — the single funnel identified in Attempt E.  Mechanical but large.
+3. With 2: the **oracle recursion theorem**, then **Lachlan's theorem**, then
+   **Steel's uniform case** via the Attempt-E game blueprint — the first genuine
+   partial results of Martin's conjecture, machine-checked.
+4. **Posner–Robinson** (Kumabe–Slaman forcing) — the remaining pillar for the
+   Slaman–Steel and Lutz–Siskind theorems in full.

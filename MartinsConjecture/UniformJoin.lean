@@ -212,8 +212,22 @@ degree.  Together with `equivVia_join_uniform` this says the family
 theorem join_realizes {W X : ℕ → Bool} (h : W ≤ₜ X) : join W X ≡ₜ X :=
   ⟨join_le h (le.refl X), right_le_join W X⟩
 
+/-- **Every Martin-large set contains a uniformly pointed copy of Cantor
+space**: if an invariant property holds on a cone, the canonical family
+`X ↦ join W X` lands entirely inside it while realizing (above `W`) every
+degree with controlled congruence.  This is the join-cone formulation of
+"measure-one sets contain pointed perfect trees" — milestone 1 of the attack
+plan, obtained without any tree combinatorics. -/
+theorem exists_pointed_family_of_onCone {P : (ℕ → Bool) → Prop}
+    (h : OnCone P) :
+    ∃ W : ℕ → Bool, (∀ X, P (join W X)) ∧ ∀ X, W ≤ₜ X → join W X ≡ₜ X := by
+  obtain ⟨W, hW⟩ := h
+  exact ⟨W, fun X => hW (join W X) (left_le_join W X),
+    fun X hX => join_realizes hX⟩
+
 #print axioms equivVia_join_uniform
 #print axioms uniformlyTuringInvariant_comp_join
 #print axioms join_realizes
+#print axioms exists_pointed_family_of_onCone
 
 end Martin

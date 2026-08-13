@@ -76,6 +76,76 @@ theorem eval_rfind (O : ℕ →. ℕ) (cf : OracleCode) (a : ℕ) :
     eval O (.rfind cf) a
       = Nat.rfind fun n => (fun m => m = 0) <$> eval O cf (Nat.pair a n) := rfl
 
+/-! #### Membership characterizations of `eval`
+
+`ℕ →. ℕ` (`PFun`) is not reducible, which makes `simp`/`rw` on raw
+`>>=`/`<$>`/`<*>` expressions involving `eval` fragile.  The lemmas below
+characterize membership in `eval` once and for all, term-level, so that
+downstream files never have to rewrite under the monad operations. -/
+
+theorem mem_eval_comp {O : ℕ →. ℕ} {cf cg : OracleCode} {n y : ℕ} :
+    y ∈ eval O (.comp cf cg) n ↔ ∃ b ∈ eval O cg n, y ∈ eval O cf b :=
+  Part.mem_bind_iff
+
+theorem eval_pair_eq (O : ℕ →. ℕ) (cf cg : OracleCode) (n : ℕ) :
+    eval O (.pair cf cg) n
+      = ((eval O cf n).map Nat.pair).bind fun g => (eval O cg n).map g := rfl
+
+theorem mem_eval_pair {O : ℕ →. ℕ} {cf cg : OracleCode} {n y : ℕ} :
+    y ∈ eval O (.pair cf cg) n
+      ↔ ∃ a ∈ eval O cf n, ∃ b ∈ eval O cg n, Nat.pair a b = y := by
+  rw [eval_pair_eq]
+  constructor
+  · intro h
+    obtain ⟨g, hg, hy⟩ := Part.mem_bind_iff.mp h
+    obtain ⟨a, ha, rfl⟩ := (Part.mem_map_iff _).mp hg
+    obtain ⟨b, hb, rfl⟩ := (Part.mem_map_iff _).mp hy
+    exact ⟨a, ha, b, hb, rfl⟩
+  · rintro ⟨a, ha, b, hb, rfl⟩
+    exact Part.mem_bind_iff.mpr ⟨Nat.pair a, (Part.mem_map_iff _).mpr ⟨a, ha, rfl⟩,
+      (Part.mem_map_iff _).mpr ⟨b, hb, rfl⟩⟩
+
+theorem true_mem_decideMap {o : Part ℕ} :
+    true ∈ (fun m => decide (m = 0)) <$> o ↔ 0 ∈ o := by
+  rw [Part.map_eq_map, Part.mem_map_iff]
+  constructor
+  · rintro ⟨x, hx, hdec⟩
+    rwa [of_decide_eq_true hdec] at hx
+  · intro h0
+    exact ⟨0, h0, by simp⟩
+
+theorem false_mem_decideMap {o : Part ℕ} :
+    false ∈ (fun m => decide (m = 0)) <$> o ↔ ∃ x ∈ o, x ≠ 0 := by
+  rw [Part.map_eq_map, Part.mem_map_iff]
+  constructor
+  · rintro ⟨x, hx, hdec⟩
+    exact ⟨x, hx, of_decide_eq_false hdec⟩
+  · rintro ⟨x, hx, hne⟩
+    exact ⟨x, hx, decide_eq_false hne⟩
+
+theorem mem_eval_rfind {O : ℕ →. ℕ} {cf : OracleCode} {a v : ℕ} :
+    v ∈ eval O (.rfind cf) a
+      ↔ 0 ∈ eval O cf (Nat.pair a v)
+          ∧ ∀ m < v, ∃ x ∈ eval O cf (Nat.pair a m), x ≠ 0 := by
+  constructor
+  · intro h
+    obtain ⟨h1, h2⟩ := Nat.mem_rfind.mp h
+    exact ⟨true_mem_decideMap.mp h1, fun m hm => false_mem_decideMap.mp (h2 hm)⟩
+  · rintro ⟨h1, h2⟩
+    exact Nat.mem_rfind.mpr
+      ⟨true_mem_decideMap.mpr h1, fun {m} hm => false_mem_decideMap.mpr (h2 m hm)⟩
+
+theorem dom_eval_rfind {O : ℕ →. ℕ} {cf : OracleCode} {a : ℕ} :
+    (eval O (.rfind cf) a).Dom
+      ↔ ∃ n, 0 ∈ eval O cf (Nat.pair a n)
+          ∧ ∀ m < n, (eval O cf (Nat.pair a m)).Dom := by
+  constructor
+  · intro h
+    obtain ⟨n, h1, h2⟩ := Nat.rfind_dom.mp h
+    exact ⟨n, true_mem_decideMap.mp h1, fun m hm => h2 hm⟩
+  · rintro ⟨n, h1, h2⟩
+    exact Nat.rfind_dom.mpr ⟨n, true_mem_decideMap.mpr h1, fun {m} hm => h2 m hm⟩
+
 /-- Soundness: everything computed by a code is recursive in the oracle. -/
 theorem eval_recursiveIn (O : ℕ →. ℕ) : ∀ c : OracleCode, Nat.RecursiveIn {O} (eval O c)
   | .zero => .zero

@@ -107,3 +107,6 @@ import MartinsConjecture
 #print axioms KleenePostJump.B_le_jump
 #print axioms KleenePostJump.effective_kleene_post
 #print axioms KleenePostJump.exists_intermediate_degree
+#print axioms Cantor.le_iff_bitg
+#print axioms OracleCode.eval_trE_comp
+#print axioms Cantor.joinFam_le

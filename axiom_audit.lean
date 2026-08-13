@@ -115,3 +115,4 @@ import MartinsConjecture
 #print axioms OracleCode.mem_reReal_iff_haltsOn_prefix
 #print axioms OracleCode.reReal_eq_true_iff
 #print axioms OracleCode.haltsOn_mono
+#print axioms OracleCode.isOpen_reReal

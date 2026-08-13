@@ -10,6 +10,7 @@ soundness/completeness against the prefix table `graphOf (bitg X) ℓ`.
 -/
 import MartinsConjecture.ReOperator
 import MartinsConjecture.Evaln
+import MartinsConjecture.Locality
 
 open scoped Computability
 open OracleCode Cantor
@@ -61,7 +62,23 @@ theorem reReal_eq_true_iff (e n : ℕ) (X : ℕ → Bool) :
   rw [reReal, decide_eq_true_iff]
   exact mem_reReal_iff_haltsOn_prefix e n X
 
+/-- **r.e. operators are open (continuous) in the oracle.**  The set of oracles
+`X` for which `n ∈ Wˣ` is open in Cantor space: membership is forced by a finite
+prefix (the use principle), so it is a positive/`Σ₁` condition.  This is the
+topological form of the use principle, and the reason "continuity on `deg X`" in
+Lachlan's argument can only fail through a *missing* witness. -/
+theorem isOpen_reReal (e n : ℕ) :
+    IsOpen {X : ℕ → Bool | reReal e X n = true} := by
+  have hset : {X : ℕ → Bool | reReal e X n = true}
+      = ⋃ v, {X : ℕ → Bool | v ∈ eval (toPFun X) (ofNatCode e) n} := by
+    ext X
+    simp only [Set.mem_setOf_eq, Set.mem_iUnion, reReal, decide_eq_true_iff,
+      Part.dom_iff_mem]
+  rw [hset]
+  exact isOpen_iUnion (fun v => Martin.isOpen_mem_eval (ofNatCode e) n v)
+
 end OracleCode
 
 #print axioms OracleCode.mem_reReal_iff_haltsOn_prefix
 #print axioms OracleCode.reReal_eq_true_iff
+#print axioms OracleCode.isOpen_reReal

@@ -19,3 +19,15 @@ import MartinsConjecture
 #print axioms Martin.orderPreserving_jump
 #print axioms Martin.turingInvariant_jump
 #print axioms TuringDegree.lt_jump
+#print axioms Martin.eq_univ_of_isOpen_turingInvariant
+#print axioms Martin.cone_dichotomy_of_isOpen
+#print axioms Martin.cone_dichotomy_of_isClosed
+#print axioms TuringDegree.strictMono_jump_iterate
+#print axioms Martin.computablyUniformlyTuringInvariant_jump
+#print axioms Martin.measurable_jump
+#print axioms Martin.regular_jump
+#print axioms Martin.measurableSet_cone
+#print axioms Martin.onCone_forall
+#print axioms Martin.martinLT_jumpIter
+#print axioms Martin.martinLT_const_id
+#print axioms Martin.partII_succ_provable_half

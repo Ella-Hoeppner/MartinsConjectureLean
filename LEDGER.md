@@ -15,7 +15,10 @@ obstructions behind them**, for a future run.
    `jumpFn_congr`, `Martin.orderPreserving_jump`/`turingInvariant_jump`, and the degree-level
    `TuringDegree.jump` with `TuringDegree.lt_jump`. All sorry-free.
 
-2. **No determinacy instance for the cone theorem.** `Martin.cone_theorem` takes
+2. **No determinacy instance for the cone theorem.** (Session 2: the dichotomy is now
+   proved *unconditionally* for open and closed Turing-invariant sets via topological
+   triviality — `TopologicalTriviality.lean` — so the determinacy hypothesis only matters
+   from proper Borel levels upward.) `Martin.cone_theorem` takes
    `GameDetermined A` as a hypothesis. Nothing in Mathlib proves determinacy of any nontrivial
    game class (Gale–Stewart open/closed determinacy included). Options for a future run:
    (a) prove clopen/open determinacy for our concrete game encoding directly (Gale–Stewart is
@@ -42,7 +45,9 @@ obstructions behind them**, for a future run.
    (`MeasurableSpace.pi` with `⊤` on `Bool`), which coincides with the Borel σ-algebra of the
    Cantor topology mathematically; the identification (`borel_eq_pi`-style lemma) is not
    formalized. Statement-level risk is low but it should be discharged before claiming the
-   statements are *the* Borel Martin conjecture.
+   statements are *the* Borel Martin conjecture.  (Session 2 partially mitigates: the jump
+   and all cones are proved measurable w.r.t. the operative σ-algebra, so the framework's
+   own membership facts are self-consistent.)
 
 ## Deliberate scope cuts
 

@@ -173,6 +173,59 @@ anything about c.e. sets will need it (LEDGER, scope cuts).
   (LEDGER gaps 3–5 list the specific conventions at risk: prewellordering phrasing,
   Lachlan's uniformity convention, Borel = product-measurable identification).
 
+## Session 2 (2026-08-13 afternoon, ~45m): five further results
+
+All sorry-free, standard axioms only (`axiom_audit.lean` extended):
+
+### `Hierarchy.lean` — the jump hierarchy
+`0 <ᵀ 0′ <ᵀ 0″ <ᵀ ⋯`: jump iterates are strictly increasing
+(`TuringDegree.strictMono_jump_iterate`), giving typeclass instances
+**`Infinite TuringDegree`** and **`NoMaxOrder TuringDegree`** on Mathlib's own
+degree structure.
+
+### `TopologicalTriviality.lean` — unconditional cone dichotomy at the bottom
+`Cantor.patch_equiv`: finite prefixes are free for Turing degrees (the prefix
+is hard-coded as a primrec lookup table).  Hence
+**`Martin.eq_univ_of_isOpen_turingInvariant`**: every nonempty *open*
+Turing-invariant set is all of Cantor space — so the conclusion of Martin's
+cone theorem holds for open and closed Turing-invariant sets **with no
+determinacy hypothesis** (`cone_dichotomy_of_isOpen` / `_isClosed`).  This
+also explains *why* the cone theorem only becomes substantive higher in the
+Borel hierarchy.
+
+### `UniformJump.lean` — the jump is computably uniformly invariant
+**`Martin.computablyUniformlyTuringInvariant_jump`**: a computable function
+transforms index witnesses for `X ≡ₜ Y` into index witnesses for
+`X′ ≡ₜ Y′` — the strong (Steel/Slaman–Steel-style) uniformity notion, and
+the model example for the hypothesis of Lachlan's theorem.  New
+infrastructure built for it: `exists_code_of_partrec` (one code valid for
+*every* oracle), an s-m-n layer (`idCode`, `curry`, primrec `curryEnc`), and
+`trE₂` (the splicing translation, jointly primrec in the spliced index — the
+`n = 4` case of the course-of-values recursion is absorbed by
+`encode_ofNatCode`).
+
+### `MeasurableJump.lean` — the jump is Borel
+**`Martin.measurableSet_mem_eval`**: for every code, the set of oracles on
+which a computation converges to a given value is Borel (induction on codes;
+convergence decomposes into countable unions/intersections; the `oracle`
+case depends on one coordinate).  Hence **`Martin.measurable_jump`** and
+**`Martin.regular_jump`**: the jump is a `Regular` function — Borel, Turing
+invariant, Martin above the identity — i.e. a certified member of the class
+Part II of the conjecture quantifies over.
+
+### `RegularChain.lean` — the provable part of the Part II picture
+* **`Martin.measurableSet_cone`**: cones are Borel sets.
+* `Cantor.bigJoin` + `Martin.onCone_and` / **`Martin.onCone_forall`**: the
+  cone filter is closed under countable conjunction (countable completeness —
+  the combinatorial basis of Martin measure).
+* **The ω-chain `const <ₘ id <ₘ (·′) <ₘ (·″) <ₘ ⋯` inside `Regular`**:
+  `martinLT_const_id`, `regular_jumpIter`, `martinLT_jumpIter`, and
+  `partII_succ_provable_half` (`Regular` is jump-closed and `F <ₘ jump ∘ F`).
+  Part II asserts this chain is *cofinal-and-complete* (nothing regular fits
+  strictly between successive entries, and above `id` everything regular
+  appears); the chain's existence and strictness — the provable half — is
+  now formal.
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

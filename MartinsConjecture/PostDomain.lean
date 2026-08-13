@@ -25,23 +25,26 @@ namespace OracleCode
 
 attribute [local instance] Classical.propDecidable
 
+/-- **Σ₁-completeness of the jump (many-one form).**  The domain of any
+partial `O`-recursive function is *many-one reducible*, by a primitive
+recursive map, to the diagonal jump set of `O`.  (Every `O`-c.e. set is
+`≤ₘ O′`.) -/
+theorem domain_manyOne_jump {O f : ℕ →. ℕ} (hf : Nat.RecursiveIn {O} f) :
+    ∃ q : ℕ → ℕ, Nat.Primrec q ∧ ∀ n, (f n).Dom ↔ jumpP O (q n) := by
+  obtain ⟨c, hc⟩ := exists_code_of_recursiveIn hf
+  refine ⟨fun n => compEnc (encodeCode c) (constEnc n), ?_, fun n => ?_⟩
+  · exact Primrec.nat_iff.mp (compEnc_prim.comp (Primrec.const (encodeCode c))
+      constEnc_prim)
+  · rw [← hc]
+    have := dom_iff_jumpP O (encodeCode c) n
+    rwa [ofNatCode_encodeCode] at this
+
 /-- **Post's theorem, Σ₁ direction.**  If `f` is recursive in `O`, then the
 characteristic function of its domain is recursive in the jump `O′`. -/
 theorem domain_recursiveIn_jump {O f : ℕ →. ℕ} (hf : Nat.RecursiveIn {O} f) :
     Nat.RecursiveIn {jumpFn O}
       (fun n : ℕ => ((if (f n).Dom then 1 else 0 : ℕ) : Part ℕ)) := by
-  obtain ⟨c, hc⟩ := exists_code_of_recursiveIn hf
-  -- the primitive-recursive family of jump-codes deciding halting of `c`.
-  set q : ℕ → ℕ := fun n => compEnc (encodeCode c) (constEnc n) with hq
-  have hqP : Nat.Primrec q := by
-    rw [hq]
-    exact Primrec.nat_iff.mp (compEnc_prim.comp (Primrec.const (encodeCode c))
-      constEnc_prim)
-  have hkey : ∀ n, (f n).Dom ↔ jumpP O (q n) := by
-    intro n
-    rw [hq, ← hc]
-    have := dom_iff_jumpP O (encodeCode c) n
-    rwa [ofNatCode_encodeCode] at this
+  obtain ⟨q, hqP, hkey⟩ := domain_manyOne_jump hf
   -- query the jump at `q n`.
   have hquery : Nat.RecursiveIn {jumpFn O}
       (fun n : ℕ => ((q n : ℕ) : Part ℕ) >>= jumpFn O) :=
@@ -65,6 +68,7 @@ theorem general_halting_recursiveIn_jump (X : ℕ → Bool) :
           then 1 else 0 : ℕ) : Part ℕ)) :=
   domain_recursiveIn_jump (eval_universal X)
 
+#print axioms domain_manyOne_jump
 #print axioms domain_recursiveIn_jump
 #print axioms general_halting_recursiveIn_jump
 

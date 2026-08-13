@@ -226,6 +226,21 @@ Part II of the conjecture quantifies over.
   appears); the chain's existence and strictness — the provable half — is
   now formal.
 
+### `Locality.lean` — the use principle (session 2, addendum)
+**`OracleCode.eval_locality`**: a converging oracle computation consults only
+finitely many bits of its oracle — proved by induction on codes, extracting
+the finite "use" directly from the convergence derivation (no step-indexed
+universal machine needed).  Corollaries: convergence is an *open* condition
+on the oracle (`Martin.isOpen_mem_eval`) and **the jump predicate is Σ⁰₁-open
+in the oracle** (`Martin.isOpen_jumpP`), sharpening measurability.  This is
+the foundation for any future finite-extension/forcing argument
+(Kleene–Post, Sacks-style constructions).  Also added: `MartinLE.trans` and
+`martinLE_jumpIter_of_le` (any two jump iterates are Martin comparable — the
+totality half of Part II, verified on the chain).
+
+**Session 2 totals: 6 new files, full build 1025 jobs, still 0 sorries and 0
+custom axioms (37-line `axiom_audit.lean`, every line standard).**
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

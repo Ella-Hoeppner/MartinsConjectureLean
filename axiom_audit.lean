@@ -31,3 +31,8 @@ import MartinsConjecture
 #print axioms Martin.martinLT_jumpIter
 #print axioms Martin.martinLT_const_id
 #print axioms Martin.partII_succ_provable_half
+#print axioms OracleCode.eval_locality
+#print axioms Martin.isOpen_mem_eval
+#print axioms Martin.isOpen_jumpP
+#print axioms Martin.MartinLE.trans
+#print axioms Martin.martinLE_jumpIter_of_le

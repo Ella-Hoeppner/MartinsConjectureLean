@@ -11,3 +11,4 @@ import MartinsConjecture.TopologicalTriviality
 import MartinsConjecture.UniformJump
 import MartinsConjecture.MeasurableJump
 import MartinsConjecture.RegularChain
+import MartinsConjecture.Locality

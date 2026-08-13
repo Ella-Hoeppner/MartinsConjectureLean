@@ -126,6 +126,25 @@ theorem martinLT_const_id (C : ℕ → Bool) :
       ((hB (Cantor.jump (join C B))
         ((right_le_join C B).trans (le_jump _))).trans (left_le_join C B))
 
+/-- The Martin order is transitive (bases combine by the join). -/
+theorem MartinLE.trans {F G H : (ℕ → Bool) → ℕ → Bool}
+    (h1 : MartinLE F G) (h2 : MartinLE G H) : MartinLE F H :=
+  onCone_mono (fun _X h => h.1.trans h.2) (onCone_and h1 h2)
+
+/-- Any two jump iterates are Martin comparable — the totality half of the
+Part II prewellordering claim, verified on the jump chain. -/
+theorem martinLE_jumpIter_of_le {m n : ℕ} (h : m ≤ n) :
+    MartinLE (fun X => Cantor.jump^[m] X) (fun X => Cantor.jump^[n] X) := by
+  induction n with
+  | zero =>
+    rw [Nat.le_zero.mp h]
+    exact ⟨fun _ => false, fun X _ => le.refl _⟩
+  | succ n ihn =>
+    by_cases hm : m = n + 1
+    · rw [hm]
+      exact ⟨fun _ => false, fun X _ => le.refl _⟩
+    · exact (ihn (by omega)).trans (martinLT_jumpIter n).1
+
 /-- The provable half of the Part II successor claim, packaged: for every
 regular `F`, its jump-composition is again regular and strictly Martin above
 it.  (The open half of `PartII_Borel_Succ` is *minimality*: that nothing

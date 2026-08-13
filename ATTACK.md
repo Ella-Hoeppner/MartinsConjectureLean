@@ -118,6 +118,49 @@ now built and proved, sorry-free:
 With these, the paths in Attempts D and E are no longer blocked at the recursion-theorem
 step. See `Lachlan.lean` for the first named partial result now within reach.
 
+## Lachlan's theorem: a concrete formalization plan (session-4 research)
+
+Researched against Lutz's thesis Ch. 3 (2026-08-13).  **Exact statement** (local form,
+Cor 3.11, ZF, *no determinacy*): if `W` is an r.e. operator, `X ≥ᵀ 0′`, and `X ↦ Wˣ` is
+uniformly Turing invariant on `deg_T(X)`, then `W` is constant on `deg_T(X)`, or
+`Wˣ ≡ᵀ X`, or `Wˣ ≡ᵀ X′`.  The unrestricted-`F` "no Post solution" gloss is often
+attributed to Lachlan but at full strength is **Steel 1982**; Lachlan's own theorem carries
+the **r.e.-operator** hypothesis.  (Formal statements corrected accordingly in `Martin.lean`:
+`NoUniformPostSolution`, `LachlanLocalStatement`.)
+
+**The engine — Thm 3.10 (determinacy-free): `W` continuous on `deg_T(X)` or `Wˣ ≥ᵀ X′`.**
+Discontinuity direction (the pure diagonalization, the smallest clean target):
+1. From discontinuity of the r.e. operator, extract a marker `n` with `n ∉ Wˣ` but for every
+   `σ ≺ X` some finite `τ ⊇ σ` has `n ∈ W^{σ⌢τ}`.
+2. Build `yₑ ≡ᵀ X` coding `Φˣₑ(e)↓`: `yₑ = X` if it diverges; else splice the least marker-
+   witnessing `τ` after the halting-stage prefix.
+3. **s-m-n (NOT a Kleene fixed point):** computable `r, s` with `X ≡ᵀ yₑ via (r e, s e)`.
+   (Uses `smn`/`curryEnc` + padding — already formalized.)
+4. Feed `(r e, s e)` through a **computable** uniformity function `u` (Bard's Lemma 3.8):
+   `u (r e, s e)` computes `W^{yₑ}` from `Wˣ`, uniformly in `e`.
+5. `n ∈ W^{yₑ} ⟺ Φˣₑ(e)↓`, so `Wˣ` computes `X′` (uses `dom_iff_jumpP` — formalized).
+Continuity direction (Cor 3.11): continuity ⟹ `Wˣ ≤ᵀ X ⊕ 0′`, and with `X ≥ᵀ 0′` and
+Bard's Thm 3.6, `W` constant or `Wˣ ≡ᵀ X`.  Globalization to a cone (Thm 3.1) uses Turing
+determinacy once (Prop 3.9) — plug in our `cone_theorem`.
+
+**Missing infrastructure (the reason this is a separate multi-session project, not a
+2-hour add):**
+- **r.e. operators** `W : (ℕ → Bool) → Set ℕ` with the enumeration/marker structure and a
+  notion of continuity on a degree.  We have oracle *functionals* (`eval`) but not the
+  r.e.-operator layer.
+- **Bard's Lemma 3.8** (arbitrary uniformity function ⟹ a computable one) — a reusable
+  lemma we would need to prove.
+- The splicing s-m-n functions `r, s` proved to compute `yₑ`/`X` with the exact prefix
+  behaviour.
+Everything else (s-m-n, padding, Σ₁-completeness `dom_iff_jumpP`, the jump, the cone
+theorem) is already in hand.  This is the recommended next-session target; it is deliberately
+**not** attempted here rather than risk an incorrect or `sorry`-laden formalization.
+
+**Steel's uniform Part II (Q4):** needs the m-Game + AD + Wadge/Martin–Monk machinery and
+**uniformly pointed perfect trees**.  We already have the u.p.p.-tree analog in the
+join-cone formulation (`UniformJoin.equivVia_join_uniform` — the uniform congruence index),
+but the game and Wadge layers are absent.
+
 ## Assessment
 
 The mathematical wall is real and precisely located: all four attempts die at one of

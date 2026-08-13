@@ -200,11 +200,35 @@ def PartI_OrderPreserving_Borel : Prop :=
   ∀ F : (ℕ → Bool) → ℕ → Bool, Measurable F → OrderPreserving F →
     ConstantOnCone F ∨ AboveIdOnCone F
 
-/-- **Lachlan (1975)**: there is no uniformly Turing invariant solution to
-Post's problem — no uniformly invariant `F` with `X <ₜ F X <ₜ X′` on a cone. -/
-def LachlanStatement : Prop :=
+/-- **No uniformly-invariant solution to Post's problem**: no uniformly
+invariant `F` is strictly between the identity and the jump on a cone.
+
+Attribution note (checked against Lutz's thesis Ch. 3, 2026-08-13): Lachlan's
+*original* 1975 result [Lachlan, "Uniform enumeration operations", JSL 40.3]
+is stated for **r.e. operators** `W` with `Wˣ ≥ᵀ X`, as the dichotomy
+`Wˣ ≡ᵀ X` on a cone or `Wˣ ≡ᵀ X′` on a cone (see `LachlanLocalStatement`).
+The unrestricted version for *arbitrary* uniformly-invariant `F` below is the
+strength of **Steel's 1982** "A classification of jump operators" (JSL 47.2),
+of which this "no Post solution" form is the standard corollary. -/
+def NoUniformPostSolution : Prop :=
   ¬ ∃ F : (ℕ → Bool) → ℕ → Bool, UniformlyTuringInvariant F ∧
       OnCone fun X => X <ₜ F X ∧ F X <ₜ Cantor.jump X
+
+@[deprecated NoUniformPostSolution (since := "session 4: attribution")]
+alias LachlanStatement := NoUniformPostSolution
+
+/-- **Lachlan's theorem, local (per-degree) form** [Lutz thesis Cor 3.11;
+after Lachlan 1975, Bard]: for an r.e.-operator-like invariant `F` that is
+uniformly invariant and above the identity, on each sufficiently-high degree
+`F X` is Turing equivalent to `X`, to `X′`, or `F` is constant there.  Stated
+here with the "`≥ᵀ 0′` base" replaced by "on a cone" and the r.e.-operator
+hypothesis abstracted to `AboveIdOnCone`.  (Not proved — see `ATTACK.md` for
+the formalization plan; the core `Thm 3.10` is determinacy-free but needs
+r.e.-operator infrastructure and Bard's computable-uniformity lemma.) -/
+def LachlanLocalStatement : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, UniformlyTuringInvariant F → AboveIdOnCone F →
+    ConstantOnCone F ∨ MartinEquiv F (fun X => X) ∨
+      MartinEquiv F (fun X => Cantor.jump X)
 
 /-- Sanity implication: full Part I specializes to the order-preserving case. -/
 theorem partI_Borel_implies_orderPreserving :

@@ -428,6 +428,14 @@ limit lemma.  Seven new files, all sorry-free, standard axioms only.
   The `→` direction runs the reduction under the jump's stage approximation via the reusable
   table-builder `exists_tableEnc`, closed by `evaln_mono`.
 
+* **`SmnPadding.lean`** — the **s-m-n / parametrization theorem** (`smn`, with `curryEnc`
+  the primrec index transform) and the **Padding Lemma** (`infinite_indices`: every
+  function recursive in `O` has infinitely many indices), plus `exists_fixedPoint_code`.
+* **`CantorLimit.lean`** — the limit lemma repackaged for Cantor points and degrees
+  (`le_jump_iff_limitApprox`), with the capstone `jump_jump_not_limitApprox`: the double
+  jump has no `X`-limit-computable approximation (so the jump hierarchy is genuinely
+  proper).  `Martin.EquivVia` gains `refl`/`symm`.
+
 These are, to our knowledge, the first machine-checked Lean proofs of the universal oracle
 machine, the relativized recursion theorem, and the (relativized) Shoenfield limit lemma.
 The recursion theorem was the exact artifact all four attack lines in `ATTACK.md` funneled

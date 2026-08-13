@@ -125,6 +125,22 @@ theorem partII_iff_cores (hTD : TuringDeterminacy fun _ => True) :
     exact ⟨partII_total_of_core hTD h1, partII_WF_of_core h2,
       partII_succ_of_core h3⟩
 
+/-- The AD-style full statement of Martin's conjecture: Part I for *all*
+Turing-invariant functions, plus Part II. -/
+def MartinConjectureAD : Prop :=
+  (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+    ConstantOnCone F ∨ AboveIdOnCone F) ∧ PartII_Borel
+
+/-- **The final capstone**: under Turing determinacy, the full AD-style
+Martin conjecture is *equivalent* to the conjunction of the five isolated
+cores.  The formal isolation of the conjecture's open content is complete
+and lossless. -/
+theorem martinConjectureAD_iff_cores (hTD : TuringDeterminacy fun _ => True) :
+    MartinConjectureAD ↔
+      (RegressiveImpliesConstant ∧ IncomparableImpliesConstant) ∧
+      (ComparisonCore ∧ DescendingChainCore ∧ JumpMinimalityCore) := by
+  rw [MartinConjectureAD, partI_iff_cores hTD, partII_iff_cores hTD]
+
 #print axioms not_constant_and_incomparable
 #print axioms incomparable_core_iff_never
 #print axioms partI_iff_cores
@@ -132,5 +148,6 @@ theorem partII_iff_cores (hTD : TuringDeterminacy fun _ => True) :
 #print axioms partII_WF_iff_core
 #print axioms partII_succ_iff_core
 #print axioms partII_iff_cores
+#print axioms martinConjectureAD_iff_cores
 
 end Martin

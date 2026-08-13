@@ -72,3 +72,4 @@ import MartinsConjecture
 #print axioms Martin.partII_WF_iff_core
 #print axioms Martin.partII_succ_iff_core
 #print axioms Martin.partII_iff_cores
+#print axioms Martin.martinConjectureAD_iff_cores

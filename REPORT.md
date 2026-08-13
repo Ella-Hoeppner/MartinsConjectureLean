@@ -241,6 +241,24 @@ totality half of Part II, verified on the chain).
 **Session 2 totals: 6 new files, full build 1025 jobs, still 0 sorries and 0
 custom axioms (37-line `axiom_audit.lean`, every line standard).**
 
+### `KleenePost.lean` — the Kleene–Post theorem (session 2, finale)
+**`KleenePost.kleene_post : ∃ A B, ¬ A ≤ₜ B ∧ ¬ B ≤ₜ A`** — incomparable
+Turing degrees exist (Kleene–Post 1954), by the classical finite-extension
+argument built directly on the use principle: `KleenePost.step` extends any
+pair of finite strings to defeat one reduction requirement (forcing
+convergence and flipping the diagonal bit, or exploiting unforceable
+divergence); `stages` iterates the step by classical choice with even/odd
+requirement scheduling; `A`/`B` are the limits.  Degree-level corollaries on
+Mathlib's `TuringDegree`: **`TuringDegree.exists_incomparable`** and
+**`TuringDegree.not_isTotal_le`** (the Turing degrees are not linearly
+ordered).  Believed to be the first machine-checked Kleene–Post in Lean.
+This was listed as out of reach in the session-1 ledger ("needs finite
+approximation infrastructure that does not exist yet") — `eval_locality`
+turned out to be exactly that infrastructure.
+
+**Final session-2 totals: 8 new files, full build 1026 jobs, 0 sorries,
+0 custom axioms (41-line `axiom_audit.lean`, every line standard).**
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

@@ -59,8 +59,11 @@ obstructions behind them**, for a future run.
 - **Lachlan's theorem (T4)** not attempted: needs the recursion theorem for oracle codes
   (fixed-point via `smn`, i.e. `curry` machinery on `OracleCode`), which needs the primrec
   code-operation layer (same infrastructure as gap 1). This is the natural next milestone.
-- **Kleene–Post** (incomparable degrees below `0′`) not attempted (finite-extension argument;
-  needs careful finite-string/oracle-approximation infrastructure that does not exist yet).
+- ~~**Kleene–Post** not attempted~~ **PROVED in session 2** (`KleenePost.lean`), via the use
+  principle (`Locality.lean`).  Note: the classical statement also places the incomparable
+  pair *below `0′`* (via a computable-in-`0′` construction); the effectiveness refinement is
+  NOT formalized — only existence of an incomparable pair.  The refinement would need the
+  construction to be `0′`-computable, i.e. the universal machine / `evaln` layer.
 
 ## Obstructions hit (engineering notes for the next run)
 

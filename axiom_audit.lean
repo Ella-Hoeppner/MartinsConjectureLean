@@ -36,3 +36,7 @@ import MartinsConjecture
 #print axioms Martin.isOpen_jumpP
 #print axioms Martin.MartinLE.trans
 #print axioms Martin.martinLE_jumpIter_of_le
+#print axioms KleenePost.step
+#print axioms KleenePost.kleene_post
+#print axioms TuringDegree.exists_incomparable
+#print axioms TuringDegree.not_isTotal_le

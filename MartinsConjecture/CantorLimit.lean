@@ -60,7 +60,22 @@ theorem lt_jump_lt_jump_jump (X : ℕ → Bool) :
     X <ₜ jump X ∧ jump X <ₜ jump (jump X) :=
   ⟨lt_jump X, lt_jump (jump X)⟩
 
+/-- **Capstone: the double jump is not `X`-limit-computable.**  Combining the
+limit lemma with jump strictness: `X″` has no `X`-computable stage
+approximation converging pointwise — which is exactly why the jump hierarchy
+is proper (there is genuine content strictly above `X′`). -/
+theorem jump_jump_not_limitApprox (X : ℕ → Bool) :
+    ¬ ∃ g : ℕ → ℕ → ℕ,
+      Nat.RecursiveIn {toPFun X}
+        (fun w : ℕ => ((g (Nat.unpair w).1 (Nat.unpair w).2 : ℕ) : Part ℕ)) ∧
+      ∀ n, ∃ s₀, ∀ s, s₀ ≤ s → g n s = bitg (jump (jump X)) n := by
+  intro h
+  -- an X-approximation of `X″`'s bits would make `X″ ≤ᵀ X′`, contradicting strictness.
+  have hle : jump (jump X) ≤ₜ jump X := le_jump_iff_limitApprox.mpr h
+  exact not_jump_le (jump X) hle
+
 #print axioms le_jump_iff_limitApprox
 #print axioms jump_limit
+#print axioms jump_jump_not_limitApprox
 
 end Cantor

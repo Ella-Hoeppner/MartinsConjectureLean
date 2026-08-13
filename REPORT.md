@@ -107,6 +107,18 @@ Proved sanity lemmas exercising the definitions (anti-fooling checklist item 2):
   `cone_theorem_onCone` in "on a cone" form. Determinacy is an explicit hypothesis
   (`GameDetermined A`), never an axiom.
 
+### `MartinsConjecture/JumpInvariance.lean` — T1 completed: the jump is invariant
+- `trE_primrec`: the `trOracle` translation is primitive recursive on encodings, by
+  course-of-values recursion (`Primrec.nat_strong_rec`) with a total step function reading
+  the history list (`trStep`, `trStep_spec`).
+- `jumpFn_mono` (order preservation), `jumpFn_congr` (degree invariance);
+  `Cantor.jump_mono`/`jump_congr`; `Martin.orderPreserving_jump` /
+  `Martin.turingInvariant_jump` — the jump belongs to the function class Martin's
+  conjecture quantifies over.
+- `TuringDegree.jump : TuringDegree → TuringDegree` (well-defined via `Quot.map`) and
+  **`TuringDegree.lt_jump : ∀ d, d < TuringDegree.jump d`** — jump strictness stated on
+  Mathlib's own `TuringDegree` partial order.
+
 ## The oracle-computation design decision (and why)
 
 Adopted **Mathlib's `Nat.RecursiveIn {g}` as the definition of `≤ᵀ`** (rather than forking a

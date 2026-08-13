@@ -95,3 +95,4 @@ import MartinsConjecture
 #print axioms OracleCode.domain_recursiveIn_jump
 #print axioms OracleCode.general_halting_recursiveIn_jump
 #print axioms OracleCode.domain_manyOne_jump
+#print axioms OracleCode.extHalting_recursiveIn_jump

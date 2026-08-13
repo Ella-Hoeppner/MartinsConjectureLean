@@ -573,4 +573,56 @@ theorem srch_query_eq (pas : List ℕ) (e len : ℕ)
     have hnh : ¬ haltsAt pas e len m := Nat.find_min h hm
     exact decide_eq_false ((hqeq m).not.mpr hnh)
 
+/-- The value of a witnessed computation. -/
+def valAt (pas : List ℕ) (e len w : ℕ) : ℕ :=
+  (evaln (fuelOf w) (pas ++ extOf w) (ofNatCode e) len).getD 0
+
+/-- Encoded pair of lists. -/
+def encPair (a b : List ℕ) : ℕ := Nat.pair (Encodable.encode a) (Encodable.encode b)
+
+/-- Decoded list from an encoding. -/
+def decL (c : ℕ) : List ℕ := (Encodable.decode (α := List ℕ) c).getD []
+
+theorem decL_encode (l : List ℕ) : decL (Encodable.encode l) = l := by
+  rw [decL, Encodable.encodek, Option.getD_some]
+
+/-- The encoded step: `arg = ⟪encode act, ⟪encode pas, e⟫⟫` ↦ the encoded
+`reqStep act pas e`.  On the `yes` branch it runs `srch`; the oracle branch
+is selected by the `0′`-decision via the `prec`-conditional
+`Nat.rec base (fun _ _ => yes) b`. -/
+noncomputable def reqStepEnc (arg : ℕ) : Part ℕ :=
+  ((if (srch (query (Nat.unpair (Nat.unpair arg).2).1 (Nat.unpair (Nat.unpair arg).2).2
+      (decL (Nat.unpair arg).1).length)).Dom then 1 else 0 : ℕ) : Part ℕ) >>= fun b =>
+    Nat.rec (Part.some (encPair (decL (Nat.unpair arg).1 ++ [0])
+        (decL (Nat.unpair (Nat.unpair arg).2).1 ++ [0])))
+      (fun _ _ => (srch (query (Nat.unpair (Nat.unpair arg).2).1
+          (Nat.unpair (Nat.unpair arg).2).2 (decL (Nat.unpair arg).1).length)).map
+        (fun w => encPair
+          (decL (Nat.unpair arg).1
+            ++ [diagBit (valAt (decL (Nat.unpair (Nat.unpair arg).2).1)
+              (Nat.unpair (Nat.unpair arg).2).2 (decL (Nat.unpair arg).1).length w)])
+          (decL (Nat.unpair (Nat.unpair arg).2).1 ++ extOf w)))
+      b
+
+/-- Correctness of the encoded step. -/
+theorem reqStepEnc_spec (act pas : List ℕ) (e : ℕ) :
+    reqStepEnc (Nat.pair (Encodable.encode act) (Nat.pair (Encodable.encode pas) e))
+      = Part.some (encPair (reqStep act pas e).1 (reqStep act pas e).2) := by
+  rw [reqStepEnc]
+  simp only [Nat.unpair_pair, decL_encode]
+  by_cases hh : ∃ w, haltsAt pas e act.length w
+  · have hdom : (srch (query (Encodable.encode pas) e act.length)).Dom :=
+      (srch_query_dom pas e act.length).mpr hh
+    rw [if_pos hdom, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+    rw [srch_query_eq pas e act.length hh]
+    rw [Part.map_some]
+    rw [reqStep, dif_pos hh]
+    rfl
+  · have hdom : ¬ (srch (query (Encodable.encode pas) e act.length)).Dom :=
+      fun hd => hh ((srch_query_dom pas e act.length).mp hd)
+    rw [if_neg hdom, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+    show Part.some (encPair (act ++ [0]) (pas ++ [0])) = _
+    rw [reqStep, dif_neg hh]
+
+
 end KleenePostJump

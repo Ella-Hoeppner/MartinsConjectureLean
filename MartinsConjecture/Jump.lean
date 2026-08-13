@@ -210,6 +210,64 @@ theorem turingReducible_jumpFn (O : ℕ →. ℕ) : O ≤ᵀ jumpFn O := by
       rw [hquery m]
       simp [Part.map_eq_map, Part.map_some, Part.mem_some_iff, hjm]
 
+/-! ### Towards invariance of the jump: code translation
+
+If `A` is computed by code `cI` relative to `B`, every `A`-oracle code can be
+translated to a `B`-oracle code by splicing in `cI` for the `oracle`
+constructor.  This is the mathematical content of "the jump is order
+preserving"; what remains for the full theorem (see LEDGER.md) is only the
+primitive recursiveness of the translation on *encodings*. -/
+
+/-- Splice the code `cI` in place of every `oracle` call. -/
+def trOracle (cI : OracleCode) : OracleCode → OracleCode
+  | .zero => .zero
+  | .succ => .succ
+  | .left => .left
+  | .right => .right
+  | .oracle => cI
+  | .pair a b => .pair (trOracle cI a) (trOracle cI b)
+  | .comp a b => .comp (trOracle cI a) (trOracle cI b)
+  | .prec a b => .prec (trOracle cI a) (trOracle cI b)
+  | .rfind a => .rfind (trOracle cI a)
+
+/-- Translation is semantics preserving. -/
+theorem eval_trOracle {A B : ℕ →. ℕ} {cI : OracleCode} (hI : eval B cI = A) :
+    ∀ c, eval B (trOracle cI c) = eval A c := by
+  intro c
+  induction c with
+  | zero => rfl
+  | succ => rfl
+  | left => rfl
+  | right => rfl
+  | oracle => exact hI
+  | pair a b iha ihb => funext n; simp only [trOracle, eval, iha, ihb]
+  | comp a b iha ihb => funext n; simp only [trOracle, eval, iha, ihb]
+  | prec a b iha ihb => funext n; simp only [trOracle, eval, iha, ihb]
+  | rfind a iha => funext n; simp only [trOracle, eval, iha]
+
+/-- The jump question about `A` at `e` is a jump question about `B` at an
+explicitly given translated code.  (The function `e ↦` that code is
+primitive recursive on encodings — not yet formalized; see LEDGER.md — which
+is the only missing ingredient for `A ≤ᵀ B → jumpFn A ≤ᵀ jumpFn B`.) -/
+theorem jumpP_trOracle {A B : ℕ →. ℕ} {cI : OracleCode} (hI : eval B cI = A) (e : ℕ) :
+    jumpP A e
+      ↔ jumpP B (encodeCode (.comp (trOracle cI (ofNatCode e)) (const e))) := by
+  unfold jumpP
+  rw [ofNatCode_encodeCode]
+  constructor
+  · intro h
+    obtain ⟨r, hr⟩ := Part.dom_iff_mem.mp h
+    refine Part.dom_iff_mem.mpr ⟨r, mem_eval_comp.mpr ⟨e, ?_, ?_⟩⟩
+    · rw [eval_const]; exact Part.mem_some_iff.mpr rfl
+    · rw [eval_trOracle hI]; exact hr
+  · intro h
+    obtain ⟨r, hr⟩ := Part.dom_iff_mem.mp h
+    obtain ⟨b, hb, hrb⟩ := mem_eval_comp.mp hr
+    rw [eval_const, Part.mem_some_iff] at hb
+    subst hb
+    rw [eval_trOracle hI] at hrb
+    exact Part.dom_iff_mem.mpr ⟨r, hrb⟩
+
 /-! ### Strictness, and sanity anchors -/
 
 /-- **Jump strictness**: every oracle is strictly below its jump. -/

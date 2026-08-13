@@ -70,6 +70,94 @@ theorem not_jump_le (X : ℕ → Bool) : ¬ jump X ≤ₜ X := by
 /-- **Jump strictness on Cantor space.** -/
 theorem lt_jump (X : ℕ → Bool) : X <ₜ jump X := ⟨le_jump X, not_jump_le X⟩
 
+/-- If `X` is obtained from `Z` by precomposition with a primitive recursive
+index transformation, then `X ≤ₜ Z`. -/
+theorem le_of_precomp {X Z : ℕ → Bool} {g : ℕ → ℕ} (hg : Nat.Primrec g)
+    (h : ∀ n, X n = Z (g n)) : X ≤ₜ Z := by
+  refine RecursiveIn.iff_nat.mpr ?_
+  have h1 : Nat.RecursiveIn {toPFun Z} (fun n : ℕ => ((g n : ℕ) : Part ℕ) >>= toPFun Z) :=
+    Nat.RecursiveIn.comp (.oracle _ rfl) hg.recursiveIn
+  refine h1.of_eq fun n => ?_
+  rw [Part.coe_some,
+    show (Part.some (g n) >>= toPFun Z) = toPFun Z (g n) from Part.bind_some _ _]
+  simp [toPFun, h n]
+
+/-! ### Join: the upper semilattice structure -/
+
+/-- The join (recursive join) of two points: even bits from `X`, odd from `Y`. -/
+def join (X Y : ℕ → Bool) : ℕ → Bool :=
+  fun n => if n % 2 = 0 then X (n / 2) else Y (n / 2)
+
+theorem left_le_join (X Y : ℕ → Bool) : X ≤ₜ join X Y := by
+  refine le_of_precomp (g := fun n => 2 * n)
+    (Primrec.nat_iff.mp (Primrec.nat_mul.comp (Primrec.const 2) Primrec.id))
+    fun n => ?_
+  rw [join, if_pos (by omega)]
+  congr 1
+  omega
+
+theorem right_le_join (X Y : ℕ → Bool) : Y ≤ₜ join X Y := by
+  refine le_of_precomp (g := fun n => 2 * n + 1)
+    (Primrec.nat_iff.mp (Primrec.nat_add.comp
+      (Primrec.nat_mul.comp (Primrec.const 2) Primrec.id) (Primrec.const 1)))
+    fun n => ?_
+  rw [join, if_neg (by omega)]
+  congr 1
+  omega
+
+/-- The join is a least upper bound: anything computing both `X` and `Y`
+computes their join. -/
+theorem join_le {X Y Z : ℕ → Bool} (hX : X ≤ₜ Z) (hY : Y ≤ₜ Z) : join X Y ≤ₜ Z := by
+  refine RecursiveIn.iff_nat.mpr ?_
+  obtain ⟨cX, hcX⟩ := OracleCode.exists_code_of_recursiveIn (RecursiveIn.iff_nat.mp hX)
+  obtain ⟨cY, hcY⟩ := OracleCode.exists_code_of_recursiveIn (RecursiveIn.iff_nat.mp hY)
+  set g : ℕ → ℕ := fun n => n / 2 with hg
+  have hgP : Nat.Primrec g := Primrec.nat_iff.mp
+    (Primrec.nat_div.comp Primrec.id (Primrec.const 2))
+  set comb : ℕ → ℕ := fun w =>
+    (1 - (Nat.unpair w).1 % 2) * (Nat.unpair (Nat.unpair w).2).1
+      + ((Nat.unpair w).1 % 2) * (Nat.unpair (Nat.unpair w).2).2 with hcomb
+  have hcombP : Nat.Primrec comb := by
+    rw [hcomb]
+    refine Primrec.nat_iff.mp ?_
+    have hn : Primrec fun w : ℕ => (Nat.unpair w).1 := Primrec.fst.comp Primrec.unpair
+    have hs : Primrec fun w : ℕ => (Nat.unpair (Nat.unpair w).2).1 :=
+      Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+    have ht : Primrec fun w : ℕ => (Nat.unpair (Nat.unpair w).2).2 :=
+      Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+    exact Primrec.nat_add.comp
+      (Primrec.nat_mul.comp
+        (Primrec.nat_sub.comp (Primrec.const 1)
+          (Primrec.nat_mod.comp hn (Primrec.const 2))) hs)
+      (Primrec.nat_mul.comp (Primrec.nat_mod.comp hn (Primrec.const 2)) ht)
+  have hsX : Nat.RecursiveIn {toPFun Z}
+      (fun n : ℕ => ((g n : ℕ) : Part ℕ) >>= OracleCode.eval (toPFun Z) cX) :=
+    Nat.RecursiveIn.comp (OracleCode.eval_recursiveIn (toPFun Z) cX) hgP.recursiveIn
+  have hsY : Nat.RecursiveIn {toPFun Z}
+      (fun n : ℕ => ((g n : ℕ) : Part ℕ) >>= OracleCode.eval (toPFun Z) cY) :=
+    Nat.RecursiveIn.comp (OracleCode.eval_recursiveIn (toPFun Z) cY) hgP.recursiveIn
+  have hid : Nat.RecursiveIn {toPFun Z} (fun n : ℕ => ((n : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hP : Nat.RecursiveIn {toPFun Z} (fun n : ℕ =>
+      Nat.pair <$> ((n : ℕ) : Part ℕ) <*>
+        (Nat.pair <$> (((g n : ℕ) : Part ℕ) >>= OracleCode.eval (toPFun Z) cX)
+          <*> (((g n : ℕ) : Part ℕ) >>= OracleCode.eval (toPFun Z) cY))) :=
+    Nat.RecursiveIn.pair hid (Nat.RecursiveIn.pair hsX hsY)
+  have hF := Nat.RecursiveIn.comp hcombP.recursiveIn hP
+  refine hF.of_eq fun n => ?_
+  simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  rw [hcX, hcY,
+    show (Part.some (g n) >>= toPFun X) = toPFun X (g n) from Part.bind_some _ _,
+    show (Part.some (g n) >>= toPFun Y) = toPFun Y (g n) from Part.bind_some _ _]
+  simp only [toPFun, Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind,
+    Part.bind_some]
+  simp only [hcomb, Nat.unpair_pair, hg, join]
+  rcases Nat.mod_two_eq_zero_or_one n with hn | hn
+  · rw [if_pos hn]
+    cases hX2 : X (n / 2) <;> simp [hn, hX2]
+  · rw [if_neg (by omega)]
+    cases hY2 : Y (n / 2) <;> simp [hn, hY2]
+
 /-! ### The bottom degree: sanity anchors -/
 
 theorem toPFun_const_false : toPFun (fun _ => false) = fun _ => Part.some 0 := by
@@ -87,18 +175,6 @@ theorem le_bot_iff {X : ℕ → Bool} : X ≤ₜ (fun _ => false) ↔ Partrec (t
     exact TuringReducible.partrec_of_const h
   · intro h
     exact h.turingReducible
-
-/-- If `X` is obtained from `Z` by precomposition with a primitive recursive
-index transformation, then `X ≤ₜ Z`. -/
-theorem le_of_precomp {X Z : ℕ → Bool} {g : ℕ → ℕ} (hg : Nat.Primrec g)
-    (h : ∀ n, X n = Z (g n)) : X ≤ₜ Z := by
-  refine RecursiveIn.iff_nat.mpr ?_
-  have h1 : Nat.RecursiveIn {toPFun Z} (fun n : ℕ => ((g n : ℕ) : Part ℕ) >>= toPFun Z) :=
-    Nat.RecursiveIn.comp (.oracle _ rfl) hg.recursiveIn
-  refine h1.of_eq fun n => ?_
-  rw [Part.coe_some,
-    show (Part.some (g n) >>= toPFun Z) = toPFun Z (g n) from Part.bind_some _ _]
-  simp [toPFun, h n]
 
 /-- Computable points are in the bottom degree. -/
 theorem le_of_computable {X Y : ℕ → Bool} (h : Computable X) : X ≤ₜ Y := by

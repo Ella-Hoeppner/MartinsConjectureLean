@@ -115,6 +115,17 @@ prewellorders the regular functions, with the jump as successor. -/
 def PartII_Borel : Prop :=
   PartII_Borel_Total ∧ PartII_Borel_WF ∧ PartII_Borel_Succ
 
+/-- A fragment of the successor claim that is provable outright: every
+function is strictly Martin-below its jump, by pointwise jump strictness.
+(The other half of `PartII_Borel_Succ` — that nothing fits strictly between —
+is the open part.) -/
+theorem martinLT_jump (F : (ℕ → Bool) → ℕ → Bool) :
+    MartinLT F (fun X => Cantor.jump (F X)) := by
+  constructor
+  · exact ⟨fun _ => false, fun X _ => le_jump (F X)⟩
+  · rintro ⟨Y, hY⟩
+    exact not_jump_le (F Y) (hY Y (le.refl Y))
+
 /-- **Martin's conjecture, Borel version** (both parts). -/
 def MartinConjecture_Borel : Prop := PartI_Borel ∧ PartII_Borel
 

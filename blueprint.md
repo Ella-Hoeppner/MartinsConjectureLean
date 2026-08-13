@@ -2,6 +2,12 @@
 
 Start: 2026-08-13, ~12:20 EDT. Toolchain: Lean 4.34.0-rc1, Mathlib master (rev pinned in lakefile).
 
+> **Final status (2026-08-13, ~13:40 EDT):** T0–T3 complete and sorry-free; see REPORT.md
+> (results) and LEDGER.md (gaps/obstructions). The plan below was executed as written, with
+> file 5 (`ConeTheorem.lean`) proved rather than merely scaffolded, plus a bonus join
+> semilattice on Cantor points and the `trOracle` translation layer toward jump invariance.
+> The key insight forecast below ("avoids porting the universal-machine development") held up.
+
 ## T0 audit results
 
 Present in Mathlib (2026-08):

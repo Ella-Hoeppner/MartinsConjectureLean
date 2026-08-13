@@ -161,6 +161,45 @@ theorem) is already in hand.  This is the recommended next-session target; it is
 join-cone formulation (`UniformJoin.equivVia_join_uniform` — the uniform congruence index),
 but the game and Wadge layers are absent.
 
+## Effective Kleene–Post: complete Lean-level execution guide
+
+The full proof is worked out; what remains is formalization labour (encoding plumbing).
+Recorded here so a future session can execute it directly.
+
+**Statement.** `∃ A B : ℕ → Bool, A ≤ᵀ jump ∅ ∧ B ≤ᵀ jump ∅ ∧ ¬(A ≤ᵀ B) ∧ ¬(B ≤ᵀ A)`.
+
+**Representation.** Strings are `List ℕ` of 0/1 values (matching `evaln`'s oracle table),
+encoded by `Encodable.encode`.  A condition is `pair (encode σ) (encode τ)`.
+
+**Step** at stage `r` (`r = 2e` defeats `Φₑᴮ = A`; `r = 2e+1` defeats `Φₑᴬ = B`, symmetric).
+Even case, `e = r/2`, current condition `(σ, τ)`:
+- Query `0′`: does `∃ ext, fuel, evaln fuel (τ ++ ext) (ofNatCode e) |σ|` halt?  This is exactly
+  `extHalting_recursiveIn_jump` at `(encode τ, e, |σ|)` — **proved**.
+- **YES**: run `ehFun` (halts, since decided yes) to get the least witness `w = (encode ext, fuel)`;
+  let `v` be the `evaln` value.  Set `σ' = σ ++ [if v = 0 then 1 else 0]` (a bit ≠ `v`),
+  `τ' = τ ++ ext`.
+- **NO**: `σ' = σ ++ [0]`, `τ' = τ ++ [0]`.
+Step is `Nat.RecursiveIn {jump ∅}` (decode/encode/`evaln` are primrec; one oracle query; the
+YES-branch search `ehFun` is `∅`-partrec hence recursive in `jump ∅`).
+
+**Stages / reals.** `stages = prec` over the step (base `pair (encode []) (encode [])`); `σ`/`τ`
+are nested, so `A = ⋃ σ`, `B = ⋃ τ` are well-defined limits; `A, B ≤ᵀ jump ∅` because
+`stages` is `jump ∅`-recursive and `A n` reads the σ-part of a stage past `n` (mirror
+`KleenePost.agreesA`).
+
+**Incomparability (the non-obvious bridge — all tools present).** For requirement `2e`:
+- *YES branch*: `evaln fuel (τ ++ ext) c |σ|_r = some v` and `B ⊇ τ' = τ ++ ext`, so by
+  `evaln_sound` (table = a prefix of `B`’s graph) `v ∈ eval (toPFun B) c |σ|_r`, i.e.
+  `Φₑᴮ(|σ|_r) = v`.  And `A(|σ|_r)` was set `≠ v`.  So `Φₑᴮ ≠ A`.
+- *NO branch*: if `Φₑᴮ(|σ|_r)↓` then by `evaln_complete` some `evaln k (graphOf (bitg B) k) c |σ|_r`
+  halts; since `B ⊇ τ`, `evaln_mono` extends that table to `τ ++ ext` for a suitable `ext`,
+  contradicting the NO decision.  So `Φₑᴮ(|σ|_r)↑ ≠ A` (total).
+Hence no `e` computes `A` from `B`; symmetric for `B` from `A`.
+
+Every ingredient (`extHalting_recursiveIn_jump`, `ehFun`, `evaln_sound/complete/mono`, `prec`,
+the encodings) is already in the repository.  The obstacle is purely the length/friction of the
+`Nat.RecursiveIn {jump ∅}` step term and the limit bookkeeping — estimated one focused session.
+
 ## Assessment
 
 The mathematical wall is real and precisely located: all four attempts die at one of

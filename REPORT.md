@@ -1,11 +1,46 @@
 # Final report: Martin's conjecture in Lean 4 / Mathlib
 
-**Date:** 2026-08-13 (single session, ~1h40m of work within a 3h budget).
+**Date:** 2026-08-13 (four work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, 972 jobs.
-**Sorry count: 0. Custom axioms: 0.**
+`lake-manifest.json`). Full `lake build`: green, ~1045 jobs, 29 files, ~5.9k lines.
+**Sorry count: 0. Custom axioms: 0** (89 headline theorems audited; every one uses only
+`propext`, `Classical.choice`, `Quot.sound`).
 
-## TL;DR
+## Headline results (all sorry-free, standard axioms; believed new to Lean)
+
+Recursion-theory foundation (`OracleCode.*`, `Cantor.*`):
+- **Enumeration theorem** for oracle computability (`exists_code`); **jump strictness**
+  `X <ᵀ X′` (`jumpFn_gt`, `Cantor.lt_jump`, `TuringDegree.lt_jump`); jump is
+  degree-invariant and order-preserving (`jumpFn_congr`), descends to `TuringDegree`.
+- **Kleene–Post**: incomparable Turing degrees exist (`kleene_post`,
+  `TuringDegree.not_isTotal_le`).
+- **The universal machine**: step-indexed `evaln` with soundness/completeness, and
+  **`evaln_prim`** (it is primitive recursive).
+- **Relativized recursion theorem** (`exists_fixedPoint`), **s-m-n** (`smn`), **padding
+  lemma** (`infinite_indices`), quine (`exists_quine`).
+- **Σ₁-completeness of the jump** (`dom_iff_jumpP`); **the full Shoenfield limit lemma**
+  `f ≤ᵀ X′ ↔ f is X-limit-computable` (`limit_lemma`, `Cantor.le_jump_iff_limitApprox`);
+  the jump is Δ⁰₂-in-X (`jump_limitApprox`).
+- Upper-semilattice join on Cantor points; infinitely many degrees; no maximal degree.
+
+Martin's-conjecture layer (`Martin.*`):
+- **Formal statements** of Part I and Part II (Borel version), the uniform and
+  order-preserving variants, and Lachlan's statement — with sanity lemmas.
+- **Martin's cone theorem** (`cone_theorem`), determinacy as an explicit hypothesis;
+  proved unconditionally for open/closed sets (`cone_dichotomy_of_isOpen/isClosed`).
+- **Martin measure** as a countably complete ultrafilter (`exists_onCone_of_cover`);
+  comparability trichotomy; the jump is a `Regular` function (`regular_jump`).
+- **Reduction of the whole conjecture to five isolated open cores**, proved to be an
+  *exact equivalence* under Turing determinacy (`martinConjectureAD_iff_cores`,
+  `partI_iff_cores`, `partII_iff_cores`); boundedness lemma and counterexample profile.
+
+**Bottom line:** Martin's conjecture itself remains open (no honest run settles a
+50-year-open problem). What this project delivers is (a) a substantial, first-of-its-kind
+Lean formalization of the recursion-theory and Martin-measure machinery the subject rests
+on, several pieces genuinely new to Lean, and (b) the conjecture's open content *formally
+isolated* to five precisely stated cores, with everything around them machine-checked.
+
+## TL;DR (session 1)
 
 Tiers T0–T3 are complete, sorry-free, and pass the anti-fooling checklist. The headline
 results, believed to be **new to Lean** (based on the prior-art search below):

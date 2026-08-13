@@ -73,3 +73,8 @@ import MartinsConjecture
 #print axioms Martin.partII_succ_iff_core
 #print axioms Martin.partII_iff_cores
 #print axioms Martin.martinConjectureAD_iff_cores
+#print axioms OracleCode.evaln_sound
+#print axioms OracleCode.evaln_complete
+#print axioms OracleCode.evaln_prim
+#print axioms OracleCode.eval_universal
+#print axioms OracleCode.exists_fixedPoint

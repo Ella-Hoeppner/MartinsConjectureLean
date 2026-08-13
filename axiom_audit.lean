@@ -96,3 +96,4 @@ import MartinsConjecture
 #print axioms OracleCode.general_halting_recursiveIn_jump
 #print axioms OracleCode.domain_manyOne_jump
 #print axioms OracleCode.extHalting_recursiveIn_jump
+#print axioms Cantor.join_jump_le_jump_join

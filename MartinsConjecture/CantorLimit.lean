@@ -74,8 +74,24 @@ theorem jump_jump_not_limitApprox (X : ℕ → Bool) :
   have hle : jump (jump X) ≤ₜ jump X := le_jump_iff_limitApprox.mpr h
   exact not_jump_le (jump X) hle
 
+/-! ### Jump and join -/
+
+/-- The jump is monotone under the join. -/
+theorem jump_le_jump_join_left (X Y : ℕ → Bool) : jump X ≤ₜ jump (join X Y) :=
+  jump_mono (left_le_join X Y)
+
+theorem jump_le_jump_join_right (X Y : ℕ → Bool) : jump Y ≤ₜ jump (join X Y) :=
+  jump_mono (right_le_join X Y)
+
+/-- The join of the jumps is below the jump of the join (`X′ ⊕ Y′ ≤ᵀ (X ⊕ Y)′`).
+The reverse inequality also holds classically but needs a separate argument. -/
+theorem join_jump_le_jump_join (X Y : ℕ → Bool) :
+    join (jump X) (jump Y) ≤ₜ jump (join X Y) :=
+  join_le (jump_le_jump_join_left X Y) (jump_le_jump_join_right X Y)
+
 #print axioms le_jump_iff_limitApprox
 #print axioms jump_limit
 #print axioms jump_jump_not_limitApprox
+#print axioms join_jump_le_jump_join
 
 end Cantor

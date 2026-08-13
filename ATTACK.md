@@ -213,7 +213,10 @@ fully-specified formalization plan rather than research.
    transcription — deferred rather than risk an incorrect proof.)
 4. **Posner–Robinson** (Kumabe–Slaman forcing) — the remaining pillar for the
    Slaman–Steel and Lutz–Siskind theorems in full.
-5. **Effective Kleene–Post** (incomparable degrees `≤ᵀ 0′`): the Σ₁-decision in
-   `KleenePost.step` is now `0′`-answerable via `dom_iff_jumpP` + the universal machine;
-   rebuilding the construction with a `0′`-computable selector would give the effective
-   refinement.
+5. **Effective Kleene–Post** (incomparable degrees `≤ᵀ 0′`): the crux — that the
+   extension-halting question "does `e` halt on `k` under some finite extension of a given
+   prefix?" is `0′`-decidable — is now **proved** (`ExtHalting.extHalting_recursiveIn_jump`,
+   via Post's theorem `domain_recursiveIn_jump`).  What remains is the `0′`-recursive
+   finite-extension construction (stages via `prec` querying this oracle, a `0′`-computable
+   canonical-witness selector, bit read-off) and the incomparability proof — an intricate
+   but conceptually clear next-session build; the recursion-theoretic content is done.

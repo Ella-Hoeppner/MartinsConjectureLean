@@ -141,6 +141,10 @@ theorem EquivVia.equiv {X Y : ℕ → Bool} {i j : ℕ} (h : EquivVia X Y i j) :
   ⟨RecursiveIn.iff_nat.mpr (h.2 ▸ eval_recursiveIn (toPFun Y) (ofNatCode j)),
    RecursiveIn.iff_nat.mpr (h.1 ▸ eval_recursiveIn (toPFun X) (ofNatCode i))⟩
 
+/-- `EquivVia` is symmetric in the point/index pairs. -/
+theorem EquivVia.symm {X Y : ℕ → Bool} {i j : ℕ} (h : EquivVia X Y i j) :
+    EquivVia Y X j i := ⟨h.2, h.1⟩
+
 /-- Sanity (converse): every Turing equivalence has index witnesses — this is
 exactly the enumeration theorem `exists_code`. -/
 theorem equiv_iff_exists_equivVia {X Y : ℕ → Bool} :

@@ -78,3 +78,5 @@ import MartinsConjecture
 #print axioms OracleCode.evaln_prim
 #print axioms OracleCode.eval_universal
 #print axioms OracleCode.exists_fixedPoint
+#print axioms OracleCode.dom_iff_jumpP
+#print axioms OracleCode.recursiveIn_jump_of_limit

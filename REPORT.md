@@ -1,9 +1,9 @@
 # Final report: Martin's conjecture in Lean 4 / Mathlib
 
-**Date:** 2026-08-13 (four work sessions).
+**Date:** 2026-08-13 (five work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, ~1045 jobs, 29 files, ~5.9k lines.
-**Sorry count: 0. Custom axioms: 0** (89 headline theorems audited; every one uses only
+`lake-manifest.json`). Full `lake build`: green, ~1048 jobs, 33 files, ~7.2k lines.
+**Sorry count: 0. Custom axioms: 0** (107 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
@@ -13,7 +13,11 @@ Recursion-theory foundation (`OracleCode.*`, `Cantor.*`):
   `X <ᵀ X′` (`jumpFn_gt`, `Cantor.lt_jump`, `TuringDegree.lt_jump`); jump is
   degree-invariant and order-preserving (`jumpFn_congr`), descends to `TuringDegree`.
 - **Kleene–Post**: incomparable Turing degrees exist (`kleene_post`,
-  `TuringDegree.not_isTotal_le`).
+  `TuringDegree.not_isTotal_le`); and the **effective** version
+  (`KleenePostJump.effective_kleene_post`): two reals `A, B` with
+  `A ≤ᵀ 0′ ∧ B ≤ᵀ 0′ ∧ ¬(A ≤ᵀ B) ∧ ¬(B ≤ᵀ A)` — the finite-extension
+  construction made fully `0′`-computable by encoding the whole stage recursion
+  (`condN`) and running each stage's Σ₁ decision through the jump.
 - **The universal machine**: step-indexed `evaln` with soundness/completeness, and
   **`evaln_prim`** (it is primitive recursive).
 - **Relativized recursion theorem** (`exists_fixedPoint`), **s-m-n** (`smn`), **padding
@@ -452,6 +456,37 @@ machine, the relativized recursion theorem, and the (relativized) Shoenfield lim
 The recursion theorem was the exact artifact all four attack lines in `ATTACK.md` funneled
 through; with it, Lachlan's theorem and Steel's uniform case become concrete formalization
 plans rather than research (see `ATTACK.md`, "next milestones").
+
+## Session 5 (2026-08-13, continuing): the effective Kleene–Post theorem
+
+The `ATTACK.md`-scoped `0′`-recursive construction is now **built and fully proved**,
+completing the finite-extension-below-`0′` method end to end.  One new file,
+`EffectiveKP.lean` (~990 lines, sorry-free, standard axioms only).
+
+* **`effective_kleene_post`** — the headline:
+  `∃ A B : ℕ → Bool, A ≤ᵀ 0′ ∧ B ≤ᵀ 0′ ∧ ¬(A ≤ᵀ B) ∧ ¬(B ≤ᵀ A)`.  Two reals, each
+  Turing-below the halting problem, that are Turing-incomparable — the effective refinement
+  of Kleene–Post (the plain version only bounds the pair below `0″`).
+* **The construction (`cond`)** — a finite-extension priority-free construction on
+  `List ℕ` strings of 0/1 bits: at even stage `2e` diagonalize against `Φₑᴮ = A`; at odd
+  `2e+1` against `Φₑᴬ = B`.  Each `reqStep` consults the extension-halting oracle
+  (`ExtHalting`, Σ₁, hence `0′`-decidable) and appends a diagonalizing bit or a default `0`.
+* **Incomparability (`not_A_le_B`, `not_B_le_A`)** — via the `evaln`
+  soundness/completeness/monotonicity bridge: `defeat_even`/`defeat_odd` show the stage-`e`
+  requirement makes `Φₑ` differ from the target at the diagonalized position.
+* **The `0′`-bound — the session's technical core.**  The entire stage recursion is
+  *encoded* as a single `ℕ →. ℕ` function `condN` (each pair `(σ,τ)` packed as
+  `encPair σ τ`), and shown recursive in `jump ∅` by running the encoded stage step
+  `reqStepEnc` — itself recursive in `0′` — inside a `Nat.RecursiveIn.prec` fold.
+  `condN_spec` proves the encoding faithful (`condN r = encPair (cond r).1 (cond r).2`);
+  `bitgA/bitgB_recursiveIn` extract the reals' bits; `A_le_jump`/`B_le_jump` bridge to the
+  Cantor-point/jump representation (`toPFun (jump ∅) = jumpFn ∅`).
+
+This is, to our knowledge, the first machine-checked Lean proof that incomparable degrees
+exist *below the halting problem* (a strictly stronger statement than plain Kleene–Post),
+and the first fully `0′`-computable finite-extension construction in Lean.  It closes the
+last item scoped in `ATTACK.md` and completes T1's optional Kleene–Post target at full
+strength.
 
 ## Concrete next steps for a future run
 

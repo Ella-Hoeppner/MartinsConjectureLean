@@ -145,6 +145,12 @@ theorem EquivVia.equiv {X Y : ℕ → Bool} {i j : ℕ} (h : EquivVia X Y i j) :
 theorem EquivVia.symm {X Y : ℕ → Bool} {i j : ℕ} (h : EquivVia X Y i j) :
     EquivVia Y X j i := ⟨h.2, h.1⟩
 
+/-- `EquivVia` is reflexive, witnessed by the oracle-query code. -/
+theorem EquivVia.refl (X : ℕ → Bool) :
+    EquivVia X X (encodeCode .oracle) (encodeCode .oracle) := by
+  refine ⟨?_, ?_⟩ <;>
+    · rw [ofNatCode_encodeCode, eval_oracle]
+
 /-- Sanity (converse): every Turing equivalence has index witnesses — this is
 exactly the enumeration theorem `exists_code`. -/
 theorem equiv_iff_exists_equivVia {X Y : ℕ → Bool} :

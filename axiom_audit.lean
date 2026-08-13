@@ -110,3 +110,5 @@ import MartinsConjecture
 #print axioms Cantor.le_iff_bitg
 #print axioms OracleCode.eval_trE_comp
 #print axioms Cantor.joinFam_le
+#print axioms OracleCode.reReal_le_jump
+#print axioms OracleCode.reReal_eq_of_reduces

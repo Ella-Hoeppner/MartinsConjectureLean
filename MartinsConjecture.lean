@@ -32,3 +32,4 @@ import MartinsConjecture.PostDomain
 import MartinsConjecture.ExtHalting
 import MartinsConjecture.EffectiveKP
 import MartinsConjecture.UniformFunctionals
+import MartinsConjecture.ReOperator

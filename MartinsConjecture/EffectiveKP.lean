@@ -555,4 +555,22 @@ theorem decision_recursiveIn_jump :
       (fun q : ℕ => ((if (srch q).Dom then 1 else 0 : ℕ) : Part ℕ)) :=
   domain_recursiveIn_jump srch_partrec.recursiveIn
 
+/-- The search returns exactly the least witness `Nat.find` chooses. -/
+theorem srch_query_eq (pas : List ℕ) (e len : ℕ)
+    (h : ∃ w, haltsAt pas e len w) :
+    srch (query (Encodable.encode pas) e len) = Part.some (Nat.find h) := by
+  have hqeq : ∀ w, srchTest (query (Encodable.encode pas) e len) w = 0 ↔
+      haltsAt pas e len w := by
+    intro w
+    rw [srchTest_zero_iff]
+    simp only [haltsAt, query, Nat.unpair_pair, Encodable.encodek, Option.getD_some]
+  rw [Part.eq_some_iff, srch]
+  refine Nat.mem_rfind.mpr ⟨?_, fun {m} hm => ?_⟩
+  · rw [true_mem_srchPred]
+    exact (hqeq _).mpr (Nat.find_spec h)
+  · rw [srchPred, Part.map_eq_map, Part.mem_map_iff]
+    refine ⟨srchTest _ m, Part.mem_some _, ?_⟩
+    have hnh : ¬ haltsAt pas e len m := Nat.find_min h hm
+    exact decide_eq_false ((hqeq m).not.mpr hnh)
+
 end KleenePostJump

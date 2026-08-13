@@ -51,14 +51,17 @@ obstructions behind them**, for a future run.
 
 ## Deliberate scope cuts
 
-- **No universal machine / `evaln`** for oracle codes. Not needed for jump strictness (see
-  blueprint). Needed later for: jump is Σ⁰₁-complete relative to the oracle, c.e. degrees,
-  Lachlan's theorem.
-- **`rfind` instead of `rfind'`** in `OracleCode` — see blueprint; revisit if a step-indexed
-  universal machine is built.
-- **Lachlan's theorem (T4)** not attempted: needs the recursion theorem for oracle codes
-  (fixed-point via `smn`, i.e. `curry` machinery on `OracleCode`), which needs the primrec
-  code-operation layer (same infrastructure as gap 1). This is the natural next milestone.
+- ~~**No universal machine / `evaln`**~~ **BUILT (session 4)**: `Evaln.lean` +
+  `EvalnPrim.lean` (`evaln_prim`) + `Universal.lean`.  This unlocked the recursion theorem,
+  s-m-n, padding, Σ₁-completeness of the jump (`dom_iff_jumpP`), and the full Shoenfield
+  limit lemma (`limit_lemma`).
+- **`rfind` instead of `rfind'`** in `OracleCode` — the session-4 universal machine
+  (`evaln`) used a bounded `searchList` over an explicit value list instead of the
+  `rfind'`-offset device, so the plain-`rfind` choice caused no problems downstream.
+- **Lachlan's theorem (T4)** not attempted — but its prerequisite (the recursion theorem
+  for oracle codes) is now PROVED (`Universal.exists_fixedPoint`), along with s-m-n
+  (`SmnPadding.smn`) and padding.  What remains is transcribing Lachlan's specific
+  combinatorial argument; deferred rather than risk an incorrect formalization.
 - ~~**Kleene–Post** not attempted~~ **PROVED in session 2** (`KleenePost.lean`), via the use
   principle (`Locality.lean`).  Note: the classical statement also places the incomparable
   pair *below `0′`* (via a computable-in-`0′` construction); the effectiveness refinement is

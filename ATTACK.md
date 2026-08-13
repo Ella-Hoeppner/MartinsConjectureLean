@@ -159,12 +159,18 @@ fully-specified formalization plan rather than research.
 
 ## Next formal milestones (in dependency order)
 
-1. ~~Pointed perfect trees~~ **Done in the join-cone formulation** (`UniformJoin.lean`:
-   realization, controlled congruence, `exists_pointed_family_of_onCone`).
-2. **The universal machine for `OracleCode`** (`evaln` + its primitive recursiveness,
-   relativized) — the single funnel identified in Attempt E.  Mechanical but large.
-3. With 2: the **oracle recursion theorem**, then **Lachlan's theorem**, then
-   **Steel's uniform case** via the Attempt-E game blueprint — the first genuine
-   partial results of Martin's conjecture, machine-checked.
+1. ~~Pointed perfect trees~~ **Done in the join-cone formulation** (`UniformJoin.lean`).
+2. ~~The universal machine for `OracleCode`~~ **DONE (session 4)** — `Evaln.lean`,
+   `EvalnPrim.lean` (`evaln_prim`), `Universal.lean` (`eval_universal`,
+   `exists_fixedPoint`).  The oracle recursion theorem, s-m-n, padding, Σ₁-completeness
+   of the jump, and the full Shoenfield limit lemma are all now proved.
+3. **Lachlan's theorem** and **Steel's uniform case** (Attempt-E blueprint) — the
+   recursion-theorem blocker is gone; these are now concrete formalization plans.  (Not
+   yet attempted: the exact combinatorial argument of each still needs careful
+   transcription — deferred rather than risk an incorrect proof.)
 4. **Posner–Robinson** (Kumabe–Slaman forcing) — the remaining pillar for the
    Slaman–Steel and Lutz–Siskind theorems in full.
+5. **Effective Kleene–Post** (incomparable degrees `≤ᵀ 0′`): the Σ₁-decision in
+   `KleenePost.step` is now `0′`-answerable via `dom_iff_jumpP` + the universal machine;
+   rebuilding the construction with a `0′`-computable selector would give the effective
+   refinement.

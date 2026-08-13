@@ -112,3 +112,5 @@ import MartinsConjecture
 #print axioms Cantor.joinFam_le
 #print axioms OracleCode.reReal_le_jump
 #print axioms OracleCode.reReal_eq_of_reduces
+#print axioms OracleCode.mem_reReal_iff_haltsOn_prefix
+#print axioms OracleCode.reReal_eq_true_iff

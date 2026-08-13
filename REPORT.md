@@ -33,6 +33,10 @@ Martin's-conjecture layer (`Martin.*`):
 - **Reduction of the whole conjecture to five isolated open cores**, proved to be an
   *exact equivalence* under Turing determinacy (`martinConjectureAD_iff_cores`,
   `partI_iff_cores`, `partII_iff_cores`); boundedness lemma and counterexample profile.
+- **The canonical Steel chain** (`uniform_jump_chain`): the iterates `X ↦ X^(n)` are
+  simultaneously uniformly invariant (via the universal machine), `Regular`, and strictly
+  Martin-increasing-and-comparable — a machine-checked witness that the conjecture's
+  predicted `id <ₘ (·′) <ₘ (·″) <ₘ ⋯` is realized as far as provable without full Part II.
 
 **Bottom line:** Martin's conjecture itself remains open (no honest run settles a
 50-year-open problem). What this project delivers is (a) a substantial, first-of-its-kind

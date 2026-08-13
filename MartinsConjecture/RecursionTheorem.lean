@@ -60,8 +60,17 @@ theorem exists_selfHalting_code (X : ℕ → Bool) :
   · intro _
     exact hdom n
 
+/-- Recursion theorem, code form: a code that computes the same function as
+its image under any computable index transformation. -/
+theorem exists_fixedPoint_code (X : ℕ → Bool) {f : ℕ → ℕ} (hf : Nat.Primrec f) :
+    ∃ c : OracleCode,
+      eval (toPFun X) (ofNatCode (f (encodeCode c))) = eval (toPFun X) c := by
+  obtain ⟨e, he⟩ := exists_fixedPoint X hf
+  exact ⟨ofNatCode e, by rw [encode_ofNatCode]; exact he⟩
+
 #print axioms exists_quine
 #print axioms no_fixedPointFree
 #print axioms exists_selfHalting_code
+#print axioms exists_fixedPoint_code
 
 end OracleCode

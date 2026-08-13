@@ -9,15 +9,11 @@ obstructions behind them**, for a future run.
 
 ## Gaps (things stated or motivated but not proved)
 
-1. **Jump order-preservation / degree-invariance** (`A ≤ᵀ B → jumpFn A ≤ᵀ jumpFn B`).
-   - Done: `trOracle` code translation and its semantics-preservation `eval_trOracle`;
-     `jumpP_trOracle` reduces the jump question about `A` to a jump question about `B` at an
-     explicitly computed code.
-   - Missing: primitive recursiveness of `fun e => encodeCode (.comp (trOracle cI (ofNatCode e)) (const e))`.
-     This needs course-of-values recursion on encodings (`Primrec.nat_strong_rec` with a
-     `List`-history function, mirroring how Mathlib proves `Nat.Partrec.Code.rec_prim`).
-     Mechanical but ~100 fiddly lines; cut for time. Without it the jump does not yet descend
-     to an operation on `TuringDegree`.
+1. ~~**Jump order-preservation / degree-invariance**~~ **DISCHARGED** in
+   `JumpInvariance.lean` (added after the first ledger draft): `trE_primrec` proves the code
+   translation primitive recursive via `Primrec.nat_strong_rec`, yielding `jumpFn_mono`,
+   `jumpFn_congr`, `Martin.orderPreserving_jump`/`turingInvariant_jump`, and the degree-level
+   `TuringDegree.jump` with `TuringDegree.lt_jump`. All sorry-free.
 
 2. **No determinacy instance for the cone theorem.** `Martin.cone_theorem` takes
    `GameDetermined A` as a hypothesis. Nothing in Mathlib proves determinacy of any nontrivial

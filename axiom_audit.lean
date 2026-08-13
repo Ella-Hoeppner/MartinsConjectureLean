@@ -12,3 +12,10 @@ import MartinsConjecture
 #print axioms Martin.gamePlay_le
 #print axioms Martin.cone_theorem
 #print axioms Martin.cone_theorem_onCone
+#print axioms trE_primrec
+#print axioms jumpFn_mono
+#print axioms jumpFn_congr
+#print axioms Cantor.jump_congr
+#print axioms Martin.orderPreserving_jump
+#print axioms Martin.turingInvariant_jump
+#print axioms TuringDegree.lt_jump

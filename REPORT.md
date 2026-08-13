@@ -1,14 +1,14 @@
 # Final report: Martin's conjecture in Lean 4 / Mathlib
 
-**Date:** 2026-08-13 (single session, ~1h15m of work within a 3h budget).
+**Date:** 2026-08-13 (single session, ~1h40m of work within a 3h budget).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, 971 jobs.
+`lake-manifest.json`). Full `lake build`: green, 972 jobs.
 **Sorry count: 0. Custom axioms: 0.**
 
 ## TL;DR
 
-Tiers T0–T3 are complete, sorry-free, and pass the anti-fooling checklist. The two headline
-results, both believed to be **new to Lean** (based on the prior-art search below):
+Tiers T0–T3 are complete, sorry-free, and pass the anti-fooling checklist. The headline
+results, believed to be **new to Lean** (based on the prior-art search below):
 
 1. **Jump strictness** `O <ᵀ O′` for Mathlib's oracle-computability framework
    (`jumpFn_gt : O ≤ᵀ jumpFn O ∧ ¬ jumpFn O ≤ᵀ O`), including a Gödel numbering and
@@ -17,6 +17,12 @@ results, both believed to be **new to Lean** (based on the prior-art search belo
    subset of Cantor space contains a cone or is disjoint from a cone — with determinacy of
    the game as an explicit hypothesis (nothing else was mathematically possible: no
    determinacy exists in Mathlib, and axiomatizing AD would be inconsistent).
+3. **The jump is degree invariant and descends to `TuringDegree`**
+   (`JumpInvariance.lean`): `jumpFn_mono`/`jumpFn_congr` (order preservation / invariance,
+   via a primitively-recursive code translation proved by course-of-values recursion), the
+   jump is an `OrderPreserving`/`TuringInvariant` function in the Martin framework, and
+   `TuringDegree.jump` with **`TuringDegree.lt_jump : d < d.jump`** on Mathlib's own degree
+   structure. This completes every T1 item in the brief.
 
 Plus formal statements (T2) of Martin's conjecture Parts I and II (Borel version), the
 uniformly-invariant and order-preserving variants, and Lachlan's theorem — with sanity
@@ -157,9 +163,9 @@ anything about c.e. sets will need it (LEDGER, scope cuts).
 
 ## Concrete next steps for a future run
 
-1. Primrec-ness of `trOracle` on encodings (`Primrec.nat_strong_rec` grind) ⟹ jump is
-   order-preserving and uniformly invariant ⟹ jump descends to `TuringDegree`; then state
-   and prove degree-level strictness.
+1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining
+   refinement: extract the *uniformity* content (the translation gives computable index
+   transforms, so the jump should be provably `ComputablyUniformlyTuringInvariant`).
 2. `curry`/`smn` + recursion theorem for `OracleCode` ⟹ **Lachlan's theorem** (T4, the
    recommended named target — pure recursion theory).
 3. Open (Gale–Stewart) determinacy for the concrete game encoding ⟹ unconditional cone

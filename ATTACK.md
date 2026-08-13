@@ -100,6 +100,24 @@ This is precisely the mechanism by which Steel-style arguments control a functio
 across representatives of the same degree.  What remains for Steel's uniform case is
 the comparison-game analysis itself (pillar iii).
 
+## BREAKTHROUGH (session 4): the single blocker is gone
+
+The universal machine for `OracleCode` — the artifact every attempt funneled through — is
+now built and proved, sorry-free:
+
+* `Evaln.lean`: `evaln` (step-indexed evaluation with a finite oracle table), with
+  `evaln_sound`, `evaln_complete`, `evaln_mono`.
+* `EvalnPrim.lean`: **`evaln_prim`** — `evaln` is primitive recursive (course-of-values
+  recursion over stage tables; `stageStep_spec` + `Primrec.nat_strong_rec`).
+* `Universal.lean`: **`eval_universal`** (the two-argument evaluator is recursive in any
+  total oracle, by dovetailing `evaln` over the oracle's own graph) and
+  **`exists_fixedPoint`** — Kleene's second recursion theorem, relativized.
+* `LimitLemma.lean`: **`dom_iff_jumpP`** (Σ₁-completeness of the jump) and
+  **`recursiveIn_jump_of_limit`** (Shoenfield limit lemma, substantive direction).
+
+With these, the paths in Attempts D and E are no longer blocked at the recursion-theorem
+step. See `Lachlan.lean` for the first named partial result now within reach.
+
 ## Assessment
 
 The mathematical wall is real and precisely located: all four attempts die at one of

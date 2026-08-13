@@ -13,6 +13,7 @@ space and their jump degrees:
   jump strictness plus monotonicity).
 -/
 import MartinsConjecture.LimitLemmaFull
+import MartinsConjecture.RegularChain
 
 open scoped Computability
 open OracleCode
@@ -114,5 +115,24 @@ theorem uniformlyTuringInvariant_jumpIterate :
           = (fun X => Cantor.jump (Cantor.jump^[n] X)) := by
         funext X; rw [Function.iterate_succ_apply']
       rw [heq]; exact h
+
+/-- **The canonical Steel chain.**  Each jump iterate `X ↦ X^(n)` is
+simultaneously *uniformly Turing invariant*, *Regular* (Borel, invariant,
+above the identity), and strictly Martin-below its successor; and any two
+iterates are Martin comparable.  This is the concrete, machine-checked witness
+that the class of uniformly-invariant functions Steel's theorem prewellorders
+is inhabited by a strictly increasing ω-chain — the conjecture's predicted
+`id <ₘ (·′) <ₘ (·″) <ₘ ⋯`, verified as far as it can be without the full
+Part II theorem. -/
+theorem uniform_jump_chain (n : ℕ) :
+    UniformlyTuringInvariant (fun X => Cantor.jump^[n] X) ∧
+    Regular (fun X => Cantor.jump^[n] X) ∧
+    MartinLT (fun X => Cantor.jump^[n] X) (fun X => Cantor.jump^[n + 1] X) ∧
+    (∀ m, m ≤ n → MartinLE (fun X => Cantor.jump^[m] X) (fun X => Cantor.jump^[n] X)) :=
+  ⟨uniformlyTuringInvariant_jumpIterate n, regular_jumpIter n, martinLT_jumpIter n,
+    fun _ h => martinLE_jumpIter_of_le h⟩
+
+#print axioms uniformlyTuringInvariant_jumpIterate
+#print axioms uniform_jump_chain
 
 end Martin

@@ -50,6 +50,20 @@ def OrderPreserving (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
 theorem OrderPreserving.turingInvariant {F} (h : OrderPreserving F) :
     TuringInvariant F := fun X Y hXY => ⟨h X Y hXY.1, h Y X hXY.2⟩
 
+/-- Turing invariance is closed under composition. -/
+theorem TuringInvariant.comp {F G} (hF : TuringInvariant F) (hG : TuringInvariant G) :
+    TuringInvariant (fun X => F (G X)) :=
+  fun X Y hXY => hF (G X) (G Y) (hG X Y hXY)
+
+/-- Order preservation is closed under composition. -/
+theorem OrderPreserving.comp {F G} (hF : OrderPreserving F) (hG : OrderPreserving G) :
+    OrderPreserving (fun X => F (G X)) :=
+  fun X Y hXY => hF (G X) (G Y) (hG X Y hXY)
+
+/-- The identity is order preserving. -/
+theorem orderPreserving_id : OrderPreserving (fun X : ℕ → Bool => X) :=
+  fun _ _ h => h
+
 /-- The cone above `Y`: all points computing `Y`. -/
 def cone (Y : ℕ → Bool) : Set (ℕ → Bool) := {X | Y ≤ₜ X}
 
@@ -177,6 +191,27 @@ used in some classical papers; conventions vary — see the ledger). -/
 def ComputablyUniformlyTuringInvariant (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
   ∃ u : ℕ × ℕ → ℕ × ℕ, Computable u ∧ ∀ X Y i j, EquivVia X Y i j →
     EquivVia (F X) (F Y) (u (i, j)).1 (u (i, j)).2
+
+/-- The identity is uniformly invariant (transformer = identity). -/
+theorem uniformlyTuringInvariant_id :
+    UniformlyTuringInvariant (fun X : ℕ → Bool => X) :=
+  ⟨id, fun _ _ _ _ h => h⟩
+
+/-- Every constant function is uniformly invariant (transformer is the
+constant oracle-query witness pair). -/
+theorem uniformlyTuringInvariant_const (C : ℕ → Bool) :
+    UniformlyTuringInvariant (fun _ => C) :=
+  ⟨fun _ => (encodeCode .oracle, encodeCode .oracle),
+   fun _ _ _ _ _ => EquivVia.refl C⟩
+
+/-- Uniform invariance is closed under composition: the transformer of the
+composite is the composite of the transformers. -/
+theorem UniformlyTuringInvariant.comp {F G}
+    (hF : UniformlyTuringInvariant F) (hG : UniformlyTuringInvariant G) :
+    UniformlyTuringInvariant (fun X => F (G X)) := by
+  obtain ⟨uF, huF⟩ := hF
+  obtain ⟨uG, huG⟩ := hG
+  exact ⟨fun p => uF (uG p), fun X Y i j hij => huF (G X) (G Y) _ _ (huG X Y i j hij)⟩
 
 /-- Sanity: uniform invariance implies invariance. -/
 theorem UniformlyTuringInvariant.turingInvariant {F}

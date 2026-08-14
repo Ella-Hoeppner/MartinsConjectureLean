@@ -370,5 +370,36 @@ theorem hasCodingFamily (e n₀ : ℕ) (X : ℕ → Bool)
 
 #print axioms hasCodingFamily
 
+/-! ### Lachlan's discontinuous case, complete (coding family discharged) -/
+
+/-- **Lachlan's discontinuous case, complete** (modulo Bard's Lemma 3.8): a
+computably-uniformly-invariant r.e. operator `W` (index `e`) that is
+*discontinuous* at `X` — no prefix of `X` halts `W` at the marker `n₀` (`hnp`),
+but every prefix has a `0/1` extension that does (`hd`) — satisfies `Wˣ ≡ᵀ X′`.
+The coding-real family is now *built*, not assumed: `hasCodingFamily` supplies it
+from the discontinuity data, and `discontinuous_equiv_jump` reads off the jump. -/
+theorem discontinuous_case_complete (e n₀ : ℕ) (X : ℕ → Bool)
+    (hnp : ∀ ℓ, ¬ haltsOn (graphOf (bitg X) ℓ) e n₀)
+    (hd : ∀ t, ∃ w : List Bool, haltsOn (graphOf (bitg X) t ++ w.map bbit) e n₀)
+    (hu : Martin.ComputablyUniformlyTuringInvariant (reReal e)) :
+    reReal e X ≡ₜ Cantor.jump X :=
+  discontinuous_equiv_jump e X n₀ hu (hasCodingFamily e n₀ X hnp hd)
+
+/-- **No operator solution to Post's problem, complete** (modulo Bard 3.8): for a
+computably-uniform r.e. operator that is discontinuous at a high `X` (`0/1`
+discontinuity at `n₀`), `Wˣ` is *never* strictly between `X` and `X′` — it is
+Turing-equivalent to `X′`.  This is exactly Lachlan's theorem's payoff, with the
+coding construction fully formalized. -/
+theorem no_operator_post_solution_complete (e n₀ : ℕ) (X : ℕ → Bool)
+    (hnp : ∀ ℓ, ¬ haltsOn (graphOf (bitg X) ℓ) e n₀)
+    (hd : ∀ t, ∃ w : List Bool, haltsOn (graphOf (bitg X) t ++ w.map bbit) e n₀)
+    (hu : Martin.ComputablyUniformlyTuringInvariant (reReal e)) :
+    ¬ (X <ₜ reReal e X ∧ reReal e X <ₜ Cantor.jump X) := by
+  rintro ⟨hlo, hhi⟩
+  exact hhi.2 (discontinuous_case_complete e n₀ X hnp hd hu).2
+
+#print axioms discontinuous_case_complete
+#print axioms no_operator_post_solution_complete
+
 end Coding
 end OracleCode

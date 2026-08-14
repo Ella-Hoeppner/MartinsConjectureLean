@@ -138,3 +138,5 @@ import MartinsConjecture
 #print axioms OracleCode.eval_univCode
 #print axioms OracleCode.Coding.yc_equiv
 #print axioms OracleCode.Coding.hasCodingFamily
+#print axioms OracleCode.Coding.discontinuous_case_complete
+#print axioms OracleCode.Coding.no_operator_post_solution_complete

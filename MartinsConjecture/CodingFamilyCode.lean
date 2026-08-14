@@ -153,5 +153,121 @@ theorem eval_cWitSearch (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ)
 
 #print axioms eval_cWitSearch
 
+/-! ### The halted-bit code, the un-shift query, and the splice -/
+
+def haltFn (w : ℕ) : ℕ :=
+  bif (uEvalnD (Nat.pair (Nat.pair (Nat.pair (Nat.unpair (Nat.unpair w).1).1
+    (Nat.unpair (Nat.unpair w).1).1) (Nat.unpair (Nat.unpair w).1).2)
+    (Nat.unpair w).2)).isSome then 1 else 0
+
+theorem haltFn_prim : Primrec haltFn := by
+  refine Primrec.cond
+    (Primrec.option_isSome.comp (uEvalnD_prim.comp ?_)) (Primrec.const 1) (Primrec.const 0)
+  exact Primrec₂.natPair.comp
+    (Primrec₂.natPair.comp
+      (Primrec₂.natPair.comp
+        (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+        (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+    (Primrec.snd.comp Primrec.unpair)
+
+noncomputable def cHaltTest : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec (Primrec.nat_iff.mp haltFn_prim))).choose
+
+theorem cHaltTest_spec (O : ℕ →. ℕ) (w : ℕ) : eval O cHaltTest w = Part.some (haltFn w) :=
+  congrFun ((exists_code_of_partrec
+    (Nat.Partrec.of_primrec (Primrec.nat_iff.mp haltFn_prim))).choose_spec O) w
+
+noncomputable def cHalted : OracleCode := .comp cHaltTest (.pair idCode (.comp cGraph .right))
+
+theorem eval_cHalted (X : ℕ → Bool) (c m : ℕ) :
+    eval (toPFun X) cHalted (Nat.pair c m) = Part.some (bif haltedB X c m then 1 else 0) := by
+  have hg : eval (toPFun X) (.comp cGraph .right) (Nat.pair c m)
+      = Part.some (Encodable.encode (graphOf (bitg X) m)) := by
+    rw [eval_comp, eval_right_app,
+      show (Part.some m >>= eval (toPFun X) cGraph) = eval (toPFun X) cGraph m from
+        Part.bind_some _ _, eval_cGraph, graphEnc]
+  have hpair : eval (toPFun X) (.pair idCode (.comp cGraph .right)) (Nat.pair c m)
+      = Part.some (Nat.pair (Nat.pair c m) (Encodable.encode (graphOf (bitg X) m))) := by
+    rw [eval_pair_eq, eval_idCode, hg]; simp only [Part.map_some, Part.bind_some]
+  rw [cHalted, eval_comp, hpair,
+    show (Part.some (Nat.pair (Nat.pair c m) (Encodable.encode (graphOf (bitg X) m)))
+        >>= eval (toPFun X) cHaltTest)
+      = eval (toPFun X) cHaltTest (Nat.pair (Nat.pair c m)
+          (Encodable.encode (graphOf (bitg X) m))) from Part.bind_some _ _, cHaltTest_spec]
+  congr 1
+  rw [haltFn]
+  simp only [Nat.unpair_pair]
+  rw [uEvalnD_graph, Nat.unpair_pair]
+  rfl
+
+/-- The un-shift index `m + |decoded we|` from `Z = ⟨⟨⟨c,m⟩,t⟩, we⟩`. -/
+def cIdxFn (Z : ℕ) : ℕ :=
+  (Nat.unpair (Nat.unpair (Nat.unpair Z).1).1).2
+    + ((Encodable.decode (α := List Bool) (Nat.unpair (Nat.unpair Z).2).1).getD []).length
+
+theorem cIdxFn_prim : Primrec cIdxFn :=
+  Primrec.nat_add.comp
+    (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp
+      (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+    (Primrec.list_length.comp (Primrec.option_getD.comp
+      (Primrec.decode.comp (Primrec.fst.comp (Primrec.unpair.comp
+        (Primrec.snd.comp Primrec.unpair)))) (Primrec.const ([] : List Bool))))
+
+noncomputable def cIdxCode : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec (Primrec.nat_iff.mp cIdxFn_prim))).choose
+
+theorem cIdxCode_spec (O : ℕ →. ℕ) (Z : ℕ) : eval O cIdxCode Z = Part.some (cIdxFn Z) :=
+  congrFun ((exists_code_of_partrec
+    (Nat.Partrec.of_primrec (Primrec.nat_iff.mp cIdxFn_prim))).choose_spec O) Z
+
+/-- The splice (halted branch): search `hStage`, search `witEnc`, then query `O` at `m+|w|`. -/
+noncomputable def cSpl (e n₀ : ℕ) : OracleCode :=
+  .comp (.comp .oracle cIdxCode)
+    (.comp (.pair idCode (.comp (cWitSearch e n₀) .right))
+      (.pair idCode (.comp cHStage .left)))
+
+theorem eval_cSpl (e n₀ : ℕ) (X : ℕ → Bool) (c m : ℕ) (h : conv X c)
+    (hwp : ∃ p, witPair e n₀ X (hStage X c) p = true) :
+    eval (toPFun X) (cSpl e n₀) (Nat.pair c m)
+      = Part.some (bitg X (m + (wit e n₀ X (hStage X c)).length)) := by
+  have hct : eval (toPFun X) (.comp cHStage .left) (Nat.pair c m) = Part.some (hStage X c) := by
+    rw [eval_comp, eval_left_app,
+      show (Part.some c >>= eval (toPFun X) cHStage) = eval (toPFun X) cHStage c from
+        Part.bind_some _ _, eval_cHStage X c h]
+  have hqt : eval (toPFun X) (.pair idCode (.comp cHStage .left)) (Nat.pair c m)
+      = Part.some (Nat.pair (Nat.pair c m) (hStage X c)) := by
+    rw [eval_pair_eq, eval_idCode, hct]; simp only [Part.map_some, Part.bind_some]
+  have hwe : eval (toPFun X) (.comp (cWitSearch e n₀) .right)
+      (Nat.pair (Nat.pair c m) (hStage X c)) = Part.some (witEnc e n₀ X (hStage X c)) := by
+    rw [eval_comp, eval_right_app,
+      show (Part.some (hStage X c) >>= eval (toPFun X) (cWitSearch e n₀))
+        = eval (toPFun X) (cWitSearch e n₀) (hStage X c) from Part.bind_some _ _,
+      eval_cWitSearch e n₀ X (hStage X c) hwp]
+  have hqtwe : eval (toPFun X) (.pair idCode (.comp (cWitSearch e n₀) .right))
+      (Nat.pair (Nat.pair c m) (hStage X c))
+      = Part.some (Nat.pair (Nat.pair (Nat.pair c m) (hStage X c))
+          (witEnc e n₀ X (hStage X c))) := by
+    rw [eval_pair_eq, eval_idCode, hwe]; simp only [Part.map_some, Part.bind_some]
+  rw [cSpl, eval_comp, eval_comp, hqt,
+    show (Part.some (Nat.pair (Nat.pair c m) (hStage X c))
+        >>= eval (toPFun X) (.pair idCode (.comp (cWitSearch e n₀) .right)))
+      = eval (toPFun X) (.pair idCode (.comp (cWitSearch e n₀) .right))
+          (Nat.pair (Nat.pair c m) (hStage X c)) from Part.bind_some _ _, hqtwe,
+    show (Part.some (Nat.pair (Nat.pair (Nat.pair c m) (hStage X c))
+          (witEnc e n₀ X (hStage X c))) >>= eval (toPFun X) (.comp .oracle cIdxCode))
+      = eval (toPFun X) (.comp .oracle cIdxCode) (Nat.pair (Nat.pair (Nat.pair c m) (hStage X c))
+          (witEnc e n₀ X (hStage X c))) from Part.bind_some _ _,
+    eval_comp, cIdxCode_spec,
+    show (Part.some (cIdxFn (Nat.pair (Nat.pair (Nat.pair c m) (hStage X c))
+          (witEnc e n₀ X (hStage X c)))) >>= eval (toPFun X) OracleCode.oracle)
+      = eval (toPFun X) OracleCode.oracle (cIdxFn (Nat.pair (Nat.pair (Nat.pair c m)
+          (hStage X c)) (witEnc e n₀ X (hStage X c)))) from Part.bind_some _ _, eval_oracle]
+  rw [show cIdxFn (Nat.pair (Nat.pair (Nat.pair c m) (hStage X c)) (witEnc e n₀ X (hStage X c)))
+      = m + (wit e n₀ X (hStage X c)).length from by
+    simp only [cIdxFn, Nat.unpair_pair, wit], toPFun_eq_bitg]
+
+#print axioms eval_cSpl
+
 end Coding
 end OracleCode

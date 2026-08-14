@@ -136,3 +136,5 @@ import MartinsConjecture
 #print axioms jump_inversion_strict
 #print axioms OracleCode.eval_cGraph
 #print axioms OracleCode.eval_univCode
+#print axioms OracleCode.Coding.yc_equiv
+#print axioms OracleCode.Coding.hasCodingFamily

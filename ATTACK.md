@@ -269,14 +269,11 @@ fully-specified formalization plan rather than research.
      core** — a genuine oracle-machine construction on the scale of the effective-KP build.
    - **(L3) assembly**: the easy half `Wˣ ≤ᵀ X′` is **done** (`ReOperator.reReal_le_jump`,
      Post Σ₁); Bard Fact 3.1 is **done** (`Cantor.joinFam_le`); the continuous case
-     `Wˣ ≤ᵀ X⊕0′` now has its key ingredient **done** — the extension-halting `Π₁` test
-     `∀τ, n∉W^{σ⌢τ}` is `0′`-decidable (`ContinuousCase.extHaltsFrom_recursiveIn_jump`,
-     bridging `ExtHalting` to the `haltsOn`/`graphOf` prefix setup) — plus the use principle
-     `OperatorLocal.mem_reReal_iff_haltsOn_prefix` and monotonicity `haltsOn_mono`.  What
-     remains of L3 is the final `X⊕0′`-recursive `μ`-search assembly: at each prefix length
-     `ℓ`, test `haltsOn (graphOf (bitg X) ℓ)` (a second `0′`-decidability, analogous to the
-     extension test) versus `¬extHaltsFrom (graphOf (bitg X) ℓ)`, stop when decisive, read
-     off the answer.  Straightforward but plumbing-heavy; recursive-in-`join X 0′`.
+     `Wˣ ≤ᵀ X⊕0′` is now **DONE** (`ContinuousCase.continuous_case`): the `μ`-search over
+     prefix lengths, both tests `0′`-decidable (`haltsOn_recursiveIn_jump`,
+     `extHaltsFrom_recursiveIn_jump`), the prefix `X`-computable (`graphEnc`), assembled over
+     `{toPFun X, jumpFn ∅}` and cut to `join X 0′` via `Nat.RecursiveIn.subst`, with
+     correctness kernel `decisive_answer`.
    Groundwork complete this session: `eval_trE_comp`, `joinFam_le`, `le_iff_bitg`,
    `reReal`/`reReal_le_jump`/`reReal_eq_of_reduces`, the operator use principle +
    monotonicity + openness (`OperatorLocal`), and `extHaltsFrom_recursiveIn_jump`

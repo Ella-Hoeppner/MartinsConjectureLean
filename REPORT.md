@@ -3,7 +3,7 @@
 **Date:** 2026-08-13 (five work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
 `lake-manifest.json`). Full `lake build`: green, ~1052 jobs, 37 files, ~7.6k lines.
-**Sorry count: 0. Custom axioms: 0** (118 headline theorems audited; every one uses only
+**Sorry count: 0. Custom axioms: 0** (121 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
@@ -514,11 +514,24 @@ foundations built and proved (`UniformFunctionals.lean`, `ReOperator.lean`):
   *continuous* case, from `evaln` soundness/completeness against the prefix table
   `graphOf (bitg X)`.
 
+* **`OracleCode.continuous_case`** — **the continuous case of Lachlan's local dichotomy is
+  now COMPLETE** (Lutz Cor. 3.11, the determinacy-free half): *if the r.e. operator `W`
+  (index `e`) is continuous at `X`* — every `n`'s membership `n ∈ Wˣ` is settled by a finite
+  prefix of `X` (`haltsOn (X↾ℓ) ∨ ¬ extHaltsFrom (X↾ℓ)`) — *then `Wˣ ≤ᵀ X ⊕ 0′`*.  On input
+  `n` the reduction μ-searches for the least *decisive* prefix length `ℓ` (both tests
+  `0′`-decidable: `haltsOn_recursiveIn_jump`, `extHaltsFrom_recursiveIn_jump`; the prefix is
+  `X`-computable via `graphEnc`), then reads off the answer.  Built over the two-oracle set
+  `{toPFun X, jumpFn ∅}` and cut down to `join X 0′` via `Nat.RecursiveIn.subst`; the
+  correctness kernel `decisive_answer` shows the positive test reads the true bit at any
+  decisive stage (monotonicity + `graphOf` prefixing).  This is a genuine half of Lachlan's
+  theorem for r.e. operators.
+
 A key finding: the modern proof needs **no recursion theorem** (contrary to the folklore
 framing), and its heaviest ingredient (computable composition) was already in the codebase.
-What remains is the `y_e` diagonalization (Lutz Thm 3.10) — an oracle-machine construction
-on the scale of the effective-KP build — and the fixed-word part of computable uniformity;
-see `ATTACK.md` "Next formal milestones" for the precise plan.
+The **continuous half of Lachlan's local dichotomy is now fully proved**; what remains for
+the full theorem is the `y_e` diagonalization (Lutz Thm 3.10, the discontinuous case —
+an oracle-machine construction on the scale of the effective-KP build) and the fixed-word
+part of computable uniformity (Bard Lemma 3.4); see `ATTACK.md` "Next formal milestones".
 
 ## Concrete next steps for a future run
 

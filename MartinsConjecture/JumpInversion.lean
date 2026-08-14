@@ -609,9 +609,34 @@ theorem jump_jReal_le (C : ℕ → Bool) (hC : Cantor.jump (fun _ : ℕ => false
       rw [this]; rfl
   rw [hbit]
 
+/-! ### Claim 3: `C ≤ᵀ A′` (decoding) -/
+
+/-- The coding bit `C e` sits at the last position of stage `e+1`. -/
+theorem C_eq_jReal (C : ℕ → Bool) (e : ℕ) :
+    C e = jReal C ((jstr C (e + 1)).length - 1) := by
+  have hstr : jstr C (e + 1)
+      = (if jExists (jstr C e) e then jstr C e ++ jtau (jstr C e) e else jstr C e)
+        ++ [if C e then 1 else 0] := by rw [jstr]
+  set σ' := if jExists (jstr C e) e then jstr C e ++ jtau (jstr C e) e else jstr C e with hσ'
+  have hlen : (jstr C (e + 1)).length = σ'.length + 1 := by rw [hstr]; simp
+  have hge : e + 1 ≤ (jstr C (e + 1)).length := jstr_len_ge C (e + 1)
+  set m := (jstr C (e + 1)).length - 1 with hm
+  have hmeq : m = σ'.length := by omega
+  have hmlt : m < (jstr C (e + 1)).length := by omega
+  have hlast : (jstr C (e + 1)).getD m 0 = (if C e then 1 else 0) := by
+    rw [hstr, List.getD_eq_getElem?_getD, hmeq, List.getElem?_append_right (le_refl _),
+      Nat.sub_self]
+    simp
+  rw [jReal]
+  have hget : (jstr C (m + 1)).getD m 0 = (jstr C (e + 1)).getD m 0 :=
+    prefix_getD (jstr_mono C (by omega)) hmlt
+  rw [hget, hlast]
+  cases C e <;> simp
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
 #print axioms OracleCode.dom_iff_jExists
 #print axioms OracleCode.jReal_le
 #print axioms OracleCode.jump_jReal_le
+#print axioms OracleCode.C_eq_jReal

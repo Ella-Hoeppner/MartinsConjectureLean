@@ -124,4 +124,27 @@ theorem local_dichotomy_sharp (e : ℕ) (X : ℕ → Bool)
 
 #print axioms local_dichotomy_sharp
 
+/-- **Lachlan's local dichotomy, high form** (Lutz Cor. 3.11, modulo the coding
+hypothesis and the constant case).  For a computably-uniformly-invariant r.e.
+operator `W` (index `e`) and any `X ≥ᵀ 0′`: either `W` is continuous at `X`, so
+`Wˣ ≤ᵀ X`, or `W` is discontinuous at `X` and — given a coding family there —
+`Wˣ ≡ᵀ X′`.  This is the clean "`≤ᵀ X` or `≡ᵀ X′`" form of the local theorem. -/
+theorem local_dichotomy_high (e : ℕ) (X : ℕ → Bool)
+    (hX : Cantor.jump (fun _ : ℕ => false) ≤ₜ X)
+    (hu : Martin.ComputablyUniformlyTuringInvariant (reReal e)) :
+    reReal e X ≤ₜ X
+    ∨ (∃ n₀, (∀ ℓ, ¬ haltsOn (graphOf (bitg X) ℓ) e n₀
+        ∧ extHaltsFrom (graphOf (bitg X) ℓ) e n₀)
+        ∧ (HasCodingFamily e X n₀ → reReal e X ≡ₜ Cantor.jump X)) := by
+  by_cases hc : ∀ n, ∃ ℓ, haltsOn (graphOf (bitg X) ℓ) e n
+      ∨ ¬ extHaltsFrom (graphOf (bitg X) ℓ) e n
+  · exact Or.inl (continuous_case_high X e hX hc)
+  · refine Or.inr ?_
+    push_neg at hc
+    obtain ⟨n₀, hn₀⟩ := hc
+    exact ⟨n₀, fun ℓ => by have h := hn₀ ℓ; tauto,
+      fun hcode => discontinuous_equiv_jump e X n₀ hu hcode⟩
+
+#print axioms local_dichotomy_high
+
 end OracleCode

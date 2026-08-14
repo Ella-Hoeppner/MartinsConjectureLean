@@ -121,3 +121,4 @@ import MartinsConjecture
 #print axioms OracleCode.decisive_answer
 #print axioms OracleCode.continuous_case
 #print axioms OracleCode.continuous_case_high
+#print axioms OracleCode.local_dichotomy

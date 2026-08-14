@@ -341,6 +341,27 @@ theorem continuous_case_high (X : ℕ → Bool) (e : ℕ)
     reReal e X ≤ₜ X :=
   (continuous_case X e Hcont).trans (Cantor.join_le (Cantor.le.refl X) hX)
 
+/-- **Local dichotomy for r.e. operators** (the fully-proved skeleton of Lutz
+Thm 3.10 / Cor. 3.11): for every r.e. operator `W` (index `e`) and every `X`,
+*either* `W` is continuous at `X`, in which case `Wˣ ≤ᵀ X ⊕ 0′`, *or* `W` is
+discontinuous at `X` — there is a witness `n₀` for which no prefix of `X` halts
+yet every prefix has a halting extension.  (The discontinuous branch's further
+conclusion `Wˣ ≥ᵀ X′` needs the `y_e` diagonalization, which is blocked in this
+framework by the absence of a universal code — see `ATTACK.md`.) -/
+theorem local_dichotomy (X : ℕ → Bool) (e : ℕ) :
+    reReal e X ≤ₜ Cantor.join X (Cantor.jump (fun _ : ℕ => false))
+    ∨ ∃ n₀, ∀ ℓ, ¬ haltsOn (graphOf (bitg X) ℓ) e n₀
+        ∧ extHaltsFrom (graphOf (bitg X) ℓ) e n₀ := by
+  by_cases hc : ∀ n, ∃ ℓ, haltsOn (graphOf (bitg X) ℓ) e n
+      ∨ ¬ extHaltsFrom (graphOf (bitg X) ℓ) e n
+  · exact Or.inl (continuous_case X e hc)
+  · refine Or.inr ?_
+    push_neg at hc
+    obtain ⟨n₀, hn₀⟩ := hc
+    refine ⟨n₀, fun ℓ => ?_⟩
+    have h := hn₀ ℓ
+    tauto
+
 end OracleCode
 
 #print axioms OracleCode.extHaltsFrom_recursiveIn_jump
@@ -348,3 +369,4 @@ end OracleCode
 #print axioms OracleCode.decisive_answer
 #print axioms OracleCode.continuous_case
 #print axioms OracleCode.continuous_case_high
+#print axioms OracleCode.local_dichotomy

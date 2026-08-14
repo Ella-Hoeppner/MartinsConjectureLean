@@ -143,3 +143,6 @@ import MartinsConjecture
 #print axioms Martin.local_dichotomy_complete
 #print axioms Martin.lachlan_dichotomy_cone
 #print axioms Martin.lachlan_no_post_solution_cone
+#print axioms Martin.regressive_uniform_of_steel
+#print axioms Martin.incomparable_uniform_of_steel
+#print axioms Martin.steelUniformKernel_iff_cores

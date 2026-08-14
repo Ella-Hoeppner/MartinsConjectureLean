@@ -42,3 +42,4 @@ import MartinsConjecture.CodingFamilyCode
 import MartinsConjecture.JumpInversion
 import MartinsConjecture.DegreeCapstone
 import MartinsConjecture.LachlanTheorem
+import MartinsConjecture.UniformCores

@@ -35,5 +35,6 @@ import MartinsConjecture.UniformFunctionals
 import MartinsConjecture.ReOperator
 import MartinsConjecture.OperatorLocal
 import MartinsConjecture.ContinuousCase
+import MartinsConjecture.DiscontinuousCase
 import MartinsConjecture.JumpInversion
 import MartinsConjecture.DegreeCapstone

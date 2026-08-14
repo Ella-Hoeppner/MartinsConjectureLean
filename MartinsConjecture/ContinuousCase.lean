@@ -346,8 +346,10 @@ Thm 3.10 / Cor. 3.11): for every r.e. operator `W` (index `e`) and every `X`,
 *either* `W` is continuous at `X`, in which case `Wˣ ≤ᵀ X ⊕ 0′`, *or* `W` is
 discontinuous at `X` — there is a witness `n₀` for which no prefix of `X` halts
 yet every prefix has a halting extension.  (The discontinuous branch's further
-conclusion `Wˣ ≥ᵀ X′` needs the `y_e` diagonalization, which is blocked in this
-framework by the absence of a universal code — see `ATTACK.md`.) -/
+conclusion `Wˣ ≥ᵀ X′` is supplied — its *reduction half* — by
+`DiscontinuousCase.local_dichotomy_sharp`, modulo the coding-real family and
+computable uniformity; the universal code is *not* a blocker, `eval_universal`
+being proved. See `ATTACK.md`.) -/
 theorem local_dichotomy (X : ℕ → Bool) (e : ℕ) :
     reReal e X ≤ₜ Cantor.join X (Cantor.jump (fun _ : ℕ => false))
     ∨ ∃ n₀, ∀ ℓ, ¬ haltsOn (graphOf (bitg X) ℓ) e n₀

@@ -3,7 +3,7 @@
 **Date:** 2026-08-13 (five work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
 `lake-manifest.json`). Full `lake build`: green, ~1052 jobs, 37 files, ~7.9k lines.
-**Sorry count: 0. Custom axioms: 0** (124 headline theorems audited; every one uses only
+**Sorry count: 0. Custom axioms: 0** (123 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)

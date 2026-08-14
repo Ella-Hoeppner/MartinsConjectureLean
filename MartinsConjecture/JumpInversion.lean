@@ -501,8 +501,76 @@ theorem jStepEnc_recursiveIn (C : ℕ → Bool) :
   simp only [Seq.seq, Part.coe_some, Part.map_eq_map, Part.bind_eq_bind, Part.map_some,
     Part.bind_some, innerEnc, jStepEnc, jQ, jC, jY, jBaseFn, jAssembleFn, Nat.unpair_pair, hcb]
 
+/-- The encoded construction, as a `prec` fold. -/
+noncomputable def jstrEnc (C : ℕ → Bool) (p : ℕ) : Part ℕ :=
+  Nat.rec (((Encodable.encode ([] : List ℕ) : ℕ) : Part ℕ))
+    (fun y IH => IH >>= fun i => jStepEnc C (Nat.pair (Nat.unpair p).1 (Nat.pair y i)))
+    (Nat.unpair p).2
+
+theorem jstrEnc_recursiveIn (C : ℕ → Bool) :
+    Nat.RecursiveIn {Cantor.toPFun C, jumpFn emptyO} (jstrEnc C) := by
+  have hbase : Nat.RecursiveIn {Cantor.toPFun C, jumpFn emptyO}
+      (fun _ : ℕ => ((Encodable.encode ([] : List ℕ) : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.const _))
+  exact (Nat.RecursiveIn.prec hbase (jStepEnc_recursiveIn C)).of_eq fun p => rfl
+
+theorem jstrEnc_spec (C : ℕ → Bool) (n : ℕ) :
+    jstrEnc C (Nat.pair 0 n) = Part.some (Encodable.encode (jstr C n)) := by
+  induction n with
+  | zero => rw [jstrEnc]; simp only [Nat.unpair_pair]; rfl
+  | succ n ih =>
+    have hunf : jstrEnc C (Nat.pair 0 (n + 1))
+        = jstrEnc C (Nat.pair 0 n) >>= fun i => jStepEnc C (Nat.pair 0 (Nat.pair n i)) := by
+      rw [jstrEnc, jstrEnc]; simp only [Nat.unpair_pair]
+    rw [hunf, ih, Part.bind_eq_bind, Part.bind_some, jStepEnc_spec]
+
+/-- `0′ = jump ∅` as `jumpFn emptyO`, at the point level. -/
+theorem jumpFn_emptyO_eq : jumpFn emptyO = Cantor.toPFun (Cantor.jump (fun _ : ℕ => false)) := by
+  rw [Cantor.toPFun_jump, Cantor.toPFun_const_false]; rfl
+
+theorem jExtract_prim : Primrec (fun p : ℕ =>
+    ((Encodable.decode (α := List ℕ) (Nat.unpair p).2).getD []).getD (Nat.unpair p).1 0) :=
+  (Primrec.option_getD.comp
+    (Primrec.list_getElem?.comp
+      (Primrec.option_getD.comp (Primrec.decode.comp (Primrec.snd.comp Primrec.unpair))
+        (Primrec.const ([] : List ℕ)))
+      (Primrec.fst.comp Primrec.unpair))
+    (Primrec.const 0)).of_eq fun _ => List.getD_eq_getElem?_getD.symm
+
+/-- **Claim 1: `A ≤ᵀ C`.**  The construction is recursive in `C` (which computes
+`0′`). -/
+theorem jReal_le (C : ℕ → Bool) (hC : Cantor.jump (fun _ : ℕ => false) ≤ₜ C) :
+    jReal C ≤ₜ C := by
+  have hjstrC : Nat.RecursiveIn {Cantor.toPFun C} (jstrEnc C) :=
+    (jstrEnc_recursiveIn C).subst (by
+      intro g hg
+      rcases hg with h | h
+      · subst h; exact Nat.RecursiveIn.oracle _ rfl
+      · rw [Set.mem_singleton_iff.mp h, jumpFn_emptyO_eq]
+        exact RecursiveIn.iff_nat.mp hC)
+  rw [Cantor.le_iff_bitg]
+  have hbuild : Nat.RecursiveIn {Cantor.toPFun C} (fun n : ℕ => jstrEnc C (Nat.pair 0 (n + 1))) :=
+    (Nat.RecursiveIn.comp hjstrC (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+      (Primrec₂.natPair.comp (Primrec.const 0)
+        (Primrec.nat_add.comp Primrec.id (Primrec.const 1)))))).of_eq
+      fun n => by simp only [id_eq, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hext : Nat.RecursiveIn {Cantor.toPFun C}
+      (fun p : ℕ => ((((Encodable.decode (α := List ℕ) (Nat.unpair p).2).getD []).getD
+        (Nat.unpair p).1 0 : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp jExtract_prim)
+  have hpair : Nat.RecursiveIn {Cantor.toPFun C}
+      (fun n : ℕ => Nat.pair <$> ((n : ℕ) : Part ℕ) <*> jstrEnc C (Nat.pair 0 (n + 1))) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hbuild
+  refine (Nat.RecursiveIn.comp hext hpair).of_eq fun n => ?_
+  rw [jstrEnc_spec]
+  simp only [Part.coe_some, Seq.seq, Part.map_eq_map, Part.bind_eq_bind, Part.map_some,
+    Part.bind_some, Nat.unpair_pair, Encodable.encodek, Option.getD_some]
+  have hlen : n < (jstr C (n + 1)).length :=
+    lt_of_lt_of_le (Nat.lt_succ_self n) (jstr_len_ge C (n + 1))
+  rw [← jstr_getD_eq_bitg C (n + 1) n hlen]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
 #print axioms OracleCode.dom_iff_jExists
-#print axioms OracleCode.jStepEnc_recursiveIn
+#print axioms OracleCode.jReal_le

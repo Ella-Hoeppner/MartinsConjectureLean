@@ -206,7 +206,27 @@ The reusable Part-monad eval idiom (`eval_left_app`/`eval_right_app` + explicit 
 terms for `PFun` continuations) is now in place.  **This unblocks the coding-family recovery
 machine `cM`** (bounded universal sim via `univCode` + un-shift): the remaining work to
 discharge `HasCodingFamily` is the `Y_c` splicing + `cY`/`cM` codes + s-m-n specialization, and
-externally Bard's Lemma 3.8.  With it, `cM` (recovery = bounded
+externally Bard's Lemma 3.8.
+
+### UPDATE (2026-08-14): the coding family's mathematical heart is DONE
+
+`CodingFamily.lean` builds the coding real and its marker property, sorry-free:
+- `yc e n₀ X c` — the splicing real (insert the least `0/1` marker-witness at `Φ_c^X(c)`'s
+  halting stage), with `haltedB`/`hStage`/`conv_iff_jump` halting machinery, `graphOf_yc`
+  (graph agreement), and **`marker_property`**: `reReal e (yc..) n₀ = true ↔ jump X c = true`
+  under the `0/1` discontinuity data.
+- `wit` uses a `⟨witness, step⟩` **pair-search** (not "least `k` with `haltsOn`", which is only
+  `Σ₁`), so it is genuinely `X`-computable — the precondition for `yc ≤ᵀ X`.
+
+**Remaining to discharge `HasCodingFamily`** (two Turing reductions as exact s-m-n codes):
+1. **`yc ≤ᵀ X`**: prove `(c,m) ↦ bitg (yc.. c) m` is `RecursiveIn {toPFun X}` (bounded `evaln`
+   sim for `haltedB` + bounded search for `hStage` + the `wit` `μ`-search + shift), take its
+   code via `exists_code_of_recursiveIn`, then `r c := curryEnc ⌜cY⌝ c`.
+2. **`X ≤ᵀ yc`**: an oracle-generic recovery machine `cM` (run `Φ_c^{Y_c}(c)` via `univCode`,
+   then un-shift), correct because `Φ_c`'s use lies below the halting stage where `Y_c = X`;
+   then `s c := curryEnc ⌜cM⌝ c`.
+Both are ~200-line `RecursiveIn`/code constructions (the `condN`/`jstrEnc` idiom + `univCode`);
+the math is settled, the labor is the remaining step.  Externally: Bard's Lemma 3.8.  With it, `cM` (recovery = bounded
 universal sim + un-shift) and `cY` assemble `HasCodingFamily`; then Bard 3.8 (bare uniform
 invariance ⟹ computable) is the last external lemma.  Math certain; scope is a dedicated session.
 

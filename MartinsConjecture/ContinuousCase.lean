@@ -154,6 +154,46 @@ theorem haltsOn_recursiveIn_jump :
   refine (domain_recursiveIn_jump hrec).of_eq fun p => ?_
   rw [hFun_dom p, exists_hTest_iff p]
 
+/-! ### The continuous-case reduction
+
+We now show: if the operator `W` (index `e`) is **continuous at `X`** — for every
+`n`, some finite prefix decides `n ∈ Wˣ`, i.e.
+`haltsOn (X↾ℓ) ∨ ¬ extHaltsFrom (X↾ℓ)` — then `Wˣ ≤ᵀ X ⊕ 0′`.
+
+The reduction, on input `n`: search for the least prefix length `ℓ` that is
+*decisive*, then read off the answer.  Both tests are decidable in `0′`
+(`haltsOn_recursiveIn_jump`, `extHaltsFrom_recursiveIn_jump`); the prefix itself
+is `X`-computable (`graphEnc`).  We work over the two-oracle set
+`{toPFun X, jumpFn ∅}` and cut to `join X 0′` at the end via
+`Nat.RecursiveIn.subst`. -/
+
+/-- Stage-`ℓ` query at input `n`, packed as `m = ⟪n, ℓ⟫`:
+`⟪encode (X↾ℓ), ⟪e, n⟫⟫`. -/
+def qEnc (X : ℕ → Bool) (e : ℕ) (m : ℕ) : ℕ :=
+  Nat.pair (Encodable.encode (graphOf (bitg X) (Nat.unpair m).2))
+    (Nat.pair e (Nat.unpair m).1)
+
+/-- The positive test as a `0/1` value: `1` iff the prefix `X↾ℓ` already halts. -/
+noncomputable def hVal (X : ℕ → Bool) (e : ℕ) (m : ℕ) : ℕ :=
+  if haltsOn (graphOf (bitg X) (Nat.unpair m).2) e (Nat.unpair m).1 then 1 else 0
+
+/-- The extension test as a `0/1` value: `1` iff some extension of `X↾ℓ` halts. -/
+noncomputable def eVal (X : ℕ → Bool) (e : ℕ) (m : ℕ) : ℕ :=
+  if extHaltsFrom (graphOf (bitg X) (Nat.unpair m).2) e (Nat.unpair m).1 then 1 else 0
+
+/-- Decision value: `0` exactly when stage `ℓ` is decisive. -/
+noncomputable def decVal (X : ℕ → Bool) (e : ℕ) (m : ℕ) : ℕ :=
+  (1 - hVal X e m) * eVal X e m
+
+theorem decVal_eq_zero_iff (X : ℕ → Bool) (e m : ℕ) :
+    decVal X e m = 0 ↔
+      haltsOn (graphOf (bitg X) (Nat.unpair m).2) e (Nat.unpair m).1
+      ∨ ¬ extHaltsFrom (graphOf (bitg X) (Nat.unpair m).2) e (Nat.unpair m).1 := by
+  rw [decVal, hVal, eVal]
+  by_cases hh : haltsOn (graphOf (bitg X) (Nat.unpair m).2) e (Nat.unpair m).1 <;>
+    by_cases he : extHaltsFrom (graphOf (bitg X) (Nat.unpair m).2) e (Nat.unpair m).1 <;>
+    simp [hh, he]
+
 end OracleCode
 
 #print axioms OracleCode.extHaltsFrom_recursiveIn_jump

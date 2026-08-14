@@ -122,3 +122,7 @@ import MartinsConjecture
 #print axioms OracleCode.continuous_case
 #print axioms OracleCode.continuous_case_high
 #print axioms OracleCode.local_dichotomy
+#print axioms OracleCode.jReal_le
+#print axioms OracleCode.jump_jReal_le
+#print axioms OracleCode.C_le_jump
+#print axioms OracleCode.jump_inversion

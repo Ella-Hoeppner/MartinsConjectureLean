@@ -776,11 +776,62 @@ theorem lenStepEnc_recursiveIn (C : ℕ → Bool) :
   · simp [Part.bind_some, Part.bind_eq_bind, Part.bind_some_eq_map, Part.map_map,
       Function.comp_def, Nat.unpair_pair, lenQFn, lenAssembleFn]
 
+/-- The reconstructed length, as a `prec` fold, recursive in `A′`. -/
+noncomputable def jLenEnc (C : ℕ → Bool) (p : ℕ) : Part ℕ :=
+  Nat.rec ((0 : ℕ) : Part ℕ)
+    (fun y IH => IH >>= fun i => lenStepEnc C (Nat.pair (Nat.unpair p).1 (Nat.pair y i)))
+    (Nat.unpair p).2
+
+theorem jLenEnc_recursiveIn (C : ℕ → Bool) :
+    Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))} (jLenEnc C) := by
+  have hbase : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))}
+      (fun _ : ℕ => ((0 : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.const _))
+  exact (Nat.RecursiveIn.prec hbase (lenStepEnc_recursiveIn C)).of_eq fun p => rfl
+
+theorem jLenEnc_spec (C : ℕ → Bool) (e : ℕ) :
+    jLenEnc C (Nat.pair 0 e) = Part.some (jstr C e).length := by
+  induction e with
+  | zero => rw [jLenEnc]; simp only [Nat.unpair_pair]; rfl
+  | succ e ih =>
+    have hunf : jLenEnc C (Nat.pair 0 (e + 1))
+        = jLenEnc C (Nat.pair 0 e) >>= fun i => lenStepEnc C (Nat.pair 0 (Nat.pair e i)) := by
+      rw [jLenEnc, jLenEnc]; simp only [Nat.unpair_pair]
+    rw [hunf, ih, Part.bind_eq_bind, Part.bind_some, lenStepEnc_spec]
+
+/-- **Claim 3: `C ≤ᵀ A′`.**  Decode `C` by reconstructing the coding positions
+from `A′` and reading the corresponding bits of `A = jReal C ≤ᵀ A′`. -/
+theorem C_le_jump (C : ℕ → Bool) : C ≤ₜ Cantor.jump (jReal C) := by
+  have hjReal : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))}
+      (fun n : ℕ => ((bitg (jReal C) n : ℕ) : Part ℕ)) :=
+    Cantor.le_iff_bitg.mp (le_jump (jReal C))
+  rw [Cantor.le_iff_bitg]
+  have hpos : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))}
+      (fun e : ℕ => jLenEnc C (Nat.pair 0 (e + 1)) >>= fun l => (((l - 1 : ℕ)) : Part ℕ)) :=
+    Nat.RecursiveIn.comp
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (Primrec.nat_sub.comp Primrec.id (Primrec.const 1))))
+      ((Nat.RecursiveIn.comp (jLenEnc_recursiveIn C)
+        (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+          (Primrec₂.natPair.comp (Primrec.const 0)
+            (Primrec.nat_add.comp Primrec.id (Primrec.const 1)))))).of_eq
+        fun e => by simp only [id_eq, Part.coe_some, Part.bind_eq_bind, Part.bind_some])
+  refine (Nat.RecursiveIn.comp hjReal hpos).of_eq fun e => ?_
+  simp only [jLenEnc_spec, Part.coe_some, Part.bind_eq_bind, Part.bind_some, bitg]
+  rw [← C_eq_jReal]
+
+/-- **The Friedberg jump-inversion theorem.**  Every Turing degree above `0′`
+is the jump of some degree: for every `C ≥ᵀ 0′` there is an `A ≤ᵀ C` whose jump
+`A′` is Turing-equivalent to `C`. -/
+theorem jump_inversion (C : ℕ → Bool) (hC : Cantor.jump (fun _ : ℕ => false) ≤ₜ C) :
+    ∃ A : ℕ → Bool, A ≤ₜ C ∧ Cantor.jump A ≡ₜ C :=
+  ⟨jReal C, jReal_le C hC, jump_jReal_le C hC, C_le_jump C⟩
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
 #print axioms OracleCode.dom_iff_jExists
 #print axioms OracleCode.jReal_le
 #print axioms OracleCode.jump_jReal_le
-#print axioms OracleCode.C_eq_jReal
-#print axioms OracleCode.lenStepEnc_recursiveIn
+#print axioms OracleCode.C_le_jump
+#print axioms OracleCode.jump_inversion

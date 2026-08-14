@@ -17,40 +17,43 @@ namespace OracleCode
 
 attribute [local instance] Classical.propDecidable
 
-/-- `n ∈ W^{σ⌢τ}` for some finite extension `τ` of `σ`: the extension-halting
-predicate for the operator with index `e`. -/
+/-- `n ∈ W^{σ⌢τ}` for some finite **Boolean** (`0/1`) extension `τ` of `σ`: the
+extension-halting predicate for the operator with index `e`.  Extensions range
+over Cantor space (`List Bool`, mapped into the oracle table by `bbit`), which is
+the notion the operator actually lives on — and exactly matches the discontinuity
+data `hd` consumed by the coding family. -/
 def extHaltsFrom (σ : List ℕ) (e n : ℕ) : Prop :=
-  ∃ τ : List ℕ, haltsOn (σ ++ τ) e n
+  ∃ τ : List Bool, haltsOn (σ ++ τ.map bbit) e n
 
-/-- `∃ w, ehTest p w = 0` is exactly extension-halting for the prefix decoded
-from `p`. -/
-theorem exists_ehTest_iff (p : ℕ) :
-    (∃ w, ehTest p w = 0) ↔
+/-- `∃ w, ehTest01 p w = 0` is exactly `0/1`-extension-halting for the prefix
+decoded from `p`. -/
+theorem exists_ehTest01_iff (p : ℕ) :
+    (∃ w, ehTest01 p w = 0) ↔
       extHaltsFrom ((Encodable.decode (α := List ℕ) (Nat.unpair p).1).getD [])
         (Nat.unpair (Nat.unpair p).2).1 (Nat.unpair (Nat.unpair p).2).2 := by
   constructor
   · rintro ⟨w, hw⟩
-    refine ⟨(Encodable.decode (α := List ℕ) (Nat.unpair w).1).getD [], (Nat.unpair w).2, ?_⟩
+    refine ⟨(Encodable.decode (α := List Bool) (Nat.unpair w).1).getD [], (Nat.unpair w).2, ?_⟩
     by_contra hns
-    rw [ehTest, if_neg hns] at hw
+    rw [ehTest01, if_neg hns] at hw
     exact one_ne_zero hw
   · rintro ⟨τ, s, hs⟩
     refine ⟨Nat.pair (Encodable.encode τ) s, ?_⟩
-    rw [ehTest]
+    rw [ehTest01]
     simp only [Nat.unpair_pair, Encodable.encodek, Option.getD_some]
     rw [if_pos hs]
 
-/-- **The extension-halting problem is `0′`-decidable** (operator form): as a
-function of `p = ⟪encode σ, ⟪e, n⟫⟫`, whether `n ∈ W^{σ⌢τ}` for some `τ` is
-recursive in the jump of the empty oracle. -/
+/-- **The `0/1`-extension-halting problem is `0′`-decidable** (operator form): as
+a function of `p = ⟪encode σ, ⟪e, n⟫⟫`, whether `n ∈ W^{σ⌢τ}` for some Boolean
+`τ` is recursive in the jump of the empty oracle. -/
 theorem extHaltsFrom_recursiveIn_jump :
     Nat.RecursiveIn {jumpFn emptyO}
       (fun p : ℕ => ((if extHaltsFrom
         ((Encodable.decode (α := List ℕ) (Nat.unpair p).1).getD [])
         (Nat.unpair (Nat.unpair p).2).1 (Nat.unpair (Nat.unpair p).2).2
         then 1 else 0 : ℕ) : Part ℕ)) := by
-  refine extHalting_recursiveIn_jump.of_eq fun p => ?_
-  rw [exists_ehTest_iff p]
+  refine extHalting01_recursiveIn_jump.of_eq fun p => ?_
+  rw [exists_ehTest01_iff p]
 
 /-! ### The prefix-halting test is also `0′`-decidable
 
@@ -211,8 +214,8 @@ theorem decisive_answer (X : ℕ → Bool) (e n ℓ : ℕ)
       · exfalso
         apply hne
         rcases le_total ℓ' ℓ with hle | hle
-        · exact ⟨[], by rw [List.append_nil]; exact haltsOn_mono (graphOf_prefix hle) hℓ'⟩
-        · obtain ⟨τ, hτ⟩ := graphOf_prefix hle
+        · exact ⟨[], by simpa using haltsOn_mono (graphOf_prefix hle) hℓ'⟩
+        · obtain ⟨τ, hτ⟩ := graphOf_bitg_prefix_bool (X := X) hle
           exact ⟨τ, hτ ▸ hℓ'⟩
   by_cases hh : haltsOn (graphOf (bitg X) ℓ) e n
   · rw [if_pos hh, bitg, hiff.mp hh]; rfl

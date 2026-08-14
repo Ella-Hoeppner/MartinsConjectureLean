@@ -121,4 +121,105 @@ theorem extHalting_recursiveIn_jump :
 
 #print axioms extHalting_recursiveIn_jump
 
+/-! ### The `0/1`-extension-halting problem is also decidable in `0′`
+
+For the operator on Cantor space the extensions that matter are genuine
+Boolean (`0/1`) extensions of the prefix, not arbitrary numeric tables.  The
+same `Σ₁` search — now over `ext : List Bool`, mapped into the oracle table by
+`bbit` — is decidable in `0′`.  This is the notion the discontinuity marker in
+the coding family consumes (`hd`). -/
+
+/-- `0/1` variant of `ehTest`: `ext` is decoded as a `List Bool` and mapped into
+the table by `bbit`.  `ehTest01 p w = 0` iff `evaln fuel (base ++ ext.map bbit)
+(ofNatCode e) k` halts. -/
+def ehTest01 (p w : ℕ) : ℕ :=
+  if (evaln (Nat.unpair w).2
+      (((Encodable.decode (α := List ℕ) (Nat.unpair p).1).getD [])
+        ++ ((Encodable.decode (α := List Bool) (Nat.unpair w).1).getD []).map bbit)
+      (ofNatCode (Nat.unpair (Nat.unpair p).2).1)
+      (Nat.unpair (Nat.unpair p).2).2).isSome then 0 else 1
+
+theorem ehTest01_prim :
+    Nat.Primrec (fun v => ehTest01 (Nat.unpair v).1 (Nat.unpair v).2) := by
+  refine Primrec.nat_iff.mp ?_
+  have hbase : Primrec fun v : ℕ =>
+      (Encodable.decode (α := List ℕ) (Nat.unpair (Nat.unpair v).1).1).getD [] :=
+    Primrec.option_getD.comp
+      (Primrec.decode.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+      (Primrec.const ([] : List ℕ))
+  have hext : Primrec fun v : ℕ =>
+      ((Encodable.decode (α := List Bool) (Nat.unpair (Nat.unpair v).2).1).getD []).map bbit :=
+    (Primrec.list_map
+      (Primrec.option_getD.comp
+        (Primrec.decode.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))))
+        (Primrec.const ([] : List Bool)))
+      (bbit_prim.comp Primrec.snd))
+  have hfuel : Primrec fun v : ℕ => (Nat.unpair (Nat.unpair v).2).2 :=
+    Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+  have hcode : Primrec fun v : ℕ =>
+      ofNatCode (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).1 :=
+    (Primrec.ofNat OracleCode).comp
+      (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+  have hk : Primrec fun v : ℕ => (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).2 :=
+    Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+  have hev : Primrec fun v : ℕ =>
+      evaln (Nat.unpair (Nat.unpair v).2).2
+        (((Encodable.decode (α := List ℕ) (Nat.unpair (Nat.unpair v).1).1).getD [])
+          ++ ((Encodable.decode (α := List Bool) (Nat.unpair (Nat.unpair v).2).1).getD []).map bbit)
+        (ofNatCode (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).1)
+        (Nat.unpair (Nat.unpair (Nat.unpair v).1).2).2 :=
+    evaln_prim.comp (Primrec.pair (Primrec.pair (Primrec.pair hfuel
+      (Primrec.list_append.comp hbase hext)) hcode) hk)
+  have hci : ∀ b : Bool, (cond b (0 : ℕ) 1) = if b then (0 : ℕ) else 1 :=
+    fun b => by cases b <;> rfl
+  exact (Primrec.cond (Primrec.option_isSome.comp hev)
+    (Primrec.const 0) (Primrec.const 1)).of_eq fun v => by
+    simp only [ehTest01, Nat.unpair_pair]
+    exact hci _
+
+private def ehPred01 (a : ℕ) : ℕ →. Bool :=
+  fun n => (fun m => decide (m = 0)) <$> (Part.some (ehTest01 a n) : Part ℕ)
+
+private noncomputable def ehFun01 (a : ℕ) : Part ℕ := Nat.rfind (ehPred01 a)
+
+private theorem ehFun01_partrec : Nat.Partrec ehFun01 := by
+  have h1 : Nat.Partrec
+      (fun v : ℕ => (Part.some (ehTest01 (Nat.unpair v).1 (Nat.unpair v).2) : Part ℕ)) :=
+    Nat.Partrec.of_primrec ehTest01_prim
+  refine (Nat.Partrec.rfind h1).of_eq fun a => ?_
+  simp only [Nat.unpair_pair]
+  rfl
+
+private theorem ehPred01_dom (a n : ℕ) : (ehPred01 a n).Dom := by
+  rw [ehPred01, Part.map_eq_map, Part.map_some]; trivial
+
+private theorem true_mem_ehPred01 (a n : ℕ) : true ∈ ehPred01 a n ↔ ehTest01 a n = 0 := by
+  rw [ehPred01, Part.map_eq_map, Part.mem_map_iff]
+  constructor
+  · rintro ⟨x, hx, hx0⟩
+    rw [Part.mem_some_iff.mp hx] at hx0
+    exact of_decide_eq_true hx0
+  · intro h
+    exact ⟨ehTest01 a n, Part.mem_some _, by simp [h]⟩
+
+private theorem ehFun01_dom (a : ℕ) :
+    (ehFun01 a).Dom ↔ ∃ w, ehTest01 a w = 0 := by
+  rw [ehFun01, Nat.rfind_dom]
+  constructor
+  · rintro ⟨w, hw, -⟩
+    exact ⟨w, (true_mem_ehPred01 a w).mp hw⟩
+  · rintro ⟨w, hw⟩
+    exact ⟨w, (true_mem_ehPred01 a w).mpr hw, fun {m} _ => ehPred01_dom a m⟩
+
+/-- **The `0/1`-extension-halting problem is decidable in `0′`.** -/
+theorem extHalting01_recursiveIn_jump :
+    Nat.RecursiveIn {jumpFn emptyO}
+      (fun p : ℕ => ((if (∃ w, ehTest01 p w = 0) then 1 else 0 : ℕ) : Part ℕ)) := by
+  have hrec : Nat.RecursiveIn {emptyO} ehFun01 := ehFun01_partrec.recursiveIn
+  refine (domain_recursiveIn_jump hrec).of_eq fun p => ?_
+  have hd := ehFun01_dom p
+  simp only [hd]
+
+#print axioms extHalting01_recursiveIn_jump
+
 end OracleCode

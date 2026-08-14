@@ -29,6 +29,41 @@ def bitg (X : ℕ → Bool) : ℕ → ℕ := fun i => cond (X i) 1 0
 theorem toPFun_eq_bitg (X : ℕ → Bool) (i : ℕ) :
     toPFun X i = Part.some (bitg X i) := rfl
 
+/-- The `0/1` numeral of a Boolean (the oracle bit).  Defined here — early —
+so the `0/1`-extension machinery (`ExtHalting`, `ContinuousCase`) can quantify
+over Boolean extensions mapped into oracle tables. -/
+def bbit (b : Bool) : ℕ := bif b then 1 else 0
+
+theorem bbit_prim : Primrec bbit :=
+  Primrec.cond Primrec.id (Primrec.const 1) (Primrec.const 0)
+
+theorem bitg_eq_bbit (Y : ℕ → Bool) (m : ℕ) : bitg Y m = bbit (Y m) := rfl
+
+/-- A `bitg` graph prefix is a `0/1` table: `graphOf (bitg X) k` is the
+`bbit`-image of `X`'s first `k` Boolean values.  This exposes graph prefixes as
+genuine Cantor-space (Boolean) prefixes for the extension-halting analysis. -/
+theorem graphOf_bitg_eq_map (X : ℕ → Bool) (k : ℕ) :
+    graphOf (bitg X) k = ((List.range k).map X).map bbit := by
+  rw [graphOf, List.map_map]
+  rfl
+
+/-- A longer `bitg` graph prefix is the shorter one followed by a `bbit`-mapped
+Boolean tail: `graphOf (bitg X) ℓ'` extends `graphOf (bitg X) ℓ` by a genuine
+`0/1` (Boolean) block whenever `ℓ ≤ ℓ'`.  This is what lets the extension-halting
+analysis stay inside Cantor space. -/
+theorem graphOf_bitg_prefix_bool {X : ℕ → Bool} {ℓ ℓ' : ℕ} (h : ℓ ≤ ℓ') :
+    ∃ τ : List Bool, graphOf (bitg X) ℓ' = graphOf (bitg X) ℓ ++ τ.map bbit := by
+  induction ℓ' with
+  | zero => rw [Nat.le_zero.mp h]; exact ⟨[], by rw [List.map_nil, List.append_nil]⟩
+  | succ k ih =>
+    by_cases hk : ℓ = k + 1
+    · exact ⟨[], by rw [hk, List.map_nil, List.append_nil]⟩
+    · obtain ⟨τ, hτ⟩ := ih (by omega)
+      refine ⟨τ ++ [X k], ?_⟩
+      have hstep : graphOf (bitg X) (k + 1) = graphOf (bitg X) k ++ [bbit (X k)] := by
+        rw [graphOf, graphOf, List.range_succ, List.map_append, List.map_singleton, bitg_eq_bbit]
+      rw [hstep, hτ, List.map_append, List.map_singleton, List.append_assoc]
+
 /-- Encoded graph prefixes of the oracle. -/
 def graphEnc (X : ℕ → Bool) : ℕ → Part ℕ :=
   fun k => Part.some (Encodable.encode (graphOf (bitg X) k))

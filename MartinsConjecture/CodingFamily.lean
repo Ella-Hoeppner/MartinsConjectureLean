@@ -29,13 +29,8 @@ namespace Coding
 
 attribute [local instance] Classical.propDecidable
 
-/-- The oracle bit of a Boolean. -/
-def bbit (b : Bool) : ℕ := bif b then 1 else 0
-
 @[simp] theorem bbit_eq (b : Bool) : bbit b = bitg (fun _ => b) 0 := by
   cases b <;> rfl
-
-theorem bitg_eq_bbit (Y : ℕ → Bool) (m : ℕ) : bitg Y m = bbit (Y m) := rfl
 
 /-- `Φ_c^X(c)` halts within `m` steps (bounded simulation with the length-`m`
 prefix of `X`'s graph). -/
@@ -327,9 +322,6 @@ theorem hStageSearch_eq (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
 def encTable (g p : ℕ) : ℕ :=
   Encodable.encode ((Encodable.decode (α := List ℕ) g).getD []
     ++ ((Encodable.decode (α := List Bool) (Nat.unpair p).1).getD []).map bbit)
-
-theorem bbit_prim : Primrec bbit :=
-  Primrec.cond Primrec.id (Primrec.const 1) (Primrec.const 0)
 
 theorem encTable_prim : Primrec₂ encTable :=
   Primrec.encode.comp (Primrec.list_append.comp

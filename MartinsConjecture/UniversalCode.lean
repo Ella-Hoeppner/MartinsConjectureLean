@@ -1,24 +1,28 @@
 /-
-Toward the **explicit** universal machine as a single `OracleCode`.
+The **explicit** universal machine as a single `OracleCode`.
 
 `Universal.lean` proves `eval_universal` — the two-argument evaluator is
 *recursive in* any total oracle — but as a per-oracle `RecursiveIn` proposition,
 so `exists_code` off it yields a code depending on the oracle.  Several
 constructions (notably the coding reals of Lachlan's discontinuous case, whose
-recovery machine runs with a varying oracle `Y_c`) need a *single* explicit code
-`univCode : OracleCode` with `eval (toPFun X) univCode ⟨e,n⟩ = eval (toPFun X)
-(ofNatCode e) n` for every total `0/1` oracle `X`.
+recovery machine runs with a varying oracle `Y_c`) need a *single* explicit code.
 
-This file builds the **only genuinely oracle-using ingredient**: `cGraph`, an
-explicit `OracleCode` that enumerates the oracle's own graph prefixes
-(`eval_cGraph : eval (toPFun X) cGraph k = graphEnc X k`).  Every remaining part
-of the machine (`evaln`, the stage test `ts`, extraction) is oracle-independent
-and gets an *oracle-generic* code via `exists_code_of_partrec`; assembling those
-with `cGraph`, `curry`, and the `rfind`/`comp` constructors — mirroring
-`eval_universal`'s proof at the code level — yields `univCode`.  That assembly is
-the remaining step (see `ATTACK.md`); `cGraph` and its Part-monad evaluation
-idiom (applied-form `eval_left_app`/`eval_right_app` + explicit `Part.bind_some`
-terms for `PFun` continuations) are the reusable groundwork done here.
+This file builds it: **`eval_univCode`** — `univCode : OracleCode` with
+`eval (toPFun X) univCode ⟨e,n⟩ = eval (toPFun X) (ofNatCode e) n` for *every*
+total `0/1` oracle `X`.  This is the "step-indexed universal machine" that
+`OracleCode.lean`'s design note observed was not built.
+
+Structure: the only genuinely oracle-using ingredient is `cGraph`, an explicit
+code enumerating the oracle's own graph prefixes (`eval_cGraph`); every other
+part (`evaln`, the stage test `uTs`, extraction `uExtv`) is oracle-independent
+and gets an *oracle-generic* code via `exists_code_of_partrec`.  These assemble
+with the `rfind`/`comp`/`pair` constructors, mirroring `eval_universal`'s proof
+at the code level; correctness (`eval_univCode`) is by `evaln`
+soundness/completeness.  The reusable Part-monad evaluation idiom — applied-form
+`eval_left_app`/`eval_right_app` + explicit `Part.bind_some` terms for `PFun`
+continuations, and membership lemmas (`mem_eval_comp`/`pair`/`rfind`) for the
+final value analysis — is the groundwork that makes such code-level proofs
+tractable.
 -/
 import MartinsConjecture.Universal
 

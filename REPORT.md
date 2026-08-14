@@ -588,14 +588,22 @@ over the decision bit) with "search = least witness" bridges.
   never strictly between `X` and `X′`, which is exactly why Lachlan's theorem rules out uniform
   solutions to Post's problem.
 
+* **The explicit universal machine** (`UniversalCode.lean`, `eval_univCode`): `univCode :
+  OracleCode` with `eval (toPFun X) univCode ⟨e,n⟩ = eval (toPFun X) (ofNatCode e) n` for every
+  total `0/1` oracle `X` — a *single* code uniform across oracles, the "step-indexed universal
+  machine" `OracleCode.lean`'s design note said was not built (`eval_universal` gives only the
+  per-oracle `RecursiveIn` form).  Built from the explicit oracle graph-prefix encoder `cGraph`
+  + oracle-free `evaln`/`ts`/`extv` codes (`exists_code_of_partrec`) + the `rfind` search, with
+  correctness by `evaln` soundness/completeness.  This is what the discontinuous case's recovery
+  machine needs (a code that runs uniformly with the varying oracle `Y_c`).
+
 **Correction to an earlier boundary claim.**  Prior notes (including an earlier draft of this
-section) said the discontinuous case is "blocked by the absence of a universal code."  This is
-**wrong**: `Universal.lean` already proves `eval_universal` (the two-argument evaluator is
-recursive in any total oracle) and `exists_fixedPoint` (Kleene's relativized second recursion
-theorem).  The genuinely-remaining content is (i) **discharging `HasCodingFamily`** — the
-coding-real splicing with exact s-m-n codes, a delicate finite-extension construction; and
-(ii) **Bard's Lemma 3.8** (turning bare uniform invariance into computable uniformity).
-Neither is the universal code.
+section) said the discontinuous case is "blocked by the absence of a universal code."  That was
+**wrong**: `Universal.lean` already had `eval_universal`/`exists_fixedPoint`, and the explicit
+`univCode` is now built too.  The genuinely-remaining content for Lachlan's theorem is
+(i) **discharging `HasCodingFamily`** — the `Y_c` splicing (recipe in `ATTACK.md`) + its `cY`/`cM`
+codes (the latter now buildable from `univCode`) + s-m-n; and (ii) **Bard's Lemma 3.8** (turning
+bare uniform invariance into computable uniformity).  Neither is the universal code.
 
 ## Concrete next steps for a future run
 

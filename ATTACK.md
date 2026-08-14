@@ -196,13 +196,17 @@ proves only the per-oracle `RecursiveIn` form (`eval_universal`); `exists_code` 
 `graphEnc`'s oracle-`prec` code + oracle-free `evaln`/`ts`/`extv` codes via `exists_code_of_partrec`
 + the `rfind` search, mirroring `eval_universal`'s proof at the code level, ~300–400 lines) is
 therefore the true **prerequisite foundational milestone** — the "step-indexed universal
-machine" `OracleCode.lean`'s design note says was not built.  **STARTED (2026-08-14,
-`UniversalCode.lean`):** the only genuinely oracle-using ingredient, `cGraph`, is DONE and
-verified — `eval_cGraph : eval (toPFun X) cGraph k = graphEnc X k` — along with the reusable
-Part-monad eval idiom (`eval_left_app`/`eval_right_app` + explicit `Part.bind_some` terms for
-`PFun` continuations).  Remaining: the oracle-free `evaln`/`ts`/`extv` codes (mechanical, via
-`exists_code_of_partrec`) + the `rfind` assembly + the ~95-line correctness value-analysis
-(copy `eval_universal`'s `of_eq`).  With it, `cM` (recovery = bounded
+machine" `OracleCode.lean`'s design note says was not built.  **DONE (2026-08-14,
+`UniversalCode.lean`): `eval_univCode`** — `univCode : OracleCode` with
+`eval (toPFun X) univCode ⟨e,n⟩ = eval (toPFun X) (ofNatCode e) n` for every total `0/1`
+oracle `X`, a single code uniform across oracles.  Built from `cGraph` (explicit oracle
+graph-prefix encoder) + oracle-free `uEvalnD`/`uTs`/`uExtv` codes (`exists_code_of_partrec`) +
+the `rfind` search; correctness by `evaln` soundness/completeness with the membership lemmas.
+The reusable Part-monad eval idiom (`eval_left_app`/`eval_right_app` + explicit `Part.bind_some`
+terms for `PFun` continuations) is now in place.  **This unblocks the coding-family recovery
+machine `cM`** (bounded universal sim via `univCode` + un-shift): the remaining work to
+discharge `HasCodingFamily` is the `Y_c` splicing + `cY`/`cM` codes + s-m-n specialization, and
+externally Bard's Lemma 3.8.  With it, `cM` (recovery = bounded
 universal sim + un-shift) and `cY` assemble `HasCodingFamily`; then Bard 3.8 (bare uniform
 invariance ⟹ computable) is the last external lemma.  Math certain; scope is a dedicated session.
 

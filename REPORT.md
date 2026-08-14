@@ -576,14 +576,17 @@ constructions made recursive in an oracle via `Nat.RecursiveIn.prec` over an enc
 step's recursiveness mirroring `reqStepEnc_recursiveIn` (decision/oracle-bind `>>=` `Nat.rec`
 over the decision bit) with "search = least witness" bridges.
 
-* **Discontinuous case, reduction half** (`DiscontinuousCase.lean`, `discontinuous_reduction`):
-  the partner of the continuous case.  If the operator `W` (index `e`) is *computably uniformly
-  invariant* and admits a *coding-real family* at a discontinuity marker `n₀`
-  (`HasCodingFamily` — the splicing construction + its s-m-n witnesses, isolated as a named
-  hypothesis in the codebase's reduce-to-lemmas style), then `X′ ≤ᵀ Wˣ`.  Fully proved: the
-  recursion-theoretic assembly of s-m-n and the universal machine (`eval_universal`) at the
-  fixed marker, composed with the computable index map.  Packaged with the continuous half as
-  `local_dichotomy_sharp`.
+* **Discontinuous case + the full local dichotomy** (`DiscontinuousCase.lean`): the partner of
+  the continuous case, a complete arc.  `discontinuous_reduction`: if the operator `W` (index
+  `e`) is *computably uniformly invariant* and admits a *coding-real family* at a discontinuity
+  marker `n₀` (`HasCodingFamily` — the splicing + s-m-n witnesses, isolated as a named
+  hypothesis in the codebase's reduce-to-lemmas style), then `X′ ≤ᵀ Wˣ`, by the recursion-
+  theoretic assembly of s-m-n and the universal machine (`eval_universal`) at the fixed marker.
+  With Post's theorem this sharpens to `discontinuous_equiv_jump` (`Wˣ ≡ᵀ X′`).  Assembled into
+  `local_dichotomy_high` — Lutz Cor 3.11's clean form: for `X ≥ᵀ 0′`, `Wˣ ≤ᵀ X` (continuous) or
+  `Wˣ ≡ᵀ X′` (discontinuous) — and the payoff `no_operator_post_solution`: such an operator is
+  never strictly between `X` and `X′`, which is exactly why Lachlan's theorem rules out uniform
+  solutions to Post's problem.
 
 **Correction to an earlier boundary claim.**  Prior notes (including an earlier draft of this
 section) said the discontinuous case is "blocked by the absence of a universal code."  This is

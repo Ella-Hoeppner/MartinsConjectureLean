@@ -124,8 +124,8 @@ private theorem cmpFn_prim (bp : ℕ) : Nat.Primrec (cmpFn bp) :=
     (Primrec.nat_sub.comp Primrec.id (Primrec.const bp))
     (Primrec.nat_sub.comp (Primrec.const bp) Primrec.id))
 
-/-- `prec` evaluation, unfolded on a paired input (local copy). -/
-private theorem eval_prec_pair (O : ℕ →. ℕ) (cf cg : OracleCode) (a n : ℕ) :
+/-- `prec` evaluation, unfolded on a paired input. -/
+theorem eval_prec_pair (O : ℕ →. ℕ) (cf cg : OracleCode) (a n : ℕ) :
     eval O (.prec cf cg) (Nat.pair a n)
       = Nat.rec (motive := fun _ => Part ℕ) (eval O cf a)
           (fun y IH => IH >>= fun i => eval O cg (Nat.pair a (Nat.pair y i))) n := by
@@ -135,7 +135,7 @@ private theorem eval_prec_pair (O : ℕ →. ℕ) (cf cg : OracleCode) (a n : �
       (Nat.unpair (Nat.pair a n)).2 = _
   rw [Nat.unpair_pair]
 
-private theorem eval_left_val (O : ℕ →. ℕ) (a : ℕ) :
+theorem eval_left_val (O : ℕ →. ℕ) (a : ℕ) :
     eval O OracleCode.left a = Part.some (Nat.unpair a).1 := rfl
 
 /-- **Bard's selector witness family** (Theorem 2.2, code half).  For `z ≡ᵀ x`

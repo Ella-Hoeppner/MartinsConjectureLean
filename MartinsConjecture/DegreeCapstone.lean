@@ -27,3 +27,19 @@ theorem exists_intermediate_non_jump :
   exact hnge ((OracleCode.jump_range_iff A).mp h)
 
 #print axioms exists_intermediate_non_jump
+
+/-- **Strict jump inversion.**  Every degree `≥ᵀ 0′` is the jump of a degree
+*strictly* below it.  (From `jump_inversion` — which gives `A ≤ᵀ C` with
+`A′ ≡ᵀ C` — plus strictness: if `A ≡ᵀ C` then `C′ ≡ᵀ A′ ≡ᵀ C`, forcing
+`C′ ≤ᵀ C`, contradicting `C <ᵀ C′`.) -/
+theorem jump_inversion_strict (C : ℕ → Bool)
+    (hC : Cantor.jump (fun _ : ℕ => false) ≤ₜ C) :
+    ∃ A : ℕ → Bool, A <ₜ C ∧ Cantor.jump A ≡ₜ C := by
+  obtain ⟨A, hAle, hAjump⟩ := OracleCode.jump_inversion C hC
+  refine ⟨A, ⟨hAle, ?_⟩, hAjump⟩
+  intro hCA
+  have hjeq : Cantor.jump A ≡ₜ Cantor.jump C :=
+    ⟨Cantor.jump_mono hAle, Cantor.jump_mono hCA⟩
+  exact Cantor.not_jump_le C (hjeq.2.trans hAjump.1)
+
+#print axioms jump_inversion_strict

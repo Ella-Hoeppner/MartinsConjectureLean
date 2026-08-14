@@ -131,3 +131,4 @@ import MartinsConjecture
 #print axioms OracleCode.discontinuous_reduction
 #print axioms OracleCode.discontinuous_equiv_jump
 #print axioms OracleCode.local_dichotomy_sharp
+#print axioms jump_inversion_strict

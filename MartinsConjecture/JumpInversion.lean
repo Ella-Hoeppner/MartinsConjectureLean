@@ -143,7 +143,73 @@ theorem jstr_eq_graphOf (C : ℕ → Bool) (e : ℕ) :
     jstr_getD_eq_bitg C e i h1]
   simp only [graphOf, List.getElem_map, List.getElem_range]
 
+theorem graphOf_split {g : ℕ → ℕ} {L ℓ : ℕ} (h : L ≤ ℓ) :
+    graphOf g ℓ = graphOf g L ++ (List.range (ℓ - L)).map (fun j => g (L + j)) := by
+  rw [graphOf, graphOf]
+  conv_lhs => rw [show ℓ = L + (ℓ - L) from by omega]
+  rw [List.range_add, List.map_append, List.map_map]
+  simp [graphOf, Function.comp, Nat.add_comm]
+
+/-- A bit of any prefix of a stage string equals the corresponding bit of the
+real. -/
+theorem prefix_getElem_bit (C : ℕ → Bool) {S : List ℕ} {m : ℕ} (hS : S <+: jstr C m)
+    {i : ℕ} (hi : i < S.length) : S[i] = bitg (jReal C) i := by
+  have hlen : i < (jstr C m).length := lt_of_lt_of_le hi hS.length_le
+  have h1 : (jstr C m).getD i 0 = S.getD i 0 := prefix_getD hS hi
+  have h3 : S.getD i 0 = S[i] := by
+    rw [List.getD_eq_getElem?_getD, List.getElem?_eq_getElem hi, Option.getD_some]
+  rw [← h3, ← h1, jstr_getD_eq_bitg C m i hlen]
+
+/-- **The jump characterization** (claim 2's heart): `e ∈ (jReal C)′` iff `Φ_e`
+halts on `e` under some extension of the stage-`e` string. -/
+theorem dom_iff_jExists (C : ℕ → Bool) (e : ℕ) :
+    (eval (toPFun (jReal C)) (ofNatCode e) e).Dom ↔ jExists (jstr C e) e := by
+  constructor
+  · intro hdom
+    obtain ⟨v, hv⟩ := Part.dom_iff_mem.mp hdom
+    obtain ⟨ℓ, hℓ⟩ := evaln_complete (O := toPFun (jReal C)) (g := bitg (jReal C))
+      (fun i => rfl) hv
+    rcases le_total ℓ (jstr C e).length with hle | hle
+    · refine ⟨Nat.pair (Encodable.encode ([] : List Bool)) ℓ, ?_⟩
+      have hb : boolExt (Encodable.encode ([] : List Bool)) = [] := by
+        simp [boolExt, Encodable.encodek]
+      have hpre : graphOf (bitg (jReal C)) ℓ <+: jstr C e := by
+        conv_rhs => rw [jstr_eq_graphOf C e]
+        exact graphOf_prefix hle
+      have hmono := evaln_mono (le_refl ℓ) hpre hℓ
+      simp only [Nat.unpair_pair, hb, List.append_nil, hmono, Option.isSome_some]
+    · set L := (jstr C e).length with hLdef
+      refine ⟨Nat.pair (Encodable.encode
+        ((List.range (ℓ - L)).map (fun j => jReal C (L + j)))) ℓ, ?_⟩
+      simp only [Nat.unpair_pair]
+      have hbe : boolExt (Encodable.encode
+          ((List.range (ℓ - L)).map (fun j => jReal C (L + j))))
+          = (List.range (ℓ - L)).map (fun j => bitg (jReal C) (L + j)) := by
+        rw [boolExt, Encodable.encodek, Option.getD_some, List.map_map]
+        apply List.map_congr_left
+        intro j _
+        simp only [Function.comp_apply, bitg]
+        cases jReal C (L + j) <;> rfl
+      have hjs : jstr C e = graphOf (bitg (jReal C)) L := by rw [hLdef]; exact jstr_eq_graphOf C e
+      have hsplit : jstr C e ++
+          (List.range (ℓ - L)).map (fun j => bitg (jReal C) (L + j)) = graphOf (bitg (jReal C)) ℓ := by
+        rw [hjs, ← graphOf_split hle]
+      simp only [hbe, hsplit, hℓ, Option.isSome_some]
+  · intro h
+    have hfind := Nat.find_spec h
+    obtain ⟨v, hv⟩ := Option.isSome_iff_exists.mp hfind
+    have hjtau : jstr C e ++ jtau (jstr C e) e
+        = jstr C e ++ boolExt (Nat.unpair (Nat.find h)).1 := by rw [jtau, dif_pos h]
+    have hvalid : ∀ i, (hi : i < (jstr C e ++ jtau (jstr C e) e).length) →
+        toPFun (jReal C) i = Part.some ((jstr C e ++ jtau (jstr C e) e)[i]) := by
+      intro i hi
+      have hpre : jstr C e ++ jtau (jstr C e) e <+: jstr C (e + 1) := by
+        rw [jstr, if_pos h]; exact List.prefix_append _ _
+      rw [toPFun_eq_some_bitg, prefix_getElem_bit C hpre hi]
+    refine Part.dom_iff_mem.mpr ⟨v, evaln_sound (k := (Nat.unpair (Nat.find h)).2) hvalid ?_⟩
+    rw [hjtau]; exact hv
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
-#print axioms OracleCode.jstr_eq_graphOf
+#print axioms OracleCode.dom_iff_jExists

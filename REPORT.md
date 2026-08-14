@@ -1,10 +1,13 @@
 # Final report: Martin's conjecture in Lean 4 / Mathlib
 
-**Date:** 2026-08-13 (five work sessions).
+**Date:** 2026-08-14 (six work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, ~1053 jobs, 38 files, ~8.7k lines.
-**Sorry count: 0. Custom axioms: 0** (127 headline theorems audited; every one uses only
+`lake-manifest.json`). Full `lake build`: green, 1059 jobs, 44 files, ~10.6k lines.
+**Sorry count: 0. Custom axioms: 0** (144 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
+
+**Headline this session: Lachlan's theorem for r.e. operators, globalized to a cone**
+(`Martin.lachlan_dichotomy_cone`, `Martin.lachlan_no_post_solution_cone`) — see below.
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
 
@@ -25,11 +28,26 @@ Recursion-theory foundation (`OracleCode.*`, `Cantor.*`):
 - **Σ₁-completeness of the jump** (`dom_iff_jumpP`); **the full Shoenfield limit lemma**
   `f ≤ᵀ X′ ↔ f is X-limit-computable` (`limit_lemma`, `Cantor.le_jump_iff_limitApprox`);
   the jump is Δ⁰₂-in-X (`jump_limitApprox`).
-- **Lachlan's theorem, continuous case** (`continuous_case`, Lutz Cor. 3.11, determinacy-free
-  half): if an r.e. operator `W` is continuous at `X` then `Wˣ ≤ᵀ X ⊕ 0′` (and `≤ᵀ X` for
-  `0′ ≤ᵀ X`) — a genuine half of Lachlan's theorem, with the full `local_dichotomy` skeleton;
-  supported by the operator use principle, computable composition of functionals
-  (`eval_trE_comp`), Bard's Fact 3.1 (`joinFam_le`), and `Wˣ ≤ᵀ X′` (`reReal_le_jump`).
+- **Lachlan's theorem for r.e. operators, GLOBALIZED to a cone** (`Martin.lachlan_dichotomy_cone`,
+  `Martin.lachlan_no_post_solution_cone`; Lachlan 1975 / Lutz Cor. 3.11).  For a
+  *computably-uniformly-invariant* r.e. operator `W` (index `e`) that is above the identity on a
+  cone, with Turing determinacy: **on a cone `Wˣ ≡ᵀ X` or `Wˣ ≡ᵀ X′`**, and `W` is never strictly
+  between `X` and `X′`.  Both branches are fully proved and assembled (`local_dichotomy_complete`):
+  * **continuous case** (`continuous_case`, determinacy-free): `Wˣ ≤ᵀ X ⊕ 0′`, via the `0′`-decidable
+    `0/1`-extension-halting test and the decisive-prefix reduction;
+  * **discontinuous case** (`discontinuous_case_complete`): `Wˣ ≡ᵀ X′`, via the **coding-real family**
+    — `Y_c ≡ᵀ X` splicing `Φ_c^X(c)↓` at the marker (`yc_equiv`), fully built including the explicit
+    uniform backward-recovery `OracleCode` that discharges `HasCodingFamily` (`hasCodingFamily`,
+    `CodingFamilyCode.lean`);
+  * **globalization**: `Martin.cone_theorem_onCone` on the invariant pivot `{X | Wˣ ≤ᵀ X}` — cone ⟹
+    `Wˣ ≡ᵀ X` (with above-id), complementary cone ⟹ `W` discontinuous ⟹ `Wˣ ≡ᵀ X′`.
+
+  Determinacy is threaded explicitly (`TuringDeterminacy`); nothing is axiomatized.  The **single
+  external classical input** is Bard's Lemma 3.8 (bare uniform invariance ⟹ *computable* uniformity),
+  which is why the hypothesis is `ComputablyUniformlyTuringInvariant` — the standard *effective* form
+  of Lachlan's theorem.  Supporting infrastructure: operator use principle, computable composition of
+  functionals (`eval_trE_comp`, Bard's `∗`), Bard's Fact 3.1 (`joinFam_le`), `Wˣ ≤ᵀ X′`
+  (`reReal_le_jump`), the explicit universal machine (`eval_univCode`).
 - **The Friedberg Jump Inversion Theorem** (`jump_inversion`): *every Turing degree above the
   halting problem is a jump* — for every `C ≥ᵀ 0′` there is an `A ≤ᵀ C` with `A′ ≡ᵀ C`.  The
   full finite-extension construction relative to `C`: each stage consults the extension-halting

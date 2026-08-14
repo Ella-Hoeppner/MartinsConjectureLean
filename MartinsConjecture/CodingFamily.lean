@@ -269,5 +269,58 @@ theorem haltedBit_recursiveIn (X : ℕ → Bool) :
 
 #print axioms haltedBit_recursiveIn
 
+/-- The **complemented** halted bit (`0` when halted), for the `hStage` search. -/
+theorem notHaltedBit_recursiveIn (X : ℕ → Bool) :
+    Nat.RecursiveIn {toPFun X}
+      (fun q => ((bif haltedB X (Nat.unpair q).1 (Nat.unpair q).2 then 0 else 1 : ℕ) : Part ℕ)) := by
+  have hg : Nat.RecursiveIn {toPFun X} (fun q => graphEnc X (Nat.unpair q).2) :=
+    (Nat.RecursiveIn.comp (graphEnc_recursiveIn X)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.snd.comp Primrec.unpair)))).of_eq
+      fun q => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hid : Nat.RecursiveIn {toPFun X} (fun q : ℕ => ((q : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hpair : Nat.RecursiveIn {toPFun X}
+      (fun q => Nat.pair <$> ((q : ℕ) : Part ℕ) <*> graphEnc X (Nat.unpair q).2) :=
+    Nat.RecursiveIn.pair hid hg
+  have htest : Nat.Primrec fun w =>
+      (bif (uEvalnD (Nat.pair (Nat.pair (Nat.pair (Nat.unpair (Nat.unpair w).1).1
+        (Nat.unpair (Nat.unpair w).1).1) (Nat.unpair (Nat.unpair w).1).2)
+        (Nat.unpair w).2)).isSome then 0 else 1 : ℕ) := by
+    refine Primrec.nat_iff.mp (Primrec.cond
+      (Primrec.option_isSome.comp (uEvalnD_prim.comp ?_))
+      (Primrec.const 0) (Primrec.const 1))
+    exact Primrec₂.natPair.comp
+      (Primrec₂.natPair.comp
+        (Primrec₂.natPair.comp
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+        (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+      (Primrec.snd.comp Primrec.unpair)
+  refine (Nat.RecursiveIn.comp htest.recursiveIn hpair).of_eq fun q => ?_
+  rw [show graphEnc X (Nat.unpair q).2
+      = Part.some (Encodable.encode (graphOf (bitg X) (Nat.unpair q).2)) from rfl]
+  simp only [Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+    Part.coe_some, Nat.unpair_pair]
+  rw [← haltedB_eq_uEvalnD]
+
+/-- The `hStage` search: `μ m'. haltedB X c m'`, recursive in `X`. -/
+theorem hStageSearch_recursiveIn (X : ℕ → Bool) :
+    Nat.RecursiveIn {toPFun X} (fun c => Nat.rfind fun m' =>
+      (fun x => x = 0) <$> ((bif haltedB X c m' then 0 else 1 : ℕ) : Part ℕ)) :=
+  (Nat.RecursiveIn.rfind (notHaltedBit_recursiveIn X)).of_eq fun c => by
+    simp only [Nat.unpair_pair]
+
+/-- When `Φ_c^X(c)` converges, the search returns the halting stage `hStage X c`. -/
+theorem hStageSearch_eq (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
+    (Nat.rfind fun m' => (fun x => x = 0) <$>
+      ((bif haltedB X c m' then 0 else 1 : ℕ) : Part ℕ)) = Part.some (hStage X c) := by
+  refine Part.eq_some_iff.mpr (Nat.mem_rfind.mpr ⟨?_, fun {m} hm => ?_⟩)
+  · rw [Part.map_eq_map, Part.mem_map_iff]
+    exact ⟨_, Part.mem_some _, by rw [haltedB_hStage X c h]; rfl⟩
+  · rw [Part.map_eq_map, Part.mem_map_iff]
+    exact ⟨_, Part.mem_some _, by rw [not_haltedB_lt_hStage X c h hm]; rfl⟩
+
+#print axioms hStageSearch_eq
+
 end Coding
 end OracleCode

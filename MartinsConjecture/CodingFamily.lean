@@ -623,5 +623,53 @@ theorem yc_forward (e n₀ : ℕ) (X : ℕ → Bool)
 
 #print axioms yc_forward
 
+/-! ### Backward reduction: `X ≤ᵀ Y_c` — `Y_c` recovers `X` by un-shifting -/
+
+/-- `Y_c` and `X` have identical graph prefixes up to the halting stage. -/
+theorem graphOf_yc_eq_lt (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) {k : ℕ}
+    (hk : k ≤ hStage X c) : graphOf (bitg (yc e n₀ X c)) k = graphOf (bitg X) k := by
+  rw [graphOf, graphOf]
+  apply List.map_congr_left
+  intro j hj
+  rw [List.mem_range] at hj
+  rw [bitg_eq_bbit, bitg_eq_bbit, yc_eq_lt e n₀ X c h (lt_of_lt_of_le hj hk)]
+
+/-- The bounded simulation of `Φ_c` gives the same result over `Y_c` as over `X`
+(its use lies below the halting stage, where they agree). -/
+theorem haltedB_yc (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) (m : ℕ) :
+    haltedB (yc e n₀ X c) c m = haltedB X c m := by
+  by_cases hm : m ≤ hStage X c
+  · rw [haltedB, haltedB, graphOf_yc_eq_lt e n₀ X c h hm]
+  · push_neg at hm
+    have hyct : haltedB (yc e n₀ X c) c (hStage X c) = true := by
+      rw [haltedB, graphOf_yc_eq_lt e n₀ X c h (le_refl _)]; exact haltedB_hStage X c h
+    rw [haltedB_mono (yc e n₀ X c) c (le_of_lt hm) hyct,
+      haltedB_mono X c (le_of_lt hm) (haltedB_hStage X c h)]
+
+theorem conv_yc (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) : conv (yc e n₀ X c) c := by
+  obtain ⟨m, hm⟩ := h; exact ⟨m, by rw [haltedB_yc e n₀ X c ⟨m, hm⟩]; exact hm⟩
+
+/-- `Y_c` and `X` have the same halting stage. -/
+theorem hStage_yc (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
+    hStage (yc e n₀ X c) c = hStage X c := by
+  have hc := conv_yc e n₀ X c h
+  refine le_antisymm ?_ ?_
+  · rw [hStage, dif_pos hc]; exact Nat.find_le (by rw [haltedB_yc e n₀ X c h]; exact haltedB_hStage X c h)
+  · rw [hStage, dif_pos h]; exact Nat.find_le (by rw [← haltedB_yc e n₀ X c h]; exact haltedB_hStage _ _ hc)
+
+theorem witPair_yc (e n₀ : ℕ) (X : ℕ → Bool) (c p : ℕ) (h : conv X c) :
+    witPair e n₀ (yc e n₀ X c) (hStage X c) p = witPair e n₀ X (hStage X c) p := by
+  rw [witPair, witPair, graphOf_yc_eq_lt e n₀ X c h (le_refl _)]
+
+theorem witEnc_yc (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
+    witEnc e n₀ (yc e n₀ X c) (hStage X c) = witEnc e n₀ X (hStage X c) := by
+  have hp : ∀ p, witPair e n₀ (yc e n₀ X c) (hStage X c) p = witPair e n₀ X (hStage X c) p :=
+    fun p => witPair_yc e n₀ X c p h
+  simp only [witEnc, hp]
+
+theorem wit_yc (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
+    wit e n₀ (yc e n₀ X c) (hStage (yc e n₀ X c) c) = wit e n₀ X (hStage X c) := by
+  rw [hStage_yc e n₀ X c h, wit, wit, witEnc_yc e n₀ X c h]
+
 end Coding
 end OracleCode

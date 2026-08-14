@@ -146,3 +146,8 @@ import MartinsConjecture
 #print axioms Martin.regressive_uniform_of_steel
 #print axioms Martin.incomparable_uniform_of_steel
 #print axioms Martin.steelUniformKernel_iff_cores
+#print axioms Martin.bard_local
+#print axioms Martin.steel_kernel_computable
+#print axioms Martin.partI_computablyUniform
+#print axioms Martin.regressive_computablyUniform
+#print axioms Martin.incomparable_computablyUniform

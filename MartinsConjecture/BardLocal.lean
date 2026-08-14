@@ -274,4 +274,131 @@ theorem bard_witness_family {x z : ℕ → Bool} (hzx : z ≡ₜ x) {p : ℕ} (h
           funext m; rw [h]; exact if_neg (by decide)
         rw [hyz]; exact hjz
 
+/-- **Bard's Theorem 2.2** (effective form).  A computably-uniformly-invariant
+`F` that is *not constant* on the degree of `x` (some `z ≡ᵀ x` with `F z ≠ F x`)
+satisfies `x ≤ᵀ F x`.
+
+The `n`-th selector real `y n` is `x` or `z` by the `n`-th bit of `x`.  Reading
+the *fixed* distinguishing bit `k` of `F x, F z` off `⨁ₙ F(y n)` recovers `x`, so
+`x ≤ᵀ ⨁ₙ F(y n)`; and by computable uniformity each `F(y n) = Φ_{u(iₙ,j).1}^{F x}`,
+so Bard's Fact 3.1 gives `⨁ₙ F(y n) ≤ᵀ F x`.  Chaining: `x ≤ᵀ F x`. -/
+theorem bard_local (F : (ℕ → Bool) → ℕ → Bool)
+    (hu : ComputablyUniformlyTuringInvariant F)
+    {x : ℕ → Bool} (hnc : ∃ z, z ≡ₜ x ∧ F z ≠ F x) :
+    x ≤ₜ F x := by
+  classical
+  obtain ⟨u, hu_comp, hu_spec⟩ := hu
+  obtain ⟨z, hzx, hFne⟩ := hnc
+  have hxz : x ≠ z := fun h => hFne (by rw [h])
+  obtain ⟨p, hp⟩ := Function.ne_iff.mp hxz
+  obtain ⟨k, hk⟩ := Function.ne_iff.mp hFne
+  obtain ⟨idx, jb, hidx_comp, hEV⟩ := bard_witness_family hzx hp
+  set y : ℕ → (ℕ → Bool) := fun n m => if x n = true then x m else z m with hy
+  set R : ℕ → (ℕ → Bool) := fun n => F (y n) with hR
+  have ha_comp : Computable (fun n => (u (idx n, jb)).1) :=
+    Computable.fst.comp (hu_comp.comp (Computable.pair hidx_comp (Computable.const jb)))
+  have hFy : ∀ n, eval (toPFun (F x)) (ofNatCode ((u (idx n, jb)).1)) = toPFun (R n) :=
+    fun n => (hu_spec x (y n) (idx n) jb (hEV n)).1
+  have hjoin_le : joinFam R ≤ₜ F x := joinFam_le_computable ha_comp hFy
+  have hjoinval : ∀ n, joinFam R (Nat.pair n k) = R n k := fun n => by
+    simp [joinFam, Nat.unpair_pair]
+  have hcbit : ∀ (Y : ℕ → Bool) (i : ℕ), bitg Y i ≤ 1 := fun Y i => by
+    rcases Bool.eq_false_or_eq_true (Y i) with h | h <;> simp [bitg, h]
+  -- the pure-ℕ decode: reading the fixed bit `k` recovers `x n`
+  have hdec : ∀ n, 1 - ((bitg (joinFam R) (Nat.pair n k) - bitg (F x) k)
+        + (bitg (F x) k - bitg (joinFam R) (Nat.pair n k))) = bitg x n := by
+    intro n
+    have hqn : bitg (joinFam R) (Nat.pair n k) = bitg (F (y n)) k := by
+      simp only [bitg, joinFam, Nat.unpair_pair, hR]
+    rw [hqn]
+    rcases Bool.eq_false_or_eq_true (x n) with h | h
+    · have hyx : y n = x := funext (fun m => by simp [hy, h])
+      have hbxn : bitg x n = 1 := by simp [bitg, h]
+      rw [hyx, hbxn]
+      omega
+    · have hyz : y n = z := funext (fun m => by simp [hy, h])
+      have hbxn : bitg x n = 0 := by simp [bitg, h]
+      have hne : bitg (F z) k ≠ bitg (F x) k := by
+        intro hc; apply hk
+        cases hfz : F z k <;> cases hfx : F x k <;> simp_all [bitg]
+      rw [hyz, hbxn]
+      have h1 := hcbit (F z) k
+      have h2 := hcbit (F x) k
+      omega
+  have hx_le : x ≤ₜ joinFam R := by
+    rw [le_iff_bitg]
+    have hq : Nat.RecursiveIn {toPFun (joinFam R)}
+        (fun n => (bitg (joinFam R) (Nat.pair n k) : Part ℕ)) :=
+      (Nat.RecursiveIn.comp (le_iff_bitg.mp (Cantor.le.refl (joinFam R)))
+        ((Primrec.nat_iff.mp (Primrec₂.natPair.comp Primrec.id
+          (Primrec.const k))).recursiveIn)).of_eq fun n => by
+        simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, id_eq]
+    refine (Nat.RecursiveIn.comp
+      ((Primrec.nat_iff.mp (Primrec.nat_sub.comp (Primrec.const 1)
+        (Primrec.nat_add.comp
+          (Primrec.nat_sub.comp Primrec.id (Primrec.const (bitg (F x) k)))
+          (Primrec.nat_sub.comp (Primrec.const (bitg (F x) k)) Primrec.id)))).recursiveIn)
+        hq).of_eq fun n => by
+      simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, id_eq, hdec n]
+  exact hx_le.trans hjoin_le
+
+/-! ### Part I of Martin's conjecture for computably-uniformly-invariant functions
+
+Globalizing Bard's local theorem with the cone theorem (on the pivot set
+`{X | X ≤ᵀ F X}`) gives Part I for the computable-uniformity class — the effective
+form of Slaman–Steel 1988. -/
+
+/-- **The Steel kernel holds for computably-uniform functions**: a non-constant
+computably-uniformly-invariant `F` is above the identity on a cone.  Discharges
+the hypothesis `SteelUniformKernel` for the computable-uniformity class. -/
+theorem steel_kernel_computable (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} (hu : ComputablyUniformlyTuringInvariant F)
+    (hnc : ¬ ConstantOnCone F) : AboveIdOnCone F := by
+  have hinv : TuringInvariant F := hu.toUniformly.turingInvariant
+  have hBinv : TuringInvariantSet {X | X ≤ₜ F X} := by
+    intro X Y hXY
+    have hF := hinv X Y hXY
+    exact ⟨fun h => hXY.2.trans (h.trans hF.1), fun h => hXY.1.trans (h.trans hF.2)⟩
+  rcases cone_theorem_onCone {X | X ≤ₜ F X} hBinv (hTD _ trivial hBinv) with hB | hBc
+  · exact hB
+  · exfalso
+    obtain ⟨w, hw⟩ := hBc
+    apply hnc
+    apply const_on_degrees_constOnCone hTD (w := w)
+    intro X hX Y hYX
+    by_contra hne
+    exact hw X hX (bard_local F hu ⟨Y, hYX, hne⟩)
+
+/-- **Part I of Martin's conjecture for computably-uniformly-invariant functions**
+(Slaman–Steel 1988, effective form): every such `F` is constant on a cone or above
+the identity on a cone. -/
+theorem partI_computablyUniform (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} (hu : ComputablyUniformlyTuringInvariant F) :
+    ConstantOnCone F ∨ AboveIdOnCone F := by
+  by_cases hc : ConstantOnCone F
+  · exact Or.inl hc
+  · exact Or.inr (steel_kernel_computable hTD hu hc)
+
+/-- **The regressive core, for computably-uniform functions.** -/
+theorem regressive_computablyUniform (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} (hu : ComputablyUniformlyTuringInvariant F)
+    (hreg : OnCone (fun X => F X <ₜ X)) : ConstantOnCone F := by
+  by_contra hnc
+  obtain ⟨B1, hB1⟩ := hreg
+  obtain ⟨B2, hB2⟩ := steel_kernel_computable hTD hu hnc
+  exact (hB1 _ (Cantor.left_le_join B1 B2)).2 (hB2 _ (Cantor.right_le_join B1 B2))
+
+/-- **The incomparable core, for computably-uniform functions.** -/
+theorem incomparable_computablyUniform (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} (hu : ComputablyUniformlyTuringInvariant F)
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ConstantOnCone F := by
+  by_contra hnc
+  obtain ⟨B1, hB1⟩ := hinc
+  obtain ⟨B2, hB2⟩ := steel_kernel_computable hTD hu hnc
+  exact (hB1 _ (Cantor.left_le_join B1 B2)).2 (hB2 _ (Cantor.right_le_join B1 B2))
+
+#print axioms bard_local
+#print axioms steel_kernel_computable
+#print axioms partI_computablyUniform
+
 end Martin

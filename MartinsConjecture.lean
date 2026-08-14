@@ -43,3 +43,4 @@ import MartinsConjecture.JumpInversion
 import MartinsConjecture.DegreeCapstone
 import MartinsConjecture.LachlanTheorem
 import MartinsConjecture.UniformCores
+import MartinsConjecture.BardLocal

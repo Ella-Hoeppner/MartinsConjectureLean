@@ -310,15 +310,14 @@ theorem hStageSearch_recursiveIn (X : ℕ → Bool) :
   (Nat.RecursiveIn.rfind (notHaltedBit_recursiveIn X)).of_eq fun c => by
     simp only [Nat.unpair_pair]
 
-/-- When `Φ_c^X(c)` converges, the search returns the halting stage `hStage X c`. -/
+/-- When `Φ_c^X(c)` converges, the search returns the halting stage `hStage X c`.
+Stated in the `Part.some (decide …)` form the search takes after `simp`. -/
 theorem hStageSearch_eq (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
-    (Nat.rfind fun m' => (fun x => x = 0) <$>
-      ((bif haltedB X c m' then 0 else 1 : ℕ) : Part ℕ)) = Part.some (hStage X c) := by
+    (Nat.rfind fun m' => (Part.some (decide ((bif haltedB X c m' then 0 else 1) = 0)) : Part Bool))
+      = Part.some (hStage X c) := by
   refine Part.eq_some_iff.mpr (Nat.mem_rfind.mpr ⟨?_, fun {m} hm => ?_⟩)
-  · rw [Part.map_eq_map, Part.mem_map_iff]
-    exact ⟨_, Part.mem_some _, by rw [haltedB_hStage X c h]; rfl⟩
-  · rw [Part.map_eq_map, Part.mem_map_iff]
-    exact ⟨_, Part.mem_some _, by rw [not_haltedB_lt_hStage X c h hm]; rfl⟩
+  · rw [Part.mem_some_iff, haltedB_hStage X c h]; rfl
+  · rw [Part.mem_some_iff, not_haltedB_lt_hStage X c h hm]; rfl
 
 #print axioms hStageSearch_eq
 
@@ -392,16 +391,16 @@ theorem witEncSearch_recursiveIn (e n₀ : ℕ) (X : ℕ → Bool) :
 /-- When a `0/1` witness exists at stage `t`, the search returns `witEnc e n₀ X t`. -/
 theorem witEncSearch_eq (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ)
     (h : ∃ p, witPair e n₀ X t p = true) :
-    (Nat.rfind fun p => (fun x => x = 0) <$>
-      ((bif witPair e n₀ X t p then 0 else 1 : ℕ) : Part ℕ)) = Part.some (witEnc e n₀ X t) := by
+    (Nat.rfind fun p => (Part.some (decide ((bif witPair e n₀ X t p then 0 else 1) = 0)) : Part Bool))
+      = Part.some (witEnc e n₀ X t) := by
   have hwe : witEnc e n₀ X t = Nat.find h := dif_pos h
   refine Part.eq_some_iff.mpr (Nat.mem_rfind.mpr ⟨?_, fun {m} hm => ?_⟩)
-  · rw [Part.map_eq_map, Part.mem_map_iff, hwe]
-    exact ⟨_, Part.mem_some _, by rw [Nat.find_spec h]; rfl⟩
-  · rw [Part.map_eq_map, Part.mem_map_iff]
+  · rw [Part.mem_some_iff, hwe, Nat.find_spec h]; rfl
+  · rw [Part.mem_some_iff]
     rw [hwe] at hm
-    exact ⟨_, Part.mem_some _, by
-      have := Nat.find_min h hm; rw [Bool.not_eq_true] at this; rw [this]; rfl⟩
+    have hf := Nat.find_min h hm
+    rw [Bool.not_eq_true] at hf
+    rw [hf]; rfl
 
 #print axioms witEncSearch_eq
 
@@ -519,6 +518,93 @@ theorem spl_recursiveIn (e n₀ : ℕ) (X : ℕ → Bool) :
     rw [Nat.unpair_pair]; exact hwe
 
 #print axioms spl_recursiveIn
+
+/-- In the halted branch, the computed shift value equals the bit of `Y_c`. -/
+theorem shift_eq_yc (e n₀ : ℕ) (X : ℕ → Bool) (q : ℕ) (h : conv X (Nat.unpair q).1)
+    (hm : hStage X (Nat.unpair q).1 ≤ (Nat.unpair q).2) :
+    shiftSelect (Nat.pair
+      (repackFn (Nat.pair (Nat.pair q (hStage X (Nat.unpair q).1))
+        (witEnc e n₀ X (hStage X (Nat.unpair q).1))))
+      (bitg X (shiftIdx (repackFn (Nat.pair (Nat.pair q (hStage X (Nat.unpair q).1))
+        (witEnc e n₀ X (hStage X (Nat.unpair q).1)))))))
+      = bitg (yc e n₀ X (Nat.unpair q).1) (Nat.unpair q).2 := by
+  have hrp : repackFn (Nat.pair (Nat.pair q (hStage X (Nat.unpair q).1))
+      (witEnc e n₀ X (hStage X (Nat.unpair q).1)))
+      = Nat.pair (Nat.unpair q).2 (Nat.pair (hStage X (Nat.unpair q).1)
+        (witEnc e n₀ X (hStage X (Nat.unpair q).1))) := by
+    simp only [repackFn, Nat.unpair_pair]
+  rw [hrp]
+  have hhalt : haltedB X (Nat.unpair q).1 (Nat.unpair q).2 = true :=
+    (haltedB_iff_ge_hStage X _ h _).mpr hm
+  simp only [shiftSelect, shiftIdx, zWit, Nat.unpair_pair, bitg_eq_bbit, yc, hhalt, cond_true]
+  rw [wit]
+  split_ifs <;> rfl
+
+theorem nat_rec_bif_false {α : Sort*} (base : α) (step : ℕ → α → α) :
+    Nat.rec (motive := fun _ => α) base step (bif (false : Bool) then 1 else 0) = base := rfl
+
+theorem nat_rec_bif_true {α : Sort*} (base : α) (step : ℕ → α → α) :
+    Nat.rec (motive := fun _ => α) base step (bif (true : Bool) then 1 else 0) = step 0 base := rfl
+
+/-- **The forward reduction is `X`-recursive** (uniformly in `c`): the two-argument
+map `⟨c,m⟩ ↦ bitg (Y_c) m` is recursive in `X`.  Assembles the halted bit (a lazy
+`prec`-selection between the base value `bitg X m` and the splice) with correctness
+via `hStageSearch_eq`, `witEncSearch_eq`, and `shift_eq_yc`. -/
+theorem ycBit_recursiveIn (e n₀ : ℕ) (X : ℕ → Bool)
+    (hd : ∀ t, ∃ w : List Bool, haltsOn (graphOf (bitg X) t ++ w.map bbit) e n₀) :
+    Nat.RecursiveIn {toPFun X}
+      (fun q => ((bitg (yc e n₀ X (Nat.unpair q).1) (Nat.unpair q).2 : ℕ) : Part ℕ)) := by
+  have hid : Nat.RecursiveIn {toPFun X} (fun q : ℕ => ((q : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hbitg : Nat.RecursiveIn {toPFun X} (fun n => ((bitg X n : ℕ) : Part ℕ)) :=
+    Cantor.le_iff_bitg.mp (Cantor.le.refl X)
+  have cBase : Nat.RecursiveIn {toPFun X} (fun a => ((bitg X (Nat.unpair a).2 : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp hbitg
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.snd.comp Primrec.unpair)))).of_eq
+      fun a => by rw [Part.coe_some]; exact Part.bind_some _ _
+  have cStep : Nat.RecursiveIn {toPFun X} (fun z =>
+      (Nat.rfind fun m' => (fun x => x = 0) <$>
+          ((bif haltedB X (Nat.unpair (Nat.unpair z).1).1 m' then 0 else 1 : ℕ) : Part ℕ)) >>= fun t =>
+      (Nat.rfind fun p => (fun x => x = 0) <$>
+          ((bif witPair e n₀ X t p then 0 else 1 : ℕ) : Part ℕ)) >>= fun we =>
+      ((shiftSelect (Nat.pair (repackFn (Nat.pair (Nat.pair (Nat.unpair z).1 t) we))
+        (bitg X (shiftIdx (repackFn (Nat.pair (Nat.pair (Nat.unpair z).1 t) we))))) : ℕ)
+        : Part ℕ)) :=
+    (Nat.RecursiveIn.comp (spl_recursiveIn e n₀ X)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.fst.comp Primrec.unpair)))).of_eq
+      fun z => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hpair : Nat.RecursiveIn {toPFun X}
+      (fun q => Nat.pair <$> ((q : ℕ) : Part ℕ)
+        <*> ((bif haltedB X (Nat.unpair q).1 (Nat.unpair q).2 then 1 else 0 : ℕ) : Part ℕ)) :=
+    Nat.RecursiveIn.pair hid (haltedBit_recursiveIn X)
+  refine (Nat.RecursiveIn.comp (Nat.RecursiveIn.prec cBase cStep) hpair).of_eq fun q => ?_
+  -- reduce the comp to a case on `haltedB`
+  simp only [Seq.seq, Part.map_eq_map, Part.coe_some, Part.map_some, Part.bind_eq_bind,
+    Part.bind_some, Nat.unpair_pair]
+  by_cases hh : haltedB X (Nat.unpair q).1 (Nat.unpair q).2 = true
+  · -- halted: the splice branch, `= bitg (yc)` via the search-eq lemmas
+    have hconv : conv X (Nat.unpair q).1 := ⟨_, hh⟩
+    have hge : hStage X (Nat.unpair q).1 ≤ (Nat.unpair q).2 :=
+      (haltedB_iff_ge_hStage X _ hconv _).mp hh
+    have hwp : ∃ p, witPair e n₀ X (hStage X (Nat.unpair q).1) p = true := by
+      obtain ⟨s, hs⟩ := wit_spec e n₀ X (hStage X (Nat.unpair q).1) (hd _)
+      refine ⟨Nat.pair (Encodable.encode (wit e n₀ X (hStage X (Nat.unpair q).1))) s, ?_⟩
+      simp only [witPair, Nat.unpair_pair, Encodable.encodek, Option.getD_some]; exact hs
+    rw [hh, nat_rec_bif_true]
+    simp only [Part.bind_some, Nat.unpair_pair, hStageSearch_eq X _ hconv,
+      witEncSearch_eq e n₀ X _ hwp, shift_eq_yc e n₀ X q hconv hge]
+  · -- not halted: base value `bitg X m = bitg (yc) m` (since `Y_c = X` there)
+    rw [Bool.not_eq_true] at hh
+    by_cases hconv : conv X (Nat.unpair q).1
+    · have hlt : (Nat.unpair q).2 < hStage X (Nat.unpair q).1 := by
+        by_contra hge; push_neg at hge
+        rw [(haltedB_iff_ge_hStage X _ hconv _).mpr hge] at hh; exact Bool.noConfusion hh
+      rw [hh, nat_rec_bif_false]
+      simp only [bitg_eq_bbit, yc_eq_lt e n₀ X _ hconv hlt]
+    · rw [hh, nat_rec_bif_false]
+      simp only [bitg_eq_bbit, yc_eq_of_not_conv e n₀ X _ hconv]
+
+#print axioms ycBit_recursiveIn
 
 end Coding
 end OracleCode

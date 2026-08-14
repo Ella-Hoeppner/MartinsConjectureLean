@@ -682,6 +682,100 @@ theorem lenStepEnc_spec (C : ℕ → Bool) (a y : ℕ) :
       simp only [List.length_append, List.length_cons, List.length_nil]
     rw [hjstr]
 
+/-- Query `⟪σenc, y⟫` from `a = ⟪arg, σenc⟫`, `arg = ⟪·, ⟪y, ln⟫⟫`. -/
+def lenQFn (a : ℕ) : ℕ :=
+  Nat.pair (Nat.unpair a).2 (Nat.unpair (Nat.unpair (Nat.unpair a).1).2).1
+
+theorem lenQFn_prim : Primrec lenQFn :=
+  Primrec₂.natPair.comp (Primrec.snd.comp Primrec.unpair)
+    (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp
+      (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+
+/-- Base length `ln + 1` from `a = ⟪arg, σenc⟫`. -/
+def lenBaseFn (a : ℕ) : ℕ := (Nat.unpair (Nat.unpair (Nat.unpair a).1).2).2 + 1
+
+theorem lenBaseFn_prim : Primrec lenBaseFn :=
+  Primrec.nat_add.comp
+    (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp
+      (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+    (Primrec.const 1)
+
+/-- Force length `ln + |boolExt w| + 1` from `aw = ⟪a, w⟫`. -/
+def lenAssembleFn (aw : ℕ) : ℕ :=
+  (Nat.unpair (Nat.unpair (Nat.unpair (Nat.unpair aw).1).1).2).2
+    + (boolExt (Nat.unpair (Nat.unpair aw).2).1).length + 1
+
+theorem lenAssembleFn_prim : Primrec lenAssembleFn :=
+  Primrec.nat_add.comp
+    (Primrec.nat_add.comp
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp
+        (Primrec.unpair.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))))
+      (Primrec.list_length.comp (boolExt_prim.comp
+        (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))))))
+    (Primrec.const 1)
+
+theorem lenStepEnc_recursiveIn (C : ℕ → Bool) :
+    Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))} (lenStepEnc C) := by
+  -- graphEnc (jReal C) lifted to `A′` (since `jReal C ≤ᵀ A′`)
+  have hgA : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))} (graphEnc (jReal C)) :=
+    (graphEnc_recursiveIn (jReal C)).subst (by
+      intro g hg
+      rw [Set.mem_singleton_iff.mp hg]
+      exact RecursiveIn.iff_nat.mp (le_jump (jReal C)))
+  have hbase : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))}
+      (fun a : ℕ => ((lenBaseFn a : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp lenBaseFn_prim)
+  have hsrchp : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))}
+      (fun p : ℕ => jFun (lenQFn (Nat.unpair p).1)) :=
+    (Nat.RecursiveIn.comp jFun_partrec.recursiveIn
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (lenQFn_prim.comp (Primrec.fst.comp Primrec.unpair))))).of_eq
+      fun p => by rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hstep : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))} (fun p : ℕ =>
+      (Nat.pair <$> ((p : ℕ) : Part ℕ) <*> jFun (lenQFn (Nat.unpair p).1))
+        >>= fun pw : ℕ =>
+          ((lenAssembleFn (Nat.pair (Nat.unpair (Nat.unpair pw).1).1 (Nat.unpair pw).2) : ℕ)
+            : Part ℕ)) :=
+    Nat.RecursiveIn.comp
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (lenAssembleFn_prim.comp
+        (Primrec₂.natPair.comp
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+          (Primrec.snd.comp Primrec.unpair)))))
+      (Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hsrchp)
+  have hprec := Nat.RecursiveIn.prec hbase hstep
+  -- pairing: `⟪⟪arg, σenc⟫, aBit⟫`
+  have hgm : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))}
+      (fun arg : ℕ => graphEnc (jReal C) (Nat.unpair (Nat.unpair arg).2).2) :=
+    (Nat.RecursiveIn.comp hgA (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))))).of_eq
+      fun arg => by rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have haBit : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))}
+      (fun arg : ℕ => Cantor.toPFun (Cantor.jump (jReal C)) (Nat.unpair (Nat.unpair arg).2).1) :=
+    (Nat.RecursiveIn.comp
+      (Nat.RecursiveIn.oracle (Cantor.toPFun (Cantor.jump (jReal C))) (Set.mem_singleton_iff.mpr rfl))
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))))).of_eq
+      fun arg => Part.bind_some _ _
+  have hpairing : Nat.RecursiveIn {Cantor.toPFun (Cantor.jump (jReal C))} (fun arg : ℕ =>
+      Nat.pair <$> (Nat.pair <$> ((arg : ℕ) : Part ℕ)
+        <*> graphEnc (jReal C) (Nat.unpair (Nat.unpair arg).2).2)
+        <*> Cantor.toPFun (Cantor.jump (jReal C)) (Nat.unpair (Nat.unpair arg).2).1) :=
+    Nat.RecursiveIn.pair
+      (Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hgm) haBit
+  refine (Nat.RecursiveIn.comp hprec hpairing).of_eq fun arg => ?_
+  rw [lenStepEnc,
+    show graphEnc (jReal C) (Nat.unpair (Nat.unpair arg).2).2
+      = Part.some (Encodable.encode (graphOf (bitg (jReal C)) (Nat.unpair (Nat.unpair arg).2).2))
+      from rfl,
+    show Cantor.toPFun (Cantor.jump (jReal C)) (Nat.unpair (Nat.unpair arg).2).1
+      = Part.some (cond (Cantor.jump (jReal C) (Nat.unpair (Nat.unpair arg).2).1) 1 0) from rfl]
+  simp only [Part.coe_some, Part.map_eq_map, Part.bind_eq_bind, Seq.seq, Part.map_some,
+    Part.bind_some]
+  cases Cantor.jump (jReal C) (Nat.unpair (Nat.unpair arg).2).1
+  · simp [lenBaseFn, Nat.unpair_pair]
+  · simp [Part.bind_some, Part.bind_eq_bind, Part.bind_some_eq_map, Part.map_map,
+      Function.comp_def, Nat.unpair_pair, lenQFn, lenAssembleFn]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
@@ -689,4 +783,4 @@ end OracleCode
 #print axioms OracleCode.jReal_le
 #print axioms OracleCode.jump_jReal_le
 #print axioms OracleCode.C_eq_jReal
-#print axioms OracleCode.lenStepEnc_spec
+#print axioms OracleCode.lenStepEnc_recursiveIn

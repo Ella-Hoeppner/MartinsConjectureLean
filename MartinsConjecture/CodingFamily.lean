@@ -709,5 +709,77 @@ theorem recFn_yc (e n₀ : ℕ) (X : ℕ → Bool) (c m : ℕ) :
 
 #print axioms recFn_yc
 
+/-- Recovery with a *fixed* shift `K` (the constant `|wit|`) — no search needed. -/
+noncomputable def recFnK (O : ℕ → Bool) (c K m : ℕ) : ℕ :=
+  bif haltedB O c m then bitg O (m + K) else bitg O m
+
+theorem recFn_eq_recFnK (e n₀ : ℕ) (O : ℕ → Bool) (c m : ℕ) :
+    recFn e n₀ O c m = recFnK O c (wit e n₀ O (hStage O c)).length m := by
+  rw [recFn, recFnK]
+
+/-- **The recovery is recursive in the oracle** (fixed shift `K`, machine `c`):
+`haltedBit` + a lazy `prec`-selection between the oracle queries at `m+K` and `m`. -/
+theorem recFnK_recursiveIn (O : ℕ → Bool) (c K : ℕ) :
+    Nat.RecursiveIn {toPFun O} (fun m => ((recFnK O c K m : ℕ) : Part ℕ)) := by
+  have hbitg : Nat.RecursiveIn {toPFun O} (fun n => ((bitg O n : ℕ) : Part ℕ)) :=
+    Cantor.le_iff_bitg.mp (Cantor.le.refl O)
+  have cStep : Nat.RecursiveIn {toPFun O}
+      (fun z => ((bitg O ((Nat.unpair z).1 + K) : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp hbitg
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (Primrec.nat_add.comp (Primrec.fst.comp Primrec.unpair) (Primrec.const K))))).of_eq
+      fun z => by rw [Part.coe_some]; exact Part.bind_some _ _
+  have hHb : Nat.RecursiveIn {toPFun O}
+      (fun m => ((bif haltedB O c m then 1 else 0 : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp (haltedBit_recursiveIn O)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (Primrec₂.natPair.comp (Primrec.const c) Primrec.id)))).of_eq
+      fun m => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, Nat.unpair_pair, id_eq]
+  have hpair : Nat.RecursiveIn {toPFun O}
+      (fun m => Nat.pair <$> ((m : ℕ) : Part ℕ)
+        <*> ((bif haltedB O c m then 1 else 0 : ℕ) : Part ℕ)) :=
+    Nat.RecursiveIn.pair (Primrec.nat_iff.mp Primrec.id).recursiveIn hHb
+  refine (Nat.RecursiveIn.comp (Nat.RecursiveIn.prec hbitg cStep) hpair).of_eq fun m => ?_
+  simp only [Seq.seq, Part.map_eq_map, Part.coe_some, Part.map_some, Part.bind_eq_bind,
+    Part.bind_some, Nat.unpair_pair]
+  rw [recFnK]
+  by_cases hh : haltedB O c m = true
+  · rw [hh, nat_rec_bif_true]
+    simp only [Part.bind_some, Nat.unpair_pair, cond_true]
+  · rw [Bool.not_eq_true] at hh
+    rw [hh, nat_rec_bif_false, cond_false]
+
+theorem recFnK_eq_recFn (e n₀ : ℕ) (X : ℕ → Bool) (c m : ℕ) :
+    recFnK (yc e n₀ X c) c (wit e n₀ X (hStage X c)).length m = recFn e n₀ (yc e n₀ X c) c m := by
+  rw [recFn_eq_recFnK]
+  by_cases h : conv X c
+  · rw [wit_yc e n₀ X c h]
+  · have hnh : haltedB (yc e n₀ X c) c m = false := by
+      have hyc : yc e n₀ X c = X := funext (yc_eq_of_not_conv e n₀ X c h)
+      rw [hyc]; by_contra hc; rw [Bool.not_eq_false] at hc; exact h ⟨m, hc⟩
+    rw [recFnK, recFnK, hnh]; simp only [Bool.cond_false]
+
+/-- **Backward reduction**: `X ≤ᵀ Y_c` — `Y_c` recovers `X` (no discontinuity data
+needed; the shift length is a fixed constant). -/
+theorem yc_backward (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) : X ≤ₜ yc e n₀ X c := by
+  rw [Cantor.le_iff_bitg]
+  refine (recFnK_recursiveIn (yc e n₀ X c) c (wit e n₀ X (hStage X c)).length).of_eq fun m => ?_
+  rw [recFnK_eq_recFn, recFn_yc]
+
+/-- **`Y_c ≡ᵀ X`** — the coding real is Turing-equivalent to `X` (forward needs the
+discontinuity data `hd`; backward is unconditional). -/
+theorem yc_equiv (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ)
+    (hd : ∀ t, ∃ w : List Bool, haltsOn (graphOf (bitg X) t ++ w.map bbit) e n₀) :
+    yc e n₀ X c ≡ₜ X := by
+  refine ⟨?_, yc_backward e n₀ X c⟩
+  rw [Cantor.le_iff_bitg]
+  exact (Nat.RecursiveIn.comp (ycBit_recursiveIn e n₀ X hd)
+    (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+      (Primrec₂.natPair.comp (Primrec.const c) Primrec.id)))).of_eq fun m => by
+    simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, Nat.unpair_pair, id_eq]
+
+#print axioms yc_backward
+#print axioms yc_equiv
+
 end Coding
 end OracleCode

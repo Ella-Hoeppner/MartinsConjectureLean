@@ -156,6 +156,42 @@ Everything else (s-m-n, padding, Σ₁-completeness `dom_iff_jumpP`, the jump, t
 theorem) is already in hand.  This is the recommended next-session target; it is deliberately
 **not** attempted here rather than risk an incorrect or `sorry`-laden formalization.
 
+### UPDATE (2026-08-14): reduction half DONE; the exact coding construction worked out
+
+**Reduction half formalized** (`DiscontinuousCase.lean`): given the coding family
+(`HasCodingFamily`) + computable uniformity, `discontinuous_reduction` proves `X′ ≤ᵀ Wˣ`
+via s-m-n + `eval_universal` at the marker; sharpened to `Wˣ ≡ᵀ X′`
+(`discontinuous_equiv_jump`), assembled into `local_dichotomy_high` (Lutz Cor 3.11 form) and
+`no_operator_post_solution`.  **The universal code was never a blocker** — `eval_universal`
+and `exists_fixedPoint` are proved.  Only `HasCodingFamily` and Bard's Lemma 3.8 remain.
+
+**The precise coding real (the missing step 2), now correct — insertion, not overwrite.**
+Fix marker `n₀`.  Let `t(c)` = halting stage of `Φ_c^X(c)` (least steps; ⊥ if it diverges),
+with use `u ≤ t`.  Let `τ'(c)` = least `τ` with `haltsOn(X↾t(c) ⌢ τ, e, n₀)` (exists by
+discontinuity: `extHaltsFrom(X↾t, e, n₀)`).  Define `Y_c` by **inserting** `τ'` at position
+`t`:
+```
+Y_c(m) = X(m)              if Φ_c^X(c) does not halt within m steps      (⟺ m < t, or ⊥)
+       = τ'(c)(m − t)      if halted within m steps and t ≤ m < t+|τ'|
+       = X(m − |τ'|)       if halted within m steps and m ≥ t+|τ'|
+```
+- **`Y_c ≤ᵀ X`** (uniform machine `cY`, oracle `X`, input `⟨c,m⟩`): bounded simulation
+  `evaln m` decides "halted within m steps"; if so compute `t, τ'` (τ' by a terminating
+  `rfind` over `haltsOn`, `0′`-free since `haltsOn` on a fixed prefix is decidable via
+  `evaln`), then read the shifted `X`.  Total & `X`-recursive.  `r c := curryEnc ⌜cY⌝ c`.
+- **`X ≤ᵀ Y_c`** (uniform machine `cM`, oracle `O` = `Y_c`, input `⟨c,m⟩`): run `Φ_c^O(c)`
+  for `m` steps — **valid because `Φ_c`'s use `u ≤ t` sees only `Y_c↾t = X↾t`**, so
+  `Φ_c^{Y_c}(c) = Φ_c^X(c)` (same stage `t`, same `τ'` from `O↾t`).  Recover
+  `X(m) = O(m)` if not-halted-within-m, else `O(m+|τ'|)` (un-shift).  `s c := curryEnc ⌜cM⌝ c`.
+- **`n₀ ∈ W^{Y_c} ⟺ Φ_c^X(c)↓`**: if halts, `Y_c↾(t+|τ'|) = X↾t ⌢ τ'` halts `W` at `n₀`
+  (monotonicity); if diverges, `Y_c = X` and no prefix of `X` halts `W` at `n₀`.
+
+Both `cY`/`cM` are *oracle-generic* (one code each, correctness proved by reasoning about the
+algorithm, in the `eval_universal` style: oracle-table via `graphEnc` + `evaln` + arithmetic),
+then specialized by `curryEnc`.  This is the concrete, correct execution guide for discharging
+`HasCodingFamily` — a jump-inversion-scale formalization, deferred only for size, not
+uncertainty.  The remaining external lemma is Bard 3.8 (bare uniform invariance ⟹ computable).
+
 **Steel's uniform Part II (Q4):** needs the m-Game + AD + Wadge/Martin–Monk machinery and
 **uniformly pointed perfect trees**.  We already have the u.p.p.-tree analog in the
 join-cone formulation (`UniformJoin.equivVia_join_uniform` — the uniform congruence index),

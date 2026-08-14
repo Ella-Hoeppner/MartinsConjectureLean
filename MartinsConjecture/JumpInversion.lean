@@ -633,6 +633,55 @@ theorem C_eq_jReal (C : ℕ → Bool) (e : ℕ) :
   rw [hget, hlast]
   cases C e <;> simp
 
+/-- The encoded length step (reconstruction), on `⟪a, ⟪y, ln⟫⟫` with
+`ln = |jstr C y|`: computes `|jstr C (y+1)|`.  Uses `graphEnc (jReal C)` (to
+rebuild the stage string, `≤ᵀ A′`), the oracle `A′` (the forcing decision), and
+the search `jFun` (for the forcing length). -/
+noncomputable def lenStepEnc (C : ℕ → Bool) (arg : ℕ) : Part ℕ :=
+  graphEnc (jReal C) (Nat.unpair (Nat.unpair arg).2).2 >>= fun σenc =>
+    Cantor.toPFun (Cantor.jump (jReal C)) (Nat.unpair (Nat.unpair arg).2).1 >>= fun aBit =>
+      Nat.rec (Part.some ((Nat.unpair (Nat.unpair arg).2).2 + 1))
+        (fun _ _ => (jFun (Nat.pair σenc (Nat.unpair (Nat.unpair arg).2).1)).map
+          (fun w => (Nat.unpair (Nat.unpair arg).2).2 + (boolExt (Nat.unpair w).1).length + 1))
+        aBit
+
+theorem lenStepEnc_spec (C : ℕ → Bool) (a y : ℕ) :
+    lenStepEnc C (Nat.pair a (Nat.pair y (jstr C y).length))
+      = Part.some (jstr C (y + 1)).length := by
+  rw [lenStepEnc]
+  simp only [Nat.unpair_pair]
+  -- σenc = encode (jstr C y)
+  have hσ : graphEnc (jReal C) (jstr C y).length = Part.some (Encodable.encode (jstr C y)) := by
+    rw [graphEnc, ← jstr_eq_graphOf]
+  rw [hσ, Part.bind_eq_bind, Part.bind_some]
+  -- aBit = jExists decision
+  have haBit : Cantor.toPFun (Cantor.jump (jReal C)) y
+      = Part.some (if jExists (jstr C y) y then 1 else 0) := by
+    rw [Cantor.toPFun, jump]
+    simp only [jumpP]
+    by_cases hj : jExists (jstr C y) y
+    · rw [if_pos hj]; simp [(dom_iff_jExists C y).mpr hj]
+    · rw [if_neg hj]
+      have hnd : ¬ (eval (Cantor.toPFun (jReal C)) (ofNatCode y) y).Dom :=
+        fun hd => hj ((dom_iff_jExists C y).mp hd)
+      simp [hnd]
+  rw [haBit, Part.bind_eq_bind, Part.bind_some]
+  by_cases hj : jExists (jstr C y) y
+  · rw [if_pos hj]
+    show (jFun (Nat.pair (Encodable.encode (jstr C y)) y)).map _ = _
+    rw [jFun_eq_find (jstr C y) y hj, Part.map_some]
+    have hjstr : (jstr C (y + 1)).length
+        = (jstr C y).length + (boolExt (Nat.unpair (Nat.find hj)).1).length + 1 := by
+      rw [jstr, if_pos hj, jtau, dif_pos hj]
+      simp only [List.length_append, List.length_cons, List.length_nil, Nat.add_assoc]
+    rw [hjstr]
+  · rw [if_neg hj]
+    show Part.some ((jstr C y).length + 1) = _
+    have hjstr : (jstr C (y + 1)).length = (jstr C y).length + 1 := by
+      rw [jstr, if_neg hj]
+      simp only [List.length_append, List.length_cons, List.length_nil]
+    rw [hjstr]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
@@ -640,3 +689,4 @@ end OracleCode
 #print axioms OracleCode.jReal_le
 #print axioms OracleCode.jump_jReal_le
 #print axioms OracleCode.C_eq_jReal
+#print axioms OracleCode.lenStepEnc_spec

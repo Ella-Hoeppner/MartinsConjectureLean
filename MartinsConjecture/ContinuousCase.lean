@@ -194,7 +194,37 @@ theorem decVal_eq_zero_iff (X : ℕ → Bool) (e m : ℕ) :
     by_cases he : extHaltsFrom (graphOf (bitg X) (Nat.unpair m).2) e (Nat.unpair m).1 <;>
     simp [hh, he]
 
+/-- **Correctness kernel.**  At any *decisive* stage `ℓ`, the positive test reads
+off the true bit of `Wˣ` at `n`: `[haltsOn (X↾ℓ)] = bitg Wˣ n`.  (If the prefix
+halts, `n ∈ Wˣ`; if no extension halts, no prefix of `X` halts either — by
+monotonicity and `graphOf` prefixing — so `n ∉ Wˣ`.) -/
+theorem decisive_answer (X : ℕ → Bool) (e n ℓ : ℕ)
+    (hdec : haltsOn (graphOf (bitg X) ℓ) e n ∨ ¬ extHaltsFrom (graphOf (bitg X) ℓ) e n) :
+    (if haltsOn (graphOf (bitg X) ℓ) e n then (1 : ℕ) else 0) = bitg (reReal e X) n := by
+  have hiff : haltsOn (graphOf (bitg X) ℓ) e n ↔ reReal e X n = true := by
+    rw [reReal_eq_true_iff]
+    constructor
+    · intro h; exact ⟨ℓ, h⟩
+    · rintro ⟨ℓ', hℓ'⟩
+      rcases hdec with hh | hne
+      · exact hh
+      · exfalso
+        apply hne
+        rcases le_total ℓ' ℓ with hle | hle
+        · exact ⟨[], by rw [List.append_nil]; exact haltsOn_mono (graphOf_prefix hle) hℓ'⟩
+        · obtain ⟨τ, hτ⟩ := graphOf_prefix hle
+          exact ⟨τ, hτ ▸ hℓ'⟩
+  by_cases hh : haltsOn (graphOf (bitg X) ℓ) e n
+  · rw [if_pos hh, bitg, hiff.mp hh]; rfl
+  · rw [if_neg hh, bitg]
+    have hf : reReal e X n = false := by
+      cases hb : reReal e X n
+      · rfl
+      · exact absurd (hiff.mpr hb) hh
+    rw [hf]; rfl
+
 end OracleCode
 
 #print axioms OracleCode.extHaltsFrom_recursiveIn_jump
 #print axioms OracleCode.haltsOn_recursiveIn_jump
+#print axioms OracleCode.decisive_answer

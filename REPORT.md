@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13 (five work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, ~1052 jobs, 37 files, ~7.9k lines.
-**Sorry count: 0. Custom axioms: 0** (123 headline theorems audited; every one uses only
+`lake-manifest.json`). Full `lake build`: green, ~1053 jobs, 38 files, ~8.7k lines.
+**Sorry count: 0. Custom axioms: 0** (127 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
@@ -30,6 +30,14 @@ Recursion-theory foundation (`OracleCode.*`, `Cantor.*`):
   `0′ ≤ᵀ X`) — a genuine half of Lachlan's theorem, with the full `local_dichotomy` skeleton;
   supported by the operator use principle, computable composition of functionals
   (`eval_trE_comp`), Bard's Fact 3.1 (`joinFam_le`), and `Wˣ ≤ᵀ X′` (`reReal_le_jump`).
+- **The Friedberg Jump Inversion Theorem** (`jump_inversion`): *every Turing degree above the
+  halting problem is a jump* — for every `C ≥ᵀ 0′` there is an `A ≤ᵀ C` with `A′ ≡ᵀ C`.  The
+  full finite-extension construction relative to `C`: each stage consults the extension-halting
+  oracle (`0′`-decidable, hence `C`-decidable) and appends the least forcing extension then a
+  bit of `C`.  `A ≤ᵀ C` (the construction is `C`-computable), `A′ ≤ᵀ C` (the jump is read off
+  the `C`-computable stage decisions via the use principle), and `C ≤ᵀ A′` (decode by
+  reconstructing the coding positions from `A′` through an `A′`-computable length recursion,
+  using `A ≤ᵀ A′`).  ~830 lines, all standard axioms — believed the first Lean proof.
 - Upper-semilattice join on Cantor points; infinitely many degrees; no maximal degree.
 
 Martin's-conjecture layer (`Martin.*`):

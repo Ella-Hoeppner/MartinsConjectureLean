@@ -128,4 +128,175 @@ theorem eval_cGraph (X : ℕ → Bool) (k : ℕ) :
 
 #print axioms eval_cGraph
 
+/-! ### The oracle-free ingredients and the assembled universal code -/
+
+/-- Decoded `evaln` as a primitive recursive function (local copy). -/
+def uEvalnD : ℕ → Option ℕ := fun v =>
+  evaln (Nat.unpair (Nat.unpair v).1).2
+    ((Encodable.decode (α := List ℕ) (Nat.unpair v).2).getD [])
+    (ofNatCode (Nat.unpair (Nat.unpair (Nat.unpair v).1).1).1)
+    (Nat.unpair (Nat.unpair (Nat.unpair v).1).1).2
+
+theorem uEvalnD_prim : Primrec uEvalnD := by
+  have hg : Primrec fun v : ℕ =>
+      ((((Nat.unpair (Nat.unpair v).1).2,
+        (Encodable.decode (α := List ℕ) (Nat.unpair v).2).getD []),
+        ofNatCode (Nat.unpair (Nat.unpair (Nat.unpair v).1).1).1),
+        (Nat.unpair (Nat.unpair (Nat.unpair v).1).1).2) := by
+    refine Primrec.pair (Primrec.pair (Primrec.pair ?_ ?_) ?_) ?_
+    · exact Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))
+    · exact Primrec.option_getD.comp
+        (Primrec.decode.comp (Primrec.snd.comp Primrec.unpair))
+        (Primrec.const ([] : List ℕ))
+    · exact (Primrec.ofNat OracleCode).comp
+        (Primrec.fst.comp (Primrec.unpair.comp
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+    · exact Primrec.snd.comp (Primrec.unpair.comp
+        (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+  exact evaln_prim.comp hg
+
+theorem uEvalnD_graph (X : ℕ → Bool) (p k : ℕ) :
+    uEvalnD (Nat.pair (Nat.pair p k) (Encodable.encode (graphOf (bitg X) k)))
+      = evaln k (graphOf (bitg X) k) (ofNatCode (Nat.unpair p).1) (Nat.unpair p).2 := by
+  rw [uEvalnD]; simp [Nat.unpair_pair, Encodable.encodek]
+
+/-- Stage test: `0` iff stage `k` already answers. -/
+def uTs : ℕ → ℕ := fun v => cond (uEvalnD v).isSome 0 1
+
+theorem uTs_prim : Primrec uTs :=
+  Primrec.cond (Primrec.option_isSome.comp uEvalnD_prim) (Primrec.const 0) (Primrec.const 1)
+
+/-- Value extraction. -/
+def uExtv : ℕ → ℕ := fun v => (uEvalnD v).getD 0
+
+theorem uExtv_prim : Primrec uExtv := Primrec.option_getD.comp uEvalnD_prim (Primrec.const 0)
+
+/-- Oracle-generic code for the stage test. -/
+noncomputable def cTs : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec (Primrec.nat_iff.mp uTs_prim))).choose
+
+theorem cTs_spec (O : ℕ →. ℕ) (v : ℕ) : eval O cTs v = Part.some (uTs v) :=
+  congrFun ((exists_code_of_partrec
+    (Nat.Partrec.of_primrec (Primrec.nat_iff.mp uTs_prim))).choose_spec O) v
+
+/-- Oracle-generic code for extraction. -/
+noncomputable def cExtv : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec (Primrec.nat_iff.mp uExtv_prim))).choose
+
+theorem cExtv_spec (O : ℕ →. ℕ) (v : ℕ) : eval O cExtv v = Part.some (uExtv v) :=
+  congrFun ((exists_code_of_partrec
+    (Nat.Partrec.of_primrec (Primrec.nat_iff.mp uExtv_prim))).choose_spec O) v
+
+/-- Assemble `⟨p, k⟩ ↦ ⟨⟨p,k⟩, graphEnc X k⟩` — the argument the stage test consumes. -/
+noncomputable def asmCode : OracleCode := .pair idCode (.comp cGraph .right)
+
+theorem eval_asmCode (X : ℕ → Bool) (p k : ℕ) :
+    eval (toPFun X) asmCode (Nat.pair p k)
+      = Part.some (Nat.pair (Nat.pair p k) (Encodable.encode (graphOf (bitg X) k))) := by
+  have hg : eval (toPFun X) (.comp cGraph .right) (Nat.pair p k)
+      = Part.some (Encodable.encode (graphOf (bitg X) k)) := by
+    rw [eval_comp, eval_right_app,
+      show (Part.some k >>= eval (toPFun X) cGraph) = eval (toPFun X) cGraph k from
+        Part.bind_some _ _, eval_cGraph, graphEnc]
+  rw [asmCode, eval_pair_eq, eval_idCode, hg]
+  simp only [Part.map_some, Part.bind_some]
+
+/-- The stage search: least `k` at which `evaln` answers. -/
+noncomputable def cSearch : OracleCode := .rfind (.comp cTs asmCode)
+
+/-- **The explicit universal machine.** -/
+noncomputable def univCode : OracleCode := .comp cExtv (.comp asmCode (.pair idCode cSearch))
+
+/-- The inner stage-test value. -/
+theorem eval_test (X : ℕ → Bool) (p k : ℕ) :
+    eval (toPFun X) (.comp cTs asmCode) (Nat.pair p k)
+      = Part.some (uTs (Nat.pair (Nat.pair p k) (Encodable.encode (graphOf (bitg X) k)))) := by
+  rw [eval_comp, eval_asmCode,
+    show (Part.some (Nat.pair (Nat.pair p k) (Encodable.encode (graphOf (bitg X) k)))
+        >>= eval (toPFun X) cTs)
+      = eval (toPFun X) cTs (Nat.pair (Nat.pair p k) (Encodable.encode (graphOf (bitg X) k)))
+      from Part.bind_some _ _, cTs_spec]
+
+/-- Membership in the stage search: `v` is the least stage that answers. -/
+theorem mem_cSearch (X : ℕ → Bool) (p v : ℕ) :
+    v ∈ eval (toPFun X) cSearch p ↔
+      uTs (Nat.pair (Nat.pair p v) (Encodable.encode (graphOf (bitg X) v))) = 0
+      ∧ ∀ m < v, uTs (Nat.pair (Nat.pair p m) (Encodable.encode (graphOf (bitg X) m))) ≠ 0 := by
+  rw [cSearch, mem_eval_rfind]
+  constructor
+  · rintro ⟨h1, h2⟩
+    rw [eval_test, Part.mem_some_iff] at h1
+    refine ⟨h1.symm, fun m hm => ?_⟩
+    obtain ⟨x, hx, hxne⟩ := h2 m hm
+    rw [eval_test, Part.mem_some_iff] at hx
+    rw [← hx]; exact hxne
+  · rintro ⟨h1, h2⟩
+    refine ⟨by rw [eval_test]; exact Part.mem_some_iff.mpr h1.symm, fun m hm => ?_⟩
+    exact ⟨_, by rw [eval_test]; exact Part.mem_some _, h2 m hm⟩
+
+/-- `uTs = 0` exactly means `evaln` answers at that stage. -/
+theorem uTs_eq_zero_iff (X : ℕ → Bool) (p k : ℕ) :
+    uTs (Nat.pair (Nat.pair p k) (Encodable.encode (graphOf (bitg X) k))) = 0
+      ↔ (evaln k (graphOf (bitg X) k) (ofNatCode (Nat.unpair p).1) (Nat.unpair p).2).isSome := by
+  rw [uTs, uEvalnD_graph]
+  cases (evaln k (graphOf (bitg X) k) (ofNatCode (Nat.unpair p).1) (Nat.unpair p).2).isSome <;>
+    simp
+
+/-- **Universality of the explicit code**: for every total `0/1` oracle `X`,
+`univCode` on `⟨e,n⟩` computes `Φ_e^X(n)`.  A single `OracleCode` valid for all
+oracles — the artifact `eval_universal` supplies only per-oracle. -/
+theorem eval_univCode (X : ℕ → Bool) (p : ℕ) :
+    eval (toPFun X) univCode p
+      = eval (toPFun X) (ofNatCode (Nat.unpair p).1) (Nat.unpair p).2 := by
+  have hO : ∀ i, toPFun X i = Part.some (bitg X i) := toPFun_eq_bitg X
+  apply Part.ext
+  intro y
+  constructor
+  · -- forward: unfold `univCode` and read off the answer via `evaln_sound`
+    intro hy
+    rw [univCode, mem_eval_comp] at hy
+    obtain ⟨b, hb, hyb⟩ := hy
+    rw [cExtv_spec, Part.mem_some_iff] at hyb
+    rw [mem_eval_comp] at hb
+    obtain ⟨c, hc, hbc⟩ := hb
+    rw [mem_eval_pair] at hc
+    obtain ⟨a, ha, d, hd, hcad⟩ := hc
+    rw [eval_idCode, Part.mem_some_iff] at ha
+    subst a
+    subst hcad
+    rw [eval_asmCode, Part.mem_some_iff] at hbc
+    subst hbc
+    rw [mem_cSearch] at hd
+    have hsome := (uTs_eq_zero_iff X p d).mp hd.1
+    obtain ⟨v, hv⟩ := Option.isSome_iff_exists.mp hsome
+    rw [hyb, uExtv, uEvalnD_graph, hv, Option.getD_some]
+    exact evaln_sound (graphOf_sound hO d) hv
+  · -- backward: `evaln` converges somewhere, so the search halts at the least stage
+    intro hy
+    obtain ⟨k₀, hk₀⟩ := evaln_complete hO hy
+    have hk₀some : (evaln k₀ (graphOf (bitg X) k₀)
+        (ofNatCode (Nat.unpair p).1) (Nat.unpair p).2).isSome := by rw [hk₀]; rfl
+    have hdom : (eval (toPFun X) cSearch p).Dom := by
+      rw [cSearch, dom_eval_rfind]
+      refine ⟨k₀, ?_, fun m _ => ?_⟩
+      · rw [eval_test]; exact Part.mem_some_iff.mpr ((uTs_eq_zero_iff X p k₀).mpr hk₀some).symm
+      · rw [eval_test]; trivial
+    obtain ⟨d, hd⟩ := Part.dom_iff_mem.mp hdom
+    have hdz := (mem_cSearch X p d).mp hd
+    have hsome := (uTs_eq_zero_iff X p d).mp hdz.1
+    obtain ⟨v, hv⟩ := Option.isSome_iff_exists.mp hsome
+    have hvy : v = y :=
+      Part.mem_unique (evaln_sound (graphOf_sound hO d) hv) hy
+    rw [univCode, mem_eval_comp]
+    refine ⟨Nat.pair (Nat.pair p d) (Encodable.encode (graphOf (bitg X) d)), ?_, ?_⟩
+    · rw [mem_eval_comp]
+      refine ⟨Nat.pair p d, ?_, ?_⟩
+      · rw [mem_eval_pair]
+        exact ⟨p, by rw [eval_idCode]; exact Part.mem_some _, d, hd, rfl⟩
+      · rw [eval_asmCode]; exact Part.mem_some _
+    · rw [cExtv_spec, uExtv, uEvalnD_graph, hv, Option.getD_some, hvy]
+      exact Part.mem_some _
+
+#print axioms eval_univCode
+
 end OracleCode

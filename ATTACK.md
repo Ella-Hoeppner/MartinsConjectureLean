@@ -225,11 +225,19 @@ externally Bard's Lemma 3.8.
    (`shiftVal_recursiveIn`), assembled with a lazy `prec`-selection (`nat_rec_bif` helpers) and
    correctness `hStageSearch_eq`/`witEncSearch_eq`/`shift_eq_yc`.  Packaged by s-m-n as
    `yc_forward` (computable `r` with `Φ_{r c}^X = Y_c`).
-2. **`X ≤ᵀ yc`** — remaining.  An oracle-*generic* recovery code `cM` (run `Φ_c^{Y_c}(c)` bounded
-   via the oracle's own graph = `cGraph`, then un-shift `O(m+|w|)`), correct because `Φ_c`'s use
-   lies below the halting stage where `Y_c = X`; then `s c := curryEnc ⌜cM⌝ c`.  This is the
-   univCode-scale *explicit* code build (~200 lines, `cGraph` + `evaln`-codes + `rfind` +
-   O-queries + un-shift selection).  Then `HasCodingFamily := ⟨r, s, …⟩`.  Externally: Bard 3.8.  With it, `cM` (recovery = bounded
+2. **`X ≤ᵀ yc`** — **DONE (2026-08-14).**  `yc_backward`: via `recFnK` (fixed shift
+   `K = |wit|`, *no search* — un-shift `O(m+K)` vs `O(m)` selected by `haltedBit`), unconditional.
+   Correctness `recFn_yc`/`recFnK_eq_recFn` uses the agreement lemmas (`Y_c` and `X` share graph
+   prefix/halting-stage/witness below the stage, since `Φ_c`'s use is there).  **`yc_equiv`:
+   `Y_c ≡ᵀ X`** (both directions; forward needs `hd`).  This is the full degree-level content.
+
+**Remaining for `HasCodingFamily` (the s-m-n *interface*):** `yc_forward` already gives the
+computable forward code `r`.  The backward code `s` needs a *uniform* (oracle-generic) recovery
+code — the fixed-`K` `recFnK` can't be s-m-n'd (its `K=|wit|` is `X`-dependent), so `s` must run
+the `wit` search *inside* the code (compute `K` from the oracle at runtime).  That is the
+univCode-scale explicit build (`cGraph` + `evaln`-codes + `rfind` + O-queries + prec-select,
+~200 lines).  With it `HasCodingFamily := ⟨r, s, …⟩` and Lachlan's discontinuous case lands
+(modulo Bard 3.8).  The *mathematics* is fully done (`yc_equiv`); this is code-plumbing.  With it, `cM` (recovery = bounded
 universal sim + un-shift) and `cY` assemble `HasCodingFamily`; then Bard 3.8 (bare uniform
 invariance ⟹ computable) is the last external lemma.  Math certain; scope is a dedicated session.
 

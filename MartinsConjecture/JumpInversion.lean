@@ -382,8 +382,106 @@ theorem jStepEnc_spec (C : ℕ → Bool) (a y : ℕ) :
     congr 1
     rw [jstr, if_neg hj]
 
+/-- The query `⟪c, y⟫` extracted from a prec argument `⟪a, ⟪y, c⟫⟫`. -/
+def jQ (arg : ℕ) : ℕ :=
+  Nat.pair (Nat.unpair (Nat.unpair arg).2).2 (Nat.unpair (Nat.unpair arg).2).1
+
+theorem jQ_prim : Primrec jQ := by
+  unfold jQ
+  exact Primrec₂.natPair.comp
+    (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))
+    (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))
+
+/-- The stage-`y` code `c` extracted from `arg = ⟪a, ⟪y, c⟫⟫`. -/
+def jC (arg : ℕ) : ℕ := (Nat.unpair (Nat.unpair arg).2).2
+
+theorem jC_prim : Primrec jC :=
+  Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+
+/-- The stage index `y`. -/
+def jY (arg : ℕ) : ℕ := (Nat.unpair (Nat.unpair arg).2).1
+
+theorem jY_prim : Primrec jY :=
+  Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+
+/-- Base assembly on `p = ⟪arg, cb⟫`: `encode (jstr-code ++ [cb])`. -/
+def jBaseFn (p : ℕ) : ℕ :=
+  Encodable.encode (jDecode (jC (Nat.unpair p).1) ++ [(Nat.unpair p).2])
+
+theorem jBaseFn_prim : Primrec jBaseFn := by
+  unfold jBaseFn
+  exact Primrec.encode.comp (Primrec.list_append.comp
+    (jDecode_prim.comp (jC_prim.comp (Primrec.fst.comp Primrec.unpair)))
+    (Primrec.list_cons.comp (Primrec.snd.comp Primrec.unpair) (Primrec.const [])))
+
+/-- Force assembly on `pw = ⟪⟪arg, cb⟫, w⟫`:
+`encode (jstr-code ++ boolExt(w) ++ [cb])`. -/
+def jAssembleFn (pw : ℕ) : ℕ :=
+  Encodable.encode
+    (jDecode (jC (Nat.unpair (Nat.unpair pw).1).1)
+      ++ boolExt (Nat.unpair (Nat.unpair pw).2).1
+      ++ [(Nat.unpair (Nat.unpair pw).1).2])
+
+theorem jAssembleFn_prim : Primrec jAssembleFn := by
+  unfold jAssembleFn
+  exact Primrec.encode.comp (Primrec.list_append.comp
+    (Primrec.list_append.comp
+      (jDecode_prim.comp (jC_prim.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+      (boolExt_prim.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))))
+    (Primrec.list_cons.comp (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+      (Primrec.const [])))
+
+/-- The forcing step (no coding bit), on `p = ⟪arg, cb⟫`, recursive in `0′`. -/
+noncomputable def innerEnc (p : ℕ) : Part ℕ :=
+  ((if (∃ w, jTest (jQ (Nat.unpair p).1) w = 0) then 1 else 0 : ℕ) : Part ℕ) >>= fun d =>
+    Nat.rec (Part.some (jBaseFn p))
+      (fun _ _ => (jFun (jQ (Nat.unpair p).1)).map
+        (fun w => jAssembleFn (Nat.pair p w)))
+      d
+
+theorem innerEnc_recursiveIn : Nat.RecursiveIn {jumpFn emptyO} innerEnc := by
+  have hdec : Nat.RecursiveIn {jumpFn emptyO}
+      (fun p : ℕ => ((if (∃ w, jTest (jQ (Nat.unpair p).1) w = 0) then 1 else 0 : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp jExists_recursiveIn_jump
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (jQ_prim.comp (Primrec.fst.comp Primrec.unpair))))).of_eq
+      fun p => by rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hbase : Nat.RecursiveIn {jumpFn emptyO} (fun p : ℕ => ((jBaseFn p : ℕ) : Part ℕ)) :=
+    Nat.Primrec.recursiveIn (Primrec.nat_iff.mp jBaseFn_prim)
+  have hsrchp : Nat.RecursiveIn {jumpFn emptyO}
+      (fun p : ℕ => jFun (jQ (Nat.unpair (Nat.unpair p).1).1)) :=
+    (Nat.RecursiveIn.comp jFun_partrec.recursiveIn
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (jQ_prim.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))))).of_eq
+      fun p => by rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hstep : Nat.RecursiveIn {jumpFn emptyO} (fun p : ℕ =>
+      (Nat.pair <$> ((p : ℕ) : Part ℕ) <*> jFun (jQ (Nat.unpair (Nat.unpair p).1).1))
+        >>= fun pw : ℕ =>
+          ((jAssembleFn (Nat.pair (Nat.unpair (Nat.unpair pw).1).1 (Nat.unpair pw).2) : ℕ)
+            : Part ℕ)) :=
+    Nat.RecursiveIn.comp
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (jAssembleFn_prim.comp
+        (Primrec₂.natPair.comp
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+          (Primrec.snd.comp Primrec.unpair)))))
+      (Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hsrchp)
+  have hprec := Nat.RecursiveIn.prec hbase hstep
+  have hpairing : Nat.RecursiveIn {jumpFn emptyO} (fun p : ℕ =>
+      Nat.pair <$> ((p : ℕ) : Part ℕ) <*>
+        ((if (∃ w, jTest (jQ (Nat.unpair p).1) w = 0) then 1 else 0 : ℕ) : Part ℕ)) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hdec
+  refine (Nat.RecursiveIn.comp hprec hpairing).of_eq fun p => ?_
+  simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, Seq.seq,
+    Part.map_eq_map, Part.map_some, Nat.unpair_pair]
+  rw [innerEnc]
+  by_cases hd : ∃ w, jTest (jQ (Nat.unpair p).1) w = 0
+  · rw [if_pos hd]
+    simp [Part.bind_some, Part.bind_eq_bind, Part.bind_some_eq_map, Part.map_map,
+      Function.comp_def, Nat.unpair_pair]
+  · rw [if_neg hd]
+    simp [Part.bind_some, Part.bind_eq_bind, Nat.unpair_pair]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
 #print axioms OracleCode.dom_iff_jExists
-#print axioms OracleCode.jExists_recursiveIn_jump
+#print axioms OracleCode.innerEnc_recursiveIn

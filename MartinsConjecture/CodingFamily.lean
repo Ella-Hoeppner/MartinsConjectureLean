@@ -322,5 +322,88 @@ theorem hStageSearch_eq (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
 
 #print axioms hStageSearch_eq
 
+/-! ### The witness μ-search is `X`-recursive -/
+
+/-- Encode the oracle table `X↾t ⌢ (decoded witness of p)` from `encode (X↾t)` and `p`. -/
+def encTable (g p : ℕ) : ℕ :=
+  Encodable.encode ((Encodable.decode (α := List ℕ) g).getD []
+    ++ ((Encodable.decode (α := List Bool) (Nat.unpair p).1).getD []).map bbit)
+
+theorem bbit_prim : Primrec bbit :=
+  Primrec.cond Primrec.id (Primrec.const 1) (Primrec.const 0)
+
+theorem encTable_prim : Primrec₂ encTable :=
+  Primrec.encode.comp (Primrec.list_append.comp
+    (Primrec.option_getD.comp (Primrec.decode.comp Primrec.fst) (Primrec.const ([] : List ℕ)))
+    ((Primrec.list_map (Primrec.option_getD.comp
+        (Primrec.decode.comp (Primrec.fst.comp (Primrec.unpair.comp Primrec.snd)))
+        (Primrec.const ([] : List Bool))) (bbit_prim.comp Primrec.snd).to₂)))
+
+theorem witPair_eq_uEvalnD (e n₀ : ℕ) (X : ℕ → Bool) (t p : ℕ) :
+    witPair e n₀ X t p
+      = (uEvalnD (Nat.pair (Nat.pair (Nat.pair e n₀) (Nat.unpair p).2)
+          (encTable (Encodable.encode (graphOf (bitg X) t)) p))).isSome := by
+  rw [witPair, uEvalnD, encTable]
+  simp [Nat.unpair_pair, Encodable.encodek]
+
+/-- The witness-pair test `⟨t,p⟩ ↦ [pair p witnesses at stage t]` (`0` when it does),
+recursive in `X`. -/
+theorem witPairVal_recursiveIn (e n₀ : ℕ) (X : ℕ → Bool) :
+    Nat.RecursiveIn {toPFun X}
+      (fun w => ((bif witPair e n₀ X (Nat.unpair w).1 (Nat.unpair w).2 then 0 else 1 : ℕ)
+        : Part ℕ)) := by
+  have hg : Nat.RecursiveIn {toPFun X} (fun w => graphEnc X (Nat.unpair w).1) :=
+    (Nat.RecursiveIn.comp (graphEnc_recursiveIn X)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.fst.comp Primrec.unpair)))).of_eq
+      fun w => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hid : Nat.RecursiveIn {toPFun X} (fun w : ℕ => ((w : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hpair : Nat.RecursiveIn {toPFun X}
+      (fun w => Nat.pair <$> ((w : ℕ) : Part ℕ) <*> graphEnc X (Nat.unpair w).1) :=
+    Nat.RecursiveIn.pair hid hg
+  -- primrec test on ⟨w, g⟩: g = encode (graphOf X t)
+  have htest : Nat.Primrec fun z =>
+      (bif (uEvalnD (Nat.pair (Nat.pair (Nat.pair e n₀)
+        (Nat.unpair (Nat.unpair (Nat.unpair z).1).2).2)
+        (encTable (Nat.unpair z).2 (Nat.unpair (Nat.unpair z).1).2))).isSome
+      then 0 else 1 : ℕ) := by
+    refine Primrec.nat_iff.mp (Primrec.cond
+      (Primrec.option_isSome.comp (uEvalnD_prim.comp ?_)) (Primrec.const 0) (Primrec.const 1))
+    refine Primrec₂.natPair.comp (Primrec₂.natPair.comp
+      (Primrec₂.natPair.comp (Primrec.const e) (Primrec.const n₀))
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp
+        (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))) ?_
+    exact encTable_prim.comp (Primrec.snd.comp Primrec.unpair)
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+  refine (Nat.RecursiveIn.comp htest.recursiveIn hpair).of_eq fun w => ?_
+  rw [show graphEnc X (Nat.unpair w).1
+      = Part.some (Encodable.encode (graphOf (bitg X) (Nat.unpair w).1)) from rfl]
+  simp only [Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+    Part.coe_some, Nat.unpair_pair]
+  rw [← witPair_eq_uEvalnD]
+
+/-- The witness search, recursive in `X`. -/
+theorem witEncSearch_recursiveIn (e n₀ : ℕ) (X : ℕ → Bool) :
+    Nat.RecursiveIn {toPFun X} (fun t => Nat.rfind fun p =>
+      (fun x => x = 0) <$> ((bif witPair e n₀ X t p then 0 else 1 : ℕ) : Part ℕ)) :=
+  (Nat.RecursiveIn.rfind (witPairVal_recursiveIn e n₀ X)).of_eq fun t => by
+    simp only [Nat.unpair_pair]
+
+/-- When a `0/1` witness exists at stage `t`, the search returns `witEnc e n₀ X t`. -/
+theorem witEncSearch_eq (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ)
+    (h : ∃ p, witPair e n₀ X t p = true) :
+    (Nat.rfind fun p => (fun x => x = 0) <$>
+      ((bif witPair e n₀ X t p then 0 else 1 : ℕ) : Part ℕ)) = Part.some (witEnc e n₀ X t) := by
+  have hwe : witEnc e n₀ X t = Nat.find h := dif_pos h
+  refine Part.eq_some_iff.mpr (Nat.mem_rfind.mpr ⟨?_, fun {m} hm => ?_⟩)
+  · rw [Part.map_eq_map, Part.mem_map_iff, hwe]
+    exact ⟨_, Part.mem_some _, by rw [Nat.find_spec h]; rfl⟩
+  · rw [Part.map_eq_map, Part.mem_map_iff]
+    rw [hwe] at hm
+    exact ⟨_, Part.mem_some _, by
+      have := Nat.find_min h hm; rw [Bool.not_eq_true] at this; rw [this]; rfl⟩
+
+#print axioms witEncSearch_eq
+
 end Coding
 end OracleCode

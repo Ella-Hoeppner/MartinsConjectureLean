@@ -231,13 +231,20 @@ externally Bard's Lemma 3.8.
    prefix/halting-stage/witness below the stage, since `Φ_c`'s use is there).  **`yc_equiv`:
    `Y_c ≡ᵀ X`** (both directions; forward needs `hd`).  This is the full degree-level content.
 
-**Remaining for `HasCodingFamily` (the s-m-n *interface*):** `yc_forward` already gives the
-computable forward code `r`.  The backward code `s` needs a *uniform* (oracle-generic) recovery
-code — the fixed-`K` `recFnK` can't be s-m-n'd (its `K=|wit|` is `X`-dependent), so `s` must run
-the `wit` search *inside* the code (compute `K` from the oracle at runtime).  That is the
-univCode-scale explicit build (`cGraph` + `evaln`-codes + `rfind` + O-queries + prec-select,
-~200 lines).  With it `HasCodingFamily := ⟨r, s, …⟩` and Lachlan's discontinuous case lands
-(modulo Bard 3.8).  The *mathematics* is fully done (`yc_equiv`); this is code-plumbing.  With it, `cM` (recovery = bounded
+**`HasCodingFamily` — DISCHARGED (2026-08-14, `CodingFamilyCode.lean`).**  `hasCodingFamily`:
+from the discontinuity data `(hnp, hd)`, `⟨r, s, marker_property⟩`.  `r = yc_forward`; `s =
+yc_backward_code` — the *uniform* backward code built explicitly: `cRecCode`, an oracle-generic
+`OracleCode` (`cGraph` + oracle-free `evaln`/test codes via `exists_code_of_partrec` + `rfind`
+searches `cHStage`/`cWitSearch` + oracle queries + `prec`-select), running the `wit` search
+*inside* the code (so `K=|wit|` is computed from the oracle at runtime, not baked in).
+`eval_cRecCode` proves it recovers `X` from `Y_c`, then `curryEnc` gives the computable `s`.
+
+**Lachlan's discontinuous case — COMPLETE (modulo Bard 3.8):** `discontinuous_case_complete`:
+a computably-uniform operator that is `0/1`-discontinuous at `X` has `Wˣ ≡ᵀ X′`; and
+`no_operator_post_solution_complete`: it is never strictly between `X` and `X′`.  The coding
+construction is now fully *built*, not assumed.  **The one remaining ingredient for Lachlan's
+theorem is Bard's Lemma 3.8** (bare uniform invariance ⟹ computable uniformity) + globalizing
+the local dichotomy to a cone (Turing determinacy, via `cone_theorem`).  With it, `cM` (recovery = bounded
 universal sim + un-shift) and `cY` assemble `HasCodingFamily`; then Bard 3.8 (bare uniform
 invariance ⟹ computable) is the last external lemma.  Math certain; scope is a dedicated session.
 

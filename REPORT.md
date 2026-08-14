@@ -6,8 +6,13 @@
 **Sorry count: 0. Custom axioms: 0** (144 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
-**Headline this session: Lachlan's theorem for r.e. operators, globalized to a cone**
-(`Martin.lachlan_dichotomy_cone`, `Martin.lachlan_no_post_solution_cone`) — see below.
+**Headline this session:**
+1. **Lachlan's theorem for r.e. operators, globalized to a cone**
+   (`Martin.lachlan_dichotomy_cone`, `Martin.lachlan_no_post_solution_cone`).
+2. **Part I of Martin's conjecture for computably-uniformly-invariant functions**
+   (`Martin.partI_computablyUniform` — Slaman–Steel 1988, effective form), via Bard's local
+   theorem (`Martin.bard_local`, `Martin.steel_kernel_computable`); **both Part I open cores
+   proved for that class** (`Martin.regressive_computablyUniform`, `…incomparable…`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
 

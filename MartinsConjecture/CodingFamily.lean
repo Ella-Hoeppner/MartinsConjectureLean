@@ -222,5 +222,52 @@ theorem marker_property (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ)
     rw [graphOf_yc e n₀ X c hconv]
     exact wit_spec e n₀ X (hStage X c) (hd (hStage X c))
 
+/-! ### Forward reduction groundwork: the halted bit is `X`-recursive -/
+
+/-- `haltedB X c m` equals the `isSome` of the universal decoder on the packed
+input, so it is recursive in `X` (bounded simulation via the oracle's own graph). -/
+theorem haltedB_eq_uEvalnD (X : ℕ → Bool) (c m : ℕ) :
+    haltedB X c m
+      = (uEvalnD (Nat.pair (Nat.pair (Nat.pair c c) m)
+          (Encodable.encode (graphOf (bitg X) m)))).isSome := by
+  rw [haltedB, uEvalnD_graph]
+  simp only [Nat.unpair_pair]
+
+/-- The halted bit `⟨c,m⟩ ↦ [Φ_c^X(c) halts within m steps]` is recursive in `X`. -/
+theorem haltedBit_recursiveIn (X : ℕ → Bool) :
+    Nat.RecursiveIn {toPFun X}
+      (fun q => ((bif haltedB X (Nat.unpair q).1 (Nat.unpair q).2 then 1 else 0 : ℕ) : Part ℕ)) := by
+  have hg : Nat.RecursiveIn {toPFun X} (fun q => graphEnc X (Nat.unpair q).2) :=
+    (Nat.RecursiveIn.comp (graphEnc_recursiveIn X)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.snd.comp Primrec.unpair)))).of_eq
+      fun q => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hid : Nat.RecursiveIn {toPFun X} (fun q : ℕ => ((q : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hpair : Nat.RecursiveIn {toPFun X}
+      (fun q => Nat.pair <$> ((q : ℕ) : Part ℕ) <*> graphEnc X (Nat.unpair q).2) :=
+    Nat.RecursiveIn.pair hid hg
+  have htest : Nat.Primrec fun w =>
+      (bif (uEvalnD (Nat.pair (Nat.pair (Nat.pair (Nat.unpair (Nat.unpair w).1).1
+        (Nat.unpair (Nat.unpair w).1).1) (Nat.unpair (Nat.unpair w).1).2)
+        (Nat.unpair w).2)).isSome then 1 else 0 : ℕ) := by
+    refine Primrec.nat_iff.mp (Primrec.cond
+      (Primrec.option_isSome.comp (uEvalnD_prim.comp ?_))
+      (Primrec.const 1) (Primrec.const 0))
+    exact Primrec₂.natPair.comp
+      (Primrec₂.natPair.comp
+        (Primrec₂.natPair.comp
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+          (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+        (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+      (Primrec.snd.comp Primrec.unpair)
+  refine (Nat.RecursiveIn.comp htest.recursiveIn hpair).of_eq fun q => ?_
+  rw [show graphEnc X (Nat.unpair q).2
+      = Part.some (Encodable.encode (graphOf (bitg X) (Nat.unpair q).2)) from rfl]
+  simp only [Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+    Part.coe_some, Nat.unpair_pair]
+  rw [← haltedB_eq_uEvalnD]
+
+#print axioms haltedBit_recursiveIn
+
 end Coding
 end OracleCode

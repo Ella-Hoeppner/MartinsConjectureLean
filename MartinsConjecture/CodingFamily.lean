@@ -671,5 +671,43 @@ theorem wit_yc (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
     wit e n₀ (yc e n₀ X c) (hStage (yc e n₀ X c) c) = wit e n₀ X (hStage X c) := by
   rw [hStage_yc e n₀ X c h, wit, wit, witEnc_yc e n₀ X c h]
 
+/-- On the shifted tail, `Y_c` at `m + |w|` copies `X` at `m`. -/
+theorem yc_shift (e n₀ : ℕ) (X : ℕ → Bool) (c : ℕ) (h : conv X c) {m : ℕ}
+    (hm : hStage X c ≤ m) :
+    yc e n₀ X c (m + (wit e n₀ X (hStage X c)).length) = X m := by
+  have hh : haltedB X c (m + (wit e n₀ X (hStage X c)).length) = true :=
+    haltedB_mono X c (le_trans hm (Nat.le_add_right _ _)) (haltedB_hStage X c h)
+  rw [yc, hh]
+  simp only [cond_true]
+  rw [if_neg (by omega)]
+  congr 1; omega
+
+/-- **The recovery function**: `Y_c` reconstructs `X` by un-shifting past the
+inserted witness (over an oracle `O`; correct when `O = Y_c`). -/
+noncomputable def recFn (e n₀ : ℕ) (O : ℕ → Bool) (c m : ℕ) : ℕ :=
+  bif haltedB O c m then bitg O (m + (wit e n₀ O (hStage O c)).length) else bitg O m
+
+/-- **The recovery is correct**: `recFn` over `Y_c` yields `X`'s bits. -/
+theorem recFn_yc (e n₀ : ℕ) (X : ℕ → Bool) (c m : ℕ) :
+    recFn e n₀ (yc e n₀ X c) c m = bitg X m := by
+  by_cases h : conv X c
+  · rw [recFn, haltedB_yc e n₀ X c h]
+    by_cases hh : haltedB X c m = true
+    · rw [hh, cond_true, wit_yc e n₀ X c h, bitg_eq_bbit, bitg_eq_bbit]
+      have hge := (haltedB_iff_ge_hStage X c h m).mp hh
+      rw [yc_shift e n₀ X c h hge]
+    · rw [Bool.not_eq_true] at hh
+      rw [hh, cond_false, bitg_eq_bbit, bitg_eq_bbit]
+      have hlt : m < hStage X c := by
+        by_contra hge; push_neg at hge
+        rw [(haltedB_iff_ge_hStage X c h m).mpr hge] at hh; exact Bool.noConfusion hh
+      rw [yc_eq_lt e n₀ X c h hlt]
+  · have hyc : yc e n₀ X c = X := funext (fun m' => yc_eq_of_not_conv e n₀ X c h m')
+    have hh : haltedB X c m = false := by
+      by_contra hc; rw [Bool.not_eq_false] at hc; exact h ⟨m, hc⟩
+    rw [recFn, hyc, hh, cond_false]
+
+#print axioms recFn_yc
+
 end Coding
 end OracleCode

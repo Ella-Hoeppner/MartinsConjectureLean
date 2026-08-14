@@ -147,4 +147,23 @@ theorem local_dichotomy_high (e : ℕ) (X : ℕ → Bool)
 
 #print axioms local_dichotomy_high
 
+/-- **No operator solution to Post's problem** (the operator-local form of
+Lachlan's theorem / `Martin.NoUniformPostSolution`, modulo the coding
+hypothesis).  A computably-uniformly-invariant r.e. operator `W` with coding
+families available, evaluated at a degree `X ≥ᵀ 0′`, is *never* strictly between
+`X` and `X′`: both branches of the local dichotomy forbid it (continuity gives
+`Wˣ ≤ᵀ X`; discontinuity gives `Wˣ ≡ᵀ X′`).  This is exactly why Lachlan's
+theorem rules out uniform solutions to Post's problem. -/
+theorem no_operator_post_solution (e : ℕ) (X : ℕ → Bool)
+    (hX : Cantor.jump (fun _ : ℕ => false) ≤ₜ X)
+    (hu : Martin.ComputablyUniformlyTuringInvariant (reReal e))
+    (hcode : ∀ n₀, HasCodingFamily e X n₀) :
+    ¬ (X <ₜ reReal e X ∧ reReal e X <ₜ Cantor.jump X) := by
+  rintro ⟨hlo, hhi⟩
+  rcases local_dichotomy_high e X hX hu with h | ⟨n₀, _, hdisc⟩
+  · exact hlo.2 h
+  · exact hhi.2 (hdisc (hcode n₀)).2
+
+#print axioms no_operator_post_solution
+
 end OracleCode

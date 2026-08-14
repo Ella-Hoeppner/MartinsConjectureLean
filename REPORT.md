@@ -546,10 +546,10 @@ the full theorem is the `y_e` diagonalization (Lutz Thm 3.10, the discontinuous 
 an oracle-machine construction on the scale of the effective-KP build) and the fixed-word
 part of computable uniformity (Bard Lemma 3.4); see `ATTACK.md` "Next formal milestones".
 
-## Session 6 (2026-08-13/14, the marathon): Lachlan's continuous case + jump inversion
+## Session 6 (2026-08-13/14, the marathon): Lachlan's local dichotomy + jump inversion
 
-An extended autonomous run.  Three complete, sorry-free, standard-axiom additions, all
-believed new to Lean, plus a capstone:
+An extended autonomous run.  Complete, sorry-free, standard-axiom additions, all
+believed new to Lean, plus a capstone and the discontinuous-case reduction:
 
 * **Lachlan's theorem, continuous case** (`ContinuousCase.lean`, `continuous_case`):
   literature research (Bard 2019 / Lutz thesis Ch. 3) established that the modern proof needs
@@ -576,11 +576,23 @@ constructions made recursive in an oracle via `Nat.RecursiveIn.prec` over an enc
 step's recursiveness mirroring `reqStepEnc_recursiveIn` (decision/oracle-bind `>>=` `Nat.rec`
 over the decision bit) with "search = least witness" bridges.
 
-**Honest boundary.**  Lachlan's *discontinuous* case (⟹ `Wˣ ≥ᵀ X′`) is blocked by the absence
-of a *universal code* (`∃ u, ∀ O e n, eval O u ⟪e,n⟫ = eval O e n`): the `y_e` reduction needs
-`Φ_{s(e)}^{y_e} = X` with the oracle `y_e` varying in `e`, and `exists_code_of_recursiveIn` is
-a per-oracle `Prop`, not a constructive/uniform extractor.  A constructive `codeOf` (self-
-interpreter as an `OracleCode`) would unblock it; that is the next foundational milestone.
+* **Discontinuous case, reduction half** (`DiscontinuousCase.lean`, `discontinuous_reduction`):
+  the partner of the continuous case.  If the operator `W` (index `e`) is *computably uniformly
+  invariant* and admits a *coding-real family* at a discontinuity marker `n₀`
+  (`HasCodingFamily` — the splicing construction + its s-m-n witnesses, isolated as a named
+  hypothesis in the codebase's reduce-to-lemmas style), then `X′ ≤ᵀ Wˣ`.  Fully proved: the
+  recursion-theoretic assembly of s-m-n and the universal machine (`eval_universal`) at the
+  fixed marker, composed with the computable index map.  Packaged with the continuous half as
+  `local_dichotomy_sharp`.
+
+**Correction to an earlier boundary claim.**  Prior notes (including an earlier draft of this
+section) said the discontinuous case is "blocked by the absence of a universal code."  This is
+**wrong**: `Universal.lean` already proves `eval_universal` (the two-argument evaluator is
+recursive in any total oracle) and `exists_fixedPoint` (Kleene's relativized second recursion
+theorem).  The genuinely-remaining content is (i) **discharging `HasCodingFamily`** — the
+coding-real splicing with exact s-m-n codes, a delicate finite-extension construction; and
+(ii) **Bard's Lemma 3.8** (turning bare uniform invariance into computable uniformity).
+Neither is the universal code.
 
 ## Concrete next steps for a future run
 

@@ -480,8 +480,29 @@ theorem innerEnc_recursiveIn : Nat.RecursiveIn {jumpFn emptyO} innerEnc := by
   · rw [if_neg hd]
     simp [Part.bind_some, Part.bind_eq_bind, Nat.unpair_pair]
 
+/-- The encoded step is recursive in `C ⊕ 0′`. -/
+theorem jStepEnc_recursiveIn (C : ℕ → Bool) :
+    Nat.RecursiveIn {Cantor.toPFun C, jumpFn emptyO} (jStepEnc C) := by
+  have hinner : Nat.RecursiveIn {Cantor.toPFun C, jumpFn emptyO} innerEnc :=
+    innerEnc_recursiveIn.subst (fun g hg => Nat.RecursiveIn.oracle g (Set.mem_insert_of_mem _ hg))
+  have hC : Nat.RecursiveIn {Cantor.toPFun C, jumpFn emptyO}
+      (fun arg : ℕ => Cantor.toPFun C (jY arg)) :=
+    (Nat.RecursiveIn.comp (Nat.RecursiveIn.oracle (Cantor.toPFun C)
+      (Set.mem_insert (Cantor.toPFun C) {jumpFn emptyO}))
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp jY_prim))).of_eq
+      fun arg => Part.bind_some _ _
+  have hpair : Nat.RecursiveIn {Cantor.toPFun C, jumpFn emptyO}
+      (fun arg : ℕ => Nat.pair <$> ((arg : ℕ) : Part ℕ) <*> Cantor.toPFun C (jY arg)) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hC
+  refine (Nat.RecursiveIn.comp hinner hpair).of_eq fun arg => ?_
+  have hcb : Cantor.toPFun C ((Nat.unpair (Nat.unpair arg).2).1)
+      = Part.some (if C ((Nat.unpair (Nat.unpair arg).2).1) then 1 else 0) := by
+    rw [Cantor.toPFun]; congr 1; cases C ((Nat.unpair (Nat.unpair arg).2).1) <;> rfl
+  simp only [Seq.seq, Part.coe_some, Part.map_eq_map, Part.bind_eq_bind, Part.map_some,
+    Part.bind_some, innerEnc, jStepEnc, jQ, jC, jY, jBaseFn, jAssembleFn, Nat.unpair_pair, hcb]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
 #print axioms OracleCode.dom_iff_jExists
-#print axioms OracleCode.innerEnc_recursiveIn
+#print axioms OracleCode.jStepEnc_recursiveIn

@@ -38,5 +38,6 @@ import MartinsConjecture.OperatorLocal
 import MartinsConjecture.ContinuousCase
 import MartinsConjecture.DiscontinuousCase
 import MartinsConjecture.CodingFamily
+import MartinsConjecture.CodingFamilyCode
 import MartinsConjecture.JumpInversion
 import MartinsConjecture.DegreeCapstone

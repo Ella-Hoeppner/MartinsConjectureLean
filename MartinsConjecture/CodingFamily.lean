@@ -405,5 +405,64 @@ theorem witEncSearch_eq (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ)
 
 #print axioms witEncSearch_eq
 
+/-! ### The shift value and the assembled forward reduction -/
+
+/-- The decoded witness list packed in `z = ⟨m, ⟨t, we⟩⟩`. -/
+def zWit (z : ℕ) : List Bool :=
+  (Encodable.decode (α := List Bool) (Nat.unpair (Nat.unpair (Nat.unpair z).2).2).1).getD []
+
+/-- The `X`-query index for the shifted tail: `m - |w|`. -/
+def shiftIdx (z : ℕ) : ℕ := (Nat.unpair z).1 - (zWit z).length
+
+/-- Given the query value `v = bitg X (m - |w|)` (in `zv = ⟨z, v⟩`), select the
+witness bit or the shifted tail bit. -/
+def shiftSelect (zv : ℕ) : ℕ :=
+  if (Nat.unpair (Nat.unpair zv).1).1
+      < (Nat.unpair (Nat.unpair (Nat.unpair zv).1).2).1 + (zWit (Nat.unpair zv).1).length
+  then bbit ((zWit (Nat.unpair zv).1).getD
+      ((Nat.unpair (Nat.unpair zv).1).1 - (Nat.unpair (Nat.unpair (Nat.unpair zv).1).2).1) false)
+  else (Nat.unpair zv).2
+
+theorem zWit_prim : Primrec zWit :=
+  Primrec.option_getD.comp (Primrec.decode.comp (Primrec.fst.comp (Primrec.unpair.comp
+    (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))))))
+    (Primrec.const ([] : List Bool))
+
+theorem shiftIdx_prim : Primrec shiftIdx :=
+  Primrec.nat_sub.comp (Primrec.fst.comp Primrec.unpair)
+    (Primrec.list_length.comp zWit_prim)
+
+theorem shiftSelect_prim : Primrec shiftSelect := by
+  have hm : Primrec fun zv => (Nat.unpair (Nat.unpair zv).1).1 :=
+    Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))
+  have ht : Primrec fun zv => (Nat.unpair (Nat.unpair (Nat.unpair zv).1).2).1 :=
+    Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp
+      (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+  have hw : Primrec fun zv => zWit (Nat.unpair zv).1 :=
+    zWit_prim.comp (Primrec.fst.comp Primrec.unpair)
+  refine Primrec.ite (Primrec.nat_lt.comp hm (Primrec.nat_add.comp ht
+    (Primrec.list_length.comp hw))) ?_ (Primrec.snd.comp Primrec.unpair)
+  exact bbit_prim.comp ((Primrec.option_getD.comp
+    (Primrec.list_getElem?.comp hw (Primrec.nat_sub.comp hm ht)) (Primrec.const false)).of_eq
+    fun _ => (List.getD_eq_getElem?_getD ..).symm)
+
+/-- The shift value is recursive in `X`: compute the shifted-tail query, then select. -/
+theorem shiftVal_recursiveIn (X : ℕ → Bool) :
+    Nat.RecursiveIn {toPFun X} (fun z => ((shiftSelect (Nat.pair z (bitg X (shiftIdx z))) : ℕ)
+      : Part ℕ)) := by
+  have hquery : Nat.RecursiveIn {toPFun X}
+      (fun z => Nat.pair <$> ((z : ℕ) : Part ℕ)
+        <*> (((shiftIdx z : ℕ) : Part ℕ) >>= toPFun X)) :=
+    Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn)
+      (Nat.RecursiveIn.comp (.oracle _ rfl) (Primrec.nat_iff.mp shiftIdx_prim).recursiveIn)
+  refine (Nat.RecursiveIn.comp (Primrec.nat_iff.mp shiftSelect_prim).recursiveIn hquery).of_eq
+    fun z => ?_
+  rw [show (((shiftIdx z : ℕ) : Part ℕ) >>= toPFun X) = Part.some (bitg X (shiftIdx z)) from by
+    rw [Part.coe_some]; exact (Part.bind_some _ _).trans (toPFun_eq_bitg X _)]
+  simp only [Seq.seq, Part.map_eq_map, Part.coe_some, Part.map_some, Part.bind_eq_bind,
+    Part.bind_some]
+
+#print axioms shiftVal_recursiveIn
+
 end Coding
 end OracleCode

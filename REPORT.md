@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13 (five work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, ~1052 jobs, 37 files, ~7.6k lines.
-**Sorry count: 0. Custom axioms: 0** (121 headline theorems audited; every one uses only
+`lake-manifest.json`). Full `lake build`: green, ~1052 jobs, 37 files, ~7.9k lines.
+**Sorry count: 0. Custom axioms: 0** (124 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
@@ -25,6 +25,11 @@ Recursion-theory foundation (`OracleCode.*`, `Cantor.*`):
 - **Σ₁-completeness of the jump** (`dom_iff_jumpP`); **the full Shoenfield limit lemma**
   `f ≤ᵀ X′ ↔ f is X-limit-computable` (`limit_lemma`, `Cantor.le_jump_iff_limitApprox`);
   the jump is Δ⁰₂-in-X (`jump_limitApprox`).
+- **Lachlan's theorem, continuous case** (`continuous_case`, Lutz Cor. 3.11, determinacy-free
+  half): if an r.e. operator `W` is continuous at `X` then `Wˣ ≤ᵀ X ⊕ 0′` (and `≤ᵀ X` for
+  `0′ ≤ᵀ X`) — a genuine half of Lachlan's theorem, with the full `local_dichotomy` skeleton;
+  supported by the operator use principle, computable composition of functionals
+  (`eval_trE_comp`), Bard's Fact 3.1 (`joinFam_le`), and `Wˣ ≤ᵀ X′` (`reReal_le_jump`).
 - Upper-semilattice join on Cantor points; infinitely many degrees; no maximal degree.
 
 Martin's-conjecture layer (`Martin.*`):

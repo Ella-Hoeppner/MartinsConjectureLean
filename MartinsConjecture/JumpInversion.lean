@@ -302,6 +302,86 @@ theorem jExists_recursiveIn_jump :
   refine (domain_recursiveIn_jump hrec).of_eq fun q => ?_
   rw [jFun_dom q]
 
+theorem jTest_encode_zero_iff (σ : List ℕ) (e w : ℕ) :
+    jTest (Nat.pair (Encodable.encode σ) e) w = 0 ↔
+    (evaln (Nat.unpair w).2 (σ ++ boolExt (Nat.unpair w).1) (ofNatCode e) e).isSome = true := by
+  rw [jTest, Nat.unpair_pair, Encodable.encodek, Option.getD_some]
+  constructor
+  · intro h; by_contra hns; rw [if_neg hns] at h; exact one_ne_zero h
+  · intro h; rw [if_pos h]
+
+theorem true_mem_jPred (q w : ℕ) : true ∈ jPred q w ↔ jTest q w = 0 := by
+  rw [jPred, Part.map_eq_map, Part.mem_map_iff]
+  constructor
+  · rintro ⟨x, hx, hx0⟩; rw [Part.mem_some_iff.mp hx] at hx0; exact of_decide_eq_true hx0
+  · intro h; exact ⟨jTest q w, Part.mem_some _, by simp [h]⟩
+
+/-- The search returns the least witness — matching `jtau`. -/
+theorem jFun_eq_find (σ : List ℕ) (e : ℕ) (h : jExists σ e) :
+    jFun (Nat.pair (Encodable.encode σ) e) = Part.some (Nat.find h) := by
+  apply Part.eq_some_iff.mpr
+  rw [jFun, Nat.mem_rfind]
+  refine ⟨?_, fun {m} hm => ?_⟩
+  · rw [true_mem_jPred, jTest_encode_zero_iff]
+    exact Nat.find_spec h
+  · rw [jPred, Part.map_eq_map, Part.mem_map_iff]
+    refine ⟨jTest (Nat.pair (Encodable.encode σ) e) m, Part.mem_some _, ?_⟩
+    have hfalse : jTest (Nat.pair (Encodable.encode σ) e) m ≠ 0 :=
+      fun hc => Nat.find_min h hm ((jTest_encode_zero_iff σ e m).mp hc)
+    exact decide_eq_false hfalse
+
+/-! ### The construction is recursive in `C` (claim 1) -/
+
+/-- `(decode c : List ℕ).getD []`. -/
+def jDecode (c : ℕ) : List ℕ := (Encodable.decode (α := List ℕ) c).getD []
+
+theorem jDecode_encode (l : List ℕ) : jDecode (Encodable.encode l) = l := by
+  rw [jDecode, Encodable.encodek, Option.getD_some]
+
+theorem jDecode_prim : Primrec jDecode :=
+  Primrec.option_getD.comp (Primrec.decode (α := List ℕ)) (Primrec.const ([] : List ℕ))
+
+/-- The encoded stage step, run inside a `prec` fold: on `⟪a, ⟪y, c⟫⟫` with
+`c = encode (jstr C y)`, produces `encode (jstr C (y+1))`.  Uses the `0′`
+decision (`jExists`), the search `jFun` for the least extension, and the oracle
+`C` for the coding bit. -/
+noncomputable def jStepEnc (C : ℕ → Bool) (arg : ℕ) : Part ℕ :=
+  ((if (∃ w, jTest (Nat.pair (Nat.unpair (Nat.unpair arg).2).2 (Nat.unpair (Nat.unpair arg).2).1) w = 0)
+      then 1 else 0 : ℕ) : Part ℕ) >>= fun d =>
+    (toPFun C (Nat.unpair (Nat.unpair arg).2).1) >>= fun cb =>
+      Nat.rec
+        (Part.some (Encodable.encode (jDecode (Nat.unpair (Nat.unpair arg).2).2 ++ [cb])))
+        (fun _ _ => (jFun (Nat.pair (Nat.unpair (Nat.unpair arg).2).2 (Nat.unpair (Nat.unpair arg).2).1)).map
+          (fun w => Encodable.encode
+            (jDecode (Nat.unpair (Nat.unpair arg).2).2 ++ boolExt (Nat.unpair w).1 ++ [cb])))
+        d
+
+/-- Correctness of the encoded step: at `⟪a, ⟪y, encode (jstr C y)⟫⟫` it produces
+`encode (jstr C (y+1))`. -/
+theorem jStepEnc_spec (C : ℕ → Bool) (a y : ℕ) :
+    jStepEnc C (Nat.pair a (Nat.pair y (Encodable.encode (jstr C y))))
+      = Part.some (Encodable.encode (jstr C (y + 1))) := by
+  rw [jStepEnc]
+  simp only [Nat.unpair_pair, jDecode_encode]
+  have hcb : toPFun C y = Part.some (if C y then 1 else 0) := by
+    rw [toPFun]; congr 1; cases C y <;> rfl
+  by_cases hj : jExists (jstr C y) y
+  · have hd : (∃ w, jTest (Nat.pair (Encodable.encode (jstr C y)) y) w = 0) := by
+      rw [exists_jTest_iff]; exact hj
+    rw [if_pos hd, Part.coe_some, Part.bind_eq_bind, Part.bind_some, hcb,
+      Part.bind_eq_bind, Part.bind_some]
+    show (jFun (Nat.pair (Encodable.encode (jstr C y)) y)).map _ = _
+    rw [jFun_eq_find (jstr C y) y hj, Part.map_some]
+    congr 1
+    rw [jstr, if_pos hj, jtau, dif_pos hj]
+  · have hd : ¬ (∃ w, jTest (Nat.pair (Encodable.encode (jstr C y)) y) w = 0) := by
+      rw [exists_jTest_iff]; exact hj
+    rw [if_neg hd, Part.coe_some, Part.bind_eq_bind, Part.bind_some, hcb,
+      Part.bind_eq_bind, Part.bind_some]
+    show Part.some _ = Part.some _
+    congr 1
+    rw [jstr, if_neg hj]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono

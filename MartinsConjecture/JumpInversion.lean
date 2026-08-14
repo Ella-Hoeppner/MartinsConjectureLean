@@ -827,6 +827,23 @@ theorem jump_inversion (C : ℕ → Bool) (hC : Cantor.jump (fun _ : ℕ => fals
     ∃ A : ℕ → Bool, A ≤ₜ C ∧ Cantor.jump A ≡ₜ C :=
   ⟨jReal C, jReal_le C hC, jump_jReal_le C hC, C_le_jump C⟩
 
+/-- The jump of any point is `≥ᵀ 0′`. -/
+theorem zero_jump_le_jump (A : ℕ → Bool) :
+    Cantor.jump (fun _ : ℕ => false) ≤ₜ Cantor.jump A :=
+  Cantor.jump_mono (Cantor.le_of_computable (Computable.const false))
+
+/-- **The range of the jump is exactly the cone above `0′`.**  A Turing degree
+is a jump iff it is `≥ᵀ 0′` — combining Friedberg jump inversion (`←`) with the
+fact that jumps are always `≥ᵀ 0′` (`→`). -/
+theorem jump_range_iff (C : ℕ → Bool) :
+    (∃ A : ℕ → Bool, Cantor.jump A ≡ₜ C) ↔ Cantor.jump (fun _ : ℕ => false) ≤ₜ C := by
+  constructor
+  · rintro ⟨A, h1, -⟩
+    exact (zero_jump_le_jump A).trans h1
+  · intro hC
+    obtain ⟨A, -, hA⟩ := jump_inversion C hC
+    exact ⟨A, hA⟩
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono

@@ -196,7 +196,13 @@ proves only the per-oracle `RecursiveIn` form (`eval_universal`); `exists_code` 
 `graphEnc`'s oracle-`prec` code + oracle-free `evaln`/`ts`/`extv` codes via `exists_code_of_partrec`
 + the `rfind` search, mirroring `eval_universal`'s proof at the code level, ~300–400 lines) is
 therefore the true **prerequisite foundational milestone** — the "step-indexed universal
-machine" `OracleCode.lean`'s design note says was not built.  With it, `cM` (recovery = bounded
+machine" `OracleCode.lean`'s design note says was not built.  **STARTED (2026-08-14,
+`UniversalCode.lean`):** the only genuinely oracle-using ingredient, `cGraph`, is DONE and
+verified — `eval_cGraph : eval (toPFun X) cGraph k = graphEnc X k` — along with the reusable
+Part-monad eval idiom (`eval_left_app`/`eval_right_app` + explicit `Part.bind_some` terms for
+`PFun` continuations).  Remaining: the oracle-free `evaln`/`ts`/`extv` codes (mechanical, via
+`exists_code_of_partrec`) + the `rfind` assembly + the ~95-line correctness value-analysis
+(copy `eval_universal`'s `of_eq`).  With it, `cM` (recovery = bounded
 universal sim + un-shift) and `cY` assemble `HasCodingFamily`; then Bard 3.8 (bare uniform
 invariance ⟹ computable) is the last external lemma.  Math certain; scope is a dedicated session.
 

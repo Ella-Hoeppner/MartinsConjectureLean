@@ -223,8 +223,116 @@ theorem decisive_answer (X : ℕ → Bool) (e n ℓ : ℕ)
       · exact absurd (hiff.mpr hb) hh
     rw [hf]; rfl
 
+/-- `true ∈ pf n ℓ` iff the stage is decisive (`decVal = 0`). -/
+theorem true_mem_decPred (X : ℕ → Bool) (e n ℓ : ℕ) :
+    true ∈ (((fun m => m = 0) <$> ((decVal X e (Nat.pair n ℓ) : ℕ) : Part ℕ)) : Part Bool) ↔
+      decVal X e (Nat.pair n ℓ) = 0 := by
+  rw [Part.map_eq_map, Part.mem_map_iff]
+  constructor
+  · rintro ⟨x, hx, hx0⟩
+    rw [Part.mem_some_iff.mp hx] at hx0
+    exact of_decide_eq_true hx0
+  · intro h
+    exact ⟨_, Part.mem_some _, by simp [h]⟩
+
+/-- **The continuous case of Lachlan's local dichotomy** (Lutz Cor. 3.11, the
+determinacy-free half).  If the r.e. operator `W` (index `e`) is *continuous at
+`X`* — every `n`'s membership `n ∈ Wˣ` is settled by a finite prefix of `X`
+(`haltsOn (X↾ℓ) ∨ ¬ extHaltsFrom (X↾ℓ)`) — then `Wˣ ≤ᵀ X ⊕ 0′`. -/
+theorem continuous_case (X : ℕ → Bool) (e : ℕ)
+    (Hcont : ∀ n, ∃ ℓ, haltsOn (graphOf (bitg X) ℓ) e n
+        ∨ ¬ extHaltsFrom (graphOf (bitg X) ℓ) e n) :
+    reReal e X ≤ₜ Cantor.join X (Cantor.jump (fun _ : ℕ => false)) := by
+  classical
+  set C : ℕ → Bool := Cantor.join X (Cantor.jump (fun _ : ℕ => false)) with hCdef
+  set O : Set (ℕ →. ℕ) := {Cantor.toPFun X, jumpFn emptyO} with hOdef
+  have hsubX : ({Cantor.toPFun X} : Set (ℕ →. ℕ)) ⊆ O := by
+    rw [hOdef]; exact Set.singleton_subset_iff.mpr (Set.mem_insert _ _)
+  have hsubJ : ({jumpFn emptyO} : Set (ℕ →. ℕ)) ⊆ O := by
+    rw [hOdef]; exact Set.singleton_subset_iff.mpr (Set.mem_insert_of_mem _ rfl)
+  -- graphEnc, lifted to O, then queried at the stage
+  have hgm : Nat.RecursiveIn O (fun m => graphEnc X (Nat.unpair m).2) :=
+    (Nat.RecursiveIn.comp
+      ((graphEnc_recursiveIn X).subst (fun g hg => Nat.RecursiveIn.oracle g (hsubX hg)))
+      ((Primrec.nat_iff.mp (Primrec.snd.comp Primrec.unpair)).recursiveIn)).of_eq fun m => by
+      simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  -- the query value
+  have hqf : Nat.RecursiveIn O (fun m => ((qEnc X e m : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.pair hgm
+      ((Primrec.nat_iff.mp (Primrec₂.natPair.comp (Primrec.const e)
+        (Primrec.fst.comp Primrec.unpair))).recursiveIn)).of_eq fun m => by
+      rw [qEnc, graphEnc]
+      simp only [Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+        Part.coe_some]
+  -- the two 0'-tests, composed with the query
+  have hHval : Nat.RecursiveIn O (fun m => ((hVal X e m : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp
+      (haltsOn_recursiveIn_jump.subst (fun g hg => Nat.RecursiveIn.oracle g (hsubJ hg)))
+      hqf).of_eq fun m => by
+      simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, qEnc, hVal, Nat.unpair_pair,
+        Encodable.encodek, Option.getD_some]
+  have hEval : Nat.RecursiveIn O (fun m => ((eVal X e m : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp
+      (extHaltsFrom_recursiveIn_jump.subst (fun g hg => Nat.RecursiveIn.oracle g (hsubJ hg)))
+      hqf).of_eq fun m => by
+      simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, qEnc, eVal, Nat.unpair_pair,
+        Encodable.encodek, Option.getD_some]
+  -- the decision value
+  have hcomb : Nat.RecursiveIn O
+      (fun p => (((1 - (Nat.unpair p).1) * (Nat.unpair p).2 : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp (Primrec.nat_mul.comp
+      (Primrec.nat_sub.comp (Primrec.const 1) (Primrec.fst.comp Primrec.unpair))
+      (Primrec.snd.comp Primrec.unpair))).recursiveIn
+  have hDecv : Nat.RecursiveIn O (fun m => ((decVal X e m : ℕ) : Part ℕ)) :=
+    (Nat.RecursiveIn.comp hcomb (Nat.RecursiveIn.pair hHval hEval)).of_eq fun m => by
+      simp only [Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+        Nat.unpair_pair, decVal, Part.coe_some]
+  -- the search and the answer
+  have hSearch := Nat.RecursiveIn.rfind hDecv
+  have hAns : Nat.RecursiveIn O
+      (fun n => (Nat.pair <$> ((n : ℕ) : Part ℕ) <*>
+          Nat.rfind (fun ℓ => (fun m => m = 0) <$> ((decVal X e (Nat.pair n ℓ) : ℕ) : Part ℕ)))
+        >>= fun m => ((hVal X e m : ℕ) : Part ℕ)) :=
+    Nat.RecursiveIn.comp hHval
+      (Nat.RecursiveIn.pair ((Primrec.nat_iff.mp Primrec.id).recursiveIn) hSearch)
+  -- cut both oracles down to `join X 0′`
+  have hjump_eq : jumpFn emptyO = Cantor.toPFun (Cantor.jump (fun _ : ℕ => false)) := by
+    rw [Cantor.toPFun_jump, Cantor.toPFun_const_false]; rfl
+  have hAnsC : Nat.RecursiveIn {Cantor.toPFun C} _ := hAns.subst (by
+    intro g hg
+    rw [hOdef] at hg
+    rcases hg with h | h
+    · subst h; exact RecursiveIn.iff_nat.mp (left_le_join X (Cantor.jump (fun _ : ℕ => false)))
+    · rw [Set.mem_singleton_iff.mp h, hjump_eq]
+      exact RecursiveIn.iff_nat.mp (right_le_join X (Cantor.jump (fun _ : ℕ => false))))
+  rw [Cantor.le_iff_bitg]
+  refine hAnsC.of_eq fun n => ?_
+  -- correctness: the search finds a decisive stage, and reads off the right bit
+  obtain ⟨ℓ0, hℓ0⟩ := Hcont n
+  set S : Part ℕ := Nat.rfind (fun ℓ => (fun m => m = 0) <$>
+      ((decVal X e (Nat.pair n ℓ) : ℕ) : Part ℕ)) with hSdef
+  have hwit : true ∈ (((fun m => m = 0) <$>
+      ((decVal X e (Nat.pair n ℓ0) : ℕ) : Part ℕ)) : Part Bool) :=
+    (true_mem_decPred X e n ℓ0).mpr ((decVal_eq_zero_iff X e (Nat.pair n ℓ0)).mpr
+      (by simpa using hℓ0))
+  have hSdom : S.Dom :=
+    Nat.rfind_dom.mpr ⟨ℓ0, hwit, fun {m} _ => by simp⟩
+  set ℓ := S.get hSdom with hℓdef
+  have hℓmem : ℓ ∈ S := Part.get_mem hSdom
+  have hdecisive : decVal X e (Nat.pair n ℓ) = 0 :=
+    (true_mem_decPred X e n ℓ).mp (Nat.rfind_spec hℓmem)
+  have hdec : haltsOn (graphOf (bitg X) ℓ) e n ∨ ¬ extHaltsFrom (graphOf (bitg X) ℓ) e n := by
+    have h := (decVal_eq_zero_iff X e (Nat.pair n ℓ)).mp hdecisive
+    simpa using h
+  -- substitute the search value and read off
+  rw [Part.eq_some_iff.mpr hℓmem]
+  simp only [Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+    Part.coe_some, hVal, Nat.unpair_pair]
+  exact congrArg _ (decisive_answer X e n ℓ hdec)
+
 end OracleCode
 
 #print axioms OracleCode.extHaltsFrom_recursiveIn_jump
 #print axioms OracleCode.haltsOn_recursiveIn_jump
 #print axioms OracleCode.decisive_answer
+#print axioms OracleCode.continuous_case

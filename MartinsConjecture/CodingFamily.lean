@@ -464,5 +464,61 @@ theorem shiftVal_recursiveIn (X : ℕ → Bool) :
 
 #print axioms shiftVal_recursiveIn
 
+/-- Repack `⟨⟨q,t⟩,we⟩ ↦ ⟨m, ⟨t, we⟩⟩` (extract `m` from `q`) for the shift value. -/
+def repackFn (Z : ℕ) : ℕ :=
+  Nat.pair (Nat.unpair (Nat.unpair (Nat.unpair Z).1).1).2
+    (Nat.pair (Nat.unpair (Nat.unpair Z).1).2 (Nat.unpair Z).2)
+
+theorem repackFn_prim : Primrec repackFn :=
+  Primrec₂.natPair.comp
+    (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp
+      (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+    (Primrec₂.natPair.comp
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+      (Primrec.snd.comp Primrec.unpair))
+
+/-- The splice value at `q = ⟨c,m⟩`, recursive in `X`: run both searches, then shift. -/
+theorem spl_recursiveIn (e n₀ : ℕ) (X : ℕ → Bool) :
+    Nat.RecursiveIn {toPFun X} (fun q =>
+      (Nat.rfind fun m' => (fun x => x = 0) <$>
+          ((bif haltedB X (Nat.unpair q).1 m' then 0 else 1 : ℕ) : Part ℕ)) >>= fun t =>
+      (Nat.rfind fun p => (fun x => x = 0) <$>
+          ((bif witPair e n₀ X t p then 0 else 1 : ℕ) : Part ℕ)) >>= fun we =>
+      ((shiftSelect (Nat.pair (repackFn (Nat.pair (Nat.pair q t) we))
+        (bitg X (shiftIdx (repackFn (Nat.pair (Nat.pair q t) we))))) : ℕ) : Part ℕ)) := by
+  have hid : Nat.RecursiveIn {toPFun X} (fun q : ℕ => ((q : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hT : Nat.RecursiveIn {toPFun X} (fun q => (Nat.rfind fun m' => (fun x => x = 0) <$>
+      ((bif haltedB X (Nat.unpair q).1 m' then 0 else 1 : ℕ) : Part ℕ))) :=
+    (Nat.RecursiveIn.comp (hStageSearch_recursiveIn X)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.fst.comp Primrec.unpair)))).of_eq
+      fun q => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hWE : Nat.RecursiveIn {toPFun X} (fun qt => (Nat.rfind fun p => (fun x => x = 0) <$>
+      ((bif witPair e n₀ X (Nat.unpair qt).2 p then 0 else 1 : ℕ) : Part ℕ))) :=
+    (Nat.RecursiveIn.comp (witEncSearch_recursiveIn e n₀ X)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (Primrec.snd.comp Primrec.unpair)))).of_eq
+      fun qt => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hstep1 : Nat.RecursiveIn {toPFun X}
+      (fun q => Nat.pair <$> ((q : ℕ) : Part ℕ) <*> _) := Nat.RecursiveIn.pair hid hT
+  have hstep2 : Nat.RecursiveIn {toPFun X}
+      (fun qt => Nat.pair <$> ((qt : ℕ) : Part ℕ) <*> _) := Nat.RecursiveIn.pair hid hWE
+  have hrepack : Nat.RecursiveIn {toPFun X}
+      (fun Z => ((repackFn Z : ℕ) : Part ℕ)) := (Primrec.nat_iff.mp repackFn_prim).recursiveIn
+  refine ((Nat.RecursiveIn.comp (shiftVal_recursiveIn X)
+    (Nat.RecursiveIn.comp hrepack
+      (Nat.RecursiveIn.comp hstep2 hstep1)))).of_eq fun q => ?_
+  apply Part.ext; intro y
+  simp only [Seq.seq, Part.map_eq_map, Part.coe_some, Part.bind_eq_bind, Part.bind_some,
+    Part.map_some, Part.mem_bind_iff, Part.mem_map_iff, Part.mem_some_iff]
+  constructor
+  · rintro ⟨R, ⟨Z, ⟨qt, ⟨t, ht, rfl⟩, we, hwe, rfl⟩, rfl⟩, hy⟩
+    rw [Nat.unpair_pair] at hwe
+    exact ⟨t, ht, we, hwe, hy⟩
+  · rintro ⟨t, ht, we, hwe, hy⟩
+    refine ⟨_, ⟨_, ⟨_, ⟨t, ht, rfl⟩, we, ?_, rfl⟩, rfl⟩, hy⟩
+    rw [Nat.unpair_pair]; exact hwe
+
+#print axioms spl_recursiveIn
+
 end Coding
 end OracleCode

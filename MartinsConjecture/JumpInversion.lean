@@ -569,8 +569,49 @@ theorem jReal_le (C : ℕ → Bool) (hC : Cantor.jump (fun _ : ℕ => false) ≤
     lt_of_lt_of_le (Nat.lt_succ_self n) (jstr_len_ge C (n + 1))
   rw [← jstr_getD_eq_bitg C (n + 1) n hlen]
 
+/-- **Claim 2: `A′ ≤ᵀ C`.**  The jump of the construction is read off the
+`C`-computable stage decisions. -/
+theorem jump_jReal_le (C : ℕ → Bool) (hC : Cantor.jump (fun _ : ℕ => false) ≤ₜ C) :
+    Cantor.jump (jReal C) ≤ₜ C := by
+  have hjstrC : Nat.RecursiveIn {Cantor.toPFun C} (jstrEnc C) :=
+    (jstrEnc_recursiveIn C).subst (by
+      intro g hg
+      rcases hg with h | h
+      · subst h; exact Nat.RecursiveIn.oracle _ rfl
+      · rw [Set.mem_singleton_iff.mp h, jumpFn_emptyO_eq]; exact RecursiveIn.iff_nat.mp hC)
+  have hjumpC : Nat.RecursiveIn {Cantor.toPFun C}
+      (fun q : ℕ => ((if (∃ w, jTest q w = 0) then 1 else 0 : ℕ) : Part ℕ)) :=
+    jExists_recursiveIn_jump.subst (by
+      intro g hg
+      rw [Set.mem_singleton_iff.mp hg, jumpFn_emptyO_eq]; exact RecursiveIn.iff_nat.mp hC)
+  rw [Cantor.le_iff_bitg]
+  have hs0 : Nat.RecursiveIn {Cantor.toPFun C} (fun e : ℕ => jstrEnc C (Nat.pair 0 e)) :=
+    (Nat.RecursiveIn.comp hjstrC (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+      (Primrec₂.natPair.comp (Primrec.const 0) Primrec.id)))).of_eq
+      fun e => by simp only [id_eq, Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hquery : Nat.RecursiveIn {Cantor.toPFun C}
+      (fun e : ℕ => Nat.pair <$> jstrEnc C (Nat.pair 0 e) <*> ((e : ℕ) : Part ℕ)) :=
+    Nat.RecursiveIn.pair hs0 ((Primrec.nat_iff.mp Primrec.id).recursiveIn)
+  refine (Nat.RecursiveIn.comp hjumpC hquery).of_eq fun e => ?_
+  rw [jstrEnc_spec]
+  simp only [Seq.seq, Part.map_eq_map, Part.bind_eq_bind, Part.map_some, Part.bind_some,
+    Part.coe_some, exists_jTest_iff]
+  have hbit : (if jExists (jstr C e) e then (1 : ℕ) else 0) = bitg (jump (jReal C)) e := by
+    rw [bitg]
+    by_cases hj : jExists (jstr C e) e
+    · rw [if_pos hj]
+      have : jump (jReal C) e = true := by
+        rw [jump]; exact decide_eq_true ((dom_iff_jExists C e).mpr hj)
+      rw [this]; rfl
+    · rw [if_neg hj]
+      have : jump (jReal C) e = false := by
+        rw [jump]; exact decide_eq_false (fun hd => hj ((dom_iff_jExists C e).mp hd))
+      rw [this]; rfl
+  rw [hbit]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
 #print axioms OracleCode.dom_iff_jExists
 #print axioms OracleCode.jReal_le
+#print axioms OracleCode.jump_jReal_le

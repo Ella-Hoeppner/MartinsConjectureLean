@@ -76,6 +76,7 @@ theorem eval_cNotHalt (X : ℕ → Bool) (c m' : ℕ) :
   rw [notHaltFn]
   simp only [Nat.unpair_pair]
   rw [uEvalnD_graph, Nat.unpair_pair]
+  rfl
 
 /-- The explicit halting-stage search. -/
 noncomputable def cHStage : OracleCode := .rfind cNotHalt

@@ -105,7 +105,45 @@ theorem jstr_bits_le (C : ℕ → Bool) : ∀ e, ∀ x ∈ jstr C e, x ≤ 1
     · rw [List.mem_singleton] at hx
       subst hx; split <;> simp
 
+theorem prefix_getD {l l' : List ℕ} (h : l <+: l') {n : ℕ} (hn : n < l.length) :
+    l'.getD n 0 = l.getD n 0 := by
+  obtain ⟨t, rfl⟩ := h
+  simp only [List.getD_eq_getElem?_getD, List.getElem?_append_left hn]
+
+/-- The construction's bit at `n` matches the real `jReal C`. -/
+theorem jstr_getD_eq_bitg (C : ℕ → Bool) (e n : ℕ) (hn : n < (jstr C e).length) :
+    (jstr C e).getD n 0 = bitg (jReal C) n := by
+  have hble : (jstr C (n + 1)).getD n 0 ≤ 1 := by
+    have hn1 : n < (jstr C (n + 1)).length := lt_of_lt_of_le (Nat.lt_succ_self n) (jstr_len_ge C (n + 1))
+    refine jstr_bits_le C (n + 1) _ ?_
+    rw [List.getD_eq_getElem?_getD, List.getElem?_eq_getElem hn1, Option.getD_some]
+    exact List.getElem_mem _
+  have hbitg : bitg (jReal C) n = (jstr C (n + 1)).getD n 0 := by
+    rw [bitg, jReal]
+    by_cases h1 : (jstr C (n + 1)).getD n 0 = 1
+    · rw [h1]; rfl
+    · have h0 : (jstr C (n + 1)).getD n 0 = 0 := by omega
+      rw [h0]; rfl
+  rw [hbitg]
+  rcases le_total e (n + 1) with hle | hle
+  · exact (prefix_getD (jstr_mono C hle) hn).symm
+  · have hn1 : n < (jstr C (n + 1)).length :=
+      lt_of_lt_of_le (Nat.lt_succ_self n) (jstr_len_ge C (n + 1))
+    exact prefix_getD (jstr_mono C hle) hn1
+
+/-- **Key**: the stage-`e` string is exactly the length-`|σ_e|` prefix table of
+the real's bit-graph.  Hence `evaln`-soundness/completeness against `jstr C e`
+transfer to genuine computations relative to `jReal C`. -/
+theorem jstr_eq_graphOf (C : ℕ → Bool) (e : ℕ) :
+    jstr C e = graphOf (bitg (jReal C)) (jstr C e).length := by
+  apply List.ext_getElem (by simp [graphOf])
+  intro i h1 h2
+  rw [show (jstr C e)[i] = (jstr C e).getD i 0 from by
+    rw [List.getD_eq_getElem?_getD, List.getElem?_eq_getElem h1, Option.getD_some],
+    jstr_getD_eq_bitg C e i h1]
+  simp only [graphOf, List.getElem_map, List.getElem_range]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
-#print axioms OracleCode.jstr_bits_le
+#print axioms OracleCode.jstr_eq_graphOf

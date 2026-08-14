@@ -606,5 +606,22 @@ theorem ycBit_recursiveIn (e n₀ : ℕ) (X : ℕ → Bool)
 
 #print axioms ycBit_recursiveIn
 
+/-- **The forward s-m-n reduction**: a *computable* index map `r` with
+`Φ_{r c}^X = Y_c` for every `c` — the `X ⊢ Y_c` half of `Y_c ≡ᵀ X`, uniformly. -/
+theorem yc_forward (e n₀ : ℕ) (X : ℕ → Bool)
+    (hd : ∀ t, ∃ w : List Bool, haltsOn (graphOf (bitg X) t ++ w.map bbit) e n₀) :
+    ∃ r : ℕ → ℕ, Computable r ∧
+      ∀ c, eval (toPFun X) (ofNatCode (r c)) = toPFun (yc e n₀ X c) := by
+  obtain ⟨cY, hcY⟩ := exists_code_of_recursiveIn (ycBit_recursiveIn e n₀ X hd)
+  refine ⟨fun c => curryEnc (encodeCode cY) c, ?_, fun c => ?_⟩
+  · exact Primrec.to_comp (curryEnc_prim.comp (Primrec.const _) Primrec.id)
+  · funext m
+    show eval (toPFun X) (ofNatCode (curryEnc (encodeCode cY) c)) m = toPFun (yc e n₀ X c) m
+    rw [show curryEnc (encodeCode cY) c = encodeCode (curry cY c) from
+        (encodeCode_curry cY c).symm, ofNatCode_encodeCode, eval_curry, hcY]
+    simp only [Nat.unpair_pair, toPFun_eq_bitg, Part.coe_some]
+
+#print axioms yc_forward
+
 end Coding
 end OracleCode

@@ -209,7 +209,101 @@ theorem dom_iff_jExists (C : ℕ → Bool) (e : ℕ) :
     refine Part.dom_iff_mem.mpr ⟨v, evaln_sound (k := (Nat.unpair (Nat.find h)).2) hvalid ?_⟩
     rw [hjtau]; exact hv
 
+/-! ### `jExists` is `0′`-decidable -/
+
+theorem boolExt_prim : Primrec boolExt := by
+  have hd : Primrec (fun v : ℕ => (Encodable.decode (α := List Bool) v).getD []) :=
+    Primrec.option_getD.comp (Primrec.decode (α := List Bool)) (Primrec.const ([] : List Bool))
+  have hg : Primrec₂ (fun (_ : ℕ) (b : Bool) => if b then (1 : ℕ) else 0) :=
+    Primrec₂.of_eq (Primrec.cond Primrec.snd (Primrec.const 1) (Primrec.const 0)).to₂
+      (fun _ b => by cases b <;> rfl)
+  exact (Primrec.list_map hd hg).of_eq fun v => rfl
+
+/-- `q = ⟪encode σ, e⟫`; `jTest q w = 0` iff witness `w` makes `Φ_e` halt on `e`
+under a `0/1` extension of `σ`. -/
+def jTest (q w : ℕ) : ℕ :=
+  if (evaln (Nat.unpair w).2
+      (((Encodable.decode (α := List ℕ) (Nat.unpair q).1).getD []) ++ boolExt (Nat.unpair w).1)
+      (ofNatCode (Nat.unpair q).2) (Nat.unpair q).2).isSome then 0 else 1
+
+theorem jTest_prim : Nat.Primrec (fun v => jTest (Nat.unpair v).1 (Nat.unpair v).2) := by
+  refine Primrec.nat_iff.mp ?_
+  have hfuel : Primrec fun v : ℕ => (Nat.unpair (Nat.unpair v).2).2 :=
+    Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+  have hσ : Primrec fun v : ℕ =>
+      (Encodable.decode (α := List ℕ) (Nat.unpair (Nat.unpair v).1).1).getD [] :=
+    Primrec.option_getD.comp
+      (Primrec.decode.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+      (Primrec.const ([] : List ℕ))
+  have hext : Primrec fun v : ℕ => boolExt (Nat.unpair (Nat.unpair v).2).1 :=
+    boolExt_prim.comp (Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair)))
+  have he : Primrec fun v : ℕ => (Nat.unpair (Nat.unpair v).1).2 :=
+    Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))
+  have hcode : Primrec fun v : ℕ => ofNatCode (Nat.unpair (Nat.unpair v).1).2 :=
+    (Primrec.ofNat OracleCode).comp he
+  have hev : Primrec fun v : ℕ =>
+      evaln (Nat.unpair (Nat.unpair v).2).2
+        (((Encodable.decode (α := List ℕ) (Nat.unpair (Nat.unpair v).1).1).getD [])
+          ++ boolExt (Nat.unpair (Nat.unpair v).2).1)
+        (ofNatCode (Nat.unpair (Nat.unpair v).1).2)
+        (Nat.unpair (Nat.unpair v).1).2 :=
+    evaln_prim.comp (Primrec.pair (Primrec.pair (Primrec.pair hfuel
+      (Primrec.list_append.comp hσ hext)) hcode) he)
+  have hci : ∀ b : Bool, (cond b (0 : ℕ) 1) = if b then (0 : ℕ) else 1 :=
+    fun b => by cases b <;> rfl
+  exact (Primrec.cond (Primrec.option_isSome.comp hev)
+    (Primrec.const 0) (Primrec.const 1)).of_eq fun v => by
+    simp only [jTest, Nat.unpair_pair]
+    exact hci _
+
+noncomputable def jPred (q : ℕ) : ℕ →. Bool :=
+  fun w => (fun m => decide (m = 0)) <$> (Part.some (jTest q w) : Part ℕ)
+
+noncomputable def jFun (q : ℕ) : Part ℕ := Nat.rfind (jPred q)
+
+theorem jFun_partrec : Nat.Partrec jFun := by
+  have h1 : Nat.Partrec (fun v : ℕ => (Part.some (jTest (Nat.unpair v).1 (Nat.unpair v).2) : Part ℕ)) :=
+    Nat.Partrec.of_primrec jTest_prim
+  refine (Nat.Partrec.rfind h1).of_eq fun q => ?_
+  simp only [Nat.unpair_pair]
+  rfl
+
+theorem jFun_dom (q : ℕ) : (jFun q).Dom ↔ ∃ w, jTest q w = 0 := by
+  rw [jFun, Nat.rfind_dom]
+  constructor
+  · rintro ⟨w, hw, -⟩
+    rw [jPred, Part.map_eq_map, Part.mem_map_iff] at hw
+    obtain ⟨x, hx, hx0⟩ := hw
+    rw [Part.mem_some_iff.mp hx] at hx0
+    exact ⟨w, of_decide_eq_true hx0⟩
+  · rintro ⟨w, hw⟩
+    refine ⟨w, ?_, fun {m} _ => by rw [jPred, Part.map_eq_map, Part.map_some]; trivial⟩
+    rw [jPred, Part.map_eq_map, Part.mem_map_iff]
+    exact ⟨jTest q w, Part.mem_some _, by simp [hw]⟩
+
+/-- `∃ w, jTest ⟪encode σ, e⟫ w = 0` iff `jExists σ e`. -/
+theorem exists_jTest_iff (σ : List ℕ) (e : ℕ) :
+    (∃ w, jTest (Nat.pair (Encodable.encode σ) e) w = 0) ↔ jExists σ e := by
+  constructor
+  · rintro ⟨w, hw⟩
+    refine ⟨w, ?_⟩
+    by_contra hns
+    rw [jTest, Nat.unpair_pair, Encodable.encodek, Option.getD_some, if_neg hns] at hw
+    exact one_ne_zero hw
+  · rintro ⟨w, hw⟩
+    refine ⟨w, ?_⟩
+    rw [jTest, Nat.unpair_pair, Encodable.encodek, Option.getD_some, if_pos hw]
+
+/-- **The `jExists` decision is `0′`-decidable.** -/
+theorem jExists_recursiveIn_jump :
+    Nat.RecursiveIn {jumpFn emptyO}
+      (fun q : ℕ => ((if (∃ w, jTest q w = 0) then 1 else 0 : ℕ) : Part ℕ)) := by
+  have hrec : Nat.RecursiveIn {emptyO} jFun := jFun_partrec.recursiveIn
+  refine (domain_recursiveIn_jump hrec).of_eq fun q => ?_
+  rw [jFun_dom q]
+
 end OracleCode
 
 #print axioms OracleCode.jstr_mono
 #print axioms OracleCode.dom_iff_jExists
+#print axioms OracleCode.jExists_recursiveIn_jump

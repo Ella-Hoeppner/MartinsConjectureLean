@@ -186,11 +186,19 @@ Y_c(m) = X(m)              if Φ_c^X(c) does not halt within m steps      (⟺ m
 - **`n₀ ∈ W^{Y_c} ⟺ Φ_c^X(c)↓`**: if halts, `Y_c↾(t+|τ'|) = X↾t ⌢ τ'` halts `W` at `n₀`
   (monotonicity); if diverges, `Y_c = X` and no prefix of `X` halts `W` at `n₀`.
 
-Both `cY`/`cM` are *oracle-generic* (one code each, correctness proved by reasoning about the
-algorithm, in the `eval_universal` style: oracle-table via `graphEnc` + `evaln` + arithmetic),
-then specialized by `curryEnc`.  This is the concrete, correct execution guide for discharging
-`HasCodingFamily` — a jump-inversion-scale formalization, deferred only for size, not
-uncertainty.  The remaining external lemma is Bard 3.8 (bare uniform invariance ⟹ computable).
+`cY` uses the fixed oracle `X`, so `exists_code_of_recursiveIn` on the (uniform in `⟨c,m⟩`)
+`RecursiveIn {toPFun X}` proof gives it directly, then `r c := curryEnc ⌜cY⌝ c`.  **`cM` is the
+genuine cost**: its oracle is `Y_c`, which *varies with `c`*, so a computable `s` needs one
+**oracle-generic** code (same code, correctness for every oracle), i.e. the *explicit*
+universal machine as an `OracleCode` — which the codebase does **not** have.  `Universal.lean`
+proves only the per-oracle `RecursiveIn` form (`eval_universal`); `exists_code` off it gives a
+*per-`X`* code, not a uniform one.  Building the explicit universal code (assemble
+`graphEnc`'s oracle-`prec` code + oracle-free `evaln`/`ts`/`extv` codes via `exists_code_of_partrec`
++ the `rfind` search, mirroring `eval_universal`'s proof at the code level, ~300–400 lines) is
+therefore the true **prerequisite foundational milestone** — the "step-indexed universal
+machine" `OracleCode.lean`'s design note says was not built.  With it, `cM` (recovery = bounded
+universal sim + un-shift) and `cY` assemble `HasCodingFamily`; then Bard 3.8 (bare uniform
+invariance ⟹ computable) is the last external lemma.  Math certain; scope is a dedicated session.
 
 **Steel's uniform Part II (Q4):** needs the m-Game + AD + Wadge/Martin–Monk machinery and
 **uniformly pointed perfect trees**.  We already have the u.p.p.-tree analog in the

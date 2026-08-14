@@ -330,9 +330,21 @@ theorem continuous_case (X : ℕ → Bool) (e : ℕ)
     Part.coe_some, hVal, Nat.unpair_pair]
   exact congrArg _ (decisive_answer X e n ℓ hdec)
 
+/-- **Sharpened continuous case for high `X`** (Lutz Cor. 3.11, continuous
+conclusion in its usual form): if `W` is continuous at `X` and `0′ ≤ᵀ X`, then
+`Wˣ ≤ᵀ X` — a continuous r.e. operator never escapes a base above the halting
+problem. -/
+theorem continuous_case_high (X : ℕ → Bool) (e : ℕ)
+    (hX : Cantor.jump (fun _ : ℕ => false) ≤ₜ X)
+    (Hcont : ∀ n, ∃ ℓ, haltsOn (graphOf (bitg X) ℓ) e n
+        ∨ ¬ extHaltsFrom (graphOf (bitg X) ℓ) e n) :
+    reReal e X ≤ₜ X :=
+  (continuous_case X e Hcont).trans (Cantor.join_le (Cantor.le.refl X) hX)
+
 end OracleCode
 
 #print axioms OracleCode.extHaltsFrom_recursiveIn_jump
 #print axioms OracleCode.haltsOn_recursiveIn_jump
 #print axioms OracleCode.decisive_answer
 #print axioms OracleCode.continuous_case
+#print axioms OracleCode.continuous_case_high

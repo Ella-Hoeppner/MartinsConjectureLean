@@ -94,6 +94,18 @@ theorem discontinuous_reduction (e : ℕ) (X : ℕ → Bool) (n₀ : ℕ)
 
 #print axioms discontinuous_reduction
 
+/-- **The discontinuous-case conclusion in Lachlan form**: `Wˣ ≡ᵀ X′`.  Combining
+the reduction `X′ ≤ᵀ Wˣ` with Post's theorem `Wˣ ≤ᵀ X′` (`reReal_le_jump`, since an
+r.e. operator is `Σ₁`-in-`X`), a discontinuous computably-uniform operator with a
+coding family is Turing-equivalent to the jump on that degree. -/
+theorem discontinuous_equiv_jump (e : ℕ) (X : ℕ → Bool) (n₀ : ℕ)
+    (hu : Martin.ComputablyUniformlyTuringInvariant (reReal e))
+    (hcode : HasCodingFamily e X n₀) :
+    reReal e X ≡ₜ Cantor.jump X :=
+  ⟨reReal_le_jump e X, discontinuous_reduction e X n₀ hu hcode⟩
+
+#print axioms discontinuous_equiv_jump
+
 /-- **Local dichotomy with both conclusions**, modulo the coding hypothesis.
 For every r.e. operator `W` (index `e`) and every `X`: either `W` is continuous
 at `X`, giving `Wˣ ≤ᵀ X ⊕ 0′`, or `W` is discontinuous at `X` (a marker `n₀`
@@ -105,10 +117,10 @@ theorem local_dichotomy_sharp (e : ℕ) (X : ℕ → Bool)
     reReal e X ≤ₜ Cantor.join X (Cantor.jump (fun _ : ℕ => false))
     ∨ (∃ n₀, (∀ ℓ, ¬ haltsOn (graphOf (bitg X) ℓ) e n₀
         ∧ extHaltsFrom (graphOf (bitg X) ℓ) e n₀)
-        ∧ (HasCodingFamily e X n₀ → Cantor.jump X ≤ₜ reReal e X)) := by
+        ∧ (HasCodingFamily e X n₀ → reReal e X ≡ₜ Cantor.jump X)) := by
   rcases local_dichotomy X e with h | ⟨n₀, hn₀⟩
   · exact Or.inl h
-  · exact Or.inr ⟨n₀, hn₀, fun hcode => discontinuous_reduction e X n₀ hu hcode⟩
+  · exact Or.inr ⟨n₀, hn₀, fun hcode => discontinuous_equiv_jump e X n₀ hu hcode⟩
 
 #print axioms local_dichotomy_sharp
 

@@ -99,27 +99,38 @@ theorem haltedB_iff_ge_hStage (X : ℕ → Bool) (c : ℕ) (h : conv X c) (m : �
 
 /-! ### The marker witness and the coding real -/
 
-open Classical in
-/-- Encoding of the least `0/1` list `w` such that the prefix `X↾t ⌢ w` halts the
-operator at the marker (`0` if none — unused when the discontinuity holds). -/
-noncomputable def witEnc (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ) : ℕ :=
-  if h : ∃ k, haltsOn (graphOf (bitg X) t
-      ++ ((Encodable.decode (α := List Bool) k).getD []).map bbit) e n₀
-  then Nat.find h else 0
+/-- Whether the `⟨witness, step⟩` pair `p` shows `X↾t ⌢ (decode p.1)` halts the
+operator at the marker within `p.2` steps.  Decidable, hence its least witness
+is found by a genuine `μ`-search (unlike "least `k` with `haltsOn`", which is
+only `Σ₁`). -/
+def witPair (e n₀ : ℕ) (X : ℕ → Bool) (t p : ℕ) : Bool :=
+  (evaln (Nat.unpair p).2 (graphOf (bitg X) t
+    ++ ((Encodable.decode (α := List Bool) (Nat.unpair p).1).getD []).map bbit)
+    (ofNatCode e) n₀).isSome
 
-/-- The least marker-witnessing `0/1` extension of `X↾t`. -/
+open Classical in
+/-- Encoding of the least witnessing pair for the marker at stage `t`. -/
+noncomputable def witEnc (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ) : ℕ :=
+  if h : ∃ p, witPair e n₀ X t p = true then Nat.find h else 0
+
+/-- The marker-witnessing `0/1` extension of `X↾t` from the least witnessing pair. -/
 noncomputable def wit (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ) : List Bool :=
-  (Encodable.decode (α := List Bool) (witEnc e n₀ X t)).getD []
+  (Encodable.decode (α := List Bool) (Nat.unpair (witEnc e n₀ X t)).1).getD []
 
 theorem wit_spec (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ)
     (h : ∃ w : List Bool, haltsOn (graphOf (bitg X) t ++ w.map bbit) e n₀) :
     haltsOn (graphOf (bitg X) t ++ (wit e n₀ X t).map bbit) e n₀ := by
-  have hk : ∃ k, haltsOn (graphOf (bitg X) t
-      ++ ((Encodable.decode (α := List Bool) k).getD []).map bbit) e n₀ := by
-    obtain ⟨w, hw⟩ := h
-    exact ⟨Encodable.encode w, by rw [Encodable.encodek]; exact hw⟩
-  rw [wit, witEnc, dif_pos hk]
-  exact Nat.find_spec hk
+  have hp : ∃ p, witPair e n₀ X t p = true := by
+    obtain ⟨w, s, hs⟩ := h
+    refine ⟨Nat.pair (Encodable.encode w) s, ?_⟩
+    simp only [witPair, Nat.unpair_pair, Encodable.encodek, Option.getD_some]
+    exact hs
+  have hwe : witEnc e n₀ X t = Nat.find hp := dif_pos hp
+  have hspec := Nat.find_spec hp
+  rw [witPair] at hspec
+  refine ⟨(Nat.unpair (witEnc e n₀ X t)).2, ?_⟩
+  rw [hwe, wit, hwe]
+  exact hspec
 
 open Classical in
 /-- The coding real `Y_c`: copy `X` until `Φ_c^X(c)` halts (stage `t`), then

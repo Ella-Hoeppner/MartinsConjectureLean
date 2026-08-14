@@ -546,6 +546,42 @@ the full theorem is the `y_e` diagonalization (Lutz Thm 3.10, the discontinuous 
 an oracle-machine construction on the scale of the effective-KP build) and the fixed-word
 part of computable uniformity (Bard Lemma 3.4); see `ATTACK.md` "Next formal milestones".
 
+## Session 6 (2026-08-13/14, the marathon): Lachlan's continuous case + jump inversion
+
+An extended autonomous run.  Three complete, sorry-free, standard-axiom additions, all
+believed new to Lean, plus a capstone:
+
+* **Lachlan's theorem, continuous case** (`ContinuousCase.lean`, `continuous_case`):
+  literature research (Bard 2019 / Lutz thesis Ch. 3) established that the modern proof needs
+  *no recursion theorem* and that its heaviest ingredient — computable composition of
+  functionals — was already in the codebase (`trOracle`, packaged as `eval_trE_comp`).  The
+  determinacy-free continuous half is fully proved: a continuous r.e. operator has
+  `Wˣ ≤ᵀ X ⊕ 0′`, by a `μ`-search over prefix lengths with both tests `0′`-decidable and the
+  prefix `X`-computable, assembled over `{toPFun X, jumpFn ∅}` and cut to `join X 0′` via
+  `Nat.RecursiveIn.subst`.  Groundwork: `UniformFunctionals`, `ReOperator`, `OperatorLocal`.
+* **The Friedberg Jump Inversion Theorem** (`JumpInversion.lean`, ~830 lines, `jump_inversion`):
+  `∀ C ≥ᵀ 0′, ∃ A ≤ᵀ C, A′ ≡ᵀ C` — the marathon's centerpiece.  The full finite-extension
+  construction relative to `C`, with all three reductions proved: `A ≤ᵀ C` (the encoded
+  construction `jstrEnc` is recursive in `C` via `prec`), `A′ ≤ᵀ C` (the jump is read off the
+  `C`-computable stage decisions through the operator use principle `dom_iff_jExists`), and
+  `C ≤ᵀ A′` — the decode — by reconstructing the coding positions from `A′` through an
+  `A′`-computable length recursion (`jLenEnc`), using `jReal C ≤ᵀ A′`.  Packaged as
+  `jump_range_iff`: the jump's range is *exactly* the cone above `0′`.
+* **Capstone** (`DegreeCapstone.lean`, `exists_intermediate_non_jump`): combining the effective
+  Kleene–Post intermediate degree with the jump-range characterization, there is a degree
+  `∅ <ᵀ A <ᵀ 0′` that is *not a jump* — the jump misses the intermediate degrees.
+
+The reusable technique across `condN`/`jstrEnc`/`jLenEnc`: encoded finite-extension
+constructions made recursive in an oracle via `Nat.RecursiveIn.prec` over an encoded step, the
+step's recursiveness mirroring `reqStepEnc_recursiveIn` (decision/oracle-bind `>>=` `Nat.rec`
+over the decision bit) with "search = least witness" bridges.
+
+**Honest boundary.**  Lachlan's *discontinuous* case (⟹ `Wˣ ≥ᵀ X′`) is blocked by the absence
+of a *universal code* (`∃ u, ∀ O e n, eval O u ⟪e,n⟫ = eval O e n`): the `y_e` reduction needs
+`Φ_{s(e)}^{y_e} = X` with the oracle `y_e` varying in `e`, and `exists_code_of_recursiveIn` is
+a per-oracle `Prop`, not a constructive/uniform extractor.  A constructive `codeOf` (self-
+interpreter as an `OracleCode`) would unblock it; that is the next foundational milestone.
+
 ## Concrete next steps for a future run
 
 1. ~~Primrec-ness of `trOracle` on encodings~~ Done (`JumpInvariance.lean`). Remaining

@@ -140,3 +140,6 @@ import MartinsConjecture
 #print axioms OracleCode.Coding.hasCodingFamily
 #print axioms OracleCode.Coding.discontinuous_case_complete
 #print axioms OracleCode.Coding.no_operator_post_solution_complete
+#print axioms Martin.local_dichotomy_complete
+#print axioms Martin.lachlan_dichotomy_cone
+#print axioms Martin.lachlan_no_post_solution_cone

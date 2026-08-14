@@ -36,3 +36,4 @@ import MartinsConjecture.ReOperator
 import MartinsConjecture.OperatorLocal
 import MartinsConjecture.ContinuousCase
 import MartinsConjecture.JumpInversion
+import MartinsConjecture.DegreeCapstone

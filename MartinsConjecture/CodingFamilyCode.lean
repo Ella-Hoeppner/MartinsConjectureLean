@@ -90,5 +90,68 @@ theorem eval_cHStage (X : ℕ → Bool) (c : ℕ) (h : conv X c) :
 
 #print axioms eval_cHStage
 
+/-! ### The witness search as an explicit oracle code -/
+
+/-- Oracle-free witness-pair test on `w = ⟨⟨t,p⟩, g⟩` (`g` the encoded graph at `t`). -/
+def witTestFn (e n₀ : ℕ) (w : ℕ) : ℕ :=
+  bif (uEvalnD (Nat.pair (Nat.pair (Nat.pair e n₀)
+      (Nat.unpair (Nat.unpair (Nat.unpair w).1).2).2)
+      (encTable (Nat.unpair w).2 (Nat.unpair (Nat.unpair w).1).2))).isSome then 0 else 1
+
+theorem witTestFn_prim (e n₀ : ℕ) : Primrec (witTestFn e n₀) := by
+  refine Primrec.cond (Primrec.option_isSome.comp (uEvalnD_prim.comp ?_))
+    (Primrec.const 0) (Primrec.const 1)
+  refine Primrec₂.natPair.comp (Primrec₂.natPair.comp
+    (Primrec₂.natPair.comp (Primrec.const e) (Primrec.const n₀))
+    (Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp
+      (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))) ?_
+  exact encTable_prim.comp (Primrec.snd.comp Primrec.unpair)
+    (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))
+
+noncomputable def cWitTest (e n₀ : ℕ) : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec (Primrec.nat_iff.mp (witTestFn_prim e n₀)))).choose
+
+theorem cWitTest_spec (e n₀ : ℕ) (O : ℕ →. ℕ) (w : ℕ) :
+    eval O (cWitTest e n₀) w = Part.some (witTestFn e n₀ w) :=
+  congrFun ((exists_code_of_partrec
+    (Nat.Partrec.of_primrec (Primrec.nat_iff.mp (witTestFn_prim e n₀)))).choose_spec O) w
+
+noncomputable def cWit (e n₀ : ℕ) : OracleCode :=
+  .comp (cWitTest e n₀) (.pair idCode (.comp cGraph .left))
+
+theorem eval_cWit (e n₀ : ℕ) (X : ℕ → Bool) (t p : ℕ) :
+    eval (toPFun X) (cWit e n₀) (Nat.pair t p)
+      = Part.some (bif witPair e n₀ X t p then 0 else 1) := by
+  have hg : eval (toPFun X) (.comp cGraph .left) (Nat.pair t p)
+      = Part.some (Encodable.encode (graphOf (bitg X) t)) := by
+    rw [eval_comp, eval_left_app,
+      show (Part.some t >>= eval (toPFun X) cGraph) = eval (toPFun X) cGraph t from
+        Part.bind_some _ _, eval_cGraph, graphEnc]
+  have hpair : eval (toPFun X) (.pair idCode (.comp cGraph .left)) (Nat.pair t p)
+      = Part.some (Nat.pair (Nat.pair t p) (Encodable.encode (graphOf (bitg X) t))) := by
+    rw [eval_pair_eq, eval_idCode, hg]; simp only [Part.map_some, Part.bind_some]
+  rw [cWit, eval_comp, hpair,
+    show (Part.some (Nat.pair (Nat.pair t p) (Encodable.encode (graphOf (bitg X) t)))
+        >>= eval (toPFun X) (cWitTest e n₀))
+      = eval (toPFun X) (cWitTest e n₀) (Nat.pair (Nat.pair t p)
+          (Encodable.encode (graphOf (bitg X) t))) from Part.bind_some _ _,
+    cWitTest_spec]
+  congr 1
+  rw [witTestFn]
+  simp only [Nat.unpair_pair]
+  rw [← witPair_eq_uEvalnD]
+
+/-- The explicit witness search. -/
+noncomputable def cWitSearch (e n₀ : ℕ) : OracleCode := .rfind (cWit e n₀)
+
+theorem eval_cWitSearch (e n₀ : ℕ) (X : ℕ → Bool) (t : ℕ)
+    (h : ∃ p, witPair e n₀ X t p = true) :
+    eval (toPFun X) (cWitSearch e n₀) t = Part.some (witEnc e n₀ X t) := by
+  rw [cWitSearch, eval_rfind]
+  simp only [eval_cWit, Part.map_eq_map, Part.map_some]
+  exact witEncSearch_eq e n₀ X t h
+
+#print axioms eval_cWitSearch
+
 end Coding
 end OracleCode

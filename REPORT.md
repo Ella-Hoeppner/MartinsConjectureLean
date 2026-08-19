@@ -20,6 +20,18 @@ central Theorem 3.4 (measure-preserving ⟹ above the identity), proved for the 
 pointed perfect tree**, via the encoding technique.  The remaining general theorem needs the
 Groszek–Slaman pointed-perfect-tree coding (a genuine multi-session build).
 
+The two open cores (regressive / incomparable, on the Turing degrees) were then **reduced to a single
+clean hypothesis** (`RegressiveReduction.lean`, following Lutz's strategy).  The class properties
+"constant / regressive / incomparable on a cone" are shown to be Martin-equivalence invariants, so if a
+regressive (resp. incomparable) invariant function is Martin-equivalent to *any* uniformly-invariant
+one, that core follows from the formalized uniform theorems.  Capstone
+**`partI_of_uniformization`: Part 1 of Martin's conjecture holds provided every Turing-invariant function
+is, on a cone, Martin-equivalent to a uniformly-invariant one** — pinning the entire remaining content
+into "uniformization on a cone" (exactly Lutz's hyperarithmetic step, open on the Turing degrees).  A
+companion sharpening (`escaping_iff_not_constant`, `nonconstant_mp_iff_escaping_mp`) shows escaping ⟺
+non-constant, so the class-specific half of the measure-preserving decomposition reads simply
+"escaping ⟹ measure-preserving".
+
 **Headline this session:**
 1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance
    (`Martin.lachlan_dichotomy_cone_uniform`, `Martin.lachlan_no_post_solution_cone_uniform`).

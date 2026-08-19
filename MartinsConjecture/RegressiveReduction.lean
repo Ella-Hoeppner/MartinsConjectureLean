@@ -97,7 +97,40 @@ theorem incomparable_core_of_uniformization (hTD : TuringDeterminacy fun _ => Tr
   obtain ⟨G, hGu, hFG⟩ := huniformize F hF hinc
   exact incomparable_constant_of_uniform_witness hTD hinc hGu hFG
 
+/-! ### Capstone: full Part 1 from uniformization on a cone -/
+
+/-- **Part 1 of Martin's conjecture from the two-core uniformization hypotheses.**
+If every regressive invariant function *and* every incomparable invariant function
+is, on a cone, Martin-equivalent to a uniformly-invariant one, then Part 1 holds
+for all Turing-invariant functions.  (The above-identity and comparable cases are
+already handled by `partI_of_cores`; only the two cores need uniformizing.) -/
+theorem partI_of_core_uniformization (hTD : TuringDeterminacy fun _ => True)
+    (huniR : ∀ F, TuringInvariant F → OnCone (fun X => F X <ₜ X) →
+      ∃ G, UniformlyTuringInvariant G ∧ MartinEquiv F G)
+    (huniI : ∀ F, TuringInvariant F → OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) →
+      ∃ G, UniformlyTuringInvariant G ∧ MartinEquiv F G) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_cores hTD
+    (regressive_core_of_uniformization hTD huniR)
+    (incomparable_core_of_uniformization hTD huniI)
+
+/-- **Part 1 of Martin's conjecture from uniformization on a cone.**  This is the
+sharpest packaging: *the entire remaining content of Part 1 is that every
+Turing-invariant function is, on a cone, Martin-equivalent to a uniformly-invariant
+one.*  Everything else — the Slaman–Steel / Bard theory for the uniform class
+(`partI_uniform`, `regressive_uniform`, `incomparable_uniform`), the cone theorem,
+and the reduction of Part 1 to its two cores — is already formalized in this
+project and discharged here.  Producing the uniform representative on a cone is
+exactly the step Lutz carries out on the *hyperarithmetic* degrees (via ordinal
+jump hierarchies) and which is open on the Turing degrees. -/
+theorem partI_of_uniformization (hTD : TuringDeterminacy fun _ => True)
+    (huni : ∀ F, TuringInvariant F → ∃ G, UniformlyTuringInvariant G ∧ MartinEquiv F G) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_core_uniformization hTD
+    (fun F hF _ => huni F hF) (fun F hF _ => huni F hF)
+
 #print axioms regressive_core_of_uniformization
 #print axioms incomparable_core_of_uniformization
+#print axioms partI_of_uniformization
 
 end Martin

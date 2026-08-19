@@ -164,3 +164,5 @@ import MartinsConjecture
 #print axioms Martin.MartinEquiv.trans
 #print axioms Martin.escaping_iff_not_constant
 #print axioms Martin.nonconstant_mp_iff_escaping_mp
+#print axioms Martin.partI_of_uniformization
+#print axioms Martin.partI_of_core_uniformization

@@ -511,9 +511,72 @@ theorem backward_correct
   have := eval_iterTrE (fun w => shift_transform hu false w) (Nat.pair i j) (preReal true Y)
   rwa [iter_preReal_false_true] at this
 
+/-- `iterTrE g base` is primitive recursive in the exponent. -/
+theorem iterTrE_prim (g base : ℕ) : Primrec (iterTrE g base) := by
+  have h : Primrec (fun e : ℕ =>
+      Nat.rec (motive := fun _ => ℕ) base (fun _ prev => trE₂ g prev) e) :=
+    Primrec.nat_rec' Primrec.id (Primrec.const base)
+      ((trE₂_primrec.comp (Primrec.const g) Primrec.snd).comp Primrec.snd).to₂
+  exact h.of_eq fun e => rfl
+
+/-- `Pidx u` is primitive recursive in `(i,j)` — `u` is applied only to *fixed*
+index pairs (giving constants), then composed by the primrec `trE₂`/`iterTrE`. -/
+theorem Pidx_prim : Primrec (fun p : ℕ × ℕ => Pidx u p.1 p.2) := by
+  have hij : Primrec (fun p : ℕ × ℕ => Nat.pair p.1 p.2) :=
+    Primrec₂.natPair.comp Primrec.fst Primrec.snd
+  have hβ : Primrec (fun p : ℕ × ℕ =>
+      iterTrE (u (encodeCode (preCode false), encodeCode sCode)).1
+        (encodeCode OracleCode.oracle) (Nat.pair p.1 p.2)) :=
+    (iterTrE_prim _ _).comp hij
+  have hβ' : Primrec (fun p : ℕ × ℕ =>
+      iterTrE (u (encodeCode (preCode false), encodeCode sCode)).2
+        (encodeCode OracleCode.oracle) (Nat.pair p.1 p.2)) :=
+    (iterTrE_prim _ _).comp hij
+  exact (trE₂_primrec.comp
+    (trE₂_primrec.comp
+      (trE₂_primrec.comp
+        (trE₂_primrec.comp (Primrec.const _) hβ)
+        (Primrec.const _))
+      hβ')
+    (Primrec.const _)).of_eq fun p => rfl
+
+theorem Qidx_prim : Primrec (fun p : ℕ × ℕ => Qidx u p.1 p.2) := by
+  have hij : Primrec (fun p : ℕ × ℕ => Nat.pair p.1 p.2) :=
+    Primrec₂.natPair.comp Primrec.fst Primrec.snd
+  have hβ : Primrec (fun p : ℕ × ℕ =>
+      iterTrE (u (encodeCode (preCode false), encodeCode sCode)).1
+        (encodeCode OracleCode.oracle) (Nat.pair p.1 p.2)) :=
+    (iterTrE_prim _ _).comp hij
+  have hβ' : Primrec (fun p : ℕ × ℕ =>
+      iterTrE (u (encodeCode (preCode false), encodeCode sCode)).2
+        (encodeCode OracleCode.oracle) (Nat.pair p.1 p.2)) :=
+    (iterTrE_prim _ _).comp hij
+  exact (trE₂_primrec.comp
+    (trE₂_primrec.comp
+      (trE₂_primrec.comp
+        (trE₂_primrec.comp (Primrec.const _) hβ)
+        (Primrec.const _))
+      hβ')
+    (Primrec.const _)).of_eq fun p => rfl
+
+/-- **Bard's Lemma 3.4** (for Turing-invariant functions): a *uniformly*
+Turing-invariant function has a *computable* uniformity function.  Hence
+`UniformlyTuringInvariant → ComputablyUniformlyTuringInvariant`.
+
+The computable uniformity `v(i,j) = (Pidx u i j, Qidx u i j)` applies the given
+(arbitrary) `u` only to the *fixed* index pairs `⟨prepend, strip⟩` and
+`⟨dFst, dSnd⟩`, obtaining fixed `f`-level transforms, and composes them with the
+`i,j`-indexed powers via the primitive-recursive `trE₂`/`iterTrE`. -/
+theorem uti_computable (h : UniformlyTuringInvariant F) :
+    ComputablyUniformlyTuringInvariant F := by
+  obtain ⟨u, hu⟩ := h
+  refine ⟨fun p => (Pidx u p.1 p.2, Qidx u p.1 p.2),
+    (Primrec.pair (Pidx_prim) (Qidx_prim)).to_comp, ?_⟩
+  intro X Y i j hXY
+  exact ⟨forward_correct hu hXY, backward_correct hu hXY⟩
+
 #print axioms eval_dCode
-#print axioms equivVia_enc
 #print axioms forward_correct
-#print axioms backward_correct
+#print axioms uti_computable
 
 end Martin

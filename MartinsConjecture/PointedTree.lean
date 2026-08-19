@@ -119,6 +119,23 @@ theorem partI_of_groszekSlaman (hGS : GroszekSlaman)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_measurePreserving (measurePreservingAboveId_of_groszekSlaman' hGS) hclass
 
+/-! ### Soundness of the interface
+
+The `InvertingTree` interface is a *hypothesis* feeding the reduction, so it is
+worth checking it is satisfiable — that the four fields are not jointly
+contradictory.  The identity function (which is increasing) admits an inverting
+tree: the full space `2^ω` as a (computable, hence pointed) tree with `h = id`. -/
+
+/-- The interface is non-vacuous: the identity admits an inverting tree. -/
+theorem inverting_tree_id : Nonempty (InvertingTree (fun x => x)) :=
+  ⟨{ code := fun _ => false
+     mem := fun _ => True
+     h := fun x => x
+     pointed := fun x _ => Cantor.le_of_computable (Computable.const false)
+     realizes := fun d _ => ⟨d, trivial, Cantor.equiv.refl d⟩
+     invert := fun _ _ => rfl
+     recover := fun x _ => Cantor.left_le_join x _ }⟩
+
 #print axioms measurePreservingAboveId_of_groszekSlaman
 #print axioms partI_of_groszekSlaman
 

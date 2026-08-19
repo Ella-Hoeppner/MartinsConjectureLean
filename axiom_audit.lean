@@ -168,3 +168,4 @@ import MartinsConjecture
 #print axioms Martin.partI_of_core_uniformization
 #print axioms Martin.measurePreservingAboveId_of_groszekSlaman
 #print axioms Martin.partI_of_groszekSlaman
+#print axioms Martin.inverting_tree_id

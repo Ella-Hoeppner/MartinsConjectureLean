@@ -154,3 +154,7 @@ import MartinsConjecture
 #print axioms Martin.uti_computable
 #print axioms Martin.partI_uniform
 #print axioms Martin.lachlan_dichotomy_cone_uniform
+#print axioms Martin.partI_iff_measurePreserving
+#print axioms Martin.aboveId_of_bounded_modulus
+#print axioms Martin.measurePreservingAboveId_uniform
+#print axioms Martin.measurePreserving_escapes

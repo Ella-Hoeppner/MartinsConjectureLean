@@ -6,6 +6,20 @@
 **Sorry count: 0. Custom axioms: 0** (144 headline theorems audited; every one uses only
 `propext`, `Classical.choice`, `Quot.sound`).
 
+**Research into the OPEN cores (2026-08-19).**  After a literature review of the frontier
+(Lutz–Siskind's measure-preserving approach; Lutz's regressive result on the *hyperarithmetic*
+degrees — the regressive case on the Turing degrees is *explicitly open*, blocked by an ordinal
+jump-hierarchy barrier), the modern **measure-preserving** framework was formalized
+(`MeasurePreserving.lean`, building on the existing order-preserving skeleton): the general-function
+theory (Prop 1.8, increasing modulus via choice, the two-ended dichotomy, structural theory —
+upward-closed in the Martin order, closed under composition, `measurePreserving_escapes`), the exact
+equivalence `partI_iff_measurePreserving` (Part 1 ⟺ Thm 3.4 ∧ (non-constant⟹measure-preserving),
+pinning its two halves), the tree-free fragment `aboveId_of_bounded_modulus`, and — connecting my
+Slaman–Steel formalization to the frontier — `measurePreservingAboveId_uniform`: **Lutz–Siskind's
+central Theorem 3.4 (measure-preserving ⟹ above the identity), proved for the uniform class without any
+pointed perfect tree**, via the encoding technique.  The remaining general theorem needs the
+Groszek–Slaman pointed-perfect-tree coding (a genuine multi-session build).
+
 **Headline this session:**
 1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance
    (`Martin.lachlan_dichotomy_cone_uniform`, `Martin.lachlan_no_post_solution_cone_uniform`).

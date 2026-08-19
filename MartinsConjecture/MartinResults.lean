@@ -75,10 +75,23 @@ theorem uniform_nonconstant_measurePreserving (hTD : TuringDeterminacy fun _ => 
     MeasurePreserving F :=
   aboveId_measurePreserving (steel_kernel_computable hTD (uti_computable hF) hnc)
 
+/-- **Lutz–Siskind's Theorem 3.4, for the uniform class, tree-free.**  A
+measure-preserving *uniformly*-invariant function is above the identity on a cone
+— the central pointed-perfect-tree theorem of Lutz–Siskind, obtained here for
+uniformly-invariant functions by a completely different route: measure-preservation
+rules out constancy, and my Slaman–Steel formalization (`steel_kernel_computable`
+∘ Bard 3.4) then forces above-identity, with no Groszek–Slaman coding. -/
+theorem measurePreservingAboveId_uniform (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} (hF : UniformlyTuringInvariant F)
+    (hmp : MeasurePreserving F) : AboveIdOnCone F :=
+  steel_kernel_computable hTD (uti_computable hF)
+    (fun hc => not_measurePreserving_of_constant hc hmp)
+
 #print axioms partI_uniform
 #print axioms regressive_uniform
 #print axioms incomparable_uniform
 #print axioms lachlan_dichotomy_cone_uniform
 #print axioms uniform_nonconstant_measurePreserving
+#print axioms measurePreservingAboveId_uniform
 
 end Martin

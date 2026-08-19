@@ -128,8 +128,43 @@ theorem unshift_transform {F : (ℕ → Bool) → ℕ → Bool} {u : ℕ × ℕ 
         (ofNatCode (u (encodeCode (preCode b), encodeCode sCode)).2) = toPFun (F w) :=
   (hu w (preReal b w) (encodeCode (preCode b)) (encodeCode sCode) (equivVia_preReal b w)).2
 
+/-! ### The `e`-fold composition of the monoid
+
+To build `β^e` (apply the fixed transform `β` `e` times) we iterate the computable
+composition `trE (ofNatCode g)` — keeping the *accumulator* in `trE`'s second
+(primrec-friendly) slot, so the fixed step `g` stays in the first slot. -/
+
+/-- `iterTrE g base e` : the index of "run `Φ_base`, with `Φ_g` applied to the
+oracle `e` times first".  `Φ_{iterTrE g base e}^Y = Φ_base^{(Φ_g)^e Y}`. -/
+def iterTrE (g base : ℕ) (e : ℕ) : ℕ :=
+  Nat.rec base (fun _ prev => trE (ofNatCode g) prev) e
+
+@[simp] theorem iterTrE_zero (g base : ℕ) : iterTrE g base 0 = base := rfl
+
+theorem iterTrE_succ (g base e : ℕ) :
+    iterTrE g base (e + 1) = trE (ofNatCode g) (iterTrE g base e) := rfl
+
+/-- **The `e`-fold transform.**  If the fixed index `g` transforms `F w ↦ F (σ w)`
+for every `w`, then `iterTrE g ⟨oracle⟩ e` transforms `F w ↦ F (σ^[e] w)` — the
+`e`-fold iterate of `σ` — uniformly in `w`. -/
+theorem eval_iterTrE {F : (ℕ → Bool) → ℕ → Bool} {g : ℕ} {σ : (ℕ → Bool) → (ℕ → Bool)}
+    (hg : ∀ w, eval (toPFun (F w)) (ofNatCode g) = toPFun (F (σ w))) :
+    ∀ (e : ℕ) (w : ℕ → Bool),
+      eval (toPFun (F w)) (ofNatCode (iterTrE g (encodeCode OracleCode.oracle) e))
+        = toPFun (F (σ^[e] w)) := by
+  intro e
+  induction e with
+  | zero =>
+    intro w
+    rw [iterTrE_zero, Function.iterate_zero, id, ofNatCode_encodeCode, eval_oracle]
+  | succ e ih =>
+    intro w
+    rw [iterTrE_succ, eval_trE_comp (hg w) (iterTrE g (encodeCode OracleCode.oracle) e), ih (σ w),
+      Function.iterate_succ_apply]
+
 #print axioms eval_preCode
 #print axioms equivVia_preReal
 #print axioms shift_transform
+#print axioms eval_iterTrE
 
 end Martin

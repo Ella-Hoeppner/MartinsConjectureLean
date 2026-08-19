@@ -314,6 +314,75 @@ theorem eval_runCode {sel : ℕ → ℕ} (hsel : Primrec sel) (w : ℕ → Bool)
     eval_univCode, buildQueryFn, Nat.unpair_pair, Nat.unpair_pair]
   simp only [trE₂, eval_trE_comp (eval_shiftIdx_real w (m + 1)) (sel m)]
 
+/-! ### Assembling `d`: region select + the whole machine -/
+
+/-- Region select: `z = ⟨rr, ⟨n, m⟩⟩ ↦ (0ᵐ 1 r)(n)` given `rr = r(n-m-1)`.
+`if m < n then rr else if n = m then 1 else 0`. -/
+def combineFn (z : ℕ) : ℕ :=
+  if (Nat.unpair (Nat.unpair z).2).2 < (Nat.unpair (Nat.unpair z).2).1 then (Nat.unpair z).1
+  else if (Nat.unpair (Nat.unpair z).2).1 = (Nat.unpair (Nat.unpair z).2).2 then 1 else 0
+
+theorem combineFn_prim : Nat.Primrec combineFn := by
+  refine Primrec.nat_iff.mp ?_
+  have hn : Primrec (fun z => (Nat.unpair (Nat.unpair z).2).1) :=
+    Primrec.fst.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+  have hm : Primrec (fun z => (Nat.unpair (Nat.unpair z).2).2) :=
+    Primrec.snd.comp (Primrec.unpair.comp (Primrec.snd.comp Primrec.unpair))
+  have hrr : Primrec (fun z => (Nat.unpair z).1) := Primrec.fst.comp Primrec.unpair
+  exact Primrec.ite (Primrec.nat_lt.comp hm hn) hrr
+    (Primrec.ite (Primrec.eq.comp hn hm) (Primrec.const 1) (Primrec.const 0))
+
+noncomputable def combineCode : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec combineFn_prim)).choose
+
+theorem combineCode_spec (O : ℕ →. ℕ) (z : ℕ) : eval O combineCode z = Part.some (combineFn z) :=
+  congrFun ((exists_code_of_partrec (Nat.Partrec.of_primrec combineFn_prim)).choose_spec O) z
+
+/-- **The `d`-machine** for the projection `sel`: on `enc m t = 0ᵐ 1 t` it produces
+`enc m (Φ_{sel m}^t) = 0ᵐ 1 (Φ_{sel m}^t)` — read `m`, run `Φ_{sel m}` on the tail,
+copy the prefix. -/
+noncomputable def dCode (sel : ℕ → ℕ) (hsel : Primrec sel) : OracleCode :=
+  .comp (.comp combineCode (.pair (runCode sel hsel) idCode)) (.pair idCode mReadCode)
+
+theorem combineFn_val (rr n m : ℕ) :
+    combineFn (Nat.pair rr (Nat.pair n m)) = if m < n then rr else if n = m then 1 else 0 := by
+  simp only [combineFn, Nat.unpair_pair]
+
+/-- **`d`-machine correctness**: if `Φ_{sel m}^t = r`, then `Φ_{dCode sel}^{0ᵐ 1 t} = 0ᵐ 1 r`. -/
+theorem eval_dCode {sel : ℕ → ℕ} (hsel : Primrec sel) (m : ℕ) (t r : ℕ → Bool)
+    (hr : eval (toPFun t) (ofNatCode (sel m)) = toPFun r) :
+    eval (toPFun (enc m t)) (dCode sel hsel) = toPFun (enc m r) := by
+  have htail : (fun p => enc m t (m + 1 + p)) = t := by
+    funext p; simp only [enc]; rw [if_neg (by omega), if_neg (by omega)]; congr 1; omega
+  have hrr : ∀ n, eval (toPFun (enc m t)) (runCode sel hsel) (Nat.pair n m)
+      = Part.some (bitg r (n - m - 1)) := by
+    intro n; rw [eval_runCode, htail, hr, toPFun_eq_bitg]
+  funext n
+  rw [dCode, eval_comp,
+    show eval (toPFun (enc m t)) (.pair idCode mReadCode) n = Part.some (Nat.pair n m) from by
+      rw [eval_pair_eq, eval_idCode, eval_mRead]; simp only [Part.map_some, Part.bind_some],
+    show (Part.some (Nat.pair n m)
+        >>= eval (toPFun (enc m t)) (.comp combineCode (.pair (runCode sel hsel) idCode)))
+      = eval (toPFun (enc m t)) (.comp combineCode (.pair (runCode sel hsel) idCode)) (Nat.pair n m)
+      from Part.bind_some _ _,
+    eval_comp,
+    show eval (toPFun (enc m t)) (.pair (runCode sel hsel) idCode) (Nat.pair n m)
+        = Part.some (Nat.pair (bitg r (n - m - 1)) (Nat.pair n m)) from by
+      rw [eval_pair_eq, eval_idCode, hrr]; simp only [Part.map_some, Part.bind_some],
+    show (Part.some (Nat.pair (bitg r (n - m - 1)) (Nat.pair n m)) >>= eval (toPFun (enc m t)) combineCode)
+      = eval (toPFun (enc m t)) combineCode (Nat.pair (bitg r (n - m - 1)) (Nat.pair n m))
+      from Part.bind_some _ _,
+    combineCode_spec, combineFn_val, toPFun_eq_bitg]
+  congr 1
+  by_cases hmn : m < n
+  · rw [if_pos hmn]
+    simp only [bitg, enc]; rw [if_neg (by omega), if_neg (by omega)]
+  · rw [if_neg hmn]
+    by_cases hnm : n = m
+    · rw [if_pos hnm]; subst hnm; simp [bitg, enc]
+    · rw [if_neg hnm]
+      simp only [bitg, enc]; rw [if_pos (by omega)]; rfl
+
 #print axioms eval_preCode
 #print axioms equivVia_preReal
 #print axioms shift_transform
@@ -322,5 +391,6 @@ theorem eval_runCode {sel : ℕ → ℕ} (hsel : Primrec sel) (w : ℕ → Bool)
 #print axioms iter_preReal_false_true
 #print axioms eval_mRead
 #print axioms eval_runCode
+#print axioms eval_dCode
 
 end Martin

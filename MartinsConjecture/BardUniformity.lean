@@ -162,9 +162,49 @@ theorem eval_iterTrE {F : (ℕ → Bool) → ℕ → Bool} {g : ℕ} {σ : (ℕ 
     rw [iterTrE_succ, eval_trE_comp (hg w) (iterTrE g (encodeCode OracleCode.oracle) e), ih (σ w),
       Function.iterate_succ_apply]
 
+/-! ### The shift-by-`k` reduction (for running `Φ_i` on the tail inside `d`) -/
+
+/-- `addFn ⟨k,n⟩ = k + n` (oracle-free). -/
+def addFn (p : ℕ) : ℕ := (Nat.unpair p).1 + (Nat.unpair p).2
+
+theorem addFn_prim : Nat.Primrec addFn :=
+  Primrec.nat_iff.mp (Primrec.nat_add.comp (Primrec.fst.comp Primrec.unpair)
+    (Primrec.snd.comp Primrec.unpair))
+
+/-- Oracle-free code computing `k + n` from `⟨k,n⟩`. -/
+noncomputable def addCode : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec addFn_prim)).choose
+
+theorem addCode_spec (O : ℕ →. ℕ) (p : ℕ) : eval O addCode p = Part.some (addFn p) :=
+  congrFun ((exists_code_of_partrec (Nat.Partrec.of_primrec addFn_prim)).choose_spec O) p
+
+/-- Base code for the shift: `Φ^w(⟨k,n⟩) = w(k+n)`. -/
+noncomputable def shiftBase : OracleCode := .comp .oracle addCode
+
+/-- **Shift-by-`k` index**: `Φ_{shiftIdx k}^w = fun n => w(k+n) = shift(w) k`-fold.
+Primitive recursive in `k` (via s-m-n). -/
+noncomputable def shiftIdx (k : ℕ) : ℕ := curryEnc (encodeCode shiftBase) k
+
+theorem eval_shiftIdx (w : ℕ → Bool) (k n : ℕ) :
+    eval (toPFun w) (ofNatCode (shiftIdx k)) n = Part.some (bitg w (k + n)) := by
+  rw [shiftIdx, ← encodeCode_curry, ofNatCode_encodeCode, eval_curry, shiftBase, eval_comp,
+    show (eval (toPFun w) addCode (Nat.pair k n) >>= eval (toPFun w) OracleCode.oracle)
+      = eval (toPFun w) OracleCode.oracle (addFn (Nat.pair k n)) from by
+      rw [addCode_spec]; exact Part.bind_some _ _,
+    eval_oracle, toPFun_eq_bitg, addFn, Nat.unpair_pair]
+
+theorem shiftIdx_prim : Primrec shiftIdx :=
+  curryEnc_prim.comp (Primrec.const (encodeCode shiftBase)) Primrec.id
+
+/-- `shiftIdx k` really computes the `k`-shifted oracle as a real. -/
+theorem eval_shiftIdx_real (w : ℕ → Bool) (k : ℕ) :
+    eval (toPFun w) (ofNatCode (shiftIdx k)) = toPFun (fun n => w (k + n)) := by
+  funext n; rw [eval_shiftIdx]; rfl
+
 #print axioms eval_preCode
 #print axioms equivVia_preReal
 #print axioms shift_transform
 #print axioms eval_iterTrE
+#print axioms eval_shiftIdx
 
 end Martin

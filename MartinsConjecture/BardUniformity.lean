@@ -232,11 +232,53 @@ theorem iter_shiftReal_enc (m : ℕ) (t : ℕ → Bool) :
   | zero => funext n; simp [enc, preReal, Function.iterate_zero]
   | succ m ih => rw [Function.iterate_succ_apply, shiftReal_enc_succ, ih]
 
+/-! ### Reading the unary index `m` from the oracle (the `rfind` in `d`) -/
+
+/-- `oneMinusFn v = 1 - v` (oracle-free). -/
+def oneMinusFn (v : ℕ) : ℕ := 1 - v
+
+theorem oneMinusFn_prim : Nat.Primrec oneMinusFn :=
+  Primrec.nat_iff.mp (Primrec.nat_sub.comp (Primrec.const 1) Primrec.id)
+
+noncomputable def oneMinusCode : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec oneMinusFn_prim)).choose
+
+theorem oneMinusCode_spec (O : ℕ →. ℕ) (v : ℕ) : eval O oneMinusCode v = Part.some (1 - v) :=
+  congrFun ((exists_code_of_partrec (Nat.Partrec.of_primrec oneMinusFn_prim)).choose_spec O) v
+
+/-- rfind test: `0` exactly when the oracle's `k`-th bit is `1`. -/
+noncomputable def mReadTest : OracleCode := .comp oneMinusCode (.comp .oracle .right)
+
+theorem eval_mReadTest (w : ℕ → Bool) (a k : ℕ) :
+    eval (toPFun w) mReadTest (Nat.pair a k) = Part.some (1 - bitg w k) := by
+  rw [mReadTest, eval_comp, eval_comp,
+    show eval (toPFun w) OracleCode.right (Nat.pair a k) = Part.some k from by
+      show Part.some (Nat.unpair (Nat.pair a k)).2 = _; rw [Nat.unpair_pair],
+    show (Part.some k >>= eval (toPFun w) OracleCode.oracle) = eval (toPFun w) OracleCode.oracle k
+      from Part.bind_some _ _, eval_oracle, toPFun_eq_bitg,
+    show (Part.some (bitg w k) >>= eval (toPFun w) oneMinusCode)
+      = eval (toPFun w) oneMinusCode (bitg w k) from Part.bind_some _ _, oneMinusCode_spec]
+
+/-- **Reading `m`**: on the oracle `enc m t = 0ᵐ 1 t`, `Φ_{mReadCode}` returns `m`. -/
+noncomputable def mReadCode : OracleCode := .rfind mReadTest
+
+theorem eval_mRead (m : ℕ) (t : ℕ → Bool) (a : ℕ) :
+    eval (toPFun (enc m t)) mReadCode a = Part.some m := by
+  rw [Part.eq_some_iff]
+  rw [mReadCode, mem_eval_rfind]
+  refine ⟨?_, ?_⟩
+  · rw [eval_mReadTest, show bitg (enc m t) m = 1 from by simp [bitg, enc]]
+    exact Part.mem_some 0
+  · intro k hk
+    rw [eval_mReadTest, show bitg (enc m t) k = 0 from by simp [bitg, enc, hk]]
+    exact ⟨1, Part.mem_some 1, one_ne_zero⟩
+
 #print axioms eval_preCode
 #print axioms equivVia_preReal
 #print axioms shift_transform
 #print axioms eval_iterTrE
 #print axioms eval_shiftIdx
 #print axioms iter_preReal_false_true
+#print axioms eval_mRead
 
 end Martin

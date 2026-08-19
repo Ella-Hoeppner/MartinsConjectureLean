@@ -194,9 +194,57 @@ theorem partI_iff_measurePreserving :
   · rintro ⟨h1, h2⟩
     exact partI_of_measurePreserving h1 h2
 
+/-! ### Escaping: the largeness notion that coincides with non-constancy -/
+
+/-- `F` is **escaping** if its values avoid every fixed degree on a cone: for
+every `Z`, `F X ≰ᵀ Z` on a cone.  This is *weaker* than measure-preservation
+(`F X ≥ᵀ a` on a cone ⟹ `F X ≱ᵀ a′`), and — the point below — coincides with
+non-constancy for invariant functions. -/
+def Escaping (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
+  ∀ Z : ℕ → Bool, OnCone (fun X => ¬ F X ≤ₜ Z)
+
+/-- Measure-preserving functions are escaping. -/
+theorem MeasurePreserving.escaping (hmp : MeasurePreserving F) : Escaping F :=
+  measurePreserving_escapes hmp
+
+/-- An escaping function is not constant on a cone (no determinacy needed —
+constancy would put `F X ≤ᵀ c` on a cone, contradicting escaping at `Z = c`). -/
+theorem not_constant_of_escaping (h : Escaping F) : ¬ ConstantOnCone F := by
+  rintro ⟨c, hc⟩
+  obtain ⟨b, hb⟩ := onCone_and (h c) hc
+  exact (hb b (Cantor.le.refl b)).1 (hb b (Cantor.le.refl b)).2.1
+
+/-- Conversely, a non-constant invariant function is escaping — this is exactly
+the escape theorem (`counterexample_escapes`). -/
+theorem escaping_of_not_constant (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) : Escaping F :=
+  counterexample_escapes hTD hF hnc
+
+/-- **Escaping ⟺ non-constant** for invariant functions.  So the escape theorem
+is best read as: non-constancy *is* the largeness property "avoids every fixed
+degree on a cone". -/
+theorem escaping_iff_not_constant (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) : Escaping F ↔ ¬ ConstantOnCone F :=
+  ⟨not_constant_of_escaping, escaping_of_not_constant hTD hF⟩
+
+/-- **The open class-specific half of Part 1, sharpened.**  Given determinacy,
+"every non-constant invariant function is measure-preserving" is *equivalent* to
+"every escaping invariant function is measure-preserving" (since escaping and
+non-constancy coincide).  Combined with `partI_iff_measurePreserving`, the entire
+open content of Part 1 is: **Thm 3.4** (measure-preserving ⟹ above id) together
+with **escaping ⟹ measure-preserving** — "if `F` avoids every degree from below
+on a cone, it reaches every degree from above on a cone". -/
+theorem nonconstant_mp_iff_escaping_mp (hTD : TuringDeterminacy fun _ => True) :
+    (∀ F, TuringInvariant F → ¬ ConstantOnCone F → MeasurePreserving F) ↔
+      (∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) :=
+  ⟨fun h F hF hesc => h F hF (not_constant_of_escaping hesc),
+   fun h F hF hnc => h F hF (escaping_of_not_constant hTD hF hnc)⟩
+
 #print axioms not_measurePreserving_of_constant
 #print axioms measurePreserving_hasModulus
 #print axioms partI_of_measurePreserving
 #print axioms partI_iff_measurePreserving
+#print axioms escaping_iff_not_constant
+#print axioms nonconstant_mp_iff_escaping_mp
 
 end Martin

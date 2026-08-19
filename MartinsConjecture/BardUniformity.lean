@@ -427,16 +427,93 @@ theorem equivVia_enc {x y : ℕ → Bool} {i j : ℕ} (hxy : EquivVia x y i j) :
       eval_dCode sndSel_prim (Nat.pair i j) y x
         (by rw [show sndSel (Nat.pair i j) = j from by simp [sndSel]]; exact hxy.2)]
 
-#print axioms eval_preCode
-#print axioms equivVia_preReal
-#print axioms shift_transform
-#print axioms eval_iterTrE
-#print axioms eval_shiftIdx
-#print axioms iter_preReal_false_true
-#print axioms eval_mRead
-#print axioms eval_runCode
+/-! ### Assembling the computable uniformity function `v(i,j)` -/
+
+theorem enc_zero (t : ℕ → Bool) : enc 0 t = preReal true t := by
+  funext n; cases n <;> simp [enc, preReal]
+
+/-- The 5-fold left-nested composition of indices (`a` applied first). -/
+def comp5 (a b c d e : ℕ) : ℕ := trE₂ (trE₂ (trE₂ (trE₂ a b) c) d) e
+
+/-- Chain the five transforms through `comp5`. -/
+theorem eval_comp5_transform {F : (ℕ → Bool) → ℕ → Bool} {a b c d e : ℕ}
+    {w0 w1 w2 w3 w4 w5 : ℕ → Bool}
+    (ha : eval (toPFun (F w0)) (ofNatCode a) = toPFun (F w1))
+    (hb : eval (toPFun (F w1)) (ofNatCode b) = toPFun (F w2))
+    (hc : eval (toPFun (F w2)) (ofNatCode c) = toPFun (F w3))
+    (hd : eval (toPFun (F w3)) (ofNatCode d) = toPFun (F w4))
+    (he : eval (toPFun (F w4)) (ofNatCode e) = toPFun (F w5)) :
+    eval (toPFun (F w0)) (ofNatCode (comp5 a b c d e)) = toPFun (F w5) := by
+  have h1 : eval (toPFun (F w0)) (ofNatCode (trE₂ a b)) = toPFun (F w2) := by
+    rw [trE₂, eval_trE_comp ha b, hb]
+  have h2 : eval (toPFun (F w0)) (ofNatCode (trE₂ (trE₂ a b) c)) = toPFun (F w3) := by
+    rw [trE₂, eval_trE_comp h1 c, hc]
+  have h3 : eval (toPFun (F w0)) (ofNatCode (trE₂ (trE₂ (trE₂ a b) c) d)) = toPFun (F w4) := by
+    rw [trE₂, eval_trE_comp h2 d, hd]
+  rw [comp5, trE₂, eval_trE_comp h3 e, he]
+
+variable {F : (ℕ → Bool) → ℕ → Bool} {u : ℕ × ℕ → ℕ × ℕ}
+
+/-- The forward index: `f(x) → f(1x) → f(0ᵐ1x) → f(0ᵐ1y) → f(1y) → f(y)`. -/
+noncomputable def Pidx (u : ℕ × ℕ → ℕ × ℕ) (i j : ℕ) : ℕ :=
+  comp5 (u (encodeCode (preCode true), encodeCode sCode)).1
+    (iterTrE (u (encodeCode (preCode false), encodeCode sCode)).1
+      (encodeCode OracleCode.oracle) (Nat.pair i j))
+    (u (encodeCode dFst, encodeCode dSnd)).1
+    (iterTrE (u (encodeCode (preCode false), encodeCode sCode)).2
+      (encodeCode OracleCode.oracle) (Nat.pair i j))
+    (u (encodeCode (preCode true), encodeCode sCode)).2
+
+/-- The backward index: same, but the `δ`-step runs `Φ_j` instead of `Φ_i`. -/
+noncomputable def Qidx (u : ℕ × ℕ → ℕ × ℕ) (i j : ℕ) : ℕ :=
+  comp5 (u (encodeCode (preCode true), encodeCode sCode)).1
+    (iterTrE (u (encodeCode (preCode false), encodeCode sCode)).1
+      (encodeCode OracleCode.oracle) (Nat.pair i j))
+    (u (encodeCode dFst, encodeCode dSnd)).2
+    (iterTrE (u (encodeCode (preCode false), encodeCode sCode)).2
+      (encodeCode OracleCode.oracle) (Nat.pair i j))
+    (u (encodeCode (preCode true), encodeCode sCode)).2
+
+/-- The decode chain: `β'` strips one `0` at each step of `enc m Y, enc (m-1) Y, …`. -/
+theorem decode_chain
+    (hu : ∀ X Y i' j', EquivVia X Y i' j' → EquivVia (F X) (F Y) (u (i', j')).1 (u (i', j')).2)
+    (Y : ℕ → Bool) (i j : ℕ) :
+    eval (toPFun (F (enc (Nat.pair i j) Y)))
+        (ofNatCode (iterTrE (u (encodeCode (preCode false), encodeCode sCode)).2
+          (encodeCode OracleCode.oracle) (Nat.pair i j)))
+      = toPFun (F (preReal true Y)) := by
+  have hchain := eval_iterTrE_chain (F := F) (Nat.pair i j)
+    (fun k => enc (Nat.pair i j - k) Y) (fun k hk => by
+      have e1 : Nat.pair i j - k = (Nat.pair i j - k - 1) + 1 := by omega
+      have e2 : Nat.pair i j - (k + 1) = Nat.pair i j - k - 1 := by omega
+      rw [e1, e2, ← preReal_false_enc]
+      exact unshift_transform hu false (enc (Nat.pair i j - k - 1) Y))
+  rw [Nat.sub_self, enc_zero] at hchain
+  simpa using hchain
+
+theorem forward_correct
+    (hu : ∀ X Y i' j', EquivVia X Y i' j' → EquivVia (F X) (F Y) (u (i', j')).1 (u (i', j')).2)
+    {X Y : ℕ → Bool} {i j : ℕ} (hXY : EquivVia X Y i j) :
+    eval (toPFun (F X)) (ofNatCode (Pidx u i j)) = toPFun (F Y) := by
+  refine eval_comp5_transform (shift_transform hu true X) ?_
+    (hu (enc (Nat.pair i j) X) (enc (Nat.pair i j) Y) (encodeCode dFst) (encodeCode dSnd)
+      (equivVia_enc hXY)).1 (decode_chain hu Y i j) (unshift_transform hu true Y)
+  have := eval_iterTrE (fun w => shift_transform hu false w) (Nat.pair i j) (preReal true X)
+  rwa [iter_preReal_false_true] at this
+
+theorem backward_correct
+    (hu : ∀ X Y i' j', EquivVia X Y i' j' → EquivVia (F X) (F Y) (u (i', j')).1 (u (i', j')).2)
+    {X Y : ℕ → Bool} {i j : ℕ} (hXY : EquivVia X Y i j) :
+    eval (toPFun (F Y)) (ofNatCode (Qidx u i j)) = toPFun (F X) := by
+  refine eval_comp5_transform (shift_transform hu true Y) ?_
+    (hu (enc (Nat.pair i j) X) (enc (Nat.pair i j) Y) (encodeCode dFst) (encodeCode dSnd)
+      (equivVia_enc hXY)).2 (decode_chain hu X i j) (unshift_transform hu true X)
+  have := eval_iterTrE (fun w => shift_transform hu false w) (Nat.pair i j) (preReal true Y)
+  rwa [iter_preReal_false_true] at this
+
 #print axioms eval_dCode
-#print axioms eval_iterTrE_chain
 #print axioms equivVia_enc
+#print axioms forward_correct
+#print axioms backward_correct
 
 end Martin

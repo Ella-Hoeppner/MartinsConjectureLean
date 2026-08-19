@@ -11,6 +11,7 @@ argument that the recovery search terminates.
 import MartinsConjecture.Konig
 import MartinsConjecture.UniformFunctionals
 import MartinsConjecture.Universal
+import Mathlib.Data.Fintype.Vector
 
 open scoped Computability
 open OracleCode Cantor
@@ -133,7 +134,7 @@ theorem separation {T : List Bool → Prop} (hTclosed : ∀ σ b, T (σ ++ [b]) 
     (hinj : ∀ y y', IsBranch T y → IsBranch T y' → g y = g y' → y = y')
     {x : ℕ → Bool} (hx : IsBranch T x)
     {σ : List Bool} (hσne : σ ≠ (List.range σ.length).map x) :
-    ∃ m, ∀ τ, T τ → σ <+: τ → τ.length = m → ¬ Consistent e (g x) τ := by
+    ∃ M, ∀ τ, T τ → σ <+: τ → Consistent e (g x) τ → τ.length < M := by
   by_contra hcon
   push_neg at hcon
   set S : List Bool → Prop := fun t =>
@@ -145,7 +146,7 @@ theorem separation {T : List Bool → Prop} (hTclosed : ∀ σ b, T (σ ++ [b]) 
     exact ⟨hTclosed _ _ hT1, consistent_of_append hcons⟩
   have hSinf : Konig.HasInf S [] := by
     intro m
-    obtain ⟨τ, hτT, hτpre, hτlen, hτcons⟩ := hcon (σ.length + m)
+    obtain ⟨τ, hτT, hτpre, hτcons, hτlen⟩ := hcon (σ.length + m)
     obtain ⟨t, rfl⟩ := hτpre
     refine ⟨t, ⟨hτT, hτcons⟩, ?_, ?_⟩
     · simp
@@ -180,5 +181,71 @@ theorem separation {T : List Bool → Prop} (hTclosed : ∀ σ b, T (σ ++ [b]) 
     exact cond_one_zero_inj (hzm_cons j (bitg (g z) j) hfbit)
   exact hσne (hσz.symm.trans (congrArg (fun f => (List.range σ.length).map f)
     (hinj z x hzbranch hx hgzx)))
+
+/-! ### The search that computes the branch from its image and the tree -/
+
+/-- The search predicate: at level `m`, some length-`m` node of `T` is consistent
+with `w`, and *all* consistent length-`m` nodes share their first `n` bits.  When
+this holds, that common `n`-prefix is `x↾n` (`search_correct`), and it holds for
+some `m` (`search_terminates`). -/
+def searchGood (T : List Bool → Prop) (e : ℕ) (w : ℕ → Bool) (n m : ℕ) : Prop :=
+  (∃ τ, T τ ∧ τ.length = m ∧ Consistent e w τ) ∧
+  (∀ τ τ', T τ → τ.length = m → Consistent e w τ →
+    T τ' → τ'.length = m → Consistent e w τ' → τ.take n = τ'.take n)
+
+/-- **Correctness of the search.**  When `searchGood` holds at level `m ≥ n`, every
+consistent length-`m` node's first `n` bits are exactly `x↾n` (because `x↾m` is
+itself a consistent length-`m` node). -/
+theorem search_correct {T : List Bool → Prop} {e : ℕ} {g : (ℕ → Bool) → (ℕ → Bool)}
+    (hg : ∀ y, IsBranch T y → eval (toPFun y) (ofNatCode e) = toPFun (g y))
+    {x : ℕ → Bool} (hx : IsBranch T x) {n m : ℕ} (hnm : n ≤ m)
+    (hgood : searchGood T e (g x) n m) {τ₀ : List Bool}
+    (hτ₀T : T τ₀) (hτ₀len : τ₀.length = m) (hτ₀cons : Consistent e (g x) τ₀) :
+    τ₀.take n = (List.range n).map x := by
+  have hxm := hgood.2 τ₀ ((List.range m).map x) hτ₀T hτ₀len hτ₀cons
+    (hx m) (by simp) (consistent_take hg hx m)
+  rw [hxm, ← List.map_take, List.take_range, Nat.min_eq_left hnm]
+
+/-- **Termination of the search.**  `searchGood` holds at some level `m ≥ n`: past
+the (finitely many) death levels of the wrong length-`n` nodes, every consistent
+length-`m` node has first `n` bits `x↾n`, and `x↾m` is such a node. -/
+theorem search_terminates {T : List Bool → Prop} (hTclosed : ∀ σ b, T (σ ++ [b]) → T σ)
+    {e : ℕ} {g : (ℕ → Bool) → (ℕ → Bool)}
+    (hg : ∀ y, IsBranch T y → eval (toPFun y) (ofNatCode e) = toPFun (g y))
+    (hinj : ∀ y y', IsBranch T y → IsBranch T y' → g y = g y' → y = y')
+    {x : ℕ → Bool} (hx : IsBranch T x) (n : ℕ) :
+    ∃ m, n ≤ m ∧ searchGood T e (g x) n m := by
+  classical
+  have hbd : ∀ f : Fin n → Bool, ∃ M, List.ofFn f ≠ (List.range n).map x →
+      ∀ τ, T τ → List.ofFn f <+: τ → Consistent e (g x) τ → τ.length < M := by
+    intro f
+    by_cases hw : List.ofFn f = (List.range n).map x
+    · exact ⟨0, fun h => absurd hw h⟩
+    · obtain ⟨M, hM⟩ := separation hTclosed hg hinj hx
+        (show List.ofFn f ≠ (List.range (List.ofFn f).length).map x by
+          rw [List.length_ofFn]; exact hw)
+      exact ⟨M, fun _ => hM⟩
+  choose bd hbd using hbd
+  set M := (Finset.univ : Finset (Fin n → Bool)).sup bd with hMdef
+  refine ⟨max M n, le_max_right _ _,
+    ⟨(List.range (max M n)).map x, hx _, by simp, consistent_take hg hx _⟩, ?_⟩
+  have key : ∀ ρ, T ρ → ρ.length = max M n → Consistent e (g x) ρ →
+      ρ.take n = (List.range n).map x := by
+    intro ρ hρT hρlen hρcons
+    by_contra hne
+    have hlen_n : (ρ.take n).length = n := by rw [List.length_take, hρlen]; omega
+    set f : Fin n → Bool := fun i => (ρ.take n).getD i false with hf
+    have hof : List.ofFn f = ρ.take n := by
+      apply List.ext_getElem (by simp [hlen_n])
+      intro i h1 h2
+      simp only [hf, List.getElem_ofFn]
+      rw [List.getD_eq_getElem?_getD, List.getElem?_eq_getElem h2]
+      rfl
+    have hbound := hbd f (by rw [hof]; exact hne) ρ hρT
+      (by rw [hof]; exact List.take_prefix n ρ) hρcons
+    have hle : bd f ≤ M := Finset.le_sup (Finset.mem_univ f)
+    omega
+  intro τ τ' hτT hτlen hτcons hτ'T hτ'len hτ'cons
+  rw [key τ hτT hτlen hτcons, key τ' hτ'T hτ'len hτ'cons]
 
 end Martin

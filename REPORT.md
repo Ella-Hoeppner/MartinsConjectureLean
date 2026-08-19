@@ -7,12 +7,16 @@
 `propext`, `Classical.choice`, `Quot.sound`).
 
 **Headline this session:**
-1. **Lachlan's theorem for r.e. operators, globalized to a cone**
-   (`Martin.lachlan_dichotomy_cone`, `Martin.lachlan_no_post_solution_cone`).
-2. **Part I of Martin's conjecture for computably-uniformly-invariant functions**
-   (`Martin.partI_computablyUniform` — Slaman–Steel 1988, effective form), via Bard's local
-   theorem (`Martin.bard_local`, `Martin.steel_kernel_computable`); **both Part I open cores
-   proved for that class** (`Martin.regressive_computablyUniform`, `…incomparable…`).
+1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance
+   (`Martin.lachlan_dichotomy_cone_uniform`, `Martin.lachlan_no_post_solution_cone_uniform`).
+2. **Part I of Martin's conjecture for uniformly-invariant functions** (`Martin.partI_uniform`
+   = `PartI_Uniform_Borel`, Slaman–Steel 1988) — **both Part I open cores proved for the uniform
+   class** (`Martin.regressive_uniform`, `Martin.incomparable_uniform`).
+3. **Bard's Lemma 3.4** (`Martin.uti_computable`): `UniformlyTuringInvariant F →
+   ComputablyUniformlyTuringInvariant F` — the linchpin that discharges computable uniformity for
+   both results above.  Built from the symmetric universal `d`-machine (`eval_dCode`: read the unary
+   index via `rfind`, run the tail via `univCode ∘ shiftIdx`, region-select) and the composition
+   monoid (`iterTrE`, `trE₂`), assembled into `v(i,j)` with `forward_correct`/`backward_correct`.
 
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
 

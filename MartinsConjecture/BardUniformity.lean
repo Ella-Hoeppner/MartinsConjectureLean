@@ -383,6 +383,50 @@ theorem eval_dCode {sel : ℕ → ℕ} (hsel : Primrec sel) (m : ℕ) (t r : ℕ
     · rw [if_neg hnm]
       simp only [bitg, enc]; rw [if_pos (by omega)]; rfl
 
+/-- **Chain form of the `e`-fold transform.**  If `g` transforms `F (seq k) ↦
+F (seq (k+1))` for each `k < e` along a *specific* sequence of reals, then
+`iterTrE g ⟨oracle⟩ e` transforms `F (seq 0) ↦ F (seq e)`.  (Needed for the
+decode: the strip transform `β'` only holds on `0`-prefixed reals, which is
+exactly the chain `enc m y, enc (m-1) y, …` that arises.) -/
+theorem eval_iterTrE_chain {F : (ℕ → Bool) → ℕ → Bool} {g : ℕ} :
+    ∀ (e : ℕ) (seq : ℕ → (ℕ → Bool)),
+      (∀ k, k < e → eval (toPFun (F (seq k))) (ofNatCode g) = toPFun (F (seq (k + 1)))) →
+      eval (toPFun (F (seq 0))) (ofNatCode (iterTrE g (encodeCode OracleCode.oracle) e))
+        = toPFun (F (seq e)) := by
+  intro e
+  induction e with
+  | zero => intro seq _; rw [iterTrE_zero, ofNatCode_encodeCode, eval_oracle]
+  | succ e ih =>
+    intro seq hg
+    rw [iterTrE_succ,
+      eval_trE_comp (hg 0 (Nat.succ_pos e)) (iterTrE g (encodeCode OracleCode.oracle) e)]
+    exact ih (fun k => seq (k + 1)) (fun k hk => hg (k + 1) (by omega))
+
+/-! ### The `δ` transforms (running `Φ_i`/`Φ_j` inside the prefix) -/
+
+/-- First/second projection selectors (which index of `⟨i,j⟩` the `d` machine runs). -/
+def fstSel : ℕ → ℕ := fun m => (Nat.unpair m).1
+def sndSel : ℕ → ℕ := fun m => (Nat.unpair m).2
+theorem fstSel_prim : Primrec fstSel := Primrec.fst.comp Primrec.unpair
+theorem sndSel_prim : Primrec sndSel := Primrec.snd.comp Primrec.unpair
+
+/-- The two fixed `d` machines: run `Φ_i` (resp. `Φ_j`) on the tail. -/
+noncomputable def dFst : OracleCode := dCode fstSel fstSel_prim
+noncomputable def dSnd : OracleCode := dCode sndSel sndSel_prim
+
+/-- The fixed pair `(dFst, dSnd)` witnesses `enc ⟨i,j⟩ x ≡ᵀ enc ⟨i,j⟩ y` given
+`x ≡ᵀ y via (i,j)`. -/
+theorem equivVia_enc {x y : ℕ → Bool} {i j : ℕ} (hxy : EquivVia x y i j) :
+    EquivVia (enc (Nat.pair i j) x) (enc (Nat.pair i j) y)
+      (encodeCode dFst) (encodeCode dSnd) := by
+  refine ⟨?_, ?_⟩
+  · rw [ofNatCode_encodeCode, dFst,
+      eval_dCode fstSel_prim (Nat.pair i j) x y
+        (by rw [show fstSel (Nat.pair i j) = i from by simp [fstSel]]; exact hxy.1)]
+  · rw [ofNatCode_encodeCode, dSnd,
+      eval_dCode sndSel_prim (Nat.pair i j) y x
+        (by rw [show sndSel (Nat.pair i j) = j from by simp [sndSel]]; exact hxy.2)]
+
 #print axioms eval_preCode
 #print axioms equivVia_preReal
 #print axioms shift_transform
@@ -392,5 +436,7 @@ theorem eval_dCode {sel : ℕ → ℕ} (hsel : Primrec sel) (m : ℕ) (t r : ℕ
 #print axioms eval_mRead
 #print axioms eval_runCode
 #print axioms eval_dCode
+#print axioms eval_iterTrE_chain
+#print axioms equivVia_enc
 
 end Martin

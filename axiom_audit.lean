@@ -151,3 +151,6 @@ import MartinsConjecture
 #print axioms Martin.partI_computablyUniform
 #print axioms Martin.regressive_computablyUniform
 #print axioms Martin.incomparable_computablyUniform
+#print axioms Martin.uti_computable
+#print axioms Martin.partI_uniform
+#print axioms Martin.lachlan_dichotomy_cone_uniform

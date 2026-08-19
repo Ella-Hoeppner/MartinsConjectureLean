@@ -48,3 +48,4 @@ import MartinsConjecture.BardUniformity
 import MartinsConjecture.MartinResults
 import MartinsConjecture.MeasurePreserving
 import MartinsConjecture.RegressiveReduction
+import MartinsConjecture.PointedTree

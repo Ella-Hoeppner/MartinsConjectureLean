@@ -166,3 +166,5 @@ import MartinsConjecture
 #print axioms Martin.nonconstant_mp_iff_escaping_mp
 #print axioms Martin.partI_of_uniformization
 #print axioms Martin.partI_of_core_uniformization
+#print axioms Martin.measurePreservingAboveId_of_groszekSlaman
+#print axioms Martin.partI_of_groszekSlaman

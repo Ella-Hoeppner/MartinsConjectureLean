@@ -98,6 +98,23 @@ theorem aboveId_of_modulus_fixed {g : (ℕ → Bool) → (ℕ → Bool)}
   obtain ⟨w, hw⟩ := hfix
   exact ⟨w, fun X hX => hg.2 X X (hw X hX)⟩
 
+/-- **Isolating what the pointed perfect tree does.**  If an increasing modulus is
+*uniformly bounded* — `g X ≤ᵀ X ⊕ W` for a single fixed `W` — then `F` is above
+the identity on the cone above `W`, with *no* pointed perfect tree needed.  Thus
+the Groszek–Slaman tree in Lutz–Siskind Thm 3.4 is doing exactly one thing:
+handling moduli whose base grows *unboundedly* with the input degree. -/
+theorem aboveId_of_bounded_modulus {g : (ℕ → Bool) → (ℕ → Bool)}
+    (hg : IncreasingModulus F g) {W : ℕ → Bool}
+    (hbd : ∀ X, g X ≤ₜ Cantor.join X W) : AboveIdOnCone F :=
+  ⟨W, fun X hX => hg.2 X X ((hbd X).trans (Cantor.join_le (Cantor.le.refl X) hX))⟩
+
+/-- Consequently, a measure-preserving function whose modulus can be taken
+uniformly bounded is above the identity — the tree-free fragment of Thm 3.4. -/
+theorem measurePreserving_aboveId_of_boundedModulus (hmp : MeasurePreserving F)
+    {g : (ℕ → Bool) → (ℕ → Bool)} (hg : IncreasingModulus F g) {W : ℕ → Bool}
+    (hbd : ∀ X, g X ≤ₜ Cantor.join X W) : AboveIdOnCone F :=
+  aboveId_of_bounded_modulus hg hbd
+
 /-- **The restructuring of Part 1** (Lutz–Siskind): Part 1 of Martin's conjecture
 holds provided (a) measure-preserving functions are above the identity
 (`MeasurePreservingAboveId`, their Thm 3.4) and (b) every non-constant invariant

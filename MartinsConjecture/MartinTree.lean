@@ -157,7 +157,28 @@ theorem partI_of_martinPPT (hM : MartinPPT)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_groszekSlaman (groszekSlaman_of_martinPPT hM) hclass
 
+/-- **The sharpest statement of what Part 1 rests on.**  Combining the two threads
+of this development, Part 1 of Martin's conjecture follows from exactly two
+standard/open inputs:
+
+* `MartinPPT` — Martin's pointed-perfect-tree theorem (a *standard* determinacy
+  consequence), which discharges the general Theorem 3.4; and
+* **escaping ⟹ measure-preserving** — the class-specific content ("a function that
+  avoids every degree from below on a cone reaches every degree from above on a
+  cone"), which by `escaping_iff_not_constant` is equivalent to the more familiar
+  "non-constant ⟹ measure-preserving".
+
+Everything else — the Slaman–Steel/Bard uniform theory, the cone theorem, the
+reduction to cores, the whole of Lutz–Siskind §§2–3 except Martin's cited theorem —
+is machine-checked in this project. -/
+theorem partI_of_martinPPT_escaping (hM : MartinPPT)
+    (hTD : TuringDeterminacy fun _ => True)
+    (hesc : ∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_martinPPT hM ((nonconstant_mp_iff_escaping_mp hTD).mpr hesc)
+
 #print axioms groszekSlaman_of_martinPPT
 #print axioms measurePreservingAboveId_of_martinPPT
+#print axioms partI_of_martinPPT_escaping
 
 end Martin

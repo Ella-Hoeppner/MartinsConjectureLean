@@ -173,3 +173,4 @@ import MartinsConjecture
 #print axioms Martin.measurePreservingAboveId_of_martinPPT
 #print axioms Martin.partI_of_martinPPT
 #print axioms Martin.exists_cofinal_of_iUnion
+#print axioms Martin.partI_of_martinPPT_escaping

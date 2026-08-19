@@ -32,6 +32,20 @@ companion sharpening (`escaping_iff_not_constant`, `nonconstant_mp_iff_escaping_
 non-constant, so the class-specific half of the measure-preserving decomposition reads simply
 "escaping ⟹ measure-preserving".
 
+Finally, the **general Theorem 3.4** was attacked directly (`PointedTree.lean`).  The recursion-theoretic
+output of the Groszek–Slaman pointed-perfect-tree construction is bundled into an interface
+`InvertingTree` (per increasing `F`): pointedness, realizing-a-cone, right-inversion of `F` on the
+branches (Cor 2.6), and branch-recovery (Lemma 2.1).  From the single existence hypothesis
+`GroszekSlaman` (one such tree for every increasing function) the **entire Lutz–Siskind §3 argument is
+machine-checked**: `measurePreservingAboveId_of_groszekSlaman` proves Theorem 3.4 (Turing-invariant
+measure-preserving ⟹ above the identity on a cone) for *arbitrary* invariant functions, and
+`partI_of_groszekSlaman` derives Part 1 from `GroszekSlaman` + the class half.  The interface is checked
+non-vacuous (`inverting_tree_id`), and a **concrete proper pointed perfect tree** (the even-bits tree) is
+built with its `pointed`/`realizes` fields proved (`evenTree_pointed`, `evenTree_realizes`).  What
+remains is exactly the effective perfect-tree forcing that supplies the `invert`/`recover` fields for
+`F`-image branches (`GroszekSlaman` itself) — a large standalone effective-recursion-theory formalization
+now precisely scoped, with everything above it verified.
+
 **Headline this session:**
 1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance
    (`Martin.lachlan_dichotomy_cone_uniform`, `Martin.lachlan_no_post_solution_cone_uniform`).

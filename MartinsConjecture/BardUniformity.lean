@@ -16,6 +16,7 @@ uniformity `u` gives the fixed `f`-level "shift" transforms `β, γ`
 (`beta_transform`, `gamma_transform`) that are the load-bearing pieces of the
 computable-uniformity construction. -/
 import MartinsConjecture.BardLocal
+import MartinsConjecture.UniversalCode
 
 open scoped Computability
 open OracleCode Cantor
@@ -273,6 +274,46 @@ theorem eval_mRead (m : ℕ) (t : ℕ → Bool) (a : ℕ) :
     rw [eval_mReadTest, show bitg (enc m t) k = 0 from by simp [bitg, enc, hk]]
     exact ⟨1, Part.mem_some 1, one_ne_zero⟩
 
+/-! ### The tail-run: `Φ_{sel m}` on `shift(w, m+1)`, via `univCode ∘ shiftIdx` -/
+
+/-- Build the universal-machine query: run `Φ_{sel m}` (composed with the shift by
+`m+1`) at position `n - m - 1`. -/
+noncomputable def buildQueryFn (sel : ℕ → ℕ) (nm : ℕ) : ℕ :=
+  Nat.pair (trE₂ (shiftIdx ((Nat.unpair nm).2 + 1)) (sel (Nat.unpair nm).2))
+    ((Nat.unpair nm).1 - (Nat.unpair nm).2 - 1)
+
+theorem buildQueryFn_prim {sel : ℕ → ℕ} (hsel : Primrec sel) : Primrec (buildQueryFn sel) :=
+  Primrec₂.natPair.comp
+    (trE₂_primrec.comp
+      (shiftIdx_prim.comp
+        (Primrec.nat_add.comp (Primrec.snd.comp Primrec.unpair) (Primrec.const 1)))
+      (hsel.comp (Primrec.snd.comp Primrec.unpair)))
+    (Primrec.nat_sub.comp
+      (Primrec.nat_sub.comp (Primrec.fst.comp Primrec.unpair) (Primrec.snd.comp Primrec.unpair))
+      (Primrec.const 1))
+
+noncomputable def buildQueryCode (sel : ℕ → ℕ) (hsel : Primrec sel) : OracleCode :=
+  (exists_code_of_partrec (Nat.Partrec.of_primrec (Primrec.nat_iff.mp (buildQueryFn_prim hsel)))).choose
+
+theorem buildQueryCode_spec {sel : ℕ → ℕ} (hsel : Primrec sel) (O : ℕ →. ℕ) (nm : ℕ) :
+    eval O (buildQueryCode sel hsel) nm = Part.some (buildQueryFn sel nm) :=
+  congrFun ((exists_code_of_partrec
+    (Nat.Partrec.of_primrec (Primrec.nat_iff.mp (buildQueryFn_prim hsel)))).choose_spec O) nm
+
+/-- Run the universal machine on the built query. -/
+noncomputable def runCode (sel : ℕ → ℕ) (hsel : Primrec sel) : OracleCode :=
+  .comp univCode (buildQueryCode sel hsel)
+
+theorem eval_runCode {sel : ℕ → ℕ} (hsel : Primrec sel) (w : ℕ → Bool) (n m : ℕ) :
+    eval (toPFun w) (runCode sel hsel) (Nat.pair n m)
+      = eval (toPFun (fun p => w (m + 1 + p))) (ofNatCode (sel m)) (n - m - 1) := by
+  rw [runCode, eval_comp,
+    show (eval (toPFun w) (buildQueryCode sel hsel) (Nat.pair n m) >>= eval (toPFun w) univCode)
+      = eval (toPFun w) univCode (buildQueryFn sel (Nat.pair n m)) from by
+        rw [buildQueryCode_spec]; exact Part.bind_some _ _,
+    eval_univCode, buildQueryFn, Nat.unpair_pair, Nat.unpair_pair]
+  simp only [trE₂, eval_trE_comp (eval_shiftIdx_real w (m + 1)) (sel m)]
+
 #print axioms eval_preCode
 #print axioms equivVia_preReal
 #print axioms shift_transform
@@ -280,5 +321,6 @@ theorem eval_mRead (m : ℕ) (t : ℕ → Bool) (a : ℕ) :
 #print axioms eval_shiftIdx
 #print axioms iter_preReal_false_true
 #print axioms eval_mRead
+#print axioms eval_runCode
 
 end Martin

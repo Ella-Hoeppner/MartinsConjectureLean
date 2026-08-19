@@ -75,6 +75,40 @@ theorem aboveId_measurePreserving (hai : AboveIdOnCone F) : MeasurePreserving F 
   exact (Cantor.right_le_join w1 a).trans hX
     |>.trans (hw1 X ((Cantor.left_le_join w1 a).trans hX))
 
+/-- Measure-preservation is **upward closed in the Martin order**: if `F ≤ₘ G`
+and `F` is measure-preserving, so is `G`. -/
+theorem measurePreserving_of_martinLE {G : (ℕ → Bool) → ℕ → Bool}
+    (h : MartinLE F G) (hmp : MeasurePreserving F) : MeasurePreserving G := by
+  obtain ⟨w1, hw1⟩ := h
+  intro a
+  obtain ⟨ba, hba⟩ := hmp a
+  exact ⟨Cantor.join ba w1, fun X hX =>
+    (hba X ((Cantor.left_le_join ba w1).trans hX)).trans
+      (hw1 X ((Cantor.right_le_join ba w1).trans hX))⟩
+
+/-- Measure-preserving functions are **closed under composition**. -/
+theorem measurePreserving_comp {G : (ℕ → Bool) → ℕ → Bool}
+    (hf : MeasurePreserving F) (hg : MeasurePreserving G) :
+    MeasurePreserving (fun X => F (G X)) := by
+  intro a
+  obtain ⟨bf, hbf⟩ := hf a
+  obtain ⟨bg, hbg⟩ := hg bf
+  exact ⟨bg, fun X hX => hbf (G X) (hbg X hX)⟩
+
+/-- The jump is measure-preserving (a concrete non-trivial witness). -/
+theorem jump_measurePreserving : MeasurePreserving (fun X => Cantor.jump X) :=
+  aboveId_measurePreserving ⟨fun _ => false, fun X _ => Cantor.le_jump X⟩
+
+/-- **Measure-preserving ⟹ escaping.**  A measure-preserving function escapes
+every fixed degree on a cone (its values are not below `Z`): taking `a = Z′`
+forces `F X ≥ᵀ Z′ >ᵀ Z`.  The *converse* — escaping ⟹ measure-preserving — is
+exactly the open, class-specific content of Part 1 (`counterexample_escapes`
+gives escaping from non-constancy; measure-preservation is the gap). -/
+theorem measurePreserving_escapes (hmp : MeasurePreserving F) (Z : ℕ → Bool) :
+    OnCone (fun X => ¬ F X ≤ₜ Z) := by
+  obtain ⟨b, hb⟩ := hmp (Cantor.jump Z)
+  exact ⟨b, fun X hX hle => Cantor.not_jump_le Z ((hb X hX).trans hle)⟩
+
 /-- **Definition 3.2 (increasing modulus).**  `g` is an increasing modulus for
 `F` if `X ≤ᵀ g X` and whenever `Y ≥ᵀ g X`, `F Y` computes `X`. -/
 def IncreasingModulus (F g : (ℕ → Bool) → (ℕ → Bool)) : Prop :=

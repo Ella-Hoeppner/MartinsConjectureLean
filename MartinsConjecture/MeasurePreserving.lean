@@ -128,8 +128,33 @@ theorem measurePreserving_of_partI
     (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) : MeasurePreserving F :=
   aboveId_measurePreserving ((hpartI F hF).resolve_left hnc)
 
+/-- Conversely, Thm 3.4 (`MeasurePreservingAboveId`) *follows* from Part 1: a
+measure-preserving function is non-constant, hence above the identity. -/
+theorem measurePreservingAboveId_of_partI
+    (hpartI : ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F) :
+    MeasurePreservingAboveId := by
+  intro F hF hmp
+  exact (hpartI F hF).resolve_left (fun hc => not_measurePreserving_of_constant hc hmp)
+
+/-- **Part 1 is *equivalent* to the measure-preserving decomposition.**  Part 1 of
+Martin's conjecture holds iff both (a) `MeasurePreservingAboveId` (Lutz–Siskind
+Thm 3.4) and (b) every non-constant invariant function is measure-preserving.
+This pins down exactly the two independent "halves" of Part 1: a *general*
+recursion-theoretic fact (Thm 3.4, the pointed coding) and the *class-specific*
+content (non-triviality forces cofinal growth). -/
+theorem partI_iff_measurePreserving :
+    (∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F) ↔
+      (MeasurePreservingAboveId ∧
+        ∀ F, TuringInvariant F → ¬ ConstantOnCone F → MeasurePreserving F) := by
+  constructor
+  · intro h
+    exact ⟨measurePreservingAboveId_of_partI h, fun F hF hnc => measurePreserving_of_partI h hF hnc⟩
+  · rintro ⟨h1, h2⟩
+    exact partI_of_measurePreserving h1 h2
+
 #print axioms not_measurePreserving_of_constant
 #print axioms measurePreserving_hasModulus
 #print axioms partI_of_measurePreserving
+#print axioms partI_iff_measurePreserving
 
 end Martin

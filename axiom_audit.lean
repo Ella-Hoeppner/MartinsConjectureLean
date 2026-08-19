@@ -158,3 +158,7 @@ import MartinsConjecture
 #print axioms Martin.aboveId_of_bounded_modulus
 #print axioms Martin.measurePreservingAboveId_uniform
 #print axioms Martin.measurePreserving_escapes
+#print axioms Martin.regressive_core_of_uniformization
+#print axioms Martin.incomparable_core_of_uniformization
+#print axioms Martin.constantOnCone_of_martinEquiv
+#print axioms Martin.MartinEquiv.trans

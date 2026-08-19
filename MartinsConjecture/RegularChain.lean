@@ -131,6 +131,11 @@ theorem MartinLE.trans {F G H : (ℕ → Bool) → ℕ → Bool}
     (h1 : MartinLE F G) (h2 : MartinLE G H) : MartinLE F H :=
   onCone_mono (fun _X h => h.1.trans h.2) (onCone_and h1 h2)
 
+/-- Martin equivalence is transitive (bases combine by the join). -/
+theorem MartinEquiv.trans {F G H : (ℕ → Bool) → ℕ → Bool}
+    (h1 : MartinEquiv F G) (h2 : MartinEquiv G H) : MartinEquiv F H :=
+  onCone_mono (fun _X h => h.1.trans h.2) (onCone_and h1 h2)
+
 /-- Any two jump iterates are Martin comparable — the totality half of the
 Part II prewellordering claim, verified on the jump chain. -/
 theorem martinLE_jumpIter_of_le {m n : ℕ} (h : m ≤ n) :

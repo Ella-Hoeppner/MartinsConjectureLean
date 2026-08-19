@@ -169,3 +169,7 @@ import MartinsConjecture
 #print axioms Martin.measurePreservingAboveId_of_groszekSlaman
 #print axioms Martin.partI_of_groszekSlaman
 #print axioms Martin.inverting_tree_id
+#print axioms Martin.groszekSlaman_of_martinPPT
+#print axioms Martin.measurePreservingAboveId_of_martinPPT
+#print axioms Martin.partI_of_martinPPT
+#print axioms Martin.exists_cofinal_of_iUnion

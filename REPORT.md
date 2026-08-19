@@ -41,10 +41,21 @@ machine-checked**: `measurePreservingAboveId_of_groszekSlaman` proves Theorem 3.
 measure-preserving ⟹ above the identity on a cone) for *arbitrary* invariant functions, and
 `partI_of_groszekSlaman` derives Part 1 from `GroszekSlaman` + the class half.  The interface is checked
 non-vacuous (`inverting_tree_id`), and a **concrete proper pointed perfect tree** (the even-bits tree) is
-built with its `pointed`/`realizes` fields proved (`evenTree_pointed`, `evenTree_realizes`).  What
-remains is exactly the effective perfect-tree forcing that supplies the `invert`/`recover` fields for
-`F`-image branches (`GroszekSlaman` itself) — a large standalone effective-recursion-theory formalization
-now precisely scoped, with everything above it verified.
+built with its `pointed`/`realizes` fields proved (`evenTree_pointed`, `evenTree_realizes`).
+
+`GroszekSlaman` was then **reduced further, and the reduction proved in full** (`MartinTree.lean`,
+following Lutz–Siskind §2).  `groszekSlaman_of_martinPPT : MartinPPT → GroszekSlaman` derives it from
+`MartinPPT` — **Martin's cited determinacy theorem** (their Lemma 2.3: every set cofinal in the Turing
+degrees contains a pointed perfect tree).  Machine-checked along the way: the σ-pigeonhole
+`exists_cofinal_of_iUnion` (Cor 2.4, via `bigJoin`); the code-extraction machinery
+(`outReal`/`outReal_eq`/`exists_code`); and the Lemma 2.5 / Cor 2.6 assembly — for increasing `F` the
+sets `A n = {x : Φₙ computes y with F y = x}` have cofinal union (because `F z ≥ᵀ z`), so Cor 2.4 yields a
+pointed perfect tree inside one `A n` and `Φₙ = outReal n` is the inverting functional (injective on
+branches for free, since `F ∘ (outReal n) = id` there).  Net: **`measurePreservingAboveId_of_martinPPT`
+and `partI_of_martinPPT` derive Theorem 3.4 and Part 1 from `MartinPPT` alone** — the general
+measure-preserving direction of Part 1 now rests on one named, standard determinacy theorem, everything
+else verified.  What remains is formalizing `MartinPPT` itself (Martin's tree-producing game + the
+effective perfect-tree theory Prop 1.10 / Lemma 2.1) — a well-scoped separate project.
 
 **Headline this session:**
 1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance

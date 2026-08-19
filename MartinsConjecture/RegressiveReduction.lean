@@ -57,6 +57,22 @@ theorem incomparable_of_martinEquiv (hFG : MartinEquiv F G)
   rintro X ⟨hequiv, hnle, hnge⟩
   exact ⟨fun hGX => hnle (hequiv.1.trans hGX), fun hXG => hnge (hXG.trans hequiv.2)⟩
 
+/-- Being **above the identity** on a cone is a Martin-equivalence invariant. -/
+theorem aboveId_of_martinEquiv (hFG : MartinEquiv F G) (hGai : AboveIdOnCone G) :
+    AboveIdOnCone F := by
+  refine onCone_mono ?_ (onCone_and hFG hGai)
+  rintro X ⟨hequiv, hle⟩
+  exact hle.trans hequiv.2
+
+/-- **Part 1's dichotomy conclusion is a Martin-equivalence invariant.**  If
+`F ≡ₘ G` and `G` is constant-on-a-cone-or-above-identity, so is `F`.  (This gives
+the most direct route to `partI_of_uniformization`: transfer the uniform
+dichotomy straight across `MartinEquiv`.) -/
+theorem partI_conclusion_of_martinEquiv (hFG : MartinEquiv F G)
+    (hG : ConstantOnCone G ∨ AboveIdOnCone G) :
+    ConstantOnCone F ∨ AboveIdOnCone F :=
+  hG.imp (constantOnCone_of_martinEquiv hFG) (aboveId_of_martinEquiv hFG)
+
 /-! ### The reduction: uniformization suffices -/
 
 /-- **Single-witness reduction, regressive case.**  If a regressive invariant `F`

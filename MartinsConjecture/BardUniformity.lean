@@ -201,10 +201,42 @@ theorem eval_shiftIdx_real (w : ℕ → Bool) (k : ℕ) :
     eval (toPFun w) (ofNatCode (shiftIdx k)) = toPFun (fun n => w (k + n)) := by
   funext n; rw [eval_shiftIdx]; rfl
 
+/-! ### The encoding real `enc m t = 0ᵐ 1 t` and its iterate identities -/
+
+/-- `enc m t = 0ᵐ ⌢ 1 ⌢ t`: `m` zeros, then a `1`, then `t`. -/
+def enc (m : ℕ) (t : ℕ → Bool) : ℕ → Bool :=
+  fun n => if n < m then false else if n = m then true else t (n - m - 1)
+
+/-- `enc (m+1) t` is `enc m t` with a `0` prepended. -/
+theorem preReal_false_enc (m : ℕ) (t : ℕ → Bool) : preReal false (enc m t) = enc (m + 1) t := by
+  funext n
+  simp only [preReal, enc]
+  split_ifs <;> first | rfl | (exfalso; omega) | (congr 1; omega)
+
+/-- Prepending `1` then `m` zeros builds `enc m t`: `(prepend-0)^[m] (1⌢t) = 0ᵐ 1 t`. -/
+theorem iter_preReal_false_true (m : ℕ) (t : ℕ → Bool) :
+    (preReal false)^[m] (preReal true t) = enc m t := by
+  induction m with
+  | zero => funext n; simp [preReal, enc, Function.iterate_zero]
+  | succ m ih =>
+    rw [Function.iterate_succ_apply', ih, preReal_false_enc]
+
+/-- Stripping the first bit of `enc (m+1) t` gives `enc m t`. -/
+theorem shiftReal_enc_succ (m : ℕ) (t : ℕ → Bool) : shiftReal (enc (m + 1) t) = enc m t := by
+  rw [← preReal_false_enc, shiftReal_preReal]
+
+/-- Stripping `m` zeros off `enc m t` recovers `1⌢t`: `(strip)^[m] (0ᵐ 1 t) = 1 t`. -/
+theorem iter_shiftReal_enc (m : ℕ) (t : ℕ → Bool) :
+    (shiftReal)^[m] (enc m t) = preReal true t := by
+  induction m with
+  | zero => funext n; simp [enc, preReal, Function.iterate_zero]
+  | succ m ih => rw [Function.iterate_succ_apply, shiftReal_enc_succ, ih]
+
 #print axioms eval_preCode
 #print axioms equivVia_preReal
 #print axioms shift_transform
 #print axioms eval_iterTrE
 #print axioms eval_shiftIdx
+#print axioms iter_preReal_false_true
 
 end Martin

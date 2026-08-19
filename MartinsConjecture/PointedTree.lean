@@ -119,6 +119,44 @@ theorem partI_of_groszekSlaman (hGS : GroszekSlaman)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_measurePreserving (measurePreservingAboveId_of_groszekSlaman' hGS) hclass
 
+/-! ### A concrete pointed perfect tree
+
+To make "pointed perfect tree" concrete in the development — not only an abstract
+interface — here is the recursion-theoretically simplest one: the **even-bits
+tree**, whose branches are the reals with all odd-indexed bits `0`.  It is a
+genuine proper (perfect, measure-zero) subtree of `2^ω`, it is computable — hence
+**pointed** — and it **realizes a cone of degrees**: every degree is the degree of
+a branch, by coding the degree into the even bits.  This exhibits the `pointed`
+and `realizes` fields of `InvertingTree` concretely.  The content of the
+Groszek–Slaman construction is the *other* two fields (`invert`, `recover`) for a
+tree whose branches are prescribed *values of `F`* — which one cannot arrange with
+a fixed computable tree, and which needs the effective perfect-tree forcing. -/
+
+/-- Branches of the even-bits tree: reals whose odd-indexed bits vanish. -/
+def EvenBranch (x : ℕ → Bool) : Prop := ∀ k, x (2 * k + 1) = false
+
+/-- Code a real into the even bits, leaving odd bits `0`. -/
+def evenCode (d : ℕ → Bool) : ℕ → Bool := Cantor.join d (fun _ => false)
+
+theorem evenBranch_evenCode (d : ℕ → Bool) : EvenBranch (evenCode d) := fun k => by
+  simp only [evenCode, Cantor.join]
+  rw [if_neg (by omega)]
+
+/-- The even-bits coding is degree-preserving: `evenCode d ≡ᵀ d`. -/
+theorem evenCode_equiv (d : ℕ → Bool) : evenCode d ≡ₜ d :=
+  ⟨Cantor.join_le (Cantor.le.refl d) (Cantor.le_of_computable (Computable.const false)),
+   Cantor.left_le_join d _⟩
+
+/-- **The even-bits tree realizes a cone of degrees.**  Every degree `d` is the
+degree of a branch (namely `evenCode d`). -/
+theorem evenTree_realizes (d : ℕ → Bool) : ∃ x, EvenBranch x ∧ x ≡ₜ d :=
+  ⟨evenCode d, evenBranch_evenCode d, evenCode_equiv d⟩
+
+/-- **The even-bits tree is pointed**: every branch computes the (computable) tree
+code.  In fact the code is computable, so it is below every real. -/
+theorem evenTree_pointed (x : ℕ → Bool) : (fun _ => false) ≤ₜ x :=
+  Cantor.le_of_computable (Computable.const false)
+
 /-! ### Soundness of the interface
 
 The `InvertingTree` interface is a *hypothesis* feeding the reduction, so it is

@@ -24,7 +24,7 @@ theorem + Martin measure infrastructure already in this project:
   (a) `MeasurePreservingAboveId` (Lutz–Siskind Thm 3.4, the pointed-perfect-tree
   content, isolated here) and (b) "non-constant ⟹ measure-preserving".
 -/
-import MartinsConjecture.BoundedCase
+import MartinsConjecture.OrderPreservingCase
 
 open scoped Computability
 open OracleCode Cantor
@@ -33,11 +33,10 @@ namespace Martin
 
 variable {F : (ℕ → Bool) → ℕ → Bool}
 
-/-- **Definition 1.7 (measure-preserving).**  A function `F` is measure-preserving
-if it eventually gets above every degree: for every `a` there is a cone (base `b`)
-on which `a ≤ᵀ F X`. -/
-def MeasurePreserving (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
-  ∀ a : ℕ → Bool, ∃ b : ℕ → Bool, ∀ X, b ≤ₜ X → a ≤ₜ F X
+/-! `MeasurePreserving` (Def 1.37) and `MeasurePreservingAboveId` (Lutz–Siskind
+Thm 1.39) are already defined in `OrderPreservingCase`.  Here we develop the
+*general-function* theory around them: the increasing-modulus machinery and the
+exact equivalence of Part 1 with the measure-preserving decomposition. -/
 
 /-- **Proposition 1.8.**  `F` is measure-preserving iff it is Martin-above every
 constant function. -/
@@ -98,14 +97,6 @@ theorem aboveId_of_modulus_fixed {g : (ℕ → Bool) → (ℕ → Bool)}
     AboveIdOnCone F := by
   obtain ⟨w, hw⟩ := hfix
   exact ⟨w, fun X hX => hg.2 X X (hw X hX)⟩
-
-/-- **Lutz–Siskind Theorem 3.4** (isolated): a Turing-invariant measure-preserving
-function is above the identity on a cone.  The proof (not formalized here) takes
-an increasing modulus, inverts it on a *pointed perfect tree* (Cor 2.6), and
-codes the branch into `F` (Lemma 2.2 — the Groszek–Slaman pointed coding).  This
-`Prop` isolates exactly that content. -/
-def MeasurePreservingAboveId : Prop :=
-  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → MeasurePreserving F → AboveIdOnCone F
 
 /-- **The restructuring of Part 1** (Lutz–Siskind): Part 1 of Martin's conjecture
 holds provided (a) measure-preserving functions are above the identity

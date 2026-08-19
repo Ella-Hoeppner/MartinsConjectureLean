@@ -13,6 +13,7 @@ Everything is conditional only on Turing determinacy (threaded explicitly); no
 axioms beyond `propext`, `Classical.choice`, `Quot.sound`. -/
 import MartinsConjecture.BardUniformity
 import MartinsConjecture.LachlanTheorem
+import MartinsConjecture.MeasurePreserving
 
 open scoped Computability
 open OracleCode Cantor
@@ -63,9 +64,21 @@ theorem lachlan_no_post_solution_cone_uniform (e : ℕ)
     ¬ OnCone (fun X => X <ₜ reReal e X ∧ reReal e X <ₜ Cantor.jump X) :=
   lachlan_no_post_solution_cone e (uti_computable hu) habove hTD
 
+/-- **The uniform class satisfies the class-specific half of the measure-preserving
+decomposition**: a non-constant uniformly-invariant function is measure-preserving.
+This is the uniform analogue of the Lutz–Siskind lemma (non-trivial order-preserving
+⟹ measure-preserving), obtained here from `steel_kernel_computable` — so the whole of
+Part 1 for uniformly-invariant functions factors through `partI_iff_measurePreserving`
+as this lemma plus Thm 3.4. -/
+theorem uniform_nonconstant_measurePreserving (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} (hF : UniformlyTuringInvariant F) (hnc : ¬ ConstantOnCone F) :
+    MeasurePreserving F :=
+  aboveId_measurePreserving (steel_kernel_computable hTD (uti_computable hF) hnc)
+
 #print axioms partI_uniform
 #print axioms regressive_uniform
 #print axioms incomparable_uniform
 #print axioms lachlan_dichotomy_cone_uniform
+#print axioms uniform_nonconstant_measurePreserving
 
 end Martin

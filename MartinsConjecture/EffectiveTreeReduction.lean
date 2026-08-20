@@ -256,7 +256,7 @@ theorem prefixN_eq_take {σ : List Bool} {n : ℕ} (h : n ≤ σ.length) : prefi
 
 /-- The take-`n` prefix of the first OK length-`m` node (`[]` if none). -/
 def pickN (pre : List ℕ) (e n m : ℕ) : List Bool :=
-  (allBoolLists m).foldr (fun σ acc => bif okb pre e σ then prefixN σ n else acc) []
+  (allBoolLists m).foldr (fun σ acc => if okb pre e σ = true then prefixN σ n else acc) []
 
 /-- Some OK length-`m` node exists. -/
 def existsOK (pre : List ℕ) (e m : ℕ) : Bool :=
@@ -281,7 +281,49 @@ theorem existsOK_prim : Primrec (fun q : (List ℕ × ℕ) × ℕ => existsOK q.
         (Primrec.snd.comp Primrec.fst)))
       Primrec.snd)
 
-/-! ### Remaining: `pickN_prim` / `allAgree_prim` / `sgb_prim`, correctness, assembly
+set_option maxHeartbeats 8000000 in
+theorem pickN_prim :
+    Primrec (fun q : ((List ℕ × ℕ) × ℕ) × ℕ => pickN q.1.1.1 q.1.1.2 q.1.2 q.2) := by
+  unfold pickN
+  exact list_foldr_prim
+    (f := fun q : ((List ℕ × ℕ) × ℕ) × ℕ => allBoolLists q.2) (base := fun _ => [])
+    (op := fun q σ acc => if okb q.1.1.1 q.1.1.2 σ = true then prefixN σ q.1.2 else acc)
+    (allBoolLists_prim.comp Primrec.snd) (Primrec.const [])
+    (Primrec.ite
+      (Primrec.eq.comp (okb_prim.comp (Primrec.pair
+        (Primrec.fst.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst)))
+        (Primrec.snd.comp Primrec.fst))) (Primrec.const true))
+      (prefixN_prim.comp (Primrec.pair (Primrec.snd.comp Primrec.fst)
+        (Primrec.snd.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst)))))
+      Primrec.snd)
+
+set_option maxHeartbeats 8000000 in
+theorem allAgree_prim :
+    Primrec (fun q : ((List ℕ × ℕ) × ℕ) × ℕ => allAgree q.1.1.1 q.1.1.2 q.1.2 q.2) := by
+  unfold allAgree
+  exact list_foldr_prim
+    (f := fun q : ((List ℕ × ℕ) × ℕ) × ℕ => allBoolLists q.2) (base := fun _ => true)
+    (op := fun q σ acc =>
+      (!okb q.1.1.1 q.1.1.2 σ || decide (prefixN σ q.1.2 = pickN q.1.1.1 q.1.1.2 q.1.2 q.2)) && acc)
+    (allBoolLists_prim.comp Primrec.snd) (Primrec.const true)
+    (Primrec.and.comp
+      (Primrec.or.comp
+        (Primrec.not.comp (okb_prim.comp (Primrec.pair
+          (Primrec.fst.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst)))
+          (Primrec.snd.comp Primrec.fst))))
+        (Primrec.eq.comp
+          (prefixN_prim.comp (Primrec.pair (Primrec.snd.comp Primrec.fst)
+            (Primrec.snd.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst)))))
+          (pickN_prim.comp (Primrec.fst.comp Primrec.fst))).decide)
+      Primrec.snd)
+
+theorem sgb_prim : Primrec (fun q : ((List ℕ × ℕ) × ℕ) × ℕ => sgb q.1.1.1 q.1.1.2 q.1.2 q.2) := by
+  unfold sgb
+  exact Primrec.and.comp
+    (existsOK_prim.comp (Primrec.pair (Primrec.fst.comp Primrec.fst) Primrec.snd))
+    allAgree_prim
+
+/-! ### Remaining: correctness + oracle assembly
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

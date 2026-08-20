@@ -43,12 +43,11 @@ theorem allBoolLists_complete : ∀ (l : List Bool), l ∈ allBoolLists l.length
       simp only [List.length_cons, allBoolLists, List.mem_flatMap]
       exact ⟨l, ih, by cases b <;> simp⟩
 
-/-- The number whose little-endian bits are `σ` — a bounded, length-injective code
-for a binary string (used to index tree membership in the oracle at a *bounded*
-position, so a finite oracle prefix suffices). -/
+/-- The number whose little-endian bits are `σ` (using `cond`, matching the
+`list_rec` normal form so `natOfBoolList_prim` is clean). -/
 def natOfBoolList : List Bool → ℕ
   | [] => 0
-  | b :: l => (if b then 1 else 0) + 2 * natOfBoolList l
+  | b :: l => (bif b then 1 else 0) + 2 * natOfBoolList l
 
 theorem natOfBoolList_lt : ∀ σ : List Bool, natOfBoolList σ < 2 ^ σ.length
   | [] => by simp [natOfBoolList]
@@ -67,7 +66,36 @@ theorem natOfBoolList_inj : ∀ {σ σ' : List Bool}, σ.length = σ'.length →
       have hl : natOfBoolList l = natOfBoolList l' := by cases b <;> cases b' <;> simp_all <;> omega
       rw [hb, natOfBoolList_inj hlen hl]
 
-/-! ### Primitive-recursive search predicate -/
+/-- A globally-injective, `2^(len+1)`-bounded position for a binary string: the
+length-`m` strings occupy `[2^m, 2^(m+1))`, so distinct lengths land in disjoint
+blocks. -/
+def treePos (σ : List Bool) : ℕ := 2 ^ σ.length + natOfBoolList σ
+
+theorem treePos_lt (σ : List Bool) : treePos σ < 2 ^ (σ.length + 1) := by
+  have := natOfBoolList_lt σ
+  simp only [treePos, pow_succ]; omega
+
+theorem treePos_inj {σ σ' : List Bool} (h : treePos σ = treePos σ') : σ = σ' := by
+  have h1 := natOfBoolList_lt σ
+  have h2 := natOfBoolList_lt σ'
+  have hlen : σ.length = σ'.length := by
+    by_contra hne
+    rcases Nat.lt_or_ge σ.length σ'.length with hlt | hge
+    · have : 2 ^ σ.length + natOfBoolList σ < 2 ^ σ'.length := by
+        calc 2 ^ σ.length + natOfBoolList σ < 2 ^ σ.length + 2 ^ σ.length := by omega
+          _ = 2 ^ (σ.length + 1) := by rw [pow_succ]; omega
+          _ ≤ 2 ^ σ'.length := Nat.pow_le_pow_right (by norm_num) (by omega)
+      simp only [treePos] at h; omega
+    · have hlt : σ'.length < σ.length := by omega
+      have : 2 ^ σ'.length + natOfBoolList σ' < 2 ^ σ.length := by
+        calc 2 ^ σ'.length + natOfBoolList σ' < 2 ^ σ'.length + 2 ^ σ'.length := by omega
+          _ = 2 ^ (σ'.length + 1) := by rw [pow_succ]; omega
+          _ ≤ 2 ^ σ.length := Nat.pow_le_pow_right (by norm_num) (by omega)
+      simp only [treePos] at h; omega
+  refine natOfBoolList_inj hlen ?_
+  simp only [treePos, hlen] at h; omega
+
+/-! ### Primitive-recursive scaffolding -/
 
 /-- `fbit` (the bit code `e` computes from the finite oracle prefix `σ`) is
 primitive recursive jointly in `(e, σ, j)`. -/
@@ -81,27 +109,51 @@ theorem fbit_prim : Primrec (fun p : (ℕ × List Bool) × ℕ => fbit p.1.1 p.1
   exact (OracleCode.evaln_prim.comp
     (Primrec.pair (Primrec.pair (Primrec.pair hlen hmap) hcode) Primrec.snd)).of_eq fun p => rfl
 
-/-! ### Remaining architecture (to complete `x ≤ᵀ g x ⊕ T`)
+theorem natOfBoolList_prim : Primrec natOfBoolList := by
+  have := Primrec.list_rec (α := List Bool) (β := Bool) (σ := ℕ) Primrec.id (Primrec.const 0)
+    ((Primrec.nat_add.comp
+      (Primrec.cond (Primrec.fst.comp Primrec.snd) (Primrec.const 1) (Primrec.const 0))
+      (Primrec.nat_mul.comp (Primrec.const 2)
+        (Primrec.snd.comp (Primrec.snd.comp Primrec.snd)))).to₂)
+  exact this.of_eq fun l => by
+    induction l with
+    | nil => rfl
+    | cons b l ih => simp only [natOfBoolList, ← ih]; rfl
 
-The pieces above (`allBoolLists`, `natOfBoolList`, `fbit_prim`) are the confirmed
-primitive-recursive scaffolding.  The reduction is completed as follows, all
-primitive recursive on a finite oracle **prefix** `pre : List ℕ` (which is
-`graphOf (bitg O) (B m)` for `O = join (g x) T` and a computable bound `B m =
-2·⟨m, 2^m⟩+2`, read via the existing `cGraph` code from `CodingFamilyCode`):
+theorem pow2_prim : Primrec (fun n : ℕ => 2 ^ n) := by
+  have h : Primrec (fun n : ℕ =>
+      Nat.rec (motive := fun _ => ℕ) 1 (fun _ prev => 2 * prev) n) :=
+    Primrec.nat_rec' Primrec.id (Primrec.const 1)
+      ((Primrec.nat_mul.comp (Primrec.const 2) (Primrec.snd.comp Primrec.snd)).to₂)
+  exact h.of_eq fun n => by
+    induction n with
+    | zero => rfl
+    | succ n ih => rw [pow_succ]; simp only [ih]; ring
 
-* `okNodeb pre e σ := trb ∧ consistb`, where `trb := pre.getD (2·⟨|σ|,natOfBoolList σ⟩+1) 0 = 1`
-  reflects tree membership `T σ` (bounded position, hence in `pre`), and
-  `consistb := (List.range |σ|).map (fun j => (fbit e σ j).elim true (·= pre.getD (2j) 0))`
-  folded with `&&` reflects `Consistent e (g x) σ` (bounded by `evaln_bound`);
-* `searchGoodb pre e n m` := `any` over `allBoolLists m` of `okNodeb`, `&&` the
-  nested `all/all` that OK nodes agree on `take n` — this decides `searchGood`
-  (`search_correct`/`search_terminates`) once `pre` is long enough;
-* the reduction is `fun n => rfind (m ≥ n) searchGoodb`, reading `x↾(n+1)` off the
-  first OK node, then `bitg`.  `RecursiveIn {toPFun O}` via `cGraph` (prefix read)
-  + `exists_code_of_partrec` (of the `Primrec` predicate) + `Nat.RecursiveIn.rfind`;
-  correct by `search_computes`.
+theorem treePos_prim : Primrec treePos :=
+  (Primrec.nat_add.comp (pow2_prim.comp Primrec.list_length) natOfBoolList_prim).of_eq
+    fun _ => rfl
 
-`all`/`any`/`filter` are `foldr`s built from `Primrec.list_rec` (verified to
-compose); the whole predicate is `Primrec` by the same pattern as `fbit_prim`. -/
+/-- `foldr (&&)` / `foldr (||)` are primitive recursive — the `all`/`any` building
+blocks (Mathlib's `Primrec` has no `list_all`/`list_filter`). -/
+theorem foldr_and_prim : Primrec (fun l : List Bool => l.foldr (· && ·) true) := by
+  have := Primrec.list_rec (α := List Bool) (β := Bool) (σ := Bool) Primrec.id
+    (Primrec.const true)
+    ((Primrec.cond (Primrec.fst.comp Primrec.snd)
+      (Primrec.snd.comp (Primrec.snd.comp Primrec.snd)) (Primrec.const false)).to₂)
+  exact this.of_eq fun l => by
+    induction l with
+    | nil => rfl
+    | cons a l ih => simp only [List.foldr_cons, ← ih]; cases a <;> rfl
+
+theorem foldr_or_prim : Primrec (fun l : List Bool => l.foldr (· || ·) false) := by
+  have := Primrec.list_rec (α := List Bool) (β := Bool) (σ := Bool) Primrec.id
+    (Primrec.const false)
+    ((Primrec.cond (Primrec.fst.comp Primrec.snd) (Primrec.const true)
+      (Primrec.snd.comp (Primrec.snd.comp Primrec.snd))).to₂)
+  exact this.of_eq fun l => by
+    induction l with
+    | nil => rfl
+    | cons a l ih => simp only [List.foldr_cons, ← ih]; cases a <;> rfl
 
 end Martin

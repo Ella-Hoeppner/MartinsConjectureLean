@@ -403,7 +403,55 @@ theorem okb_reflect {gx Tr : ℕ → Bool} {K e : ℕ} {σ : List Bool}
     okb (graphOf (bitg (Cantor.join gx Tr)) K) e σ = true ↔ treeMem Tr σ ∧ Consistent e gx σ := by
   simp only [okb, Bool.and_eq_true, trbb_reflect h1, consb_reflect h2]
 
-/-! ### Remaining: `sgb ↔ searchGood`, oracle assembly
+theorem foldr_or_mem {X : Type} (p : X → Bool) {l : List X} :
+    (l.foldr (fun a acc => p a || acc) false = true) ↔ ∃ a ∈ l, p a = true := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+      simp only [List.foldr_cons, Bool.or_eq_true, List.mem_cons, exists_eq_or_imp]; rw [ih]
+
+theorem foldr_and_mem {X : Type} (q : X → Bool) {l : List X} :
+    (l.foldr (fun a acc => q a && acc) true = true) ↔ ∀ a ∈ l, q a = true := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+      simp only [List.foldr_cons, Bool.and_eq_true, List.mem_cons, forall_eq_or_imp]; rw [ih]
+
+theorem foldr_if_spec {X Y : Type} (p : X → Bool) (f : X → Y) (d : Y) :
+    ∀ {l : List X}, (∃ a ∈ l, p a = true) →
+      ∃ a ∈ l, p a = true ∧ l.foldr (fun a acc => if p a = true then f a else acc) d = f a := by
+  intro l
+  induction l with
+  | nil => rintro ⟨a, ha, _⟩; exact absurd ha (by simp)
+  | cons b l ih =>
+      intro h
+      simp only [List.foldr_cons]
+      by_cases hb : p b = true
+      · exact ⟨b, List.mem_cons_self, hb, if_pos hb⟩
+      · rw [if_neg hb]
+        obtain ⟨a, ha, hpa⟩ := h
+        rcases List.mem_cons.mp ha with rfl | hal
+        · exact absurd hpa hb
+        · obtain ⟨a', ha', hpa', heq⟩ := ih ⟨a, hal, hpa⟩
+          exact ⟨a', List.mem_cons_of_mem _ ha', hpa', heq⟩
+
+theorem mem_allBoolLists_iff {σ : List Bool} {m : ℕ} : σ ∈ allBoolLists m ↔ σ.length = m :=
+  ⟨allBoolLists_length m σ, fun h => h ▸ allBoolLists_complete σ⟩
+
+theorem existsOK_reflect {gx Tr : ℕ → Bool} {K e m : ℕ} (hK : bnd m ≤ K) :
+    existsOK (graphOf (bitg (Cantor.join gx Tr)) K) e m = true ↔
+      ∃ σ, σ.length = m ∧ treeMem Tr σ ∧ Consistent e gx σ := by
+  rw [existsOK, foldr_or_mem]
+  constructor
+  · rintro ⟨σ, hσmem, hok⟩
+    have hlen := allBoolLists_length m σ hσmem
+    obtain ⟨hb1, hb2⟩ := bnd_bounds hlen
+    exact ⟨σ, hlen, (okb_reflect (by omega) (by omega)).mp hok⟩
+  · rintro ⟨σ, hlen, habs⟩
+    obtain ⟨hb1, hb2⟩ := bnd_bounds hlen
+    exact ⟨σ, mem_allBoolLists_iff.mpr hlen, (okb_reflect (by omega) (by omega)).mpr habs⟩
+
+/-! ### Remaining: `allAgree`/`sgb ↔ searchGood`, oracle assembly
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

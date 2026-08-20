@@ -315,6 +315,41 @@ theorem codeReal_le (Y : ℕ → Bool) : codeReal Y ≤ₜ Y := by
     rw [Encodable.encodek]; rfl]
   rw [codeG_eq, bitg_eq_bbit]
 
+/-! ### The Turing reduction `Y ≤ᵀ codeReal Y`
+
+To recover `Y k`, search the length-`2k+1` strings for one in the tree (read off
+the oracle's graph-prefix) and take its bit `2k`: any in-tree string of that
+length has its even bits equal to `Y`, and the even-`Y` prefix witnesses that one
+exists. -/
+
+/-- Search the length-`2k+1` strings for one in the tree (`h.getD (treePos σ) = 1`)
+and return its `2k`-th bit. -/
+def recoverBit (h : List ℕ) (k : ℕ) : Bool :=
+  (allBoolLists (2 * k + 1)).foldr
+    (fun σ acc => if (h.getD (treePos σ) 0 == 1) = true then σ.getD (2 * k) false else acc) false
+
+set_option maxHeartbeats 8000000 in
+theorem recoverBit_prim : Primrec (fun q : List ℕ × ℕ => recoverBit q.1 q.2) := by
+  unfold recoverBit
+  exact list_foldr_prim
+    (f := fun q : List ℕ × ℕ => allBoolLists (2 * q.2 + 1)) (base := fun _ => false)
+    (op := fun q σ acc =>
+      if (q.1.getD (treePos σ) 0 == 1) = true then σ.getD (2 * q.2) false else acc)
+    (allBoolLists_prim.comp
+      (Primrec.succ.comp (Primrec.nat_mul.comp (Primrec.const 2) Primrec.snd)))
+    (Primrec.const false)
+    (Primrec.ite
+      (Primrec.eq.comp
+        (primrec_beq
+          ((Primrec.list_getD 0).comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst))
+            (treePos_prim.comp (Primrec.snd.comp Primrec.fst)))
+          (Primrec.const 1))
+        (Primrec.const true))
+      ((Primrec.list_getD false).comp (Primrec.snd.comp Primrec.fst)
+        (Primrec.nat_mul.comp (Primrec.const 2)
+          (Primrec.snd.comp (Primrec.fst.comp Primrec.fst))))
+      Primrec.snd)
+
 /-- Given `codeReal Y ≡ᵀ Y`, the even-`Y` coding tree is a genuine `RawPPT`. -/
 noncomputable def coneRawPPT (Y : ℕ → Bool) (hequiv : codeReal Y ≡ₜ Y) : RawPPT where
   code := codeReal Y

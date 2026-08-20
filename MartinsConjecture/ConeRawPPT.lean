@@ -47,6 +47,24 @@ theorem evenMatchB_iff (Y : ℕ → Bool) (σ : List Bool) :
       simp only [hget, Bool.or_true]
     · rw [show (2 * k + 1) % 2 = 1 by omega]; rfl
 
+/-- **Finite use of the even-match test.**  `evenMatchB Y σ` reads `Y` only at
+positions `< σ.length`, so agreeing prefixes of `Y` give the same test.  This is
+the mathematical seed of `codeReal · ≤ᵀ ·` (the test, hence the coding real, is
+computable from a finite prefix of `Y`). -/
+theorem evenMatchB_congr {Y Y' : ℕ → Bool} {σ : List Bool}
+    (h : ∀ j, 2 * j < σ.length → Y j = Y' j) : evenMatchB Y σ = evenMatchB Y' σ := by
+  have hiff : EvenMatch Y σ ↔ EvenMatch Y' σ := by
+    constructor <;> intro hEM k hk
+    · rw [← h k hk]; exact hEM k hk
+    · rw [h k hk]; exact hEM k hk
+  cases hY : evenMatchB Y σ <;> cases hY' : evenMatchB Y' σ <;>
+    first
+      | rfl
+      | (rw [evenMatchB_iff] at hY; rw [Bool.eq_false_iff, ne_eq, evenMatchB_iff] at hY';
+         exact absurd (hiff.mp hY) hY')
+      | (rw [evenMatchB_iff] at hY'; rw [Bool.eq_false_iff, ne_eq, evenMatchB_iff] at hY;
+         exact absurd (hiff.mpr hY') hY)
+
 /-- Characteristic real of the even-`Y` coding tree: at `treePos σ` it records
 whether `σ`'s even positions match `Y`, found by a bounded search over the finite
 strings.  Constructive (so its computability from `Y` is reachable); off the range
@@ -85,6 +103,25 @@ theorem treeMem_codeReal (Y : ℕ → Bool) (σ : List Bool) :
     treeMem (codeReal Y) σ ↔ EvenMatch Y σ := by
   unfold treeMem
   rw [codeReal_treePos, evenMatchB_iff]
+
+/-- **Finite use of the coding real.**  `codeReal Y p` depends only on `Y` below
+`p`: the only string the search can match at `treePos σ = p` has length `< p`, so
+the even-match test there reads `Y` only below `p`.  This is exactly the use
+property behind `codeReal Y ≤ᵀ Y` (the coding real is computable from `Y`); the
+remaining step to a Turing reduction is the (bulky, `lemma21`-scale) `Primrec`
+presentation of the search reading an oracle graph-prefix. -/
+theorem codeReal_use {Y Y' : ℕ → Bool} {p : ℕ}
+    (h : ∀ j, 2 * j < p → Y j = Y' j) : codeReal Y p = codeReal Y' p := by
+  unfold codeReal
+  have hpred : (fun σ : List Bool => (treePos σ == p) && evenMatchB Y σ)
+             = (fun σ : List Bool => (treePos σ == p) && evenMatchB Y' σ) := by
+    funext σ
+    by_cases hp : treePos σ = p
+    · have hlt : σ.length < treePos σ := by
+        have := Nat.lt_two_pow_self (n := σ.length); unfold treePos; omega
+      rw [evenMatchB_congr (fun j hj => h j (by omega))]
+    · rw [beq_eq_false_iff_ne.mpr hp, Bool.false_and, Bool.false_and]
+  simp only [hpred]
 
 /-- The coding tree is downward closed. -/
 theorem closed_codeReal (Y : ℕ → Bool) :

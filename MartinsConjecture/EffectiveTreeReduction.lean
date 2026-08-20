@@ -156,4 +156,61 @@ theorem foldr_or_prim : Primrec (fun l : List Bool => l.foldr (· || ·) false) 
     | nil => rfl
     | cons a l ih => simp only [List.foldr_cons, ← ih]; cases a <;> rfl
 
+/-! ### The search predicate on an oracle prefix -/
+
+/-- `g x`'s `j`-th bit, read from the (even part of the) oracle prefix. -/
+def gxb (pre : List ℕ) (j : ℕ) : ℕ := pre.getD (2 * j) 0
+
+/-- Consistency at bit `j`: whatever `fbit e σ j` converges to must match `g x`'s
+bit (`getD` makes divergence vacuously consistent). -/
+def consBit (pre : List ℕ) (e : ℕ) (σ : List Bool) (j : ℕ) : Bool :=
+  decide ((fbit e σ j).getD (gxb pre j) = gxb pre j)
+
+/-- `σ` is consistent (all converged bits match `g x`) — a bounded check. -/
+def consb (pre : List ℕ) (e : ℕ) (σ : List Bool) : Bool :=
+  ((List.range σ.length).map (consBit pre e σ)).foldr (· && ·) true
+
+/-- Tree membership of `σ`, read from the (odd part of the) oracle prefix. -/
+def trbb (pre : List ℕ) (σ : List Bool) : Bool :=
+  decide (pre.getD (2 * treePos σ + 1) 0 = 1)
+
+/-- `σ` is an OK node: in the tree and consistent. -/
+def okb (pre : List ℕ) (e : ℕ) (σ : List Bool) : Bool := trbb pre σ && consb pre e σ
+
+theorem consBit_prim :
+    Primrec (fun q : ((List ℕ × ℕ) × List Bool) × ℕ => consBit q.1.1.1 q.1.1.2 q.1.2 q.2) := by
+  have hpre : Primrec (fun q : ((List ℕ × ℕ) × List Bool) × ℕ => q.1.1.1) :=
+    Primrec.fst.comp (Primrec.fst.comp Primrec.fst)
+  have he : Primrec (fun q : ((List ℕ × ℕ) × List Bool) × ℕ => q.1.1.2) :=
+    Primrec.snd.comp (Primrec.fst.comp Primrec.fst)
+  have hσ : Primrec (fun q : ((List ℕ × ℕ) × List Bool) × ℕ => q.1.2) :=
+    Primrec.snd.comp Primrec.fst
+  have hj : Primrec (fun q : ((List ℕ × ℕ) × List Bool) × ℕ => q.2) := Primrec.snd
+  have hgxb : Primrec (fun q : ((List ℕ × ℕ) × List Bool) × ℕ => gxb q.1.1.1 q.2) :=
+    (Primrec.list_getD (0 : ℕ)).comp hpre (Primrec.nat_mul.comp (Primrec.const 2) hj)
+  have hfbit : Primrec (fun q : ((List ℕ × ℕ) × List Bool) × ℕ => fbit q.1.1.2 q.1.2 q.2) :=
+    fbit_prim.comp (Primrec.pair (Primrec.pair he hσ) hj)
+  exact (Primrec.eq.comp (Primrec.option_getD.comp hfbit hgxb) hgxb).decide
+
+theorem consb_prim :
+    Primrec (fun q : (List ℕ × ℕ) × List Bool => consb q.1.1 q.1.2 q.2) := by
+  have hmap : Primrec (fun q : (List ℕ × ℕ) × List Bool =>
+      (List.range q.2.length).map (consBit q.1.1 q.1.2 q.2)) :=
+    Primrec.list_map (Primrec.list_range.comp (Primrec.list_length.comp Primrec.snd))
+      consBit_prim.to₂
+  exact foldr_and_prim.comp hmap
+
+theorem trbb_prim : Primrec (fun q : List ℕ × List Bool => trbb q.1 q.2) :=
+  (Primrec.eq.comp
+    ((Primrec.list_getD (0 : ℕ)).comp Primrec.fst
+      (Primrec.nat_add.comp
+        (Primrec.nat_mul.comp (Primrec.const 2) (treePos_prim.comp Primrec.snd))
+        (Primrec.const 1)))
+    (Primrec.const 1)).decide
+
+theorem okb_prim : Primrec (fun q : (List ℕ × ℕ) × List Bool => okb q.1.1 q.1.2 q.2) :=
+  Primrec.and.comp
+    (trbb_prim.comp (Primrec.pair (Primrec.fst.comp Primrec.fst) Primrec.snd))
+    consb_prim
+
 end Martin

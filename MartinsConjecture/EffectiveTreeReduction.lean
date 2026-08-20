@@ -19,10 +19,10 @@ open OracleCode Cantor
 
 namespace Martin
 
-/-- All binary strings of length `m`. -/
+/-- All binary strings of length `m` (`map ++ map` form — primitive recursive). -/
 def allBoolLists : ℕ → List (List Bool)
   | 0 => [[]]
-  | m + 1 => (allBoolLists m).flatMap (fun l => [false :: l, true :: l])
+  | m + 1 => (allBoolLists m).map (false :: ·) ++ (allBoolLists m).map (true :: ·)
 
 theorem allBoolLists_length : ∀ (m : ℕ), ∀ l ∈ allBoolLists m, l.length = m := by
   intro m
@@ -30,18 +30,32 @@ theorem allBoolLists_length : ∀ (m : ℕ), ∀ l ∈ allBoolLists m, l.length 
   | zero => intro l hl; simp only [allBoolLists, List.mem_singleton] at hl; simp [hl]
   | succ m ih =>
       intro l hl
-      simp only [allBoolLists, List.mem_flatMap] at hl
-      obtain ⟨l', hl'mem, hl'⟩ := hl
-      simp only [List.mem_cons, List.mem_singleton, List.not_mem_nil, or_false] at hl'
-      rcases hl' with rfl | rfl <;> simp [ih l' hl'mem]
+      simp only [allBoolLists, List.mem_append, List.mem_map] at hl
+      rcases hl with ⟨l', hl', rfl⟩ | ⟨l', hl', rfl⟩ <;> simp [ih l' hl']
 
 theorem allBoolLists_complete : ∀ (l : List Bool), l ∈ allBoolLists l.length := by
   intro l
   induction l with
   | nil => simp [allBoolLists]
   | cons b l ih =>
-      simp only [List.length_cons, allBoolLists, List.mem_flatMap]
-      exact ⟨l, ih, by cases b <;> simp⟩
+      simp only [List.length_cons, allBoolLists, List.mem_append, List.mem_map]
+      cases b
+      · exact Or.inl ⟨l, ih, rfl⟩
+      · exact Or.inr ⟨l, ih, rfl⟩
+
+theorem allBoolLists_prim : Primrec allBoolLists := by
+  have h : Primrec (fun m : ℕ => Nat.rec (motive := fun _ => List (List Bool)) [[]]
+      (fun _ prev => prev.map (false :: ·) ++ prev.map (true :: ·)) m) :=
+    Primrec.nat_rec' Primrec.id (Primrec.const [[]])
+      ((Primrec.list_append.comp
+        (Primrec.list_map (Primrec.snd.comp Primrec.snd)
+          (Primrec.list_cons.comp (Primrec.const false) Primrec.snd).to₂)
+        (Primrec.list_map (Primrec.snd.comp Primrec.snd)
+          (Primrec.list_cons.comp (Primrec.const true) Primrec.snd).to₂)).to₂)
+  exact h.of_eq fun m => by
+    induction m with
+    | zero => rfl
+    | succ m ih => simp only [allBoolLists, ← ih]
 
 /-- The number whose little-endian bits are `σ` (using `cond`, matching the
 `list_rec` normal form so `natOfBoolList_prim` is clean). -/

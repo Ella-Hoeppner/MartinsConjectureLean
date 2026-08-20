@@ -51,4 +51,5 @@ import MartinsConjecture.RegressiveReduction
 import MartinsConjecture.PointedTree
 import MartinsConjecture.Konig
 import MartinsConjecture.EffectiveTree
+import MartinsConjecture.EffectiveTreeReduction
 import MartinsConjecture.MartinTree

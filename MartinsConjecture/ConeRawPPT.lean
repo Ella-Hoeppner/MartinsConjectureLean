@@ -24,23 +24,67 @@ namespace Martin
 def EvenMatch (Y : ℕ → Bool) (σ : List Bool) : Prop :=
   ∀ k, 2 * k < σ.length → σ.getD (2 * k) false = Y k
 
-/-- Characteristic real of the even-`Y` coding tree: at position `treePos σ` it
-records whether `σ`'s even positions match `Y`.  (Off the range of `treePos` the
-value is irrelevant, since `treeMem` only reads `treePos` positions.) -/
-noncomputable def codeReal (Y : ℕ → Bool) (p : ℕ) : Bool :=
-  if (∀ σ : List Bool, treePos σ = p → EvenMatch Y σ) then true else false
+/-- Boolean even-match test, over the positions of `σ`. -/
+def evenMatchB (Y : ℕ → Bool) (σ : List Bool) : Bool :=
+  (List.range σ.length).all (fun i => !(i % 2 == 0) || (σ.getD i false == Y (i / 2)))
+
+theorem evenMatchB_iff (Y : ℕ → Bool) (σ : List Bool) :
+    evenMatchB Y σ = true ↔ EvenMatch Y σ := by
+  unfold evenMatchB EvenMatch
+  rw [List.all_eq_true]
+  constructor
+  · intro h k hk
+    have := h (2 * k) (by simp only [List.mem_range]; omega)
+    simp only [Nat.mul_mod_right, beq_self_eq_true, Bool.not_true, Bool.false_or,
+      beq_iff_eq] at this
+    rwa [show 2 * k / 2 = k by omega] at this
+  · intro h i hi
+    simp only [List.mem_range] at hi
+    rcases Nat.even_or_odd i with ⟨k, rfl⟩ | ⟨k, rfl⟩
+    · have hget : (σ.getD (k + k) false == Y ((k + k) / 2)) = true := by
+        rw [beq_iff_eq, show (k + k) / 2 = k by omega, show k + k = 2 * k by omega]
+        exact h k (by omega)
+      simp only [hget, Bool.or_true]
+    · rw [show (2 * k + 1) % 2 = 1 by omega]; rfl
+
+/-- Characteristic real of the even-`Y` coding tree: at `treePos σ` it records
+whether `σ`'s even positions match `Y`, found by a bounded search over the finite
+strings.  Constructive (so its computability from `Y` is reachable); off the range
+of `treePos` it is `false`, which is irrelevant since `treeMem` reads only
+`treePos` positions. -/
+def codeReal (Y : ℕ → Bool) (p : ℕ) : Bool :=
+  (List.range (p + 1)).any (fun L =>
+    (allBoolLists L).any (fun σ => (treePos σ == p) && evenMatchB Y σ))
+
+/-- The search evaluates the even-match test at the (unique) string coded by
+`treePos σ`. -/
+theorem codeReal_treePos (Y : ℕ → Bool) (σ : List Bool) :
+    codeReal Y (treePos σ) = evenMatchB Y σ := by
+  unfold codeReal
+  have hlen : σ.length < treePos σ + 1 := by
+    have := Nat.lt_two_pow_self (n := σ.length)
+    unfold treePos; omega
+  cases hem : evenMatchB Y σ with
+  | true =>
+    rw [List.any_eq_true]
+    exact ⟨σ.length, by simp only [List.mem_range]; omega, by
+      rw [List.any_eq_true]
+      exact ⟨σ, allBoolLists_complete σ, by simp [hem]⟩⟩
+  | false =>
+    rw [Bool.eq_false_iff, ne_eq, List.any_eq_true]
+    rintro ⟨L, _, hL⟩
+    rw [List.any_eq_true] at hL
+    obtain ⟨σ', _, hσ'⟩ := hL
+    simp only [Bool.and_eq_true, beq_iff_eq] at hσ'
+    obtain ⟨hpos, hev⟩ := hσ'
+    have : σ' = σ := treePos_inj hpos
+    subst this; rw [hem] at hev; exact Bool.false_ne_true hev
 
 /-- Membership in the coding tree is exactly the even-match predicate. -/
 theorem treeMem_codeReal (Y : ℕ → Bool) (σ : List Bool) :
     treeMem (codeReal Y) σ ↔ EvenMatch Y σ := by
-  unfold treeMem codeReal
-  by_cases hall : ∀ σ' : List Bool, treePos σ' = treePos σ → EvenMatch Y σ'
-  · rw [if_pos hall]
-    exact ⟨fun _ => hall σ rfl, fun _ => rfl⟩
-  · rw [if_neg hall]
-    refine ⟨fun h => absurd h Bool.false_ne_true, fun hEM => absurd (fun σ' hσ' => ?_) hall⟩
-    have : σ' = σ := treePos_inj hσ'
-    subst this; exact hEM
+  unfold treeMem
+  rw [codeReal_treePos, evenMatchB_iff]
 
 /-- The coding tree is downward closed. -/
 theorem closed_codeReal (Y : ℕ → Bool) :

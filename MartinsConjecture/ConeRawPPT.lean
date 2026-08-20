@@ -235,6 +235,59 @@ theorem codeG_eq (Y : ℕ → Bool) (p : ℕ) :
   have hlen : σ.length = L := allBoolLists_length L σ hσ
   rw [evenMatchG_eq Y σ (K := p + 1) (by omega)]
 
+/-- `ℕ`-`BEq` is primitive recursive (bridge to `Primrec.eq`). -/
+theorem primrec_beq {α : Type} [Primcodable α] {f g : α → ℕ}
+    (hf : Primrec f) (hg : Primrec g) : Primrec (fun x => (f x == g x)) :=
+  ((Primrec.eq.comp hf hg).decide).of_eq (fun x => (beq_eq_decide (f x) (g x)).symm)
+
+theorem evenMatchG_prim : Primrec (fun q : List ℕ × List Bool => evenMatchG q.1 q.2) := by
+  unfold evenMatchG
+  refine list_foldr_prim (Primrec.list_range.comp (Primrec.list_length.comp Primrec.snd))
+    (Primrec.const true) ?_
+  have hg : Primrec (fun p : ((List ℕ × List Bool) × ℕ) × Bool => p.1.1.1) :=
+    Primrec.fst.comp (Primrec.fst.comp Primrec.fst)
+  have hσ : Primrec (fun p : ((List ℕ × List Bool) × ℕ) × Bool => p.1.1.2) :=
+    Primrec.snd.comp (Primrec.fst.comp Primrec.fst)
+  have hi : Primrec (fun p : ((List ℕ × List Bool) × ℕ) × Bool => p.1.2) :=
+    Primrec.snd.comp Primrec.fst
+  have hnot : Primrec (fun p : ((List ℕ × List Bool) × ℕ) × Bool => !(p.1.2 % 2 == 0)) :=
+    Primrec.not.comp (primrec_beq (Primrec.nat_mod.comp hi (Primrec.const 2)) (Primrec.const 0))
+  have hbeq : Primrec (fun p : ((List ℕ × List Bool) × ℕ) × Bool =>
+      (bbit (p.1.1.2.getD p.1.2 false) == p.1.1.1.getD (p.1.2 / 2) 0)) :=
+    primrec_beq (bbit_prim.comp ((Primrec.list_getD false).comp hσ hi))
+      ((Primrec.list_getD 0).comp hg (Primrec.nat_div.comp hi (Primrec.const 2)))
+  exact Primrec.and.comp (Primrec.or.comp hnot hbeq) Primrec.snd
+
+set_option maxHeartbeats 8000000 in
+theorem codeG_prim : Primrec (fun q : List ℕ × ℕ => codeG q.1 q.2) := by
+  unfold codeG
+  -- inner foldr over `allBoolLists L`, as a function of `((g, p), L)`
+  have hinner : Primrec (fun r : (List ℕ × ℕ) × ℕ =>
+      (allBoolLists r.2).foldr
+        (fun σ acc2 => ((treePos σ == r.1.2) && evenMatchG r.1.1 σ) || acc2) false) := by
+    refine list_foldr_prim
+      (f := fun r : (List ℕ × ℕ) × ℕ => allBoolLists r.2) (base := fun _ => false)
+      (op := fun r σ acc2 => ((treePos σ == r.1.2) && evenMatchG r.1.1 σ) || acc2)
+      (allBoolLists_prim.comp Primrec.snd) (Primrec.const false) ?_
+    have hg : Primrec (fun s : (((List ℕ × ℕ) × ℕ) × List Bool) × Bool => s.1.1.1.1) :=
+      Primrec.fst.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst))
+    have hp : Primrec (fun s : (((List ℕ × ℕ) × ℕ) × List Bool) × Bool => s.1.1.1.2) :=
+      Primrec.snd.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst))
+    have hσ : Primrec (fun s : (((List ℕ × ℕ) × ℕ) × List Bool) × Bool => s.1.2) :=
+      Primrec.snd.comp Primrec.fst
+    exact Primrec.or.comp
+      (Primrec.and.comp (primrec_beq (treePos_prim.comp hσ) hp)
+        (evenMatchG_prim.comp (Primrec.pair hg hσ))) Primrec.snd
+  exact list_foldr_prim
+    (f := fun q : List ℕ × ℕ => List.range (q.2 + 1)) (base := fun _ => false)
+    (op := fun q L acc =>
+      ((allBoolLists L).foldr
+        (fun σ acc2 => ((treePos σ == q.2) && evenMatchG q.1 σ) || acc2) false) || acc)
+    (Primrec.list_range.comp (Primrec.succ.comp Primrec.snd)) (Primrec.const false)
+    (Primrec.or.comp
+      (hinner.comp (Primrec.pair (Primrec.fst.comp Primrec.fst) (Primrec.snd.comp Primrec.fst)))
+      Primrec.snd)
+
 /-- Given `codeReal Y ≡ᵀ Y`, the even-`Y` coding tree is a genuine `RawPPT`. -/
 noncomputable def coneRawPPT (Y : ℕ → Bool) (hequiv : codeReal Y ≡ₜ Y) : RawPPT where
   code := codeReal Y

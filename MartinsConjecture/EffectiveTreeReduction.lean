@@ -647,7 +647,56 @@ theorem bitTest_correct (hTclosed : ∀ σ b, treeMem Tr (σ ++ [b]) → treeMem
       Option.map_some, Option.getD_some]
   rw [this]; rfl
 
-/-! ### Remaining: rfind + final theorem
+/-- **Lutz–Siskind's Lemma 2.1, effective form.**  The branch `x` of a tree `T`
+(coded by `Tr`) is Turing-below `g x ⊕ T`, for a computable (code `e`) injective
+functional `g` on the branches: the reduction reads the oracle prefix, `rfind`s the
+first good level, and reads `x↾(n+1)` off it. -/
+theorem lemma21 (hTclosed : ∀ σ b, treeMem Tr (σ ++ [b]) → treeMem Tr σ)
+    (hg : ∀ y, IsBranch (treeMem Tr) y → eval (toPFun y) (ofNatCode e) = toPFun (g y))
+    (hinj : ∀ y y', IsBranch (treeMem Tr) y → IsBranch (treeMem Tr) y' → g y = g y' → y = y')
+    {x : ℕ → Bool} (hx : IsBranch (treeMem Tr) x) :
+    x ≤ₜ Cantor.join (g x) Tr := by
+  rw [Cantor.le_iff_bitg]
+  set O := Cantor.join (g x) Tr with hO
+  -- `goodTest = 0` is exactly "good level `m > n`"
+  have hgt : ∀ n k, goodTest (Encodable.encode (graphOf (bitg O) (bnd k))) e n k = 0 ↔
+      (n < k ∧ sgb (graphOf (bitg O) (bnd k)) e (n + 1) k = true) := by
+    intro n k
+    have hdec : sgbNat (Encodable.encode (graphOf (bitg O) (bnd k))) e (n + 1) k
+        = sgb (graphOf (bitg O) (bnd k)) e (n + 1) k := by
+      unfold sgbNat
+      rw [show (Encodable.decode (α := List ℕ)
+        (Encodable.encode (graphOf (bitg O) (bnd k)))).getD [] = graphOf (bitg O) (bnd k) by
+        rw [Encodable.encodek]; rfl]
+    unfold goodTest; rw [hdec]
+    rcases hlt : decide (n < k) <;> rcases hsg : sgb (graphOf (bitg O) (bnd k)) e (n + 1) k <;>
+      simp_all
+  have hsearch : Nat.RecursiveIn {toPFun O} (fun a => Nat.rfind
+      (↑(fun m => decide (goodTest (Encodable.encode (graphOf (bitg O) (bnd m))) e a m = 0)))) :=
+    (Nat.RecursiveIn.rfind (goodBit_recursiveIn O e)).of_eq fun a => by
+      congr 1; funext m; simp only [Nat.unpair_pair, PFun.coe_val, Part.map_some]; rfl
+  have hid : Nat.RecursiveIn {toPFun O} (fun n : ℕ => ((n : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  refine (Nat.RecursiveIn.comp (extractBit_recursiveIn O e)
+    (Nat.RecursiveIn.pair hid hsearch)).of_eq fun n => ?_
+  obtain ⟨m, hmge, hgoodm⟩ := search_terminates hTclosed hg hinj hx (n + 1)
+  have hqm : decide (goodTest (Encodable.encode (graphOf (bitg O) (bnd m))) e n m = 0) = true := by
+    rw [decide_eq_true_eq, hgt]
+    exact ⟨by omega, (sgb_iff_searchGood (le_refl _) hmge).mpr hgoodm⟩
+  obtain ⟨m₀, hm₀mem, _⟩ := Nat.rfind_min'
+    (p := fun k => decide (goodTest (Encodable.encode (graphOf (bitg O) (bnd k))) e n k = 0)) hqm
+  have hg0 : n < m₀ ∧ sgb (graphOf (bitg O) (bnd m₀)) e (n + 1) m₀ = true := by
+    have hs : decide (goodTest (Encodable.encode (graphOf (bitg O) (bnd m₀))) e n m₀ = 0) = true := by
+      simpa using Nat.rfind_spec hm₀mem
+    rw [decide_eq_true_eq, hgt] at hs; exact hs
+  refine Part.eq_some_iff.mpr ?_
+  have hval := bitTest_correct hTclosed hg hinj hx hg0.1 hg0.2
+  simp only [Part.bind_eq_bind, Part.mem_bind_iff, Seq.seq, Part.map_eq_map, Part.mem_map_iff,
+    Part.mem_coe, Part.mem_some_iff, Nat.unpair_pair]
+  exact ⟨Nat.pair n m₀, ⟨Nat.pair n, ⟨n, rfl, rfl⟩, m₀, hm₀mem, rfl⟩,
+    by simp only [Nat.unpair_pair, hO, hval]; exact rfl⟩
+
+/-! ### Remaining: package for `PPT.recover`
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

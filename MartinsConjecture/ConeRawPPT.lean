@@ -15,7 +15,7 @@ import MartinsConjecture.RawPPT
 import MartinsConjecture.ConeTree
 
 open scoped Computability
-open Cantor
+open Cantor OracleCode
 open Classical
 
 namespace Martin
@@ -172,14 +172,68 @@ theorem isBranch_codeReal (Y : ℕ → Bool) (x : ℕ → Bool) :
       List.getElem?_range hk, Option.map_some, Option.getD_some, Cantor.join,
       if_pos (by omega), show 2 * k / 2 = k by omega]
 
-/-! ### The invariant `RawPPT`, modulo `codeReal Y ≡ᵀ Y`
+/-! ### The Turing reduction `codeReal Y ≤ᵀ Y`
 
-The three reflection lemmas reduce a genuine invariant `RawPPT` — and hence, via
-`RawPPT.toPPT`/`lemma21`, a full `PPT` carrying the effective `recover` field — to
-the single recursion-theoretic fact that the coding real is Turing-equivalent to
-`Y`.  That fact is a pure computability statement (`codeReal Y` reads finitely
-many bits of `Y`, and `Y` is read back off the tree prefix by prefix); it is the
-one piece still to be discharged by an explicit reduction. -/
+`codeReal Y p` is computed by the same bounded search, but reading the bits of `Y`
+off an oracle graph-prefix `g = graphOf (bitg Y) K` instead of `Y` directly.  This
+graph version is primitive recursive, so the reduction assembles as
+`graphEnc`-then-`Primrec`, exactly as in `goodBit_recursiveIn`. -/
+
+/-- `foldr`-with-`&&` respects pointwise equality of the head function on the list. -/
+theorem foldr_and_congr {f g : ℕ → Bool} {l : List ℕ} (h : ∀ a ∈ l, f a = g a) :
+    l.foldr (fun a acc => f a && acc) true = l.foldr (fun a acc => g a && acc) true := by
+  induction l with
+  | nil => rfl
+  | cons a t ih =>
+      simp only [List.foldr_cons, h a (List.mem_cons_self ..),
+        ih (fun x hx => h x (List.mem_cons_of_mem _ hx))]
+
+/-- `foldr`-with-`||` respects pointwise equality of the head function on the list. -/
+theorem foldr_or_congr {α : Type} {f g : α → Bool} {l : List α} (h : ∀ a ∈ l, f a = g a) :
+    l.foldr (fun a acc => f a || acc) false = l.foldr (fun a acc => g a || acc) false := by
+  induction l with
+  | nil => rfl
+  | cons a t ih =>
+      simp only [List.foldr_cons, h a (List.mem_cons_self ..),
+        ih (fun x hx => h x (List.mem_cons_of_mem _ hx))]
+
+theorem bbit_beq (a b : Bool) : (bbit a == bbit b) = (a == b) := by
+  cases a <;> cases b <;> rfl
+
+/-- Graph-prefix version of the even-match test: reads `Y (i/2)` as the `i/2`-th
+entry of an oracle graph-prefix. -/
+def evenMatchG (g : List ℕ) (σ : List Bool) : Bool :=
+  (List.range σ.length).foldr
+    (fun i acc => (!(i % 2 == 0) || (bbit (σ.getD i false) == g.getD (i / 2) 0)) && acc) true
+
+/-- On a long-enough prefix, the graph version agrees with `evenMatchB`. -/
+theorem evenMatchG_eq (Y : ℕ → Bool) (σ : List Bool) {K : ℕ} (hK : σ.length ≤ K) :
+    evenMatchG (graphOf (bitg Y) K) σ = evenMatchB Y σ := by
+  unfold evenMatchG evenMatchB
+  refine foldr_and_congr (fun i hi => ?_)
+  simp only [List.mem_range] at hi
+  have hik : i / 2 < K := by omega
+  rw [graphOf_getD hik, bitg_eq_bbit, bbit_beq]
+
+/-- Graph-prefix version of the coding real. -/
+def codeG (g : List ℕ) (p : ℕ) : Bool :=
+  (List.range (p + 1)).foldr
+    (fun L acc =>
+      ((allBoolLists L).foldr
+        (fun σ acc2 => ((treePos σ == p) && evenMatchG g σ) || acc2) false) || acc)
+    false
+
+/-- On the prefix of length `p + 1`, the graph version computes `codeReal Y p`
+(every string the search visits has length `≤ p`, so its even-match reads are
+covered). -/
+theorem codeG_eq (Y : ℕ → Bool) (p : ℕ) :
+    codeG (graphOf (bitg Y) (p + 1)) p = codeReal Y p := by
+  unfold codeG codeReal
+  refine foldr_or_congr (fun L hL => ?_)
+  simp only [List.mem_range] at hL
+  refine foldr_or_congr (fun σ hσ => ?_)
+  have hlen : σ.length = L := allBoolLists_length L σ hσ
+  rw [evenMatchG_eq Y σ (K := p + 1) (by omega)]
 
 /-- Given `codeReal Y ≡ᵀ Y`, the even-`Y` coding tree is a genuine `RawPPT`. -/
 noncomputable def coneRawPPT (Y : ℕ → Bool) (hequiv : codeReal Y ≡ₜ Y) : RawPPT where

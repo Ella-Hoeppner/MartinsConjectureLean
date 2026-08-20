@@ -565,7 +565,51 @@ theorem goodBit_recursiveIn (O : ℕ → Bool) (e : ℕ) :
   simp only [graphEnc, Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
     Part.coe_some, Nat.unpair_pair]
 
-/-! ### Remaining: rfind + extraction, final theorem
+/-- The extracted bit: `x n` (as `0/1`) read off `pickN` at level `m`. -/
+def bitTest (enc e n m : ℕ) : ℕ :=
+  bif ((pickN ((Encodable.decode enc).getD []) e (n + 1) m).getD n false) then 1 else 0
+
+set_option maxHeartbeats 8000000 in
+theorem bitTest_prim :
+    Primrec (fun w : ((ℕ × ℕ) × ℕ) × ℕ => bitTest w.1.1.1 w.1.1.2 w.1.2 w.2) := by
+  unfold bitTest
+  have hn : Primrec (fun w : ((ℕ × ℕ) × ℕ) × ℕ => w.1.2) := Primrec.snd.comp Primrec.fst
+  have hpre : Primrec (fun w : ((ℕ × ℕ) × ℕ) × ℕ =>
+      (Encodable.decode w.1.1.1 : Option (List ℕ)).getD []) :=
+    Primrec.option_getD.comp
+      (Primrec.decode.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst))) (Primrec.const [])
+  have hpick : Primrec (fun w : ((ℕ × ℕ) × ℕ) × ℕ =>
+      pickN ((Encodable.decode w.1.1.1 : Option (List ℕ)).getD []) w.1.1.2 (w.1.2 + 1) w.2) :=
+    pickN_prim.comp (Primrec.pair (Primrec.pair (Primrec.pair hpre
+      (Primrec.snd.comp (Primrec.fst.comp Primrec.fst))) (Primrec.succ.comp hn)) Primrec.snd)
+  exact Primrec.cond ((Primrec.list_getD false).comp hpick hn) (Primrec.const 1) (Primrec.const 0)
+
+set_option maxHeartbeats 4000000 in
+theorem extractBit_recursiveIn (O : ℕ → Bool) (e : ℕ) :
+    Nat.RecursiveIn {toPFun O} (fun q =>
+      ((bitTest (Encodable.encode (graphOf (bitg O) (bnd (Nat.unpair q).2))) e
+        (Nat.unpair q).1 (Nat.unpair q).2 : ℕ) : Part ℕ)) := by
+  have hg : Nat.RecursiveIn {toPFun O} (fun q => graphEnc O (bnd (Nat.unpair q).2)) :=
+    (Nat.RecursiveIn.comp (graphEnc_recursiveIn O)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp
+        (bnd_prim.comp (Primrec.snd.comp Primrec.unpair))))).of_eq
+      fun q => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hid : Nat.RecursiveIn {toPFun O} (fun q : ℕ => ((q : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hpair : Nat.RecursiveIn {toPFun O}
+      (fun q => Nat.pair <$> ((q : ℕ) : Part ℕ) <*> graphEnc O (bnd (Nat.unpair q).2)) :=
+    Nat.RecursiveIn.pair hid hg
+  have htest : Nat.Primrec (fun w => bitTest (Nat.unpair w).2 e
+      (Nat.unpair (Nat.unpair w).1).1 (Nat.unpair (Nat.unpair w).1).2) :=
+    Primrec.nat_iff.mp (bitTest_prim.comp (Primrec.pair (Primrec.pair (Primrec.pair
+      (Primrec.snd.comp Primrec.unpair) (Primrec.const e))
+      (Primrec.fst.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair))))
+      (Primrec.snd.comp (Primrec.unpair.comp (Primrec.fst.comp Primrec.unpair)))))
+  refine (Nat.RecursiveIn.comp htest.recursiveIn hpair).of_eq fun q => ?_
+  simp only [graphEnc, Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+    Part.coe_some, Nat.unpair_pair]
+
+/-! ### Remaining: rfind + correctness, final theorem
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

@@ -93,6 +93,22 @@ theorem invariant_cofinal_contains_pointedPerfect (A : Set (ℕ → Bool))
   exact ⟨Y, fun x hx => hY (coneEmbedding_pointed Y x hx),
     coneEmbedding_pointed Y, coneEmbedding_realizes Y, ⟨coneEmbedding Y⟩⟩
 
+/-- The same conclusion phrased against the project's `TuringDeterminacy`
+convention: for any determinacy class `Γ` containing `A`, an invariant cofinal
+`A` in the class contains a pointed perfect tree.  With `Γ := fun _ => True` this
+is the `ZF+AD` statement (determinacy threaded as a hypothesis, never an axiom);
+with `Γ := MeasurableSet` it is unconditional modulo Borel determinacy. -/
+theorem invariant_cofinal_contains_pointedPerfect_TD {Γ : Set (ℕ → Bool) → Prop}
+    (hTD : TuringDeterminacy Γ) (A : Set (ℕ → Bool)) (hΓ : Γ A)
+    (hTI : TuringInvariantSet A) (hcof : Cofinal (· ∈ A)) :
+    ∃ Y : ℕ → Bool,
+      (∀ x, CodedBranch Y x → x ∈ A) ∧
+      (∀ x, CodedBranch Y x → Y ≤ₜ x) ∧
+      (∀ d, Y ≤ₜ d → ∃ x, CodedBranch Y x ∧ x ≡ₜ d) ∧
+      Nonempty (PerfectEmbedding Y (CodedBranch Y)) :=
+  invariant_cofinal_contains_pointedPerfect A hTI hcof (hTD A hΓ hTI)
+
 #print axioms invariant_cofinal_contains_pointedPerfect
+#print axioms invariant_cofinal_contains_pointedPerfect_TD
 
 end Martin

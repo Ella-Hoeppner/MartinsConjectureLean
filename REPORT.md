@@ -83,10 +83,15 @@ cofinality give a cone `cone Y ⊆ A` (`cone_of_invariant_cofinal`), and a cone 
 tree — the reals whose even bits spell `Y` (`{join Y Z}`) are pointed, realize every degree above `Y`
 (Prop 1.10, via `coneEmbedding` + `realizes_of_perfectEmbedding`), perfect (the embedding
 `z ↦ join Y z` is injective — continuum-many branches), and lie in `cone Y ⊆ A`.  Headline
-`invariant_cofinal_contains_pointedPerfect` (and its `TuringDeterminacy`-threaded form).  What remains is
-only the **non-invariant** cofinal case of `MartinPPT'` — the sets `A n` in Groszek–Slaman are not
-Turing-invariant, so the cone theorem does not apply and Martin's genuine fusion/uniformization argument
-is needed — a well-scoped separate project needing AD, threaded as a hypothesis, never axiomatized.
+`invariant_cofinal_contains_pointedPerfect` (and its `TuringDeterminacy`-threaded form).  A *full* PPT for
+the invariant case — carrying the effective `recover` field — is obtained by presenting the coding tree in
+the `treeMem` coding (`ConeRawPPT.lean`): the reflection lemmas `treeMem_codeReal` / `closed_codeReal` /
+`isBranch_codeReal` reduce the whole invariant `RawPPT` (`invariant_cofinal_contains_PPT`) to the single
+computability fact `codeReal Y ≡ᵀ Y` — an explicit `Turing` reduction left as well-scoped future work.
+What remains for `MartinPPT'` in general is only the **non-invariant** cofinal case — the sets `A n` in
+Groszek–Slaman are not Turing-invariant, so the cone theorem does not apply and Martin's genuine
+fusion/uniformization argument is needed — a well-scoped separate project needing AD, threaded as a
+hypothesis, never axiomatized.
 
 **Headline (latest session, 2026-08-20):**
 1. **Lutz–Siskind's Lemma 2.1 proved in full** (`Martin.lemma21`): a computable functional injective on

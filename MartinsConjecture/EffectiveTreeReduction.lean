@@ -270,4 +270,37 @@ def allAgree (pre : List ℕ) (e n m : ℕ) : Bool :=
 /-- The level is "good": some OK node, and all OK nodes agree on `prefixN · n`. -/
 def sgb (pre : List ℕ) (e n m : ℕ) : Bool := existsOK pre e m && allAgree pre e n m
 
+theorem prefixN_prim : Primrec (fun q : List Bool × ℕ => prefixN q.1 q.2) :=
+  Primrec.list_map (Primrec.list_range.comp Primrec.snd)
+    ((Primrec.list_getD false).comp (Primrec.fst.comp Primrec.fst) Primrec.snd).to₂
+
+theorem existsOK_prim : Primrec (fun q : (List ℕ × ℕ) × ℕ => existsOK q.1.1 q.1.2 q.2) :=
+  list_foldr_prim (allBoolLists_prim.comp Primrec.snd) (Primrec.const false)
+    (Primrec.or.comp
+      (okb_prim.comp (Primrec.pair (Primrec.fst.comp (Primrec.fst.comp Primrec.fst))
+        (Primrec.snd.comp Primrec.fst)))
+      Primrec.snd)
+
+/-! ### Remaining: `pickN_prim` / `allAgree_prim` / `sgb_prim`, correctness, assembly
+
+`existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
+(`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)
+trip a Lean elaboration blow-up (runaway `whnf` in `list_foldr_prim`'s
+higher-order match, even with explicit `op` / `irreducible okb` / raised
+heartbeats).  The mathematically-clean fix is to make `pickN` **`ℕ`-valued**
+(fold accumulating `Encodable.encode (prefixN σ n)` instead of the list — the
+`ℕ`-valued fold `natOfBoolList_prim` elaborates fine) and to flatten the input
+tuple; then `sgb = existsOK && allAgree`.
+
+The reduction is then completed (all *mathematically* done, `search_computes`):
+* `okb`-reflects-abstract: for `pre = graphOf (bitg (join (g x) Tr)) K` with
+  `K > 2·treePos σ + 1`, `trbb pre σ = decide (Tr (treePos σ))` and (with `K > 2m`)
+  `consb pre e σ = decide (Consistent e (g x) σ)` (bounded by `evaln_bound`), so
+  `sgb pre e n m ↔ searchGood (treeMem Tr) e (g x) n m`;
+* the reduction `fun n => decode (rfind (m ↦ sgb (graphOf … (B m)) e (n+1) m); pickN)`,
+  `B m = 2^(m+2)+2`, is `RecursiveIn {toPFun (join (g x) Tr)}` via the `cGraph`
+  code (prefix read) + `exists_code_of_partrec (sgb_prim)` + `Nat.RecursiveIn.rfind`;
+* correct (computes `bitg x`) by `search_correct`/`search_terminates`; conclude
+  `x ≤ᵀ join (g x) Tr` by `Cantor.le_iff_bitg`. -/
+
 end Martin

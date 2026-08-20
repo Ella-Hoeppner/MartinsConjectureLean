@@ -69,6 +69,15 @@ theorem coneEmbedding_injective (Y : ℕ → Bool) :
   simp only [Cantor.join, if_neg (show ¬ (2 * k + 1) % 2 = 0 by omega)] at hk
   rwa [show (2 * k + 1) / 2 = k by omega] at hk
 
+/-- The coding tree is a **proper** subtree of `2^ω`: some real is not a branch
+(flip the first even bit of `Y`).  Together with `coneEmbedding_injective` this
+makes it a genuine proper perfect tree, not the whole space. -/
+theorem codedBranch_proper (Y : ℕ → Bool) : ∃ x, ¬ CodedBranch Y x := by
+  refine ⟨fun n => if n = 0 then !(Y 0) else false, ?_⟩
+  rintro ⟨Z, hZ⟩
+  have h0 : !(Y 0) = Y 0 := by simpa [Cantor.join] using congrFun hZ 0
+  exact absurd h0 (by cases Y 0 <;> simp)
+
 /-! ### From invariant cofinality to a cone -/
 
 /-- A determined Turing-invariant **cofinal** set contains a cone: the

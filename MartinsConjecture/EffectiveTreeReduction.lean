@@ -227,4 +227,47 @@ theorem okb_prim : Primrec (fun q : (List ℕ × ℕ) × List Bool => okb q.1.1 
     (trbb_prim.comp (Primrec.pair (Primrec.fst.comp Primrec.fst) Primrec.snd))
     consb_prim
 
+/-- A reusable "foldr is primitive recursive" combinator (Mathlib has `list_rec`
+but no `list_foldr`). -/
+theorem list_foldr_prim {α β γ : Type} [Primcodable α] [Primcodable β] [Primcodable γ]
+    {f : α → List β} {base : α → γ} {op : α → β → γ → γ}
+    (hf : Primrec f) (hbase : Primrec base)
+    (hop : Primrec (fun p : (α × β) × γ => op p.1.1 p.1.2 p.2)) :
+    Primrec (fun a => (f a).foldr (op a) (base a)) := by
+  have := Primrec.list_rec hf hbase
+    ((hop.comp (Primrec.pair (Primrec.pair Primrec.fst (Primrec.fst.comp Primrec.snd))
+      (Primrec.snd.comp (Primrec.snd.comp Primrec.snd)))).to₂)
+  exact this.of_eq fun a => by
+    generalize f a = L
+    induction L with
+    | nil => rfl
+    | cons b l ih => simp only [List.foldr_cons]; exact congrArg _ ih
+
+/-! ### The level predicate -/
+
+/-- The first `n` bits of `σ` (= `σ.take n` for `n ≤ |σ|`; primrec-friendly). -/
+def prefixN (σ : List Bool) (n : ℕ) : List Bool := (List.range n).map (fun i => σ.getD i false)
+
+theorem prefixN_eq_take {σ : List Bool} {n : ℕ} (h : n ≤ σ.length) : prefixN σ n = σ.take n := by
+  apply List.ext_getElem (by simp [prefixN]; omega)
+  intro i h1 h2
+  simp only [prefixN, List.getElem_map, List.getElem_range, List.getElem_take]
+  rw [List.getD_eq_getElem?_getD, List.getElem?_eq_getElem (by simp at h2; omega)]; rfl
+
+/-- The take-`n` prefix of the first OK length-`m` node (`[]` if none). -/
+def pickN (pre : List ℕ) (e n m : ℕ) : List Bool :=
+  (allBoolLists m).foldr (fun σ acc => bif okb pre e σ then prefixN σ n else acc) []
+
+/-- Some OK length-`m` node exists. -/
+def existsOK (pre : List ℕ) (e m : ℕ) : Bool :=
+  (allBoolLists m).foldr (fun σ acc => okb pre e σ || acc) false
+
+/-- Every OK length-`m` node has `prefixN · n` equal to `pickN`. -/
+def allAgree (pre : List ℕ) (e n m : ℕ) : Bool :=
+  (allBoolLists m).foldr
+    (fun σ acc => (!okb pre e σ || decide (prefixN σ n = pickN pre e n m)) && acc) true
+
+/-- The level is "good": some OK node, and all OK nodes agree on `prefixN · n`. -/
+def sgb (pre : List ℕ) (e n m : ℕ) : Bool := existsOK pre e m && allAgree pre e n m
+
 end Martin

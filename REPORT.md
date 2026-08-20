@@ -84,14 +84,18 @@ tree — the reals whose even bits spell `Y` (`{join Y Z}`) are pointed, realize
 (Prop 1.10, via `coneEmbedding` + `realizes_of_perfectEmbedding`), perfect (the embedding
 `z ↦ join Y z` is injective — continuum-many branches), and lie in `cone Y ⊆ A`.  Headline
 `invariant_cofinal_contains_pointedPerfect` (and its `TuringDeterminacy`-threaded form).  A *full* PPT for
-the invariant case — carrying the effective `recover` field — is obtained by presenting the coding tree in
-the `treeMem` coding (`ConeRawPPT.lean`): the reflection lemmas `treeMem_codeReal` / `closed_codeReal` /
-`isBranch_codeReal` reduce the whole invariant `RawPPT` (`invariant_cofinal_contains_PPT`) to the single
-computability fact `codeReal Y ≡ᵀ Y` — an explicit `Turing` reduction left as well-scoped future work.
-What remains for `MartinPPT'` in general is only the **non-invariant** cofinal case — the sets `A n` in
-Groszek–Slaman are not Turing-invariant, so the cone theorem does not apply and Martin's genuine
-fusion/uniformization argument is needed — a well-scoped separate project needing AD, threaded as a
-hypothesis, never axiomatized.
+the invariant case — carrying the effective `recover` field — is proved in `ConeRawPPT.lean`: the coding
+tree is presented in the `treeMem` coding, and `codeReal Y ≡ᵀ Y` — the only recursion-theoretic fact
+needed — is **proved in full** (`codeReal_equiv`), by a `RecursiveIn` reduction in both directions
+(`codeReal_le`: the oracle reads its own graph-prefix and runs the primitive-recursive graph search;
+`le_codeReal`: `Y k` is recovered by searching the length-`2k+1` strings for one in the tree, read off the
+oracle prefix).  Hence **`invariant_cofinal_contains_PPT`** (and its `TuringDeterminacy` form): every
+Turing-invariant, cofinal, determined set contains a *full* pointed perfect tree (`recover` via `lemma21`)
+with all its branches in the set — **the determinacy game genuinely builds pointed perfect trees, with no
+axioms beyond determinacy of the game.**  What remains for `MartinPPT'` in general is only the
+**non-invariant** cofinal case — the sets `A n` in Groszek–Slaman are not Turing-invariant, so the cone
+theorem does not apply and Martin's genuine fusion/uniformization argument is needed — a well-scoped
+separate project needing AD, threaded as a hypothesis, never axiomatized.
 
 **Headline (latest session, 2026-08-20):**
 1. **Lutz–Siskind's Lemma 2.1 proved in full** (`Martin.lemma21`): a computable functional injective on
@@ -102,10 +106,13 @@ hypothesis, never axiomatized.
    promise-free `MartinPPT_perfect` (a purely structural perfect pointed tree) implies `MartinPPT` —
    `recover` via `lemma21`, `realizes` (Prop 1.10) via `realizes_of_perfectEmbedding`. So
    `partI_of_perfect_escaping` rests Part 1 on the minimal, faithful form of Martin's theorem.
-3. **The determinacy game builds pointed perfect trees (invariant case)** (`ConeTree.lean`): Martin's
-   Lemma 2.3 proved for Turing-invariant cofinal sets straight from `cone_theorem` — a cone is the
-   `Y`-coding tree `{join Y Z}`, pointed + realizing + (injective embedding ⟹) perfect, inside the set.
-   Only the non-invariant case of `MartinPPT'` now remains.
+3. **The determinacy game builds pointed perfect trees (invariant case)** (`ConeTree.lean`,
+   `ConeRawPPT.lean`): Martin's Lemma 2.3 proved for Turing-invariant cofinal sets straight from
+   `cone_theorem` — a cone is the `Y`-coding tree `{join Y Z}`, pointed + realizing + (injective
+   embedding ⟹) perfect, inside the set — and upgraded to a **full `PPT` with the effective `recover`
+   field**, by proving `codeReal Y ≡ᵀ Y` as an explicit two-direction `RecursiveIn` reduction
+   (`invariant_cofinal_contains_PPT`). No axioms beyond determinacy of the game. Only the non-invariant
+   case of `MartinPPT'` now remains.
 
 **Headline (prior session):**
 1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance

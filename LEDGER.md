@@ -77,14 +77,14 @@ obstructions behind them**, for a future run.
   gap = `MartinPPT'` itself. Prop 1.10 (`realizes`) is now *also* a theorem
   (`realizes_of_perfectEmbedding`, from a degree-preserving perfect embedding), so a `PerfectTree`
   carries only structural data and derives both `realizes` and `recover`. **The invariant case of
-  Martin's Lemma 2.3 is now PROVED** (`ConeTree.lean`, `invariant_cofinal_contains_pointedPerfect`):
-  from `cone_theorem`, a Turing-invariant cofinal determined set contains a cone, and a cone is a
-  pointed perfect tree (the even-`Y`-coding family `{join Y Z}`). The remaining gap is precisely the
-  **non-invariant** cofinal case (the `A n` in Groszek–Slaman are not Turing-invariant, so
-  `cone_theorem` does not apply; Martin's genuine fusion/uniformization argument is needed). A full
-  invariant `PPT` with the effective `recover` field would additionally need the even-`Y` tree in the
-  `treeMem` coding (so `lemma21` applies) — a `code ≡ᵀ Y` `RecursiveIn` encoding step, deferred as it
-  does not advance the non-invariant chain. Determinacy must stay a hypothesis
+  Martin's Lemma 2.3 is now PROVED IN FULL** (`ConeTree.lean`, `ConeRawPPT.lean`): from `cone_theorem`,
+  a Turing-invariant cofinal determined set contains a cone, and a cone is a pointed perfect tree (the
+  even-`Y`-coding family `{join Y Z}`), upgraded to a full `PPT` with the effective `recover` field via
+  the `treeMem` coding — the required fact `codeReal Y ≡ᵀ Y` is a proved two-direction `RecursiveIn`
+  reduction (`codeReal_equiv`). So `invariant_cofinal_contains_PPT` needs no hypothesis beyond
+  determinacy of the game. The remaining gap is precisely the **non-invariant** cofinal case (the `A n`
+  in Groszek–Slaman are not Turing-invariant, so `cone_theorem` does not apply; Martin's genuine
+  fusion/uniformization argument is needed). Determinacy must stay a hypothesis
   (`GameDetermined`/`TuringDeterminacy`), **never** an added axiom.
 
 ## Obstructions hit (engineering notes for the next run)

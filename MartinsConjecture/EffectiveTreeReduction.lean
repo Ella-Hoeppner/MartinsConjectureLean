@@ -323,7 +323,63 @@ theorem sgb_prim : Primrec (fun q : ((List ℕ × ℕ) × ℕ) × ℕ => sgb q.1
     (existsOK_prim.comp (Primrec.pair (Primrec.fst.comp Primrec.fst) Primrec.snd))
     allAgree_prim
 
-/-! ### Remaining: correctness + oracle assembly
+/-! ### Correctness: the primrec predicate reflects the abstract search -/
+
+/-- Tree membership encoded in a real: `σ` is in the tree iff `Tr (treePos σ)`. -/
+def treeMem (Tr : ℕ → Bool) (σ : List Bool) : Prop := Tr (treePos σ) = true
+
+theorem graphOf_getD {f : ℕ → ℕ} {K i : ℕ} (h : i < K) : (graphOf f K).getD i 0 = f i := by
+  simp only [graphOf, List.getD_eq_getElem?_getD, List.getElem?_map, List.getElem?_range, h,
+    ite_true, Option.map_some, Option.getD_some]
+
+theorem bitg_join_even (A B : ℕ → Bool) (j : ℕ) : bitg (Cantor.join A B) (2 * j) = bitg A j := by
+  simp only [bitg, Cantor.join]; rw [if_pos (by omega), show 2 * j / 2 = j by omega]
+
+theorem bitg_join_odd (A B : ℕ → Bool) (k : ℕ) :
+    bitg (Cantor.join A B) (2 * k + 1) = bitg B k := by
+  simp only [bitg, Cantor.join]; rw [if_neg (by omega), show (2 * k + 1) / 2 = k by omega]
+
+theorem gxb_reflect {gx Tr : ℕ → Bool} {K j : ℕ} (h : 2 * j < K) :
+    gxb (graphOf (bitg (Cantor.join gx Tr)) K) j = bitg gx j := by
+  rw [gxb, graphOf_getD h, bitg_join_even]
+
+theorem trbb_reflect {gx Tr : ℕ → Bool} {K : ℕ} {σ : List Bool} (h : 2 * treePos σ + 1 < K) :
+    trbb (graphOf (bitg (Cantor.join gx Tr)) K) σ = true ↔ treeMem Tr σ := by
+  simp only [trbb]
+  rw [graphOf_getD h, bitg_join_odd]
+  unfold bitg treeMem
+  cases Tr (treePos σ) <;> simp
+
+theorem foldr_and_all {l : List Bool} : (l.foldr (· && ·) true = true) ↔ ∀ b ∈ l, b = true := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+      simp only [List.foldr_cons, Bool.and_eq_true, List.mem_cons, forall_eq_or_imp]
+      rw [ih]
+
+/-- The bounded consistency check reflects `Consistent` when the prefix is long
+enough (using `evaln_bound`: `fbit e σ j` converges only for `j < |σ|`). -/
+theorem consb_reflect {gx Tr : ℕ → Bool} {K e : ℕ} {σ : List Bool} (h : 2 * σ.length ≤ K) :
+    consb (graphOf (bitg (Cantor.join gx Tr)) K) e σ = true ↔ Consistent e gx σ := by
+  set pre := graphOf (bitg (Cantor.join gx Tr)) K with hpre
+  have hgx : ∀ j, j < σ.length → gxb pre j = bitg gx j := fun j hj => gxb_reflect (by omega)
+  rw [consb, foldr_and_all]
+  simp only [List.mem_map, List.mem_range, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  constructor
+  · intro hall j v hv
+    have hjlen : j < σ.length := by
+      have := evaln_bound (by simpa only [fbit] using hv); simpa only [fbit] using this
+    have hc := hall j hjlen
+    simp only [consBit, hgx j hjlen, decide_eq_true_eq, hv, Option.getD_some] at hc
+    exact hc
+  · intro hcons j hjlen
+    simp only [consBit, hgx j hjlen, decide_eq_true_eq]
+    cases hf : fbit e σ j with
+    | none => simp
+    | some v => simp only [Option.getD_some]; exact hcons j v hf
+
+/-! ### Remaining: `sgb ↔ searchGood`, oracle assembly
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

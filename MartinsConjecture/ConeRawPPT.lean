@@ -461,8 +461,22 @@ theorem invariant_cofinal_contains_PPT_TD {Γ : Set (ℕ → Bool) → Prop}
     ∃ T : PPT, ∀ x, T.mem x → x ∈ A :=
   invariant_cofinal_contains_PPT A hTI hcof (hTD A hΓ hTI)
 
+/-- **σ-pigeonhole + tree (invariant Cor 2.4).**  If countably many
+Turing-invariant sets in a determinacy class cover a cone, then one of them
+contains a full pointed perfect tree.  This is how the invariant Lemma 2.3 slots
+into the reduction machinery (`exists_onCone_of_cover`). -/
+theorem invariant_cover_contains_PPT {Γ : Set (ℕ → Bool) → Prop}
+    (hTD : TuringDeterminacy Γ) {A : ℕ → Set (ℕ → Bool)} (hΓ : ∀ n, Γ (A n))
+    (hInv : ∀ n, TuringInvariantSet (A n)) {W : ℕ → Bool} (hcover : cone W ⊆ ⋃ n, A n) :
+    ∃ n, ∃ T : PPT, ∀ x, T.mem x → x ∈ A n := by
+  obtain ⟨n, Y, hY⟩ := exists_onCone_of_cover hTD hΓ hInv hcover
+  have hcof : Cofinal (· ∈ A n) := fun z =>
+    ⟨Cantor.join z Y, Cantor.left_le_join z Y, hY _ (Cantor.right_le_join z Y)⟩
+  exact ⟨n, invariant_cofinal_contains_PPT (A n) (hInv n) hcof (hTD _ (hΓ n) (hInv n))⟩
+
 #print axioms codeReal_equiv
 #print axioms invariant_cofinal_contains_PPT
 #print axioms invariant_cofinal_contains_PPT_TD
+#print axioms invariant_cover_contains_PPT
 
 end Martin

@@ -609,7 +609,45 @@ theorem extractBit_recursiveIn (O : ℕ → Bool) (e : ℕ) :
   simp only [graphEnc, Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
     Part.coe_some, Nat.unpair_pair]
 
-/-! ### Remaining: rfind + correctness, final theorem
+variable {Tr : ℕ → Bool} {e : ℕ} {g : (ℕ → Bool) → (ℕ → Bool)}
+
+theorem pickN_eq_branch (hTclosed : ∀ σ b, treeMem Tr (σ ++ [b]) → treeMem Tr σ)
+    (hg : ∀ y, IsBranch (treeMem Tr) y → eval (toPFun y) (ofNatCode e) = toPFun (g y))
+    (hinj : ∀ y y', IsBranch (treeMem Tr) y → IsBranch (treeMem Tr) y' → g y = g y' → y = y')
+    {x : ℕ → Bool} (hx : IsBranch (treeMem Tr) x) {n m : ℕ} (hnm : n + 1 ≤ m)
+    (hsgb : sgb (graphOf (bitg (Cantor.join (g x) Tr)) (bnd m)) e (n + 1) m = true) :
+    pickN (graphOf (bitg (Cantor.join (g x) Tr)) (bnd m)) e (n + 1) m = (List.range (n + 1)).map x := by
+  set pre := graphOf (bitg (Cantor.join (g x) Tr)) (bnd m) with hpre
+  have hgood : searchGood (treeMem Tr) e (g x) (n + 1) m :=
+    (sgb_iff_searchGood (le_refl _) hnm).mp hsgb
+  obtain ⟨σ₀, hT₀, hlen₀, hC₀⟩ := hgood.1
+  obtain ⟨hb1, hb2⟩ := bnd_bounds hlen₀
+  have hex : ∃ σ ∈ allBoolLists m, okb pre e σ = true :=
+    ⟨σ₀, mem_allBoolLists_iff.mpr hlen₀, (okb_reflect (by omega) (by omega)).mpr ⟨hT₀, hC₀⟩⟩
+  obtain ⟨σ₁, hmem₁, hok₁, hpick⟩ := pickN_spec hex
+  have hlen₁ := allBoolLists_length m σ₁ hmem₁
+  obtain ⟨hb1', hb2'⟩ := bnd_bounds hlen₁
+  obtain ⟨hT₁, hC₁⟩ := (okb_reflect (by omega) (by omega)).mp hok₁
+  rw [hpick, prefixN_eq_take (by omega : n + 1 ≤ σ₁.length)]
+  exact search_correct hg hx hnm hgood hT₁ hlen₁ hC₁
+
+theorem bitTest_correct (hTclosed : ∀ σ b, treeMem Tr (σ ++ [b]) → treeMem Tr σ)
+    (hg : ∀ y, IsBranch (treeMem Tr) y → eval (toPFun y) (ofNatCode e) = toPFun (g y))
+    (hinj : ∀ y y', IsBranch (treeMem Tr) y → IsBranch (treeMem Tr) y' → g y = g y' → y = y')
+    {x : ℕ → Bool} (hx : IsBranch (treeMem Tr) x) {n m : ℕ} (hnm : n < m)
+    (hsgb : sgb (graphOf (bitg (Cantor.join (g x) Tr)) (bnd m)) e (n + 1) m = true) :
+    bitTest (Encodable.encode (graphOf (bitg (Cantor.join (g x) Tr)) (bnd m))) e n m = bitg x n := by
+  unfold bitTest
+  rw [show (Encodable.decode (α := List ℕ)
+      (Encodable.encode (graphOf (bitg (Cantor.join (g x) Tr)) (bnd m)))).getD []
+      = graphOf (bitg (Cantor.join (g x) Tr)) (bnd m) by rw [Encodable.encodek]; rfl]
+  rw [pickN_eq_branch hTclosed hg hinj hx (by omega) hsgb]
+  have : ((List.range (n + 1)).map x).getD n false = x n := by
+    rw [List.getD_eq_getElem?_getD, List.getElem?_map, List.getElem?_range (by omega),
+      Option.map_some, Option.getD_some]
+  rw [this]; rfl
+
+/-! ### Remaining: rfind + final theorem
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

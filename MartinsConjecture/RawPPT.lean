@@ -100,7 +100,35 @@ theorem partI_of_martinPPT'_escaping (h : MartinPPT')
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_martinPPT_escaping (martinPPT_of_martinPPT' h) hTD hesc
 
+/-! ### Non-vacuity
+
+The `RawPPT` interface is a hypothesis feeding the reduction, so it is worth
+checking it is inhabited — that `closed`, `pointed`, and `realizes` are jointly
+satisfiable by a genuine tree, and that `RawPPT.toPPT` (whose `recover` field is
+`lemma21`) type-checks on a concrete instance.  The recursion-theoretically
+simplest witness is the full space `2^ω` itself: every finite string is a node,
+so every real is a branch; the code is computable, so the tree is pointed; and
+every degree is realized (each `d` is its own branch). -/
+
+/-- The full space `2^ω` as a raw pointed perfect tree.  `treeMem (fun _ => true)`
+holds of every string (definitionally `true = true`), so it is trivially
+downward closed and every real is a branch. -/
+def fullRawPPT : RawPPT where
+  code := fun _ => true
+  closed := fun _ _ _ => rfl
+  pointed := fun _ _ => Cantor.le_of_computable (Computable.const true)
+  realizes := fun d _ => ⟨d, fun _ => rfl, Cantor.equiv.refl d⟩
+
+/-- The `RawPPT` interface is non-vacuous. -/
+theorem nonempty_rawPPT : Nonempty RawPPT := ⟨fullRawPPT⟩
+
+/-- Consequently the full `PPT` interface is inhabited too — `RawPPT.toPPT`
+supplies the `recover` field via `lemma21` on a concrete tree, so the whole
+`RawPPT → PPT` bridge type-checks end to end. -/
+theorem nonempty_ppt : Nonempty PPT := ⟨fullRawPPT.toPPT⟩
+
 #print axioms martinPPT_of_martinPPT'
 #print axioms partI_of_martinPPT'_escaping
+#print axioms nonempty_ppt
 
 end Martin

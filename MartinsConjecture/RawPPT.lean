@@ -20,6 +20,7 @@ pointedness and cone-realization smuggled in.
 -/
 import MartinsConjecture.MartinTree
 import MartinsConjecture.EffectiveTreeReduction
+import MartinsConjecture.PerfectEmbedding
 
 open scoped Computability
 open OracleCode Cantor
@@ -100,6 +101,62 @@ theorem partI_of_martinPPT'_escaping (h : MartinPPT')
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_martinPPT_escaping (martinPPT_of_martinPPT' h) hTD hesc
 
+/-! ### The maximally-faithful form: a purely structural perfect tree
+
+`RawPPT` still carries `realizes` (Prop 1.10) as a promise.  But `realizes` too is
+derivable — from a *degree-preserving perfect embedding* (`PerfectEmbedding`), the
+recursion-theoretic meaning of "the tree is perfect".  A `PerfectTree` therefore
+carries **only structural tree data** — downward-closure, pointedness, and a
+perfect embedding — and yet yields a full `PPT`: `realizes` via
+`realizes_of_perfectEmbedding`, and `recover` via `lemma21`.  Nothing
+recursion-theoretic is assumed beyond pointedness; both conclusions are theorems. -/
+
+/-- A **perfect pointed tree** as pure structure: a downward-closed tree (`closed`)
+that is `pointed` and carries a degree-preserving perfect embedding of Cantor
+space into its branches.  This is Martin's Lemma 2.3 output in its natural form,
+with *no* `realizes`/`recover` promises attached — both are derived. -/
+structure PerfectTree where
+  /-- The tree, coded by the characteristic real of its string-set. -/
+  code : ℕ → Bool
+  /-- Downward closed (a genuine tree). -/
+  closed : ∀ σ b, treeMem code (σ ++ [b]) → treeMem code σ
+  /-- Pointedness (Def 1.9). -/
+  pointed : ∀ x, IsBranch (treeMem code) x → code ≤ₜ x
+  /-- Perfection: a degree-preserving embedding `2^ω → [T]`. -/
+  embedding : PerfectEmbedding code (IsBranch (treeMem code))
+
+/-- A structural perfect tree is a `RawPPT`: `realizes` is discharged by
+`realizes_of_perfectEmbedding`. -/
+def PerfectTree.toRawPPT (T : PerfectTree) : RawPPT where
+  code := T.code
+  closed := T.closed
+  pointed := T.pointed
+  realizes := realizes_of_perfectEmbedding T.pointed T.embedding
+
+/-- **Martin's Lemma 2.3 in its natural, promise-free form** — every cofinal set
+contains a *structural* perfect pointed tree. -/
+def MartinPPT_perfect : Prop :=
+  ∀ A : (ℕ → Bool) → Prop, Cofinal A →
+    ∃ T : PerfectTree, ∀ x, IsBranch (treeMem T.code) x → A x
+
+/-- `MartinPPT_perfect → MartinPPT'` (hence `→ MartinPPT`): from a purely
+structural perfect tree, both `realizes` and `recover` are derived. -/
+theorem martinPPT'_of_perfect (h : MartinPPT_perfect) : MartinPPT' := by
+  intro A hA
+  obtain ⟨T, hT⟩ := h A hA
+  exact ⟨T.toRawPPT, hT⟩
+
+/-- **Part 1 from the promise-free `MartinPPT_perfect`.**  Every recursion-theoretic
+property of the pointed perfect tree used anywhere in the reduction — `recover`
+(Lemma 2.1) and `realizes` (Prop 1.10) — is now a machine-checked theorem; the
+only remaining input is the *combinatorial* existence of the tree (Martin's
+determinacy game). -/
+theorem partI_of_perfect_escaping (h : MartinPPT_perfect)
+    (hTD : TuringDeterminacy fun _ => True)
+    (hesc : ∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_martinPPT'_escaping (martinPPT'_of_perfect h) hTD hesc
+
 /-! ### Non-vacuity
 
 The `RawPPT` interface is a hypothesis feeding the reduction, so it is worth
@@ -127,8 +184,26 @@ supplies the `recover` field via `lemma21` on a concrete tree, so the whole
 `RawPPT → PPT` bridge type-checks end to end. -/
 theorem nonempty_ppt : Nonempty PPT := ⟨fullRawPPT.toPPT⟩
 
+/-- The full space is even a *structural* `PerfectTree` (with the identity
+embedding), so `PerfectTree.toRawPPT` — deriving `realizes` from the embedding —
+also type-checks end to end. -/
+def fullPerfectTree : PerfectTree where
+  code := fun _ => true
+  closed := fun _ _ _ => rfl
+  pointed := fun _ _ => Cantor.le_of_computable (Computable.const true)
+  embedding :=
+    { emb := id
+      maps_to := fun _ _ => rfl
+      forward := fun z => Cantor.left_le_join z _
+      invert := fun z => Cantor.left_le_join z _ }
+
+/-- The `PerfectTree` interface is non-vacuous, and hence so is the full derived
+`PPT` (via `toRawPPT.toPPT`, deriving both `realizes` and `recover`). -/
+theorem nonempty_perfectTree : Nonempty PerfectTree := ⟨fullPerfectTree⟩
+
 #print axioms martinPPT_of_martinPPT'
 #print axioms partI_of_martinPPT'_escaping
+#print axioms partI_of_perfect_escaping
 #print axioms nonempty_ppt
 
 end Martin

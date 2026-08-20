@@ -379,6 +379,30 @@ theorem consb_reflect {gx Tr : ℕ → Bool} {K e : ℕ} {σ : List Bool} (h : 2
     | none => simp
     | some v => simp only [Option.getD_some]; exact hcons j v hf
 
+theorem foldr_or_all {l : List Bool} : (l.foldr (· || ·) false = true) ↔ ∃ b ∈ l, b = true := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+      simp only [List.foldr_cons, Bool.or_eq_true, List.mem_cons, exists_eq_or_imp]
+      rw [ih]
+
+/-- The prefix length that makes every length-`m` node's oracle positions available. -/
+def bnd (m : ℕ) : ℕ := 2 ^ (m + 2) + 2
+
+theorem bnd_bounds {σ : List Bool} {m : ℕ} (hm : σ.length = m) :
+    2 * treePos σ + 1 < bnd m ∧ 2 * σ.length ≤ bnd m := by
+  have ht := treePos_lt σ
+  rw [hm] at ht
+  have hp : m < 2 ^ m := Nat.lt_two_pow_self
+  refine ⟨?_, ?_⟩
+  · simp only [bnd, pow_succ] at ht ⊢; omega
+  · simp only [bnd, hm, pow_succ]; omega
+
+theorem okb_reflect {gx Tr : ℕ → Bool} {K e : ℕ} {σ : List Bool}
+    (h1 : 2 * treePos σ + 1 < K) (h2 : 2 * σ.length ≤ K) :
+    okb (graphOf (bitg (Cantor.join gx Tr)) K) e σ = true ↔ treeMem Tr σ ∧ Consistent e gx σ := by
+  simp only [okb, Bool.and_eq_true, trbb_reflect h1, consb_reflect h2]
+
 /-! ### Remaining: `sgb ↔ searchGood`, oracle assembly
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`

@@ -503,7 +503,24 @@ theorem sgb_iff_searchGood {gx Tr : ℕ → Bool} {K e n m : ℕ} (hK : bnd m �
     rw [hpick, prefixN_eq_take (hnm.trans_eq hlenσ.symm), prefixN_eq_take (hnm.trans_eq hlen₁.symm)]
     exact hpairs σ σ₁ hTσ hlenσ hCσ hT₁ hlen₁ hC₁
 
-/-! ### Remaining: oracle assembly
+/-! ### Oracle assembly -/
+
+/-- `sgb` on the *encoded* prefix (`decode` composed in), for the oracle code. -/
+def sgbNat (enc e n m : ℕ) : Bool := sgb ((Encodable.decode enc).getD []) e n m
+
+set_option maxHeartbeats 8000000 in
+theorem sgbNat_prim :
+    Primrec (fun w : ((ℕ × ℕ) × ℕ) × ℕ => sgbNat w.1.1.1 w.1.1.2 w.1.2 w.2) := by
+  unfold sgbNat
+  have hpre : Primrec (fun w : ((ℕ × ℕ) × ℕ) × ℕ =>
+      (Encodable.decode w.1.1.1 : Option (List ℕ)).getD []) :=
+    Primrec.option_getD.comp
+      (Primrec.decode.comp (Primrec.fst.comp (Primrec.fst.comp Primrec.fst)))
+      (Primrec.const [])
+  exact sgb_prim.comp (Primrec.pair (Primrec.pair (Primrec.pair hpre
+    (Primrec.snd.comp (Primrec.fst.comp Primrec.fst))) (Primrec.snd.comp Primrec.fst)) Primrec.snd)
+
+/-! ### Remaining: rfind + extraction assembly
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

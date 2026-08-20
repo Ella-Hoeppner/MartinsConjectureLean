@@ -57,6 +57,18 @@ theorem coneEmbedding_realizes (Y : ℕ → Bool) :
 theorem codedBranch_subset_cone (Y : ℕ → Bool) : ∀ x, CodedBranch Y x → x ∈ cone Y :=
   coneEmbedding_pointed Y
 
+/-- The embedding is **injective**: distinct `z` give distinct branches (the odd
+bits recover `z`).  So the coding tree is genuinely *perfect* — it has a distinct
+branch for every point of Cantor space, hence continuum-many, and by
+`coneEmbedding_realizes` one of every degree above `Y`. -/
+theorem coneEmbedding_injective (Y : ℕ → Bool) :
+    Function.Injective (fun z => Cantor.join Y z) := by
+  intro z z' h
+  funext k
+  have hk := congrFun h (2 * k + 1)
+  simp only [Cantor.join, if_neg (show ¬ (2 * k + 1) % 2 = 0 by omega)] at hk
+  rwa [show (2 * k + 1) / 2 = k by omega] at hk
+
 /-! ### From invariant cofinality to a cone -/
 
 /-- A determined Turing-invariant **cofinal** set contains a cone: the

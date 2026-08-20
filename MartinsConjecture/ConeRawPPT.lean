@@ -420,40 +420,49 @@ theorem le_codeReal (Y : ℕ → Bool) : Y ≤ₜ codeReal Y := by
 theorem codeReal_equiv (Y : ℕ → Bool) : codeReal Y ≡ₜ Y :=
   ⟨codeReal_le Y, le_codeReal Y⟩
 
-/-- Given `codeReal Y ≡ᵀ Y`, the even-`Y` coding tree is a genuine `RawPPT`. -/
-noncomputable def coneRawPPT (Y : ℕ → Bool) (hequiv : codeReal Y ≡ₜ Y) : RawPPT where
+/-- The even-`Y` coding tree is a genuine `RawPPT`: `pointed` and `realizes`
+follow from `codeReal Y ≡ᵀ Y`, and `closed` from `closed_codeReal`. -/
+noncomputable def coneRawPPT (Y : ℕ → Bool) : RawPPT where
   code := codeReal Y
   closed := closed_codeReal Y
   pointed := by
     intro x hx
     rw [isBranch_codeReal] at hx
     obtain ⟨Z, rfl⟩ := hx
-    exact hequiv.1.trans (Cantor.left_le_join Y Z)
+    exact (codeReal_equiv Y).1.trans (Cantor.left_le_join Y Z)
   realizes := by
     intro d hd
-    have hYd : Y ≤ₜ d := hequiv.2.trans hd
+    have hYd : Y ≤ₜ d := (codeReal_equiv Y).2.trans hd
     refine ⟨Cantor.join Y d, ?_, ?_⟩
     · rw [isBranch_codeReal]; exact ⟨d, rfl⟩
     · exact ⟨Cantor.join_le hYd (Cantor.le.refl d), Cantor.right_le_join Y d⟩
 
-/-- **Full invariant Martin Lemma 2.3, modulo `codeReal · ≡ᵀ ·`.**  If the coding
-real is Turing-equivalent to its parameter (a pure computability fact), then every
-Turing-invariant cofinal determined set contains a *full* pointed perfect tree — a
-`PPT` with the effective `recover` field supplied by `lemma21` — whose branches
-lie in the set. -/
+/-- **Full invariant case of Martin's Lemma 2.3.**  Every Turing-invariant,
+cofinal, determined set contains a *full* pointed perfect tree — a `PPT` with the
+effective `recover` field supplied by `lemma21`, and with all its branches in the
+set.  Nothing is assumed beyond determinacy of the game: the coding real's
+computability (`codeReal Y ≡ᵀ Y`) is a theorem. -/
 theorem invariant_cofinal_contains_PPT
-    (hcode : ∀ Y : ℕ → Bool, codeReal Y ≡ₜ Y)
     (A : Set (ℕ → Bool)) (hTI : ∀ X Y : ℕ → Bool, X ≡ₜ Y → (X ∈ A ↔ Y ∈ A))
     (hcof : Cofinal (· ∈ A)) (hDet : GameDetermined A) :
     ∃ T : PPT, ∀ x, T.mem x → x ∈ A := by
   obtain ⟨Y, hY⟩ := cone_of_invariant_cofinal A hTI hcof hDet
-  refine ⟨(coneRawPPT Y (hcode Y)).toPPT, fun x hx => ?_⟩
+  refine ⟨(coneRawPPT Y).toPPT, fun x hx => ?_⟩
   -- `T.mem` unfolds to `IsBranch (treeMem (codeReal Y))`, i.e. `CodedBranch Y`
   have : CodedBranch Y x := (isBranch_codeReal Y x).mp hx
   exact hY (coneEmbedding_pointed Y x this)
 
-#print axioms treeMem_codeReal
-#print axioms isBranch_codeReal
+/-- The same, threaded through the project's `TuringDeterminacy` convention
+(`Γ := fun _ => True` is the `ZF+AD` statement; `Γ := MeasurableSet` is
+unconditional modulo Borel determinacy). -/
+theorem invariant_cofinal_contains_PPT_TD {Γ : Set (ℕ → Bool) → Prop}
+    (hTD : TuringDeterminacy Γ) (A : Set (ℕ → Bool)) (hΓ : Γ A)
+    (hTI : TuringInvariantSet A) (hcof : Cofinal (· ∈ A)) :
+    ∃ T : PPT, ∀ x, T.mem x → x ∈ A :=
+  invariant_cofinal_contains_PPT A hTI hcof (hTD A hΓ hTI)
+
+#print axioms codeReal_equiv
 #print axioms invariant_cofinal_contains_PPT
+#print axioms invariant_cofinal_contains_PPT_TD
 
 end Martin

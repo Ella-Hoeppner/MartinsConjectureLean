@@ -288,6 +288,33 @@ theorem codeG_prim : Primrec (fun q : List ℕ × ℕ => codeG q.1 q.2) := by
       (hinner.comp (Primrec.pair (Primrec.fst.comp Primrec.fst) (Primrec.snd.comp Primrec.fst)))
       Primrec.snd)
 
+/-- **`codeReal Y ≤ᵀ Y`.**  The oracle reads its own graph-prefix of length `p+1`
+and runs the (primitive recursive) graph search `codeG`. -/
+theorem codeReal_le (Y : ℕ → Bool) : codeReal Y ≤ₜ Y := by
+  rw [Cantor.le_iff_bitg]
+  have hg : Nat.RecursiveIn {toPFun Y} (fun p => graphEnc Y (p + 1)) :=
+    (Nat.RecursiveIn.comp (graphEnc_recursiveIn Y)
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp Primrec.succ))).of_eq
+      fun p => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  have hid : Nat.RecursiveIn {toPFun Y} (fun p : ℕ => ((p : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hpair : Nat.RecursiveIn {toPFun Y}
+      (fun p => Nat.pair <$> ((p : ℕ) : Part ℕ) <*> graphEnc Y (p + 1)) :=
+    Nat.RecursiveIn.pair hid hg
+  have htest : Nat.Primrec (fun w => bbit (codeG
+      ((Encodable.decode (α := List ℕ) (Nat.unpair w).2).getD []) (Nat.unpair w).1)) :=
+    Primrec.nat_iff.mp (bbit_prim.comp (codeG_prim.comp (Primrec.pair
+      (Primrec.option_getD.comp (Primrec.decode.comp (Primrec.snd.comp Primrec.unpair))
+        (Primrec.const []))
+      (Primrec.fst.comp Primrec.unpair))))
+  refine (Nat.RecursiveIn.comp htest.recursiveIn hpair).of_eq fun p => ?_
+  simp only [graphEnc, Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+    Part.coe_some, Nat.unpair_pair]
+  rw [show (Encodable.decode (α := List ℕ)
+      (Encodable.encode (graphOf (bitg Y) (p + 1)))).getD [] = graphOf (bitg Y) (p + 1) by
+    rw [Encodable.encodek]; rfl]
+  rw [codeG_eq, bitg_eq_bbit]
+
 /-- Given `codeReal Y ≡ᵀ Y`, the even-`Y` coding tree is a genuine `RawPPT`. -/
 noncomputable def coneRawPPT (Y : ℕ → Bool) (hequiv : codeReal Y ≡ₜ Y) : RawPPT where
   code := codeReal Y

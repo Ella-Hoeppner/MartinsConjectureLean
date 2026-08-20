@@ -248,4 +248,21 @@ theorem search_terminates {T : List Bool → Prop} (hTclosed : ∀ σ b, T (σ +
   intro τ τ' hτT hτlen hτcons hτ'T hτ'len hτ'cons
   rw [key τ hτT hτlen hτcons, key τ' hτ'T hτ'len hτ'cons]
 
+/-- **The branch is determined by finitely much of its image and the tree.**  The
+mathematical content of Lutz–Siskind's Lemma 2.1: for a computable injective
+functional `g` (code `e`) on the branches of a tree `T`, there is, for each `n`, a
+level `m ≥ n` at which *every* consistent length-`m` node of `T` reveals the first
+`n` bits of the branch — `τ.take n = x↾n`.  This is the search whose oracle
+implementation (a `rfind` over `m`, with the consistency check bounded by
+`evaln_bound`) yields the Turing reduction `x ≤ᵀ g x ⊕ T`. -/
+theorem search_computes {T : List Bool → Prop} (hTclosed : ∀ σ b, T (σ ++ [b]) → T σ)
+    {e : ℕ} {g : (ℕ → Bool) → (ℕ → Bool)}
+    (hg : ∀ y, IsBranch T y → eval (toPFun y) (ofNatCode e) = toPFun (g y))
+    (hinj : ∀ y y', IsBranch T y → IsBranch T y' → g y = g y' → y = y')
+    {x : ℕ → Bool} (hx : IsBranch T x) (n : ℕ) :
+    ∃ m, n ≤ m ∧ ∀ τ, T τ → τ.length = m → Consistent e (g x) τ →
+      τ.take n = (List.range n).map x := by
+  obtain ⟨m, hnm, hgood⟩ := search_terminates hTclosed hg hinj hx n
+  exact ⟨m, hnm, fun τ hT hlen hcons => search_correct hg hx hnm hgood hT hlen hcons⟩
+
 end Martin

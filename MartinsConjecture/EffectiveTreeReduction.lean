@@ -67,4 +67,41 @@ theorem natOfBoolList_inj : ∀ {σ σ' : List Bool}, σ.length = σ'.length →
       have hl : natOfBoolList l = natOfBoolList l' := by cases b <;> cases b' <;> simp_all <;> omega
       rw [hb, natOfBoolList_inj hlen hl]
 
+/-! ### Primitive-recursive search predicate -/
+
+/-- `fbit` (the bit code `e` computes from the finite oracle prefix `σ`) is
+primitive recursive jointly in `(e, σ, j)`. -/
+theorem fbit_prim : Primrec (fun p : (ℕ × List Bool) × ℕ => fbit p.1.1 p.1.2 p.2) := by
+  have hlen : Primrec (fun p : (ℕ × List Bool) × ℕ => p.1.2.length) :=
+    Primrec.list_length.comp (Primrec.snd.comp Primrec.fst)
+  have hmap : Primrec (fun p : (ℕ × List Bool) × ℕ => p.1.2.map bbit) :=
+    Primrec.list_map (Primrec.snd.comp Primrec.fst) (bbit_prim.comp Primrec.snd)
+  have hcode : Primrec (fun p : (ℕ × List Bool) × ℕ => ofNatCode p.1.1) :=
+    (Primrec.ofNat OracleCode).comp (Primrec.fst.comp Primrec.fst)
+  exact (OracleCode.evaln_prim.comp
+    (Primrec.pair (Primrec.pair (Primrec.pair hlen hmap) hcode) Primrec.snd)).of_eq fun p => rfl
+
+/-! ### Remaining architecture (to complete `x ≤ᵀ g x ⊕ T`)
+
+The pieces above (`allBoolLists`, `natOfBoolList`, `fbit_prim`) are the confirmed
+primitive-recursive scaffolding.  The reduction is completed as follows, all
+primitive recursive on a finite oracle **prefix** `pre : List ℕ` (which is
+`graphOf (bitg O) (B m)` for `O = join (g x) T` and a computable bound `B m =
+2·⟨m, 2^m⟩+2`, read via the existing `cGraph` code from `CodingFamilyCode`):
+
+* `okNodeb pre e σ := trb ∧ consistb`, where `trb := pre.getD (2·⟨|σ|,natOfBoolList σ⟩+1) 0 = 1`
+  reflects tree membership `T σ` (bounded position, hence in `pre`), and
+  `consistb := (List.range |σ|).map (fun j => (fbit e σ j).elim true (·= pre.getD (2j) 0))`
+  folded with `&&` reflects `Consistent e (g x) σ` (bounded by `evaln_bound`);
+* `searchGoodb pre e n m` := `any` over `allBoolLists m` of `okNodeb`, `&&` the
+  nested `all/all` that OK nodes agree on `take n` — this decides `searchGood`
+  (`search_correct`/`search_terminates`) once `pre` is long enough;
+* the reduction is `fun n => rfind (m ≥ n) searchGoodb`, reading `x↾(n+1)` off the
+  first OK node, then `bitg`.  `RecursiveIn {toPFun O}` via `cGraph` (prefix read)
+  + `exists_code_of_partrec` (of the `Primrec` predicate) + `Nat.RecursiveIn.rfind`;
+  correct by `search_computes`.
+
+`all`/`any`/`filter` are `foldr`s built from `Primrec.list_rec` (verified to
+compose); the whole predicate is `Primrec` by the same pattern as `fbit_prim`. -/
+
 end Martin

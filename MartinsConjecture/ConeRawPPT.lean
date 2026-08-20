@@ -461,6 +461,14 @@ theorem invariant_cofinal_contains_PPT_TD {Γ : Set (ℕ → Bool) → Prop}
     ∃ T : PPT, ∀ x, T.mem x → x ∈ A :=
   invariant_cofinal_contains_PPT A hTI hcof (hTD A hΓ hTI)
 
+/-- **Every cone contains a full pointed perfect tree** — *unconditionally* (no
+determinacy needed): the `Z`-coding tree is explicitly a `PPT` (with the effective
+`recover` field from `lemma21`) all of whose branches compute `Z`. -/
+theorem cone_contains_PPT (Z : ℕ → Bool) : ∃ T : PPT, ∀ x, T.mem x → x ∈ cone Z := by
+  refine ⟨(coneRawPPT Z).toPPT, fun x hx => ?_⟩
+  have : CodedBranch Z x := (isBranch_codeReal Z x).mp hx
+  exact codedBranch_subset_cone Z x this
+
 /-- **σ-pigeonhole + tree (invariant Cor 2.4).**  If countably many
 Turing-invariant sets in a determinacy class cover a cone, then one of them
 contains a full pointed perfect tree.  This is how the invariant Lemma 2.3 slots
@@ -475,6 +483,7 @@ theorem invariant_cover_contains_PPT {Γ : Set (ℕ → Bool) → Prop}
   exact ⟨n, invariant_cofinal_contains_PPT (A n) (hInv n) hcof (hTD _ (hΓ n) (hInv n))⟩
 
 #print axioms codeReal_equiv
+#print axioms cone_contains_PPT
 #print axioms invariant_cofinal_contains_PPT
 #print axioms invariant_cofinal_contains_PPT_TD
 #print axioms invariant_cover_contains_PPT

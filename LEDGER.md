@@ -74,10 +74,18 @@ obstructions behind them**, for a future run.
   theoretic promises attached — the old `recover` field (Lutz–Siskind Lemma 2.1) is now the
   proved theorem `Martin.lemma21` (`EffectiveTree.lean` + `EffectiveTreeReduction.lean`), and
   `pointed`/`realizes` are the genuine minimal content of "pointed perfect tree". Remaining
-  gap = `MartinPPT'` itself: Martin's tree-producing determinacy game plus the perfect-tree
-  navigation for `realizes` (Prop 1.10). Must be proved from a determinacy hypothesis
-  (`GameDetermined`/`TuringDeterminacy`), **never** an added axiom. This is the single cited
-  input the whole measure-preserving branch now rests on.
+  gap = `MartinPPT'` itself. Prop 1.10 (`realizes`) is now *also* a theorem
+  (`realizes_of_perfectEmbedding`, from a degree-preserving perfect embedding), so a `PerfectTree`
+  carries only structural data and derives both `realizes` and `recover`. **The invariant case of
+  Martin's Lemma 2.3 is now PROVED** (`ConeTree.lean`, `invariant_cofinal_contains_pointedPerfect`):
+  from `cone_theorem`, a Turing-invariant cofinal determined set contains a cone, and a cone is a
+  pointed perfect tree (the even-`Y`-coding family `{join Y Z}`). The remaining gap is precisely the
+  **non-invariant** cofinal case (the `A n` in Groszek–Slaman are not Turing-invariant, so
+  `cone_theorem` does not apply; Martin's genuine fusion/uniformization argument is needed). A full
+  invariant `PPT` with the effective `recover` field would additionally need the even-`Y` tree in the
+  `treeMem` coding (so `lemma21` applies) — a `code ≡ᵀ Y` `RecursiveIn` encoding step, deferred as it
+  does not advance the non-invariant chain. Determinacy must stay a hypothesis
+  (`GameDetermined`/`TuringDeterminacy`), **never** an added axiom.
 
 ## Obstructions hit (engineering notes for the next run)
 

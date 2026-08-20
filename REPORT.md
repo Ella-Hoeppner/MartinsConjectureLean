@@ -71,19 +71,36 @@ tree that is `pointed` and `realizes` a cone — Martin's Lemma 2.3 with no recu
 smuggled in — and `RawPPT.toPPT` supplies `recover` for free via `lemma21`.  Hence
 **`martinPPT_of_martinPPT' : MartinPPT' → MartinPPT`** and `partI_of_martinPPT'_escaping`: Part 1 now
 rests on the *recover-free* `MartinPPT'`, exactly Martin's cited Lemma 2.3 in a concrete tree
-representation.  What remains is formalizing `MartinPPT'` itself (Martin's tree-producing determinacy
-game + the perfect-tree navigation Prop 1.10 `realizes`) — a well-scoped separate project needing AD,
-threaded as a hypothesis, never axiomatized.
+representation.  Prop 1.10 (`realizes`) was then *also* discharged (`PerfectEmbedding.lean`): from a
+degree-preserving perfect embedding `emb : 2^ω → [T]` (`emb z ≤ᵀ z ⊕ code`, invertible), `realizes` is a
+three-line `≤ᵀ` calculation.  A `PerfectTree` (`RawPPT.lean`) therefore carries **only structural tree
+data** — closure, pointedness, embedding — and derives both `realizes` and `recover`; so
+`partI_of_perfect_escaping` rests Part 1 on the promise-free `MartinPPT_perfect`.
+
+**The determinacy game builds these trees (invariant case)** (`ConeTree.lean`).  Martin's Lemma 2.3 is
+proved here for the **Turing-invariant** case, straight from the game machinery: `cone_theorem` +
+cofinality give a cone `cone Y ⊆ A` (`cone_of_invariant_cofinal`), and a cone *is* a pointed perfect
+tree — the reals whose even bits spell `Y` (`{join Y Z}`) are pointed, realize every degree above `Y`
+(Prop 1.10, via `coneEmbedding` + `realizes_of_perfectEmbedding`), perfect (the embedding
+`z ↦ join Y z` is injective — continuum-many branches), and lie in `cone Y ⊆ A`.  Headline
+`invariant_cofinal_contains_pointedPerfect` (and its `TuringDeterminacy`-threaded form).  What remains is
+only the **non-invariant** cofinal case of `MartinPPT'` — the sets `A n` in Groszek–Slaman are not
+Turing-invariant, so the cone theorem does not apply and Martin's genuine fusion/uniformization argument
+is needed — a well-scoped separate project needing AD, threaded as a hypothesis, never axiomatized.
 
 **Headline (latest session, 2026-08-20):**
 1. **Lutz–Siskind's Lemma 2.1 proved in full** (`Martin.lemma21`): a computable functional injective on
    the branches of a downward-closed tree lets each branch be recovered — `x ≤ᵀ g x ⊕ Tr` — via König's
    lemma, a compactness separation lemma, and an oracle `rfind`, carried down to a `RecursiveIn`
    reduction. `[propext, Classical.choice, Quot.sound]`.
-2. **`recover` is a theorem, not an axiom** (`RawPPT.lean`): the recover-free `MartinPPT'` (Martin's
-   cited Lemma 2.3, no recursion-theoretic promises beyond pointedness and cone-realization) already
-   implies `MartinPPT` — `martinPPT_of_martinPPT'` bridges the gap with `lemma21`. So
-   `partI_of_martinPPT'_escaping` rests Part 1 on the minimal, faithful form of Martin's theorem.
+2. **`recover` and `realizes` are theorems, not axioms** (`RawPPT.lean`, `PerfectEmbedding.lean`): the
+   promise-free `MartinPPT_perfect` (a purely structural perfect pointed tree) implies `MartinPPT` —
+   `recover` via `lemma21`, `realizes` (Prop 1.10) via `realizes_of_perfectEmbedding`. So
+   `partI_of_perfect_escaping` rests Part 1 on the minimal, faithful form of Martin's theorem.
+3. **The determinacy game builds pointed perfect trees (invariant case)** (`ConeTree.lean`): Martin's
+   Lemma 2.3 proved for Turing-invariant cofinal sets straight from `cone_theorem` — a cone is the
+   `Y`-coding tree `{join Y Z}`, pointed + realizing + (injective embedding ⟹) perfect, inside the set.
+   Only the non-invariant case of `MartinPPT'` now remains.
 
 **Headline (prior session):**
 1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance

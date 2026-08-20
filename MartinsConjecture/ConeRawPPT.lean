@@ -350,6 +350,76 @@ theorem recoverBit_prim : Primrec (fun q : List ℕ × ℕ => recoverBit q.1 q.2
           (Primrec.snd.comp (Primrec.fst.comp Primrec.fst))))
       Primrec.snd)
 
+/-- On a long-enough graph-prefix of `codeReal Y`, the search recovers `Y k`. -/
+theorem recoverBit_eq (Y : ℕ → Bool) (k : ℕ) {K : ℕ} (hK : 2 ^ (2 * k + 2) ≤ K) :
+    recoverBit (graphOf (bitg (codeReal Y)) K) k = Y k := by
+  unfold recoverBit
+  set h := graphOf (bitg (codeReal Y)) K with hh
+  have hpos : ∀ σ ∈ allBoolLists (2 * k + 1), treePos σ < K := by
+    intro σ hσ
+    have hlen := allBoolLists_length _ σ hσ
+    have hlt := treePos_lt σ
+    rw [hlen] at hlt
+    have he : (2 : ℕ) ^ (2 * k + 1 + 1) = 2 ^ (2 * k + 2) := rfl
+    omega
+  have hread : ∀ σ ∈ allBoolLists (2 * k + 1),
+      ((h.getD (treePos σ) 0 == 1) = true) ↔ codeReal Y (treePos σ) = true := by
+    intro σ hσ
+    rw [hh, graphOf_getD (hpos σ hσ), bitg_eq_bbit]
+    cases hc : codeReal Y (treePos σ) <;> simp [bbit]
+  -- the even-`Y` prefix is a length-`2k+1` node in the tree
+  have hbranch : IsBranch (treeMem (codeReal Y)) (Cantor.join Y (fun _ => false)) :=
+    (isBranch_codeReal Y _).mpr ⟨fun _ => false, rfl⟩
+  set σ0 := (List.range (2 * k + 1)).map (Cantor.join Y (fun _ => false)) with hσ0
+  have hσ0mem : σ0 ∈ allBoolLists (2 * k + 1) := by
+    have hl : σ0.length = 2 * k + 1 := by simp [hσ0]
+    rw [← hl]; exact allBoolLists_complete σ0
+  have hσ0tree : codeReal Y (treePos σ0) = true := hbranch (2 * k + 1)
+  have hex : ∃ σ ∈ allBoolLists (2 * k + 1), (h.getD (treePos σ) 0 == 1) = true :=
+    ⟨σ0, hσ0mem, (hread σ0 hσ0mem).mpr hσ0tree⟩
+  obtain ⟨σ, hσmem, hσp, hfold⟩ :=
+    foldr_if_spec (fun σ => h.getD (treePos σ) 0 == 1)
+      (fun σ => σ.getD (2 * k) false) false hex
+  rw [hfold]
+  have htree : codeReal Y (treePos σ) = true := (hread σ hσmem).mp hσp
+  have hem : EvenMatch Y σ := (treeMem_codeReal Y σ).mp htree
+  have hlen := allBoolLists_length _ σ hσmem
+  exact hem k (by omega)
+
+/-- **`Y ≤ᵀ codeReal Y`.**  The oracle reads a graph-prefix of `codeReal Y` of
+length `2^(2k+2)` and runs the (primitive recursive) recovery search. -/
+theorem le_codeReal (Y : ℕ → Bool) : Y ≤ₜ codeReal Y := by
+  rw [Cantor.le_iff_bitg]
+  have hg : Nat.RecursiveIn {toPFun (codeReal Y)}
+      (fun k => graphEnc (codeReal Y) (2 ^ (2 * k + 2))) :=
+    (Nat.RecursiveIn.comp (graphEnc_recursiveIn (codeReal Y))
+      (Nat.Primrec.recursiveIn (Primrec.nat_iff.mp (pow2_prim.comp
+        (Primrec.nat_add.comp (Primrec.nat_mul.comp (Primrec.const 2) Primrec.id)
+          (Primrec.const 2)))))).of_eq
+      fun k => by simp only [Part.coe_some, Part.bind_eq_bind, Part.bind_some, id_eq]
+  have hid : Nat.RecursiveIn {toPFun (codeReal Y)} (fun k : ℕ => ((k : ℕ) : Part ℕ)) :=
+    (Primrec.nat_iff.mp Primrec.id).recursiveIn
+  have hpair : Nat.RecursiveIn {toPFun (codeReal Y)}
+      (fun k => Nat.pair <$> ((k : ℕ) : Part ℕ) <*> graphEnc (codeReal Y) (2 ^ (2 * k + 2))) :=
+    Nat.RecursiveIn.pair hid hg
+  have htest : Nat.Primrec (fun w => bbit (recoverBit
+      ((Encodable.decode (α := List ℕ) (Nat.unpair w).2).getD []) (Nat.unpair w).1)) :=
+    Primrec.nat_iff.mp (bbit_prim.comp (recoverBit_prim.comp (Primrec.pair
+      (Primrec.option_getD.comp (Primrec.decode.comp (Primrec.snd.comp Primrec.unpair))
+        (Primrec.const []))
+      (Primrec.fst.comp Primrec.unpair))))
+  refine (Nat.RecursiveIn.comp htest.recursiveIn hpair).of_eq fun k => ?_
+  simp only [graphEnc, Seq.seq, Part.map_eq_map, Part.map_some, Part.bind_eq_bind, Part.bind_some,
+    Part.coe_some, Nat.unpair_pair]
+  rw [show (Encodable.decode (α := List ℕ)
+      (Encodable.encode (graphOf (bitg (codeReal Y)) (2 ^ (2 * k + 2))))).getD []
+      = graphOf (bitg (codeReal Y)) (2 ^ (2 * k + 2)) by rw [Encodable.encodek]; rfl]
+  rw [recoverBit_eq Y k (le_refl _), bitg_eq_bbit]
+
+/-- **`codeReal Y ≡ᵀ Y`** — the coding real has the same Turing degree as `Y`. -/
+theorem codeReal_equiv (Y : ℕ → Bool) : codeReal Y ≡ₜ Y :=
+  ⟨codeReal_le Y, le_codeReal Y⟩
+
 /-- Given `codeReal Y ≡ᵀ Y`, the even-`Y` coding tree is a genuine `RawPPT`. -/
 noncomputable def coneRawPPT (Y : ℕ → Bool) (hequiv : codeReal Y ≡ₜ Y) : RawPPT where
   code := codeReal Y

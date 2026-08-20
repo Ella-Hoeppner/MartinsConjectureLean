@@ -120,7 +120,55 @@ theorem invariant_cofinal_contains_pointedPerfect_TD {Γ : Set (ℕ → Bool) �
       Nonempty (PerfectEmbedding Y (CodedBranch Y)) :=
   invariant_cofinal_contains_pointedPerfect A hTI hcof (hTD A hΓ hTI)
 
+/-! ### Why the general (non-invariant) case is harder
+
+The sets `A n` in Groszek–Slaman are *not* Turing-invariant, so `cone_theorem`
+does not apply to them.  Passing to the **invariant hull** (the `≡ᵀ`-closure)
+recovers an invariant cofinal set, hence — with determinacy — a pointed perfect
+tree; but its branches lie only in the *hull*, i.e. each is Turing-equivalent to
+some member of `A`, not necessarily a member of `A`.  Bridging that last gap
+uniformly (a degree-preserving *selection* of genuine `A`-members along the tree)
+is exactly the extra content of Martin's general Lemma 2.3, and connects to the
+uniformization crux (`partI_of_uniformization`). -/
+
+/-- The **invariant hull** of `A`: all reals Turing-equivalent to a member. -/
+def invariantHull (A : Set (ℕ → Bool)) : Set (ℕ → Bool) := {x | ∃ y, y ≡ₜ x ∧ y ∈ A}
+
+theorem subset_invariantHull (A : Set (ℕ → Bool)) : A ⊆ invariantHull A :=
+  fun x hx => ⟨x, Cantor.equiv.refl x, hx⟩
+
+/-- The invariant hull is Turing-invariant. -/
+theorem invariantHull_invariant (A : Set (ℕ → Bool)) :
+    TuringInvariantSet (invariantHull A) := by
+  intro X Y hXY
+  exact ⟨fun ⟨y, hyX, hyA⟩ => ⟨y, hyX.trans hXY, hyA⟩,
+    fun ⟨y, hyY, hyA⟩ => ⟨y, hyY.trans hXY.symm, hyA⟩⟩
+
+/-- Cofinality passes to the invariant hull. -/
+theorem cofinal_invariantHull (A : Set (ℕ → Bool)) (h : Cofinal (· ∈ A)) :
+    Cofinal (· ∈ invariantHull A) := by
+  intro z
+  obtain ⟨x, hzx, hxA⟩ := h z
+  exact ⟨x, hzx, x, Cantor.equiv.refl x, hxA⟩
+
+/-- **The general case, reduced to a selection.**  For *any* cofinal `A` whose
+invariant hull is determined, there is a pointed perfect tree (the `Y`-coding
+tree) every branch of which is Turing-equivalent to a member of `A`.  What is
+still missing for a pointed perfect tree *inside* `A` is a uniform, degree-
+preserving choice of those `A`-members — the content of Martin's general
+Lemma 2.3 beyond the cone theorem. -/
+theorem cofinal_codingTree_equiv_mem (A : Set (ℕ → Bool))
+    (hcof : Cofinal (· ∈ A)) (hDet : GameDetermined (invariantHull A)) :
+    ∃ Y : ℕ → Bool,
+      (∀ d, Y ≤ₜ d → ∃ x, CodedBranch Y x ∧ x ≡ₜ d) ∧
+      (∀ x, CodedBranch Y x → ∃ a, a ≡ₜ x ∧ a ∈ A) := by
+  obtain ⟨Y, hY⟩ := cone_of_invariant_cofinal (invariantHull A)
+    (invariantHull_invariant A) (cofinal_invariantHull A hcof) hDet
+  exact ⟨Y, coneEmbedding_realizes Y,
+    fun x hx => hY (coneEmbedding_pointed Y x hx)⟩
+
 #print axioms invariant_cofinal_contains_pointedPerfect
 #print axioms invariant_cofinal_contains_pointedPerfect_TD
+#print axioms cofinal_codingTree_equiv_mem
 
 end Martin

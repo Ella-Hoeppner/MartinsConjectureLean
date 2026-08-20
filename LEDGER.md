@@ -67,6 +67,17 @@ obstructions behind them**, for a future run.
   pair *below `0′`* (via a computable-in-`0′` construction); the effectiveness refinement is
   NOT formalized — only existence of an incomparable pair.  The refinement would need the
   construction to be `0′`-computable, i.e. the universal machine / `evaln` layer.
+- **General Theorem 3.4 / pointed perfect trees — frontier as of 2026-08-20.** The general
+  measure-preserving direction of Part 1 is reduced, in full and machine-checked, to
+  `MartinPPT'` (`RawPPT.lean`): *every set cofinal in the Turing degrees contains a pointed
+  perfect tree*. This is exactly Martin's cited Lemma 2.3 (ZF+AD), with **no** recursion-
+  theoretic promises attached — the old `recover` field (Lutz–Siskind Lemma 2.1) is now the
+  proved theorem `Martin.lemma21` (`EffectiveTree.lean` + `EffectiveTreeReduction.lean`), and
+  `pointed`/`realizes` are the genuine minimal content of "pointed perfect tree". Remaining
+  gap = `MartinPPT'` itself: Martin's tree-producing determinacy game plus the perfect-tree
+  navigation for `realizes` (Prop 1.10). Must be proved from a determinacy hypothesis
+  (`GameDetermined`/`TuringDeterminacy`), **never** an added axiom. This is the single cited
+  input the whole measure-preserving branch now rests on.
 
 ## Obstructions hit (engineering notes for the next run)
 

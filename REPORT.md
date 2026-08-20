@@ -1,10 +1,10 @@
 # Final report: Martin's conjecture in Lean 4 / Mathlib
 
-**Date:** 2026-08-14 (six work sessions).
+**Date:** 2026-08-14, extended through 2026-08-20 (multiple work sessions).
 **Toolchain:** Lean 4 `v4.34.0-rc1`, Mathlib master (pinned in `lakefile.toml` /
-`lake-manifest.json`). Full `lake build`: green, 1059 jobs, 44 files, ~10.6k lines.
-**Sorry count: 0. Custom axioms: 0** (144 headline theorems audited; every one uses only
-`propext`, `Classical.choice`, `Quot.sound`).
+`lake-manifest.json`). Full `lake build`: green, 56 files, ~13.8k lines.
+**Sorry count: 0. Custom axioms: 0** (every headline theorem audited via `#print axioms`;
+each uses only `propext`, `Classical.choice`, `Quot.sound`).
 
 **Research into the OPEN cores (2026-08-19).**  After a literature review of the frontier
 (Lutz–Siskind's measure-preserving approach; Lutz's regressive result on the *hyperarithmetic*
@@ -35,7 +35,7 @@ non-constant, so the class-specific half of the measure-preserving decomposition
 Finally, the **general Theorem 3.4** was attacked directly (`PointedTree.lean`).  The recursion-theoretic
 output of the Groszek–Slaman pointed-perfect-tree construction is bundled into an interface
 `InvertingTree` (per increasing `F`): pointedness, realizing-a-cone, right-inversion of `F` on the
-branches (Cor 2.6), and branch-recovery (Lemma 2.1).  From the single existence hypothesis
+branches (Cor 2.6), and branch-recovery (Lemma 2.1 — **now a proved theorem, see below**).  From the single existence hypothesis
 `GroszekSlaman` (one such tree for every increasing function) the **entire Lutz–Siskind §3 argument is
 machine-checked**: `measurePreservingAboveId_of_groszekSlaman` proves Theorem 3.4 (Turing-invariant
 measure-preserving ⟹ above the identity on a cone) for *arbitrary* invariant functions, and
@@ -54,10 +54,38 @@ pointed perfect tree inside one `A n` and `Φₙ = outReal n` is the inverting f
 branches for free, since `F ∘ (outReal n) = id` there).  Net: **`measurePreservingAboveId_of_martinPPT`
 and `partI_of_martinPPT` derive Theorem 3.4 and Part 1 from `MartinPPT` alone** — the general
 measure-preserving direction of Part 1 now rests on one named, standard determinacy theorem, everything
-else verified.  What remains is formalizing `MartinPPT` itself (Martin's tree-producing game + the
-effective perfect-tree theory Prop 1.10 / Lemma 2.1) — a well-scoped separate project.
+else verified.
 
-**Headline this session:**
+**Lutz–Siskind's Lemma 2.1 was then proved in full** (`Konig.lean`, `EffectiveTree.lean`,
+`EffectiveTreeReduction.lean`).  `Martin.lemma21` states: for a downward-closed tree `Tr` and a
+*computable* (code `e`) functional `g` that is *injective on the branches*, every branch `x` satisfies
+`x ≤ᵀ g x ⊕ Tr`.  The proof is the genuine effective-injectivity argument — König's lemma
+(`Konig.exists_branch`), the use principle, a compactness *separation* lemma (wrong nodes stop being
+consistent with `g x`), and a `Nat.rfind` over levels of an oracle-computable "good level" predicate,
+reading `x↾(n+1)` off the first good node — carried all the way down to a `RecursiveIn` reduction (node
+enumeration, tree-membership and consistency checks all shown primitive recursive).
+
+Because Lemma 2.1 needs *nothing* but tree-closure, the `recover` field of a pointed perfect tree is
+**not an assumption but a theorem** (`RawPPT.lean`).  A `RawPPT` bundles only a genuine downward-closed
+tree that is `pointed` and `realizes` a cone — Martin's Lemma 2.3 with no recursion-theoretic content
+smuggled in — and `RawPPT.toPPT` supplies `recover` for free via `lemma21`.  Hence
+**`martinPPT_of_martinPPT' : MartinPPT' → MartinPPT`** and `partI_of_martinPPT'_escaping`: Part 1 now
+rests on the *recover-free* `MartinPPT'`, exactly Martin's cited Lemma 2.3 in a concrete tree
+representation.  What remains is formalizing `MartinPPT'` itself (Martin's tree-producing determinacy
+game + the perfect-tree navigation Prop 1.10 `realizes`) — a well-scoped separate project needing AD,
+threaded as a hypothesis, never axiomatized.
+
+**Headline (latest session, 2026-08-20):**
+1. **Lutz–Siskind's Lemma 2.1 proved in full** (`Martin.lemma21`): a computable functional injective on
+   the branches of a downward-closed tree lets each branch be recovered — `x ≤ᵀ g x ⊕ Tr` — via König's
+   lemma, a compactness separation lemma, and an oracle `rfind`, carried down to a `RecursiveIn`
+   reduction. `[propext, Classical.choice, Quot.sound]`.
+2. **`recover` is a theorem, not an axiom** (`RawPPT.lean`): the recover-free `MartinPPT'` (Martin's
+   cited Lemma 2.3, no recursion-theoretic promises beyond pointedness and cone-realization) already
+   implies `MartinPPT` — `martinPPT_of_martinPPT'` bridges the gap with `lemma21`. So
+   `partI_of_martinPPT'_escaping` rests Part 1 on the minimal, faithful form of Martin's theorem.
+
+**Headline (prior session):**
 1. **Lachlan's theorem for r.e. operators, globalized to a cone** — for *bare* uniform invariance
    (`Martin.lachlan_dichotomy_cone_uniform`, `Martin.lachlan_no_post_solution_cone_uniform`).
 2. **Part I of Martin's conjecture for uniformly-invariant functions** (`Martin.partI_uniform`

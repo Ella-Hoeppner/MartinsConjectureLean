@@ -24,14 +24,16 @@ namespace Martin
 def EvenMatch (Y : ℕ → Bool) (σ : List Bool) : Prop :=
   ∀ k, 2 * k < σ.length → σ.getD (2 * k) false = Y k
 
-/-- Boolean even-match test, over the positions of `σ`. -/
+/-- Boolean even-match test, over the positions of `σ` (`foldr` form, so it is
+directly primitive recursive via `foldr_and_mem`/`list_foldr_prim`). -/
 def evenMatchB (Y : ℕ → Bool) (σ : List Bool) : Bool :=
-  (List.range σ.length).all (fun i => !(i % 2 == 0) || (σ.getD i false == Y (i / 2)))
+  (List.range σ.length).foldr
+    (fun i acc => (!(i % 2 == 0) || (σ.getD i false == Y (i / 2))) && acc) true
 
 theorem evenMatchB_iff (Y : ℕ → Bool) (σ : List Bool) :
     evenMatchB Y σ = true ↔ EvenMatch Y σ := by
   unfold evenMatchB EvenMatch
-  rw [List.all_eq_true]
+  rw [foldr_and_mem]
   constructor
   · intro h k hk
     have := h (2 * k) (by simp only [List.mem_range]; omega)
@@ -71,8 +73,11 @@ strings.  Constructive (so its computability from `Y` is reachable); off the ran
 of `treePos` it is `false`, which is irrelevant since `treeMem` reads only
 `treePos` positions. -/
 def codeReal (Y : ℕ → Bool) (p : ℕ) : Bool :=
-  (List.range (p + 1)).any (fun L =>
-    (allBoolLists L).any (fun σ => (treePos σ == p) && evenMatchB Y σ))
+  (List.range (p + 1)).foldr
+    (fun L acc =>
+      ((allBoolLists L).foldr
+        (fun σ acc2 => ((treePos σ == p) && evenMatchB Y σ) || acc2) false) || acc)
+    false
 
 /-- The search evaluates the even-match test at the (unique) string coded by
 `treePos σ`. -/
@@ -84,14 +89,14 @@ theorem codeReal_treePos (Y : ℕ → Bool) (σ : List Bool) :
     unfold treePos; omega
   cases hem : evenMatchB Y σ with
   | true =>
-    rw [List.any_eq_true]
+    rw [foldr_or_mem]
     exact ⟨σ.length, by simp only [List.mem_range]; omega, by
-      rw [List.any_eq_true]
+      rw [foldr_or_mem]
       exact ⟨σ, allBoolLists_complete σ, by simp [hem]⟩⟩
   | false =>
-    rw [Bool.eq_false_iff, ne_eq, List.any_eq_true]
+    rw [Bool.eq_false_iff, ne_eq, foldr_or_mem]
     rintro ⟨L, _, hL⟩
-    rw [List.any_eq_true] at hL
+    rw [foldr_or_mem] at hL
     obtain ⟨σ', _, hσ'⟩ := hL
     simp only [Bool.and_eq_true, beq_iff_eq] at hσ'
     obtain ⟨hpos, hev⟩ := hσ'
@@ -113,14 +118,18 @@ presentation of the search reading an oracle graph-prefix. -/
 theorem codeReal_use {Y Y' : ℕ → Bool} {p : ℕ}
     (h : ∀ j, 2 * j < p → Y j = Y' j) : codeReal Y p = codeReal Y' p := by
   unfold codeReal
-  have hpred : (fun σ : List Bool => (treePos σ == p) && evenMatchB Y σ)
-             = (fun σ : List Bool => (treePos σ == p) && evenMatchB Y' σ) := by
-    funext σ
-    by_cases hp : treePos σ = p
-    · have hlt : σ.length < treePos σ := by
-        have := Nat.lt_two_pow_self (n := σ.length); unfold treePos; omega
-      rw [evenMatchB_congr (fun j hj => h j (by omega))]
-    · rw [beq_eq_false_iff_ne.mpr hp, Bool.false_and, Bool.false_and]
+  have hpred : (fun (σ : List Bool) (acc2 : Bool) =>
+                 ((treePos σ == p) && evenMatchB Y σ) || acc2)
+             = (fun σ acc2 => ((treePos σ == p) && evenMatchB Y' σ) || acc2) := by
+    funext σ acc2
+    have hσ : ((treePos σ == p) && evenMatchB Y σ)
+            = ((treePos σ == p) && evenMatchB Y' σ) := by
+      by_cases hp : treePos σ = p
+      · have hlt : σ.length < treePos σ := by
+          have := Nat.lt_two_pow_self (n := σ.length); unfold treePos; omega
+        rw [evenMatchB_congr (fun j hj => h j (by omega))]
+      · rw [beq_eq_false_iff_ne.mpr hp, Bool.false_and, Bool.false_and]
+    rw [hσ]
   simp only [hpred]
 
 /-- The coding tree is downward closed. -/

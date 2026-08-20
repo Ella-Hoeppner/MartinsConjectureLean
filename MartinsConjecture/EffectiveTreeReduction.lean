@@ -451,7 +451,59 @@ theorem existsOK_reflect {gx Tr : ℕ → Bool} {K e m : ℕ} (hK : bnd m ≤ K)
     obtain ⟨hb1, hb2⟩ := bnd_bounds hlen
     exact ⟨σ, mem_allBoolLists_iff.mpr hlen, (okb_reflect (by omega) (by omega)).mpr habs⟩
 
-/-! ### Remaining: `allAgree`/`sgb ↔ searchGood`, oracle assembly
+theorem allAgree_reflect {gx Tr : ℕ → Bool} {K e n m : ℕ} (hK : bnd m ≤ K) :
+    allAgree (graphOf (bitg (Cantor.join gx Tr)) K) e n m = true ↔
+      ∀ σ, σ.length = m → treeMem Tr σ → Consistent e gx σ →
+        prefixN σ n = pickN (graphOf (bitg (Cantor.join gx Tr)) K) e n m := by
+  set pre := graphOf (bitg (Cantor.join gx Tr)) K with hpre
+  rw [allAgree, foldr_and_mem]
+  constructor
+  · intro hall σ hlen hT hC
+    obtain ⟨hb1, hb2⟩ := bnd_bounds hlen
+    have hok : okb pre e σ = true := (okb_reflect (by omega) (by omega)).mpr ⟨hT, hC⟩
+    have h := hall σ (mem_allBoolLists_iff.mpr hlen)
+    simp only [hok, Bool.not_true, Bool.false_or, decide_eq_true_eq] at h
+    exact h
+  · intro hagree σ hmem
+    have hlen := allBoolLists_length m σ hmem
+    obtain ⟨hb1, hb2⟩ := bnd_bounds hlen
+    by_cases hok : okb pre e σ = true
+    · obtain ⟨hT, hC⟩ := (okb_reflect (by omega) (by omega)).mp hok
+      simp only [hok, Bool.not_true, Bool.false_or, decide_eq_true_eq]
+      exact hagree σ hlen hT hC
+    · simp only [Bool.not_eq_true] at hok; simp [hok]
+
+theorem pickN_spec {gx Tr : ℕ → Bool} {K e n m : ℕ}
+    (h : ∃ σ ∈ allBoolLists m, okb (graphOf (bitg (Cantor.join gx Tr)) K) e σ = true) :
+    ∃ σ ∈ allBoolLists m, okb (graphOf (bitg (Cantor.join gx Tr)) K) e σ = true ∧
+      pickN (graphOf (bitg (Cantor.join gx Tr)) K) e n m = prefixN σ n :=
+  foldr_if_spec (okb (graphOf (bitg (Cantor.join gx Tr)) K) e) (fun σ => prefixN σ n) [] h
+
+theorem sgb_iff_searchGood {gx Tr : ℕ → Bool} {K e n m : ℕ} (hK : bnd m ≤ K) (hnm : n ≤ m) :
+    sgb (graphOf (bitg (Cantor.join gx Tr)) K) e n m = true ↔
+      searchGood (treeMem Tr) e gx n m := by
+  set pre := graphOf (bitg (Cantor.join gx Tr)) K with hpre
+  rw [sgb, Bool.and_eq_true, existsOK_reflect hK, allAgree_reflect hK, searchGood]
+  constructor
+  · rintro ⟨⟨σ₀, hlen₀, hT₀, hC₀⟩, hagree⟩
+    refine ⟨⟨σ₀, hT₀, hlen₀, hC₀⟩, ?_⟩
+    intro τ τ' hTτ hlenτ hCτ hTτ' hlenτ' hCτ'
+    rw [← prefixN_eq_take (hnm.trans_eq hlenτ.symm), ← prefixN_eq_take (hnm.trans_eq hlenτ'.symm),
+      hagree τ hlenτ hTτ hCτ, hagree τ' hlenτ' hTτ' hCτ']
+  · rintro ⟨⟨σ₀, hT₀, hlen₀, hC₀⟩, hpairs⟩
+    obtain ⟨hb0a, hb0b⟩ := bnd_bounds hlen₀
+    refine ⟨⟨σ₀, hlen₀, hT₀, hC₀⟩, ?_⟩
+    intro σ hlenσ hTσ hCσ
+    have hex : ∃ σ ∈ allBoolLists m, okb pre e σ = true :=
+      ⟨σ₀, mem_allBoolLists_iff.mpr hlen₀, (okb_reflect (by omega) (by omega)).mpr ⟨hT₀, hC₀⟩⟩
+    obtain ⟨σ₁, hmem₁, hok₁, hpick⟩ := pickN_spec hex
+    have hlen₁ := allBoolLists_length m σ₁ hmem₁
+    obtain ⟨hb1a, hb1b⟩ := bnd_bounds hlen₁
+    obtain ⟨hT₁, hC₁⟩ := (okb_reflect (by omega) (by omega)).mp hok₁
+    rw [hpick, prefixN_eq_take (hnm.trans_eq hlenσ.symm), prefixN_eq_take (hnm.trans_eq hlen₁.symm)]
+    exact hpairs σ σ₁ hTσ hlenσ hCσ hT₁ hlen₁ hC₁
+
+/-! ### Remaining: oracle assembly
 
 `existsOK_prim` (above) shows the `||`-fold pattern compiles.  `pickN_prim`
 (`cond`-fold, `List Bool`-valued) and `allAgree_prim` (which references `pickN`)

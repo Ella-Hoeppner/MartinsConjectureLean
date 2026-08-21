@@ -11,6 +11,7 @@ Mathlib `Filter` makes "on a cone" literally "in the cone filter"
 import MartinsConjecture.RegularChain
 import MartinsConjecture.MartinMeasure
 import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.CountableInter
 
 open scoped Computability
 open Cantor
@@ -49,6 +50,16 @@ theorem coneFilter_iInter {f : ℕ → Set (ℕ → Bool)} (hf : ∀ n, f n ∈ 
     (⋂ n, f n) ∈ coneFilter := by
   choose Y hY using hf
   exact ⟨bigJoin Y, fun X hX => Set.mem_iInter.mpr fun n => hY n ((le_bigJoin Y n).trans hX)⟩
+
+/-- The cone filter is a **countable-intersection filter** (Mathlib's typeclass),
+so all of Mathlib's countable-`⋂` API applies to "on a cone". -/
+instance coneFilter_countableInter : CountableInterFilter coneFilter :=
+  ⟨fun S hSc hS => by
+    rcases S.eq_empty_or_nonempty with rfl | hne
+    · simpa using Filter.univ_mem
+    · obtain ⟨f, rfl⟩ := hSc.exists_eq_range hne
+      rw [Set.sInter_range]
+      exact coneFilter_iInter fun n => hS (f n) ⟨n, rfl⟩⟩
 
 /-- **The Martin measure is an ultrafilter on the Turing-invariant sets.**  This
 is exactly the cone theorem, packaged: a determined invariant set, or its

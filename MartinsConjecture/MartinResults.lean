@@ -102,8 +102,37 @@ theorem partI_Borel_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
     PartI_Borel :=
   fun F hMeas hInv => partI_uniform hTD F hMeas (bridge F hMeas hInv)
 
+/-- **Part I for uniformly-invariant functions, `Measurable`-free.**  The uniform
+cores (`regressive_uniform`, `incomparable_uniform`) never use measurability, so the
+`Measurable` hypothesis of `PartI_Uniform_Borel` is vestigial: a uniformly-invariant
+`F` is constant on a cone or above the identity on a cone, full stop.  Proof: the
+comparability trichotomy sends `≡ᵀ`/`>ᵀ` to above-id and `<ᵀ`/`⊥ᵀ` to the two cores. -/
+theorem partI_uniform_general (hTD : TuringDeterminacy fun _ => True)
+    (F : (ℕ → Bool) → ℕ → Bool) (hU : UniformlyTuringInvariant F) :
+    ConstantOnCone F ∨ AboveIdOnCone F := by
+  rcases comparability_on_cone hTD hU.turingInvariant with heq | hgt | hlt | hincomp
+  · exact Or.inr ⟨_, fun X hX => (heq.choose_spec X hX).2⟩
+  · exact Or.inr ⟨_, fun X hX => (hgt.choose_spec X hX).1⟩
+  · exact Or.inl (regressive_uniform hTD F hU hlt)
+  · exact Or.inl (incomparable_uniform hTD F hU hincomp)
+
+/-- **The sharpest capstone: full (AD-general) Part I reduces *entirely* to the
+uniformity bridge.**  Given determinacy, if *every* Turing-invariant `F` is
+uniformly Turing-invariant (on a cone), then Part I holds for *every* Turing-invariant
+`F` — no `Measurable`, no class restriction.  So the whole open content of Part I of
+Martin's conjecture is exactly the one implication **"Turing-invariant ⟹ uniformly
+Turing-invariant"**; everything else (`partI_uniform_general`) is already machine-checked.
+Whether determinacy delivers that bridge for non-definable `F` is the ~50-year barrier
+analysed in `ATTACK.md` (cone dichotomy vs cone uniformization). -/
+theorem partI_general_of_uniformity (hTD : TuringDeterminacy fun _ => True)
+    (bridge : ∀ F, TuringInvariant F → UniformlyTuringInvariant F) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  fun F hF => partI_uniform_general hTD F (bridge F hF)
+
 #print axioms partI_uniform
 #print axioms partI_Borel_of_uniformity_bridge
+#print axioms partI_uniform_general
+#print axioms partI_general_of_uniformity
 #print axioms regressive_uniform
 #print axioms incomparable_uniform
 #print axioms lachlan_dichotomy_cone_uniform

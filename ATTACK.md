@@ -179,14 +179,16 @@ were well-founded, one would get "a regressive counterexample is *injective* on 
 still consistent-looking (RK-order ≠ Martin-order). Net: interesting structure (`pushCone_comp` is a
 clean correct fact), no crossing.
 
-**Part 1 ↔ Part 2 link (FORMALIZED, `regressive_conePreserving_descending_chain`).** A regressive
-*cone-preserving* invariant `F` (on `cone base`: `F X <ᵀ X` **and** `base ≤ᵀ F X`) has iterates
-`F ≻ₘ F² ≻ₘ …` strictly Martin-descending ⟹ Part 2's Martin-order well-foundedness rules it out.
-So the regressive core, *restricted to cone-preserving `F`*, follows from Part 2. The remaining gap =
-the cone-preserving hypothesis: a bare regressive counterexample may **escape its own cone**
-(`F X ⊥ base` possible via `cone_theorem` on `{X : base ≤ᵀ F X}`), which is once more the
-non-uniformity wall. Removing it (showing regressive ⟹ cone-preserving on a subcone) would reduce the
-regressive core to Part 2 — a concrete future target.
+**Descending chain (FORMALIZED, `regressive_conePreserving_descending_chain`) — and a CORRECTION.**
+A regressive *cone-preserving* invariant `F` (on `cone base`: `F X <ᵀ X` **and** `base ≤ᵀ F X`) has
+iterates `F ≻ₘ F² ≻ₘ …` strictly Martin-descending. **I initially claimed this refutes Part 2 — that
+is WRONG.** `DescendingChainCore` (Part 2 as formalized) forbids descending chains of `Regular`
+(= `Measurable ∧ TuringInvariant ∧ AboveIdOnCone`) functions; these iterates are *below* id, a region
+the conjecture does NOT claim to well-order. So the chain is a structural fact about the below-id part
+of the Martin order, **not** a cross-half contradiction. (Below-id descending chains are expected;
+they don't contradict anything.) The theorem is correct; its significance is smaller than I first
+stated. Two independent wounds: (a) the cone-preserving hypothesis is generally false (cone-escape
+wall), and (b) even granting it, no Part-2 contradiction (wrong region). Net: no leverage.
 
 **Attempt to remove the cone-preserving hypothesis via `G := F ⊕ base` — FAILS (same wall).** `G X =
 F X ⊕ base` is trivially `≥ᵀ base`. Splitting via `cone_theorem` on `{X : X ≤ᵀ G X}`: either

@@ -101,14 +101,18 @@ theorem counterexample_full_profile (hM : MartinPPT)
   · exact Or.inl hlt
   · exact Or.inr hincomp
 
-/-- **A regressive cone-preserving function refutes Martin-order well-foundedness.**
-If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
-cone-preserving (`base ≤ᵀ F X`), then its iterates form an **infinite strictly
-Martin-descending chain** `F ≻ₘ F² ≻ₘ F³ ≻ₘ …`.  So Part 2's well-foundedness of
-the Martin order (`DescendingChainCore`) *rules out* such an `F` — a direct
-structural link between the two open halves of the conjecture.  (The cone-preserving
-hypothesis is what a bare regressive counterexample may fail: `F` can escape its
-own cone, which is exactly the non-uniformity wall.) -/
+/-- **A regressive cone-preserving function generates an infinite descending Martin
+chain.**  If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
+cone-preserving (`base ≤ᵀ F X`), then its iterates form an infinite strictly
+Martin-descending chain `F ≻ₘ F² ≻ₘ F³ ≻ₘ …`.
+
+*Caveat (honest):* this does **not** refute Part 2 as formalized — `DescendingChainCore`
+forbids descending chains of `Regular` (= `AboveIdOnCone`) functions, whereas these
+iterates are *below* the identity, a region the conjecture does not claim to
+well-order.  So this is a structural fact about the below-id part of the Martin
+order, not a cross-half contradiction.  (And the cone-preserving hypothesis is what
+a bare regressive counterexample may fail — `F` can escape its own cone, the
+non-uniformity wall.) -/
 theorem regressive_conePreserving_descending_chain
     {F : (ℕ → Bool) → ℕ → Bool} {base : ℕ → Bool}
     (hyp : ∀ X, base ≤ₜ X → F X <ₜ X ∧ base ≤ₜ F X) :

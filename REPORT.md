@@ -97,6 +97,21 @@ axioms beyond determinacy of the game.**  What remains for `MartinPPT'` in gener
 theorem does not apply and Martin's genuine fusion/uniformization argument is needed — a well-scoped
 separate project needing AD, threaded as a hypothesis, never axiomatized.
 
+**Headline (frontier reformulations, 2026-08-21):**
+1. **The perfect-set dichotomy** (`MartinDichotomy.lean`): `MartinDichotomy` (every set contains a pointed
+   perfect tree, or its complement contains a cone) is **equivalent to `MartinPPT`**
+   (`martinPPT_iff_dichotomy`) and is the fundamental determinacy input; its **invariant case is proved**
+   (`perfectDichotomy_invariant`, from `cone_theorem` + `cone_contains_PPT`), so the only unformalized
+   determinacy content is the dichotomy for non-invariant sets.
+2. **The open half recast as incomparability-avoidance** (`EscapingDichotomy.lean`): for escaping invariant
+   `F`, at each fixed `Z` either `Z ≤ᵀ F X` on a cone or `F X ⊥ Z` on a cone; so **`escaping ⟹ MP` is
+   exactly "no escaping invariant function is incomparable to a fixed degree on a cone"**
+   (`escapingMP_iff_no_fixedIncomparable`). The degrees below `F` form a Turing ideal (`F`'s kernel), and
+   MP is exactly that ideal being everything (`mp_iff_belowF_univ`).
+3. **Part 1 in two clean inputs** (`PartIRecast.lean`): `partI_of_dichotomy_noFixedIncomparable` — Part 1
+   follows from the perfect-set dichotomy (determinacy) together with the incomparability-avoidance
+   property (class-specific).
+
 **Headline (latest session, 2026-08-20):**
 1. **Lutz–Siskind's Lemma 2.1 proved in full** (`Martin.lemma21`): a computable functional injective on
    the branches of a downward-closed tree lets each branch be recovered — `x ≤ᵀ g x ⊕ Tr` — via König's

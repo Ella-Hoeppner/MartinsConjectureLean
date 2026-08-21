@@ -42,6 +42,23 @@ theorem partI_of_dichotomy_noFixedIncomparable
   partI_of_dichotomy_escaping h hTD
     ((escapingMP_iff_no_fixedIncomparable hTD).mpr hni)
 
+/-- **A regressive counterexample is incomparable to a cone of degrees.**  Under
+`MartinPPT`, a regressive (`F X <ᵀ X` on a cone) escaping invariant function is not
+measure-preserving (measure-preservation would force it above the identity), hence
+by `nonMP_incomparable_cone` is Turing-incomparable to every sufficiently high
+fixed degree.  So a counterexample to the *regressive* core is simultaneously
+below `X` and incomparable to a cone of fixed degrees — a strong constraint. -/
+theorem regressive_escaping_incomparable_cone (hM : MartinPPT)
+    (hTD : TuringDeterminacy fun _ => True) {F : (ℕ → Bool) → ℕ → Bool}
+    (hF : TuringInvariant F) (hreg : OnCone (fun X => F X <ₜ X)) (hesc : Escaping F) :
+    ∃ W₀, ∀ Z, W₀ ≤ₜ Z → IncomparableToFixed F Z := by
+  refine nonMP_incomparable_cone hTD hF hesc (fun hmp => ?_)
+  have hai : AboveIdOnCone F := (mp_iff_aboveId_of_martinPPT hM hF).mp hmp
+  obtain ⟨B, hB⟩ := onCone_and hai hreg
+  exact absurd (hB B (Cantor.le.refl B)).1 (hB B (Cantor.le.refl B)).2.2
+
 #print axioms partI_of_dichotomy_noFixedIncomparable
+#print axioms mp_iff_aboveId_of_martinPPT
+#print axioms regressive_escaping_incomparable_cone
 
 end Martin

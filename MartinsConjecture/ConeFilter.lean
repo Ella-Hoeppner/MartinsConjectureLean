@@ -74,9 +74,24 @@ theorem coneFilter_dichotomy_TD {Γ : Set (ℕ → Bool) → Prop} (hTD : Turing
     A ∈ coneFilter ∨ Aᶜ ∈ coneFilter :=
   coneFilter_dichotomy hTI (hTD A hΓ hTI)
 
+/-- **The pushforward of the Martin measure by an invariant function is an
+ultrafilter on invariant sets.**  For a Turing-invariant `F`, the "distribution"
+`F_*` (the cone filter pushed forward) decides every determined invariant set:
+`S` or its complement is in it.  This is the measure-theoretic meaning of an
+invariant function having a well-defined *value* modulo the Martin measure (its
+class in the cone ultrapower). -/
+theorem pushCone_dichotomy {F : (ℕ → Bool) → ℕ → Bool} (hF : TuringInvariant F)
+    {S : Set (ℕ → Bool)} (hS : TuringInvariantSet S) (hdet : GameDetermined (F ⁻¹' S)) :
+    S ∈ Filter.map F coneFilter ∨ Sᶜ ∈ Filter.map F coneFilter := by
+  have hinv : TuringInvariantSet (F ⁻¹' S) :=
+    fun X Y hXY => hS (F X) (F Y) (hF X Y hXY)
+  rw [Filter.mem_map, Filter.mem_map, Set.preimage_compl]
+  exact coneFilter_dichotomy hinv hdet
+
 #print axioms coneFilter
 #print axioms onCone_iff_mem_coneFilter
 #print axioms coneFilter_iInter
 #print axioms coneFilter_dichotomy
+#print axioms pushCone_dichotomy
 
 end Martin

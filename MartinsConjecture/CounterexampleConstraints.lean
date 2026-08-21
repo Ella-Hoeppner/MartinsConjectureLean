@@ -133,6 +133,21 @@ theorem regressive_conePreserving_descending_chain
       rw [Function.iterate_succ_apply']; exact (hyp _ (hinv n _ hX)).1
     exact h1.2 (hbase' _ hX')
 
+/-- **No idempotent cone-preserving regressive function** (unconditional).  If `F`
+is, on `cone base`, regressive (`F X <ᵀ X`) and cone-preserving (`base ≤ᵀ F X`), it
+cannot also be idempotent (`F (F X) ≡ᵀ F X`): at `X = base`, `F base` lies in the
+cone, so regressivity gives `F (F base) <ᵀ F base`, contradicting idempotence's
+`F base ≤ᵀ F (F base)`.  (The degenerate `F ≻ₘ F²` slice of the descending chain,
+here needing no determinacy at all.) -/
+theorem no_idempotent_conePreserving_regressive
+    {F : (ℕ → Bool) → ℕ → Bool} {base : ℕ → Bool}
+    (hreg : ∀ X, base ≤ₜ X → F X <ₜ X ∧ base ≤ₜ F X)
+    (hidem : ∀ X, base ≤ₜ X → F (F X) ≡ₜ F X) : False := by
+  have hFb : base ≤ₜ F base := (hreg base (Cantor.le.refl base)).2
+  have h1 : F (F base) <ₜ F base := (hreg (F base) hFb).1
+  have h2 : F (F base) ≡ₜ F base := hidem base (Cantor.le.refl base)
+  exact h1.2 h2.2
+
 /-- **An incomparable counterexample is *doubly* incomparable.**  If an invariant
 `F` is incomparable to its argument on a cone (`F X ⊥ᵀ X`, the incomparable-core
 hypothesis), then under `MartinPPT` it is also incomparable to a whole cone of
@@ -161,6 +176,7 @@ theorem incomparable_case_doubly_incomparable (hM : MartinPPT)
 #print axioms nonconstant_values_uncountable
 #print axioms counterexample_full_profile
 #print axioms regressive_conePreserving_descending_chain
+#print axioms no_idempotent_conePreserving_regressive
 #print axioms incomparable_case_doubly_incomparable
 
 end Martin

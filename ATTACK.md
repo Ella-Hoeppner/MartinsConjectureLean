@@ -293,3 +293,21 @@ A crossing needs a NEW idea to manufacture effectiveness / effective-selection /
 a non-definable invariant `F`. This is the ~50-year-open content; do not expect a Lean-tractable
 proof without a mathematical breakthrough. The value delivered here is the *sharp machine-checked
 counterexample profile* + the *precise localization of the barrier*, not a crossing.
+
+**Capstones FORMALIZED (`MartinResults.lean`, std axioms).** `partI_general_of_uniformity`: full
+(AD-general) Part I ⟸ the single implication "`TuringInvariant F ⟹ UniformlyTuringInvariant F`" —
+everything downstream (`partI_uniform_general`, the trichotomy + the two Steel cores) is machine-checked.
+`partI_Borel_of_uniformity_bridge`: same for the natural (`Measurable`) class = published S–S Part I.
+So the open content is now a *single named Lean hypothesis*, `bridge`.
+
+**Probe: try to PROVE the bridge with the project's own σ-pigeonhole — dies at non-invariance (the
+sharpest tool-level localization).**  Fix witnesses `(i,j)`.  For `X` with `EquivVia X (Φ_i^X) i j`,
+the reduction `F X → F(Φ_i^X)` exists (`F X ≡ᵀ F(Φ_i^X)` by invariance); let `g(X) = least code p`
+realizing it.  `g` has *countable* range (`p ∈ ℕ`).  IF `g` were degree-invariant, `bounded_implies_constant`
+/ the σ-pigeonhole would force `g` **constant on a cone** — i.e. a single `p = u(i,j).1` works cone-wide
+= the bridge!  It fails at exactly one point: `g(X)` is the least reduction between the *specific reals*
+`F X` and `F(Φ_i^X)`, which depends on the reals, not their degrees, so `g` is **not degree-invariant**
+(and there is no degree-invariant choice of a real-to-real reduction).  So the cone theorem / σ-pigeonhole
+— the only cone-native tools — cannot stabilize it.  This is wall 2 (non-invariant selection) pinned to
+the precise line where the formalized machinery breaks: *the bridge is one σ-pigeonhole away, blocked
+solely by the non-invariance of the reduction-code function.*

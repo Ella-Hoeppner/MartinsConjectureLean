@@ -14,6 +14,7 @@ fixed degree between `W₀` and `W₁`.
 import MartinsConjecture.EscapingDichotomy
 import MartinsConjecture.ConeFilter
 import MartinsConjecture.BoundedCase
+import MartinsConjecture.PartIRecast
 
 open scoped Computability
 open Cantor
@@ -56,6 +57,33 @@ theorem nonMP_incomparable_interval (hTD : TuringDeterminacy fun _ => True)
   simp only [Set.mem_setOf_eq, hn] at hXn
   exact hXn hW₀Z
 
+/-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
+determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
+the identity on a cone must simultaneously:
+1. be **regressive** (`F X <ᵀ X`) on a cone, *or* **incomparable to its argument**
+   (`F X ⊥ᵀ X`) on a cone (the comparability trichotomy, minus the excluded
+   `≡ᵀ`/`>ᵀ` cases which are above-id); and
+2. be **Turing-incomparable to a whole cone of fixed degrees** (`Z ≥ᵀ W₀`), with
+   the incomparability uniform over every countable initial interval `[W₀, W₁]`.
+
+This is the sharpest statement of what a hypothetical counterexample looks like;
+Part 1 asserts no `F` meets it. -/
+theorem counterexample_full_profile (hM : MartinPPT)
+    (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvariant F)
+    (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    (OnCone (fun X => F X <ₜ X) ∨ OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) ∧
+    (∃ W₀, ∀ W₁, OnCone
+      (fun X => ∀ Z, W₀ ≤ₜ Z → Z ≤ₜ W₁ → ¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) := by
+  refine ⟨?_, nonMP_incomparable_interval hTD hF
+    (escaping_of_not_constant hTD hF hnc)
+    (fun hmp => hnai ((mp_iff_aboveId_of_martinPPT hM hF).mp hmp))⟩
+  rcases comparability_on_cone hTD hF with heq | hgt | hlt | hincomp
+  · exact absurd ⟨_, fun X hX => (heq.choose_spec X hX).2⟩ hnai
+  · exact absurd ⟨_, fun X hX => (hgt.choose_spec X hX).1⟩ hnai
+  · exact Or.inl hlt
+  · exact Or.inr hincomp
+
 #print axioms nonMP_incomparable_interval
+#print axioms counterexample_full_profile
 
 end Martin

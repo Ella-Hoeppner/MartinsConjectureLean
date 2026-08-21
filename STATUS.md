@@ -41,6 +41,12 @@ one is the open one):
 `partI_of_dichotomy_noFixedIncomparable` (`PartIRecast.lean`) is the sharpest packaging:
 Part 1 ⟸ (1) + (2).
 
+**Cleanest single-hypothesis form** (`partI_general_of_uniformity`, `MartinResults.lean`): full
+Part 1 ⟸ the *one* implication "`TuringInvariant F ⟹ UniformlyTuringInvariant F` (on a cone)" —
+a **sufficient** condition (the route by which the Borel case is proven; not necessary, since Part 1
+doesn't imply uniformity). Everything downstream is machine-checked; `ATTACK.md` analyses exactly why
+determinacy does not deliver this bridge for non-definable `F` (cone dichotomy vs cone uniformization).
+
 ---
 
 ## What is machine-checked (headline map)

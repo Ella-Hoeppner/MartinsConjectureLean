@@ -35,6 +35,21 @@ show it contains a cone; index stabilization gives one good rep per degree but s
 uniformly needs uniformizing an `F`-defined (non-definable) relation. The known proofs (uniform,
 Borel, hyperarithmetic) all inject a definability/uniformity hypothesis the general case lacks.
 
+**The barrier as THREE walls (root cause).**  Every formalizable technique needs one of three
+things about `F`, and an arbitrary invariant `F` denies all three:
+1. *Effectiveness* — recursion-theoretic / self-reference / coding arguments (incl. Posner–Robinson,
+   Steel's game, the recursion theorem `exists_fixedPoint`) need `F` as an **oracle/code**.  But `F`
+   is a function on *all* reals, not a single real — it cannot be oracle-ized.  (Fixing a countable
+   restriction loses invariance.)
+2. *Effective selection* — determinacy (AD) gives **definable** uniformization of the good-rep
+   relation `G_e`, never a **Turing** functional.  Definable ≠ Turing-uniform.
+3. *Cone-compatible regularity* — AD's measure / Baire regularity lives on comeager/conull sets,
+   which are **orthogonal** to Turing cones (cones are meager AND null); regularity never transfers
+   to a cone.
+The three known proofs each *supply* a missing wall by hypothesis: uniform/Borel give (1)+(2)
+(a code), hyperarithmetic gives an ordinal-effective handle.  The general case has none.  A crossing
+must manufacture one of the three for non-definable `F` — no formalizable route does.
+
 **Progress made:** the counterexample profile is now machine-checked and sharp (below), and the
 barrier is precisely located. **Not found:** any crossing. A genuine crossing needs a *new idea*
 to get Turing-uniformity from AD for non-definable functions — or the two unformalized classical

@@ -116,6 +116,17 @@ theorem partI_uniform_general (hTD : TuringDeterminacy fun _ => True)
   · exact Or.inl (regressive_uniform hTD F hU hlt)
   · exact Or.inl (incomparable_uniform hTD F hU hincomp)
 
+/-- **Any Part-I counterexample is non-uniformly-invariant** (the contrapositive of
+`partI_uniform_general`).  A Turing-invariant `F` that is neither constant on a cone
+nor above the identity on a cone cannot be uniformly Turing-invariant — were it uniform,
+`partI_uniform_general` would force one of the two excluded alternatives.  So a
+hypothetical counterexample is genuinely "wild": its `≡ᵀ`-witness reductions cannot be
+transformed uniformly. -/
+theorem counterexample_not_uniformlyInvariant (hTD : TuringDeterminacy fun _ => True)
+    (F : (ℕ → Bool) → ℕ → Bool) (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    ¬ UniformlyTuringInvariant F := fun hU =>
+  (partI_uniform_general hTD F hU).elim hnc hnai
+
 /-- **Capstone: the uniformity bridge is a *sufficient* condition for full
 (AD-general) Part I.**  Given determinacy, if *every* Turing-invariant `F` is
 uniformly Turing-invariant (on a cone), then Part I holds for *every* Turing-invariant
@@ -150,6 +161,7 @@ theorem escapingMP_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
 
 #print axioms partI_uniform
 #print axioms partI_Borel_of_uniformity_bridge
+#print axioms counterexample_not_uniformlyInvariant
 #print axioms partI_uniform_general
 #print axioms partI_general_of_uniformity
 #print axioms escapingMP_of_uniformity_bridge

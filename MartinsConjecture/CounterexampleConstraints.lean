@@ -133,9 +133,34 @@ theorem regressive_conePreserving_descending_chain
       rw [Function.iterate_succ_apply']; exact (hyp _ (hinv n _ hX)).1
     exact h1.2 (hbase' _ hX')
 
+/-- **An incomparable counterexample is *doubly* incomparable.**  If an invariant
+`F` is incomparable to its argument on a cone (`F X ⊥ᵀ X`, the incomparable-core
+hypothesis), then under `MartinPPT` it is also incomparable to a whole cone of
+fixed degrees: for `Z ≥ᵀ W₀`, on one cone `F X` is incomparable to **both** `X`
+and `Z`.  So a counterexample to the incomparable core is incomparable to its own
+argument *and* to every sufficiently high fixed degree, simultaneously. -/
+theorem incomparable_case_doubly_incomparable (hM : MartinPPT)
+    (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvariant F)
+    (hincX : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) :
+    ∃ W₀, ∀ Z, W₀ ≤ₜ Z →
+      OnCone (fun X => (¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) ∧ (¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) := by
+  have hnc : ¬ ConstantOnCone F := by
+    rintro ⟨C, hcon⟩
+    obtain ⟨B, hB⟩ := onCone_and hincX hcon
+    obtain ⟨hinc0, heq0⟩ := hB _ (Cantor.left_le_join B C)
+    exact hinc0.1 (heq0.1.trans (Cantor.right_le_join B C))
+  have hnai : ¬ AboveIdOnCone F := by
+    rintro hai
+    obtain ⟨B, hB⟩ := onCone_and hincX hai
+    exact (hB B (Cantor.le.refl B)).1.2 (hB B (Cantor.le.refl B)).2
+  obtain ⟨W₀, hW₀⟩ := nonMP_incomparable_cone hTD hF (escaping_of_not_constant hTD hF hnc)
+    (fun hmp => hnai ((mp_iff_aboveId_of_martinPPT hM hF).mp hmp))
+  exact ⟨W₀, fun Z hZ => onCone_and hincX (hW₀ Z hZ)⟩
+
 #print axioms nonMP_incomparable_interval
 #print axioms nonconstant_values_uncountable
 #print axioms counterexample_full_profile
 #print axioms regressive_conePreserving_descending_chain
+#print axioms incomparable_case_doubly_incomparable
 
 end Martin

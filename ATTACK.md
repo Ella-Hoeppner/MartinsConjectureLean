@@ -22,6 +22,24 @@ must collapse, and *understanding the collapse* is where a proof idea would hide
 construction would need to drop determinacy (ZFC-only), which proves the weaker "AD is
 necessary" — not a disproof of the AD conjecture.
 
+## BOTTOM LINE (the barrier — read this first)
+
+Explored ~a dozen angles (index stabilization, Steel's game, Posner–Robinson, descending
+chains, RK/pushforward order, measure⊥category, continuity-on-comeager, the cone ultrapower,
+normality/Fodor, biinterpretability, definability). **They all funnel to ONE barrier:** no
+determinacy tool extracts a *Turing code* (`Φ_e`) from an arbitrary invariant `F`. Sharpest
+form: AD supplies **definable** uniformization (a selection), but Martin's conjecture needs
+**Turing** uniformization (`F = Φ_e` on a cone) — and definable ≠ Turing-uniform. Equivalently:
+the good-representative set `G_e = {Y : F Y = Φ_e^Y}` is non-invariant, so `cone_theorem` can't
+show it contains a cone; index stabilization gives one good rep per degree but selecting them
+uniformly needs uniformizing an `F`-defined (non-definable) relation. The known proofs (uniform,
+Borel, hyperarithmetic) all inject a definability/uniformity hypothesis the general case lacks.
+
+**Progress made:** the counterexample profile is now machine-checked and sharp (below), and the
+barrier is precisely located. **Not found:** any crossing. A genuine crossing needs a *new idea*
+to get Turing-uniformity from AD for non-definable functions — or the two unformalized classical
+inputs (Steel's game / Posner–Robinson forcing). Correct partial constraints are all we have.
+
 ## What a counterexample MUST look like (machine-checked constraints)
 
 For invariant `F` under `TuringDeterminacy (fun _ => True)`:

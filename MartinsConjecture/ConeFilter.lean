@@ -88,10 +88,20 @@ theorem pushCone_dichotomy {F : (ℕ → Bool) → ℕ → Bool} (hF : TuringInv
   rw [Filter.mem_map, Filter.mem_map, Set.preimage_compl]
   exact coneFilter_dichotomy hinv hdet
 
+/-- **The pushforward composes:** `F ↦ Filter.map F coneFilter` is a monoid action
+of `((ℕ→Bool)→(ℕ→Bool), ∘)` on the cone filter.  So the iterates of an invariant
+`F` give `[Fⁿ] = F_*ⁿ U` — the Martin conjecture is a statement about this action
+(`[id]` least in the induced order).  (Immediate from `Filter.map_map`, recorded
+here as the structural fact.) -/
+theorem pushCone_comp (F G : (ℕ → Bool) → ℕ → Bool) :
+    Filter.map (F ∘ G) coneFilter = Filter.map F (Filter.map G coneFilter) :=
+  (Filter.map_map).symm
+
 #print axioms coneFilter
 #print axioms onCone_iff_mem_coneFilter
 #print axioms coneFilter_iInter
 #print axioms coneFilter_dichotomy
 #print axioms pushCone_dichotomy
+#print axioms pushCone_comp
 
 end Martin

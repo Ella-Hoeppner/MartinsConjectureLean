@@ -68,6 +68,29 @@ property. -/
 theorem martinPPT_iff_dichotomy : MartinPPT ↔ MartinDichotomy :=
   ⟨dichotomy_of_martinPPT, martinPPT_of_dichotomy⟩
 
+/-! ### Localizing the non-invariant case via the invariant hull
+
+The dichotomy for an arbitrary `A` reduces to its **invariant hull** `Â` (proved
+case) plus a **selection**: the complement-cone alternative transfers from `Â` to
+`A` for free (since `A ⊆ Â`), so the only genuinely non-invariant content is
+moving a pointed perfect tree *from `Â` down into `A`* — exactly a uniform
+degree-preserving selection of `A`-representatives.  This pins the remaining gap
+precisely. -/
+
+/-- **The dichotomy for `A`, reduced to `Â` + selection.**  Given determinacy of
+the invariant hull `Â` and a selection turning a pointed perfect tree in `Â` into
+one in `A`, the dichotomy holds for `A`.  The complement-cone case needs neither
+hypothesis — it is inherited from `Â`. -/
+theorem dichotomy_of_hull (A : Set (ℕ → Bool))
+    (hÂdet : GameDetermined (invariantHull A))
+    (hsel : (∃ T : PPT, ∀ x, T.mem x → x ∈ invariantHull A) →
+            (∃ T : PPT, ∀ x, T.mem x → x ∈ A)) :
+    (∃ T : PPT, ∀ x, T.mem x → x ∈ A) ∨ (∃ Y, cone Y ⊆ Aᶜ) := by
+  rcases perfectDichotomy_invariant (invariantHull A) (invariantHull_invariant A) hÂdet with
+    hPPT | ⟨Y, hY⟩
+  · exact Or.inl (hsel hPPT)
+  · exact Or.inr ⟨Y, fun x hx hxA => hY hx (subset_invariantHull A hxA)⟩
+
 /-! ### Part 1 from the dichotomy -/
 
 /-- **Part 1 of Martin's conjecture from the perfect-set dichotomy.**  Composing
@@ -82,6 +105,7 @@ theorem partI_of_dichotomy_escaping (h : MartinDichotomy)
 
 #print axioms martinPPT_of_dichotomy
 #print axioms perfectDichotomy_invariant
+#print axioms dichotomy_of_hull
 #print axioms partI_of_dichotomy_escaping
 
 end Martin

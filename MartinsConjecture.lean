@@ -58,3 +58,4 @@ import MartinsConjecture.RawPPT
 import MartinsConjecture.PerfectEmbedding
 import MartinsConjecture.ConeTree
 import MartinsConjecture.ConeRawPPT
+import MartinsConjecture.MartinDichotomy

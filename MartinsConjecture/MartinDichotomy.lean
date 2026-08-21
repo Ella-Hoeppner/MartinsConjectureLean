@@ -50,6 +50,24 @@ theorem perfectDichotomy_invariant (A : Set (ℕ → Bool))
     exact Or.inl ⟨T, fun x hx => hY (hT x hx)⟩
   · exact Or.inr ⟨Y, hY⟩
 
+/-- **The dichotomy from `MartinPPT`.**  If `A` is cofinal, `MartinPPT` gives the
+tree; if not, `A` misses a cone, which is the complement-cone alternative. -/
+theorem dichotomy_of_martinPPT (h : MartinPPT) : MartinDichotomy := by
+  intro A
+  by_cases hcof : Cofinal (· ∈ A)
+  · exact Or.inl (h _ hcof)
+  · right
+    unfold Cofinal at hcof
+    push_neg at hcof
+    obtain ⟨z, hz⟩ := hcof
+    exact ⟨z, fun x hzx => hz x hzx⟩
+
+/-- **`MartinPPT` and the perfect-set dichotomy are equivalent** — the dichotomy
+is exactly Martin's Lemma 2.3, reframed as the cone-relativized perfect-set
+property. -/
+theorem martinPPT_iff_dichotomy : MartinPPT ↔ MartinDichotomy :=
+  ⟨dichotomy_of_martinPPT, martinPPT_of_dichotomy⟩
+
 /-! ### Part 1 from the dichotomy -/
 
 /-- **Part 1 of Martin's conjecture from the perfect-set dichotomy.**  Composing

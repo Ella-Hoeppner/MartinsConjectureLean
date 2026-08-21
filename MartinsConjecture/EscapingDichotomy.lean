@@ -125,11 +125,24 @@ theorem nonMP_incomparable_cone (hTD : TuringDeterminacy fun _ => True)
   · exact absurd hle (hW₀ Z hZ)
   · exact hinc
 
+/-- **Profile of a counterexample to `escaping ⟹ MP`.**  An escaping invariant
+function that fails to be measure-preserving is (i) *not above the identity* on
+any cone, and (ii) Turing-incomparable to a whole cone of fixed degrees.  So a
+Part-1 counterexample is genuinely "sideways": high enough to avoid every degree
+from below, yet never reaching the identity and incomparable to all sufficiently
+high fixed degrees. -/
+theorem escaping_nonMP_profile (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (hesc : Escaping F) (hnmp : ¬ MeasurePreserving F) :
+    ¬ AboveIdOnCone F ∧ ∃ W₀, ∀ Z, W₀ ≤ₜ Z → IncomparableToFixed F Z :=
+  ⟨fun hai => hnmp (aboveId_measurePreserving hai),
+   nonMP_incomparable_cone hTD hF hesc hnmp⟩
+
 #print axioms mp_at_or_incomparable
 #print axioms mp_iff_no_incomparableToFixed
 #print axioms escapingMP_iff_no_fixedIncomparable
 #print axioms belowF_join
 #print axioms mp_iff_belowF_cofinal
 #print axioms nonMP_incomparable_cone
+#print axioms escaping_nonMP_profile
 
 end Martin

@@ -101,8 +101,37 @@ theorem counterexample_full_profile (hM : MartinPPT)
   · exact Or.inl hlt
   · exact Or.inr hincomp
 
+/-- **A regressive cone-preserving function refutes Martin-order well-foundedness.**
+If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
+cone-preserving (`base ≤ᵀ F X`), then its iterates form an **infinite strictly
+Martin-descending chain** `F ≻ₘ F² ≻ₘ F³ ≻ₘ …`.  So Part 2's well-foundedness of
+the Martin order (`DescendingChainCore`) *rules out* such an `F` — a direct
+structural link between the two open halves of the conjecture.  (The cone-preserving
+hypothesis is what a bare regressive counterexample may fail: `F` can escape its
+own cone, which is exactly the non-uniformity wall.) -/
+theorem regressive_conePreserving_descending_chain
+    {F : (ℕ → Bool) → ℕ → Bool} {base : ℕ → Bool}
+    (hyp : ∀ X, base ≤ₜ X → F X <ₜ X ∧ base ≤ₜ F X) :
+    ∀ n, MartinLT (F^[n + 1]) (F^[n]) := by
+  have hinv : ∀ n X, base ≤ₜ X → base ≤ₜ F^[n] X := by
+    intro n
+    induction n with
+    | zero => intro X hX; simpa using hX
+    | succ n ih => intro X hX; rw [Function.iterate_succ_apply']; exact (hyp _ (ih X hX)).2
+  intro n
+  refine ⟨⟨base, fun X hX => ?_⟩, ?_⟩
+  · show F^[n + 1] X ≤ₜ F^[n] X
+    rw [Function.iterate_succ_apply']; exact (hyp _ (hinv n X hX)).1.1
+  · rintro ⟨base', hbase'⟩
+    have hX : base ≤ₜ Cantor.join base base' := Cantor.left_le_join base base'
+    have hX' : base' ≤ₜ Cantor.join base base' := Cantor.right_le_join base base'
+    have h1 : F^[n + 1] (Cantor.join base base') <ₜ F^[n] (Cantor.join base base') := by
+      rw [Function.iterate_succ_apply']; exact (hyp _ (hinv n _ hX)).1
+    exact h1.2 (hbase' _ hX')
+
 #print axioms nonMP_incomparable_interval
 #print axioms nonconstant_values_uncountable
 #print axioms counterexample_full_profile
+#print axioms regressive_conePreserving_descending_chain
 
 end Martin

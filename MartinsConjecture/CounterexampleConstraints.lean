@@ -15,6 +15,7 @@ import MartinsConjecture.EscapingDichotomy
 import MartinsConjecture.ConeFilter
 import MartinsConjecture.BoundedCase
 import MartinsConjecture.PartIRecast
+import MartinsConjecture.MartinResults
 
 open scoped Computability
 open Cantor
@@ -172,11 +173,36 @@ theorem incomparable_case_doubly_incomparable (hM : MartinPPT)
     (fun hmp => hnai ((mp_iff_aboveId_of_martinPPT hM hF).mp hmp))
   exact ⟨W₀, fun Z hZ => onCone_and hincX (hW₀ Z hZ)⟩
 
+/-- **The complete machine-checked profile of a Part-I counterexample.**  Bundling
+every constraint proved here and in `MartinResults`, a Turing-invariant `F` that is
+neither constant nor above-id on a cone must simultaneously be:
+1. **regressive or incomparable to its argument** on a cone;
+2. **incomparable to a whole cone of fixed degrees** `Z ≥ᵀ W₀`, uniformly over every
+   countable interval `[W₀,W₁]`;
+3. **not uniformly Turing-invariant** (genuinely "wild" — no uniform witness transform);
+4. **uncountably-valued** — its values are not covered by any countable set of degrees.
+This is the sharpest fully-verified description of a hypothetical counterexample; Part I
+asserts no `F` meets it, and every known proof route to that assertion is blocked by the
+barrier analysed in `ATTACK.md`. -/
+theorem counterexample_complete_profile (hM : MartinPPT)
+    (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvariant F)
+    (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    (OnCone (fun X => F X <ₜ X) ∨ OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) ∧
+    (∃ W₀, ∀ W₁, OnCone
+      (fun X => ∀ Z, W₀ ≤ₜ Z → Z ≤ₜ W₁ → ¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) ∧
+    (¬ UniformlyTuringInvariant F) ∧
+    (∀ c : ℕ → (ℕ → Bool), ¬ OnCone (fun X => ∃ n, F X ≡ₜ c n)) :=
+  ⟨(counterexample_full_profile hM hTD hF hnc hnai).1,
+   (counterexample_full_profile hM hTD hF hnc hnai).2,
+   counterexample_not_uniformlyInvariant hTD F hnc hnai,
+   nonconstant_values_uncountable hTD hF hnc⟩
+
 #print axioms nonMP_incomparable_interval
 #print axioms nonconstant_values_uncountable
 #print axioms counterexample_full_profile
 #print axioms regressive_conePreserving_descending_chain
 #print axioms no_idempotent_conePreserving_regressive
 #print axioms incomparable_case_doubly_incomparable
+#print axioms counterexample_complete_profile
 
 end Martin

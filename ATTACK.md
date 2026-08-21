@@ -90,6 +90,14 @@ dichotomy (have) and cone uniformization (need)**.  Every attempt in this log is
 manufacture uniformization from dichotomy; none succeeds, and there is a principled reason none can
 using only the tools determinacy is known to provide.
 
+**No stronger determinacy axiom escapes this.**  One might hope AD_ℝ (or AD⁺) helps — AD_ℝ gives
+uniformization for *all* relations on reals (Solovay), not just definable ones.  But that uniformizing
+object is still a *choice/definable function*, never a *Turing functional* (a code `Φ_e`).  The
+barrier is **definable-selection vs computable-selection**, and that is *orthogonal to the strength of
+the determinacy axiom*: determinacy manufactures definability, never computability.  So the "just
+assume more determinacy" escape is closed — the gap is not about how much selection you have, but
+about selection being *effective*, which no determinacy hypothesis provides.
+
 **Progress made:** the counterexample profile is now machine-checked and sharp (below), and the
 barrier is precisely located. **Not found:** any crossing. A genuine crossing needs a *new idea*
 to get Turing-uniformity from AD for non-definable functions — or the two unformalized classical

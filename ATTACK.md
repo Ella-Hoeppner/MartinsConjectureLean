@@ -179,9 +179,27 @@ were well-founded, one would get "a regressive counterexample is *injective* on 
 still consistent-looking (RK-order ≠ Martin-order). Net: interesting structure (`pushCone_comp` is a
 clean correct fact), no crossing.
 
-**Live ideas still untried:** (i) formalize the ultrapower/Martin-order object to state "[id] least
-nonstandard" first-class (it equals the existing Martin order, so likely no new leverage). (ii) a
-*forcing-free* substitute for Posner–Robinson using `cone_contains_PPT` (pointed trees) to absorb an
-incomparable degree into a jump — unclear if trees can replace Kumabe–Slaman forcing. (iii) attack
-the good-rep-selection gap under AD via a determinacy game whose payoff *is* "II codes a good rep"
-(needs the recursion theorem — now available — for honest play; this is essentially Steel's game).
+**Part 1 ↔ Part 2 link (FORMALIZED, `regressive_conePreserving_descending_chain`).** A regressive
+*cone-preserving* invariant `F` (on `cone base`: `F X <ᵀ X` **and** `base ≤ᵀ F X`) has iterates
+`F ≻ₘ F² ≻ₘ …` strictly Martin-descending ⟹ Part 2's Martin-order well-foundedness rules it out.
+So the regressive core, *restricted to cone-preserving `F`*, follows from Part 2. The remaining gap =
+the cone-preserving hypothesis: a bare regressive counterexample may **escape its own cone**
+(`F X ⊥ base` possible via `cone_theorem` on `{X : base ≤ᵀ F X}`), which is once more the
+non-uniformity wall. Removing it (showing regressive ⟹ cone-preserving on a subcone) would reduce the
+regressive core to Part 2 — a concrete future target.
+
+**Attempt to remove the cone-preserving hypothesis via `G := F ⊕ base` — FAILS (same wall).** `G X =
+F X ⊕ base` is trivially `≥ᵀ base`. Splitting via `cone_theorem` on `{X : X ≤ᵀ G X}`: either
+`X ≤ᵀ G X` on a cone (special form `F X ⊕ base ≡ᵀ X`) or `X ≰ᵀ G X` on `cone Y`, making `G`
+regressive on `cone(Y⊕base)`. But `regressive_conePreserving_descending_chain` needs a *single* base
+that is both the regressive base (`Y⊕base`, for strictness) **and** `≤ᵀ G X` (cone-preserving). `G` is
+cone-preserving only above `base`, regressive only above `Y⊕base`, and `Y ≰ᵀ G X` (no reason `Y ≤ᵀ
+F X`). So `G(G X)` is again uncontrolled — the regressive base `Y` isn't below `G`'s values. The
+non-uniformity/cone-escape wall reappears exactly. So the cone-preserving hypothesis is *not* removable
+this way; `regressive_conePreserving_descending_chain` stays genuinely conditional.
+
+**Live ideas still untried:** (ii) formalize the ultrapower/Martin-order object
+to state "[id] least nonstandard" first-class (≈ the existing Martin order; likely no new leverage).
+(iii) forcing-free Posner–Robinson via `cone_contains_PPT` (unclear trees replace Kumabe–Slaman).
+(iv) Steel's game for the uniform-on-reps fragment (hits the good-rep gap; recursion theorem now
+available).

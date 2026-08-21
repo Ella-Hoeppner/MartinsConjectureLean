@@ -233,8 +233,23 @@ F X`). So `G(G X)` is again uncontrolled — the regressive base `Y` isn't below
 non-uniformity/cone-escape wall reappears exactly. So the cone-preserving hypothesis is *not* removable
 this way; `regressive_conePreserving_descending_chain` stays genuinely conditional.
 
-**Live ideas still untried:** (ii) formalize the ultrapower/Martin-order object
-to state "[id] least nonstandard" first-class (≈ the existing Martin order; likely no new leverage).
-(iii) forcing-free Posner–Robinson via `cone_contains_PPT` (unclear trees replace Kumabe–Slaman).
-(iv) Steel's game for the uniform-on-reps fragment (hits the good-rep gap; recursion theorem now
-available).
+**Triage of remaining targets (honest — most are KNOWN cleanup, not the open frontier):**
+
+*Known-but-unformalized (cleanup; would complete the published Slaman–Steel Part 1 for the natural
+class, NOT the AD-general frontier).* Currently proven: only `partI_uniform` (the uniform sub-class)
+and `partI_of_bounded`. `PartI_Borel` is NOT proven; `escaping ⟹ MP` is proven for NO nontrivial
+class (only stated as the reduction hypothesis).
+- **`Measurable/Borel invariant F ⟹ UniformlyTuringInvariant on a cone`** — the missing bridge; with
+  it, `partI_uniform` upgrades to `partI_Borel` (the actual Slaman–Steel theorem). Substantial (a
+  core S–S lemma), fully classical, but a well-defined bounded target.
+- **Posner–Robinson (original finite-extension construction, not Kumabe–Slaman forcing)** — the input
+  Slaman–Steel use for the *incomparable* core. Elementary-ish, formalizable, but only cracks the
+  *uniform* incomparable core (already done); does NOT help the general frontier (still needs a code).
+- **Steel's game for the uniform-on-reps fragment** — recursion theorem now available; hits the
+  good-rep gap concretely.
+
+*Genuine frontier (the OPEN problem).* Blocked by the THREE WALLS above; no formalizable route found.
+A crossing needs a NEW idea to manufacture effectiveness / effective-selection / cone-regularity for
+a non-definable invariant `F`. This is the ~50-year-open content; do not expect a Lean-tractable
+proof without a mathematical breakthrough. The value delivered here is the *sharp machine-checked
+counterexample profile* + the *precise localization of the barrier*, not a crossing.

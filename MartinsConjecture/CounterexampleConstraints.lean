@@ -57,6 +57,24 @@ theorem nonMP_incomparable_interval (hTD : TuringDeterminacy fun _ => True)
   simp only [Set.mem_setOf_eq, hn] at hXn
   exact hXn hW₀Z
 
+/-- **A nonconstant invariant function's values are "uncountable" on a cone.**
+No countable family of degrees `c₀, c₁, …` covers the values of a nonconstant
+invariant `F` on any cone.  (If they did, the invariant fibers `{X | F X ≡ᵀ cₙ}`
+would cover a cone, and the σ-pigeonhole would put `F ≡ᵀ cₙ` on a cone = constant.)
+This generalizes `bounded_implies_constant` (bounded values ⟹ countably covered ⟹
+constant) and is the exact "escaping" content on the value side. -/
+theorem nonconstant_values_uncountable (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) :
+    ∀ c : ℕ → (ℕ → Bool), ¬ OnCone (fun X => ∃ n, F X ≡ₜ c n) := by
+  intro c hcov
+  set A : ℕ → Set (ℕ → Bool) := fun n => {X | F X ≡ₜ c n} with hA
+  have hTI : ∀ n, TuringInvariantSet (A n) := fun n X X' hXX' =>
+    ⟨fun h => (hF X X' hXX').symm.trans h, fun h => (hF X X' hXX').trans h⟩
+  obtain ⟨W, hW⟩ := hcov
+  have hcover : cone W ⊆ ⋃ n, A n := fun X hX => Set.mem_iUnion.mpr (hW X hX)
+  obtain ⟨n, hn⟩ := exists_onCone_of_cover hTD (fun _ => trivial) hTI hcover
+  exact hnc ⟨c n, hn⟩
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -84,6 +102,7 @@ theorem counterexample_full_profile (hM : MartinPPT)
   · exact Or.inr hincomp
 
 #print axioms nonMP_incomparable_interval
+#print axioms nonconstant_values_uncountable
 #print axioms counterexample_full_profile
 
 end Martin

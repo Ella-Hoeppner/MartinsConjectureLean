@@ -77,4 +77,76 @@ hyperarithmetic) do not transfer.
 Format per attempt: **candidate F**, **why it might be sideways**, **what forces it to
 collapse** (constant/above-id/contradiction), **insight extracted**.
 
-*(none yet — begins with the next work session)*
+### Session 2026-08-21 (constraint-pushing + construction probes)
+
+**Reformulation (conceptual).** Part 1 ⟺ **`[id]` is the least *nonstandard* degree in the
+cone ultrapower** `D^ω/U` (constant-on-cone = `[F]` standard; above-id = `[F] ≥ [id]`; so Part 1
+= "every nonstandard `[F] ≥ [id]`"). Regressive core = "no nonstandard `[F] < [id]`"; incomparable
+core = "no `[F] ⊥ [id]`". Suggests a minimality/descending-chain proof — but the degrees are not
+well-founded and the ultrapower isn't either, so descending `[id] > [F] > [F²] > …` gives no
+contradiction (exact pairs). Not yet formalized (needs the ultrapower object).
+
+**Why counterexamples exist in ZFC (construction probe #0).** An AC-choice function `g(d) < d`
+on the (non-minimal) degrees of a cone is a regressive non-constant invariant `F` — a genuine
+ZFC counterexample. It is non-measurable / not determined; under `TuringDeterminacy` it cannot
+exist. **Confirms**: the conjecture's whole content is that determinacy forbids this choice; a
+"disproof" is only possible by dropping AD (proving AD necessary), not against the AD conjecture.
+
+**Diagonal against a counterexample — deep failure analysis.** Want a contradiction from
+`F X ⊥ Z` (all fixed `Z ≥ᵀ W₀`). Natural move: `Z := F A ⊕ W₀ ≥ᵀ W₀`, then `F A ⊥ Z` but
+`F A ≤ᵀ Z` — contradiction *iff* `A` lies in the (Z-dependent) incomparability cone `C_Z`. **Dies**
+on circularity: `C_Z`'s base depends on `Z = F A ⊕ W₀`, i.e. on `A`. A limit/fixed-point
+construction `A_ω = ⊕ A_n` (with `A_{n+1} ∈ C` growing) still dies: `F(A_ω)` is a *fresh
+incomparable* value `⊥ ⊕_n F(A_n)` — F escapes even the ω-join of its own values. This is exactly
+the exact-pair / non-uniformity wall (= old Attempt A). **Structural fact behind it:** there is
+*no uniform incomparability base* — for any `X`, `F X` is comparable to `F X ⊕ W₀ (≥ᵀ W₀)`, so
+"F X ⊥ all Z ≥ W₀ on one cone" is self-contradictory; the non-uniformity is essential.
+
+**Index-stabilization + Steel's game — precise gap (revisiting Attempt D/E now that the
+universal machine + recursion theorem exist).** `exists_uniform_index_on_cone`: a regressive
+invariant `F` has a *fixed* code `e` with `F Y = Φ_e^Y` on a *representative* `Y` of every degree
+on a cone (uniform-on-reps). Steel's game (II codes a rep, payoff via `Φ_e`) needs, in the
+**I-wins ⟹ F bounded** direction, to bound `F` on the plays — but I cannot force a play to be a
+*good representative* (where `F = Φ_e`), and off reps `F ≠ Φ_e`. **Precise open gap:** bridging
+uniform-on-reps to controllable-on-plays. This is exactly why Steel's uniform proof does not
+transfer; the recursion theorem removes the *old* blocker but not this one.
+
+**Formalized this session (`CounterexampleConstraints.lean`):**
+- `nonMP_incomparable_interval` — degrees `≤ᵀ W₁` are countable, so countable completeness of
+  the cone filter upgrades the per-Z incomparability to: a counterexample is `⊥` **every** degree
+  in `[W₀, W₁]` on a *single* cone, for each fixed `W₁`. Still doesn't close (F escapes any fixed
+  `W₁`: `F X ⊥ W₁ ⟹ F X ∉ [W₀,W₁]`), but a real sharpening.
+
+**Kernel structure (correction).** `mp_iff_belowF_cofinal` gives: `¬MP ⟹` kernel is **not
+cofinal** ⟹ `∃ W₀`, kernel `⊆ {Z : W₀ ≰ᵀ Z}` (kernel is *disjoint from `cone W₀`*, downward+join
+closed). NOT "`⊆ {≤W₀}`" (an earlier miscalc) — the kernel may contain `W₀`-incomparable degrees.
+So the clean incomparability is exactly `Z ≥ᵀ W₀` (`nonMP_incomparable_cone`); "Z ≰ᵀ W₀" does
+**not** follow.
+
+**META-INSIGHT (why strategy 2 has a hard ceiling).** A counterexample must be **non-definable**:
+any Borel/definable invariant `F` is *uniform* on a cone (Slaman–Steel) hence satisfies Part 1
+(`partI_uniform`). So *no concrete `F` can ever be a counterexample* — every writable candidate
+collapses to constant-or-above-id or fails to be invariant. Construction probes (below) only teach
+us *why* concrete regressive attempts collapse.
+
+**META-INSIGHT (the real gap, measure-level vs function-level).** Determinacy gives *set*-level and
+*measure*-level cone-regularity: `cone_theorem` (invariant set ⊇ cone or ⊆ complement) and
+`pushCone_dichotomy` (`[F]=F_*U` is an ultrafilter). Part 1 needs *function*-level regularity: `F`
+**uniform on a cone**. AD's own regularity (measurable / Baire property) is w.r.t.
+measure/category, which are **orthogonal to the cone filter** (Attempt B). So AD does not *directly*
+hand us cone-uniformity; bridging `F_*U`-is-an-ultrafilter → `F`-uniform-on-a-cone is the
+irreducible open content (= the `partI_of_uniformization` hypothesis). Every attempt funnels here.
+
+**Construction probes (strategy 2), all collapse:**
+- **#0 AC-choice** `g(d)<d` on a cone: a genuine ZFC regressive counterexample; non-measurable,
+  gone under AD. (Confirms AD-necessity, not an AD-disproof.)
+- **#1** `F X = 0'` if `X ≥ᵀ 0'` else `X`: definable, regressive-looking; **collapses to the
+  constant `0'`** on `cone 0'`. Pattern: a definable "floor" is eventually a fixed floor = constant.
+- **#2** `F X =` largest degree `≤ᵀ X` in a fixed countable ideal `I`: on `cone (⊕I)` it is the
+  constant `⊕I`. Same collapse. Any definable regressive rule has a fixed "target" on a cone.
+
+**Live ideas to try next:** (i) the measure→function bridge — is there a determinacy argument that
+turns `F_*U` (ultrafilter) into a *code* on a cone, without Steel's game? (ii) look for a
+*second-order* constraint: iterate `pushCone_dichotomy` (apply to `F∘F`, `F⊕id`) to relate `[F]` to
+`[id]` in the ultrapower. (iii) formalize the ultrapower object itself to make the "`[id]` least
+nonstandard" statement first-class and attack it directly.

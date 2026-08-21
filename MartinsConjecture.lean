@@ -62,3 +62,4 @@ import MartinsConjecture.MartinDichotomy
 import MartinsConjecture.EscapingDichotomy
 import MartinsConjecture.PartIRecast
 import MartinsConjecture.ConeFilter
+import MartinsConjecture.CounterexampleConstraints

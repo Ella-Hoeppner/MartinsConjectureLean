@@ -9,6 +9,7 @@ Mathlib `Filter` makes "on a cone" literally "in the cone filter"
 (`coneFilter_iInter`) that drives the σ-pigeonhole.
 -/
 import MartinsConjecture.RegularChain
+import MartinsConjecture.MartinMeasure
 import Mathlib.Order.Filter.Basic
 
 open scoped Computability
@@ -49,8 +50,22 @@ theorem coneFilter_iInter {f : ℕ → Set (ℕ → Bool)} (hf : ∀ n, f n ∈ 
   choose Y hY using hf
   exact ⟨bigJoin Y, fun X hX => Set.mem_iInter.mpr fun n => hY n ((le_bigJoin Y n).trans hX)⟩
 
+/-- **The Martin measure is an ultrafilter on the Turing-invariant sets.**  This
+is exactly the cone theorem, packaged: a determined invariant set, or its
+complement, is in the cone filter. -/
+theorem coneFilter_dichotomy {A : Set (ℕ → Bool)} (hTI : TuringInvariantSet A)
+    (hDet : GameDetermined A) : A ∈ coneFilter ∨ Aᶜ ∈ coneFilter :=
+  cone_theorem A hTI hDet
+
+/-- The ultrafilter dichotomy, threaded through `TuringDeterminacy`. -/
+theorem coneFilter_dichotomy_TD {Γ : Set (ℕ → Bool) → Prop} (hTD : TuringDeterminacy Γ)
+    {A : Set (ℕ → Bool)} (hΓ : Γ A) (hTI : TuringInvariantSet A) :
+    A ∈ coneFilter ∨ Aᶜ ∈ coneFilter :=
+  coneFilter_dichotomy hTI (hTD A hΓ hTI)
+
 #print axioms coneFilter
 #print axioms onCone_iff_mem_coneFilter
 #print axioms coneFilter_iInter
+#print axioms coneFilter_dichotomy
 
 end Martin

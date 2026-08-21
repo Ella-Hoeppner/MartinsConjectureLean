@@ -298,7 +298,11 @@ counterexample profile* + the *precise localization of the barrier*, not a cross
 (AD-general) Part I ⟸ the single implication "`TuringInvariant F ⟹ UniformlyTuringInvariant F`" —
 everything downstream (`partI_uniform_general`, the trichotomy + the two Steel cores) is machine-checked.
 `partI_Borel_of_uniformity_bridge`: same for the natural (`Measurable`) class = published S–S Part I.
-So the open content is now a *single named Lean hypothesis*, `bridge`.
+`escapingMP_of_uniformity_bridge`: the bridge subsumes the `escaping ⟹ MP` route (so it's the stronger
+of the two open sufficient conditions).  **Honesty caveat:** the bridge is *sufficient, not necessary*
+— Part I (constant-or-above-id) does not imply uniformity, so this is a natural strengthening (the Borel
+route), not a reformulation; Part I could in principle hold even where the bridge fails.  It is the
+cleanest *sufficient* condition, now a single named Lean hypothesis `bridge`.
 
 **Probe: try to PROVE the bridge with the project's own σ-pigeonhole — dies at non-invariance (the
 sharpest tool-level localization).**  Fix witnesses `(i,j)`.  For `X` with `EquivVia X (Φ_i^X) i j`,

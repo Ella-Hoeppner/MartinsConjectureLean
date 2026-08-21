@@ -67,9 +67,12 @@ r.e. operator above id on a cone, `Wˣ ≡ᵀ X` or `Wˣ ≡ᵀ X′` on a cone 
 **Bard's Lemma 3.4** (`BardUniformity.lean`, `MartinResults.lean`): `uti_computable`
 (uniform ⟹ computably-uniform), unlocking `partI_uniform` and both cores for the uniform class.
 `partI_uniform_general` (the `Measurable`-free uniform Part I) and the capstones
-`partI_Borel_of_uniformity_bridge` / `partI_general_of_uniformity`: **the entire open content
-of Part I is the single implication "Turing-invariant ⟹ uniformly Turing-invariant"** — everything
-downstream of it is machine-checked. (Why determinacy doesn't deliver it: `ATTACK.md`.)
+`partI_Borel_of_uniformity_bridge` / `partI_general_of_uniformity`: the bridge
+"Turing-invariant ⟹ uniformly Turing-invariant" is a **sufficient condition** for Part I
+(everything downstream is machine-checked) — the route by which the Borel case is proven. It is
+sufficient, *not* necessary (constant/above-id functions needn't be uniform), and its truth for
+non-definable `F` is itself open. `escapingMP_of_uniformity_bridge`: the bridge subsumes the
+`escaping ⟹ MP` route. (Why determinacy doesn't deliver the bridge: `ATTACK.md`.)
 
 **Measure-preserving reduction** (`MeasurePreserving.lean`, `PointedTree.lean`, `MartinTree.lean`,
 `RawPPT.lean`, `PerfectEmbedding.lean`): Theorem 3.4 ⟸ `GroszekSlaman` ⟸ `MartinPPT`, with

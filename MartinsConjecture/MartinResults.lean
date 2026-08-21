@@ -92,11 +92,11 @@ theorem measurePreservingAboveId_uniform (hTD : TuringDeterminacy fun _ => True)
 `UniformlyTuringInvariant` (both already assume `Measurable F`).  So, given
 determinacy, the sole missing ingredient between the proven uniform case
 (`partI_uniform`, Slaman–Steel) and the full published Borel Part I is the single
-bridge **"measurable Turing-invariant ⟹ uniformly Turing-invariant"**.  This makes
-precise the capstone of the attack log: the whole open content of the *natural-class*
-theorem is a uniformity-extraction lemma, nothing else.  (The AD-*general* case —
-dropping `Measurable` — additionally needs the cone-uniformization barrier; see
-`ATTACK.md`.) -/
+bridge **"measurable Turing-invariant ⟹ uniformly Turing-invariant"**.  For the Borel
+class this bridge is a *known theorem* (Slaman–Steel), merely unformalized here — so this
+isolates the single unformalized lemma between our machine-checked uniform case and the
+published Borel Part I.  (The AD-*general* case — dropping `Measurable` — needs the bridge
+for non-definable `F`, which is not known to hold; see `ATTACK.md`.) -/
 theorem partI_Borel_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
     (bridge : ∀ F, Measurable F → TuringInvariant F → UniformlyTuringInvariant F) :
     PartI_Borel :=
@@ -116,14 +116,18 @@ theorem partI_uniform_general (hTD : TuringDeterminacy fun _ => True)
   · exact Or.inl (regressive_uniform hTD F hU hlt)
   · exact Or.inl (incomparable_uniform hTD F hU hincomp)
 
-/-- **The sharpest capstone: full (AD-general) Part I reduces *entirely* to the
-uniformity bridge.**  Given determinacy, if *every* Turing-invariant `F` is
+/-- **Capstone: the uniformity bridge is a *sufficient* condition for full
+(AD-general) Part I.**  Given determinacy, if *every* Turing-invariant `F` is
 uniformly Turing-invariant (on a cone), then Part I holds for *every* Turing-invariant
-`F` — no `Measurable`, no class restriction.  So the whole open content of Part I of
-Martin's conjecture is exactly the one implication **"Turing-invariant ⟹ uniformly
-Turing-invariant"**; everything else (`partI_uniform_general`) is already machine-checked.
-Whether determinacy delivers that bridge for non-definable `F` is the ~50-year barrier
-analysed in `ATTACK.md` (cone dichotomy vs cone uniformization). -/
+`F` — no `Measurable`, no class restriction — because `partI_uniform_general` is already
+machine-checked.  This is the route by which the Borel case is proven (Borel ⟹ uniform).
+
+*Honesty:* the bridge is **sufficient but not necessary**.  Part I says constant-or-above-id,
+and neither implies uniformity (a constant `F` is not uniform; an above-id `F` need not be).
+So this is a natural *strengthening* whose own truth for non-definable `F` is itself open — not
+a reformulation of Part I.  Part I could conceivably hold via a different argument even if the
+bridge fails.  What the barrier in `ATTACK.md` shows is that *this* (the most natural) route is
+blocked by cone dichotomy vs cone uniformization. -/
 theorem partI_general_of_uniformity (hTD : TuringDeterminacy fun _ => True)
     (bridge : ∀ F, TuringInvariant F → UniformlyTuringInvariant F) :
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=

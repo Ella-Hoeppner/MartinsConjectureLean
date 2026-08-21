@@ -97,11 +97,23 @@ theorem pushCone_comp (F G : (ℕ → Bool) → ℕ → Bool) :
     Filter.map (F ∘ G) coneFilter = Filter.map F (Filter.map G coneFilter) :=
   (Filter.map_map).symm
 
+/-- Endpoint of the action: the identity fixes the cone filter (`[id] = U`). -/
+theorem pushCone_id : Filter.map id coneFilter = coneFilter := Filter.map_id
+
+/-- Endpoint of the action: a constant function pushes `U` to the principal
+ultrafilter `pure c` (`[const c]` = the principal filter at `c`).  So the map
+`F ↦ F_*U` carries constants to principals and `id` to `U`; Part 1 is the assertion
+that every `F_*U` is a principal (constant `F`) or lies above `[id] = U` in the
+induced order (above-id `F`). -/
+theorem pushCone_const (c : ℕ → Bool) : Filter.map (fun _ => c) coneFilter = pure c := by
+  rw [Filter.map_const]
+
 #print axioms coneFilter
 #print axioms onCone_iff_mem_coneFilter
 #print axioms coneFilter_iInter
 #print axioms coneFilter_dichotomy
 #print axioms pushCone_dichotomy
 #print axioms pushCone_comp
+#print axioms pushCone_const
 
 end Martin

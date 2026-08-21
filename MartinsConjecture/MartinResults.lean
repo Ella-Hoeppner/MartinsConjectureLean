@@ -87,7 +87,23 @@ theorem measurePreservingAboveId_uniform (hTD : TuringDeterminacy fun _ => True)
   steel_kernel_computable hTD (uti_computable hF)
     (fun hc => not_measurePreserving_of_constant hc hmp)
 
+/-- **The uniformity bridge is the *entire* gap to the natural-class Part I.**
+`PartI_Borel` and `PartI_Uniform_Borel` differ only by `TuringInvariant` vs
+`UniformlyTuringInvariant` (both already assume `Measurable F`).  So, given
+determinacy, the sole missing ingredient between the proven uniform case
+(`partI_uniform`, Slaman–Steel) and the full published Borel Part I is the single
+bridge **"measurable Turing-invariant ⟹ uniformly Turing-invariant"**.  This makes
+precise the capstone of the attack log: the whole open content of the *natural-class*
+theorem is a uniformity-extraction lemma, nothing else.  (The AD-*general* case —
+dropping `Measurable` — additionally needs the cone-uniformization barrier; see
+`ATTACK.md`.) -/
+theorem partI_Borel_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
+    (bridge : ∀ F, Measurable F → TuringInvariant F → UniformlyTuringInvariant F) :
+    PartI_Borel :=
+  fun F hMeas hInv => partI_uniform hTD F hMeas (bridge F hMeas hInv)
+
 #print axioms partI_uniform
+#print axioms partI_Borel_of_uniformity_bridge
 #print axioms regressive_uniform
 #print axioms incomparable_uniform
 #print axioms lachlan_dichotomy_cone_uniform

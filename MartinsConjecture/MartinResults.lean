@@ -129,10 +129,26 @@ theorem partI_general_of_uniformity (hTD : TuringDeterminacy fun _ => True)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   fun F hF => partI_uniform_general hTD F (bridge F hF)
 
+/-- **The uniformity bridge subsumes the `escaping ⟹ MP` route.**  The two known
+sufficient conditions for Part I — the uniformity bridge (this file) and
+`MartinPPT ∧ (escaping ⟹ MP)` (`partI_of_martinPPT_escaping`) — are not independent:
+the uniformity bridge already delivers `escaping ⟹ MP`.  Indeed a uniform `F` is
+constant or above-id (`partI_uniform_general`); an escaping `F` isn't constant
+(`not_constant_of_escaping`), so it's above-id, hence measure-preserving.  So the
+uniformity bridge is the *stronger* of the two open sufficient conditions. -/
+theorem escapingMP_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
+    (bridge : ∀ F, TuringInvariant F → UniformlyTuringInvariant F) :
+    ∀ F, TuringInvariant F → Escaping F → MeasurePreserving F := by
+  intro F hF hesc
+  rcases partI_uniform_general hTD F (bridge F hF) with hc | hai
+  · exact absurd hc (not_constant_of_escaping hesc)
+  · exact aboveId_measurePreserving hai
+
 #print axioms partI_uniform
 #print axioms partI_Borel_of_uniformity_bridge
 #print axioms partI_uniform_general
 #print axioms partI_general_of_uniformity
+#print axioms escapingMP_of_uniformity_bridge
 #print axioms regressive_uniform
 #print axioms incomparable_uniform
 #print axioms lachlan_dichotomy_cone_uniform

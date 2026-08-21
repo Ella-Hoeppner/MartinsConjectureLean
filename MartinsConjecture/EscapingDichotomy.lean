@@ -125,6 +125,17 @@ theorem nonMP_incomparable_cone (hTD : TuringDeterminacy fun _ => True)
   · exact absurd hle (hW₀ Z hZ)
   · exact hinc
 
+/-- **The kernel ideal of a non-MP function avoids a cone.**  If `F` is not
+measure-preserving, its kernel `{Z | BelowF F Z}` (a downward-closed, join-closed
+Turing ideal) contains no degree `≥ᵀ W₀` for some fixed `W₀` — i.e. it is a *proper*
+ideal disjoint from `cone W₀`.  (No determinacy needed; pure from
+`mp_iff_belowF_cofinal`.) -/
+theorem nonMP_kernel_avoids_cone (hnmp : ¬ MeasurePreserving F) :
+    ∃ W₀, ∀ Z, W₀ ≤ₜ Z → ¬ BelowF F Z := by
+  rw [mp_iff_belowF_cofinal] at hnmp
+  push_neg at hnmp
+  exact hnmp
+
 /-- **Profile of a counterexample to `escaping ⟹ MP`.**  An escaping invariant
 function that fails to be measure-preserving is (i) *not above the identity* on
 any cone, and (ii) Turing-incomparable to a whole cone of fixed degrees.  So a
@@ -141,6 +152,7 @@ theorem escaping_nonMP_profile (hTD : TuringDeterminacy fun _ => True)
 #print axioms mp_iff_no_incomparableToFixed
 #print axioms escapingMP_iff_no_fixedIncomparable
 #print axioms belowF_join
+#print axioms nonMP_kernel_avoids_cone
 #print axioms mp_iff_belowF_cofinal
 #print axioms nonMP_incomparable_cone
 #print axioms escaping_nonMP_profile

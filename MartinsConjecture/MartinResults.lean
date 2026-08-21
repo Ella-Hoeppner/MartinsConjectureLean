@@ -127,6 +127,17 @@ theorem counterexample_not_uniformlyInvariant (hTD : TuringDeterminacy fun _ => 
     ¬ UniformlyTuringInvariant F := fun hU =>
   (partI_uniform_general hTD F hU).elim hnc hnai
 
+/-- **Sharper: a Part-I counterexample is not even *computably*-uniformly invariant.**
+Since `partI_computablyUniform` concludes constant-or-above-id from the *weaker*
+`ComputablyUniformlyTuringInvariant` (which `UniformlyTuringInvariant` implies via
+`uti_computable`), a counterexample fails even this weaker uniformity — strictly
+strengthening `counterexample_not_uniformlyInvariant`.  A counterexample admits no
+uniform transform of `≡ᵀ`-witnesses, not even a computable-on-a-cone one. -/
+theorem counterexample_not_computablyUniform (hTD : TuringDeterminacy fun _ => True)
+    (F : (ℕ → Bool) → ℕ → Bool) (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    ¬ ComputablyUniformlyTuringInvariant F := fun hu =>
+  (partI_computablyUniform hTD hu).elim hnc hnai
+
 /-- **Capstone: the uniformity bridge is a *sufficient* condition for full
 (AD-general) Part I.**  Given determinacy, if *every* Turing-invariant `F` is
 uniformly Turing-invariant (on a cone), then Part I holds for *every* Turing-invariant
@@ -162,6 +173,7 @@ theorem escapingMP_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
 #print axioms partI_uniform
 #print axioms partI_Borel_of_uniformity_bridge
 #print axioms counterexample_not_uniformlyInvariant
+#print axioms counterexample_not_computablyUniform
 #print axioms partI_uniform_general
 #print axioms partI_general_of_uniformity
 #print axioms escapingMP_of_uniformity_bridge

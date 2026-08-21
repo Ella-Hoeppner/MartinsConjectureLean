@@ -69,6 +69,16 @@ cones are meager & null, orthogonal to category/measure).  So walls (1)/(2) [no 
 Turing] are *the same wall* as (3) [continuity lives on comeager, not cones], viewed through the
 "continuous-on-a-cone" reformulation.  This is the single sharpest statement of the obstruction.
 
+**Why AD's free measurability does NOT apply Slaman–Steel (a tempting shortcut, refuted).**  Under
+AD every set of reals is Lebesgue-measurable, so *every* invariant `F` is measurable — one is tempted
+to say "S–S proves Part 1 for measurable `F`, and AD makes everything measurable, QED."  This FAILS:
+S–S needs `F` **Borel** (or ∞-Borel with a code), and *measurable = Borel modulo a null set*.  But
+**Turing cones are null** (and meager).  So a measurable `F` may differ from its Borel approximant on
+an *entire cone* — measurability is null-blind exactly where the cone measure lives.  AD hands you
+regularity (measure, Baire, perfect-set) for free, but all of it is null/meager-modulo, hence
+**invisible to the cone filter**.  This is the crispest form of wall 3, and the reason "AD ⟹ Part 1"
+is not a two-line corollary.
+
 **Capstone (dichotomy vs uniformization).**  Determinacy's *only* cone-native tool is the cone
 **dichotomy** — `cone_theorem`: an invariant set contains a cone or its complement does.  Part 1
 needs cone **uniformization** — an effective (Turing, on a cone) *selection* from an invariant

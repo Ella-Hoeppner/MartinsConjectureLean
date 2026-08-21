@@ -50,6 +50,25 @@ The three known proofs each *supply* a missing wall by hypothesis: uniform/Borel
 (a code), hyperarithmetic gives an ordinal-effective handle.  The general case has none.  A crossing
 must manufacture one of the three for non-definable `F` — no formalizable route does.
 
+**How the walls tie together (a clean reformulation, and a correction of my own earlier notes).**
+There are TWO distinct "uniformities", and conflating them is a trap:
+- (A) `F X = Φ_e^X` on a cone (a *single functional*; = "`F` is **continuous on a cone**").  Only
+  meaningful when `F X ≤ᵀ X` (regressive/below).
+- (B) `UniformlyTuringInvariant` = the Slaman–Steel notion: `∃u`, `EquivVia X Y i j ⟹
+  EquivVia (F X) (F Y) (u(i,j))` — reductions *between* `F X` and `F Y`, uniform in the witnesses.
+  This is what `regressive_uniform` / `partI_uniform` actually consume.
+
+(A) does **not** directly imply (B) for regressive `F`: to get `F X → F Y` you'd need `X` (to recompute
+`Y`), but `F X <ᵀ X` means `F X` can't recover `X`.  The only bridge (A)→(B) is *through* Slaman–Steel's
+"Borel ⟹ uniform on a cone" (a single functional is Borel).  So the whole open problem collapses to:
+
+> **Part 1 for `F` ⟸ `F` is continuous (a single `Φ_e`) on a cone** ⟹ Borel-on-cone ⟹ (B) via S–S ⟹ Part 1.
+
+and the barrier is precisely: **AD gives continuity on a *comeager* set, never on a *cone*** (wall 3 —
+cones are meager & null, orthogonal to category/measure).  So walls (1)/(2) [no code / definable-not-
+Turing] are *the same wall* as (3) [continuity lives on comeager, not cones], viewed through the
+"continuous-on-a-cone" reformulation.  This is the single sharpest statement of the obstruction.
+
 **Progress made:** the counterexample profile is now machine-checked and sharp (below), and the
 barrier is precisely located. **Not found:** any crossing. A genuine crossing needs a *new idea*
 to get Turing-uniformity from AD for non-definable functions — or the two unformalized classical

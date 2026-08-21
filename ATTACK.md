@@ -167,6 +167,18 @@ or Posner–Robinson (unformalized forcing). The constraint profile is now sharp
 attempt should target the **uniform-good-rep-selection** gap directly (or accept Steel's game as the
 formalization target for the *uniform-on-reps* fragment).
 
+**Pushforward-action / RK-descent idea (partial, `pushCone_comp` formalized).** The pushforward
+`F ↦ F_*U` is a monoid action: `(F∘G)_*U = F_*(G_*U)`, so `[Fⁿ] = F_*ⁿ U`. A regressive `F` would
+give a candidate descending sequence `[F] > [F²] > …`. **Two obstructions:** (a) the *descent isn't
+established* — `[F²] <ₘ [F]` needs `F X` to land back in the regressive cone, which fails because `F`
+escapes its own domain (same non-uniformity wall); (b) even granting descent, well-foundedness of
+the descent is either RK-well-foundedness of the cone ultrafilter (uncertain / possibly open) or the
+**Martin order well-foundedness = Part 2** (also OPEN) — so it's circular. If (a) were fixed and RK
+were well-founded, one would get "a regressive counterexample is *injective* on a cone" (injective ⟹
+`F_*U ≡_RK U`, no strict descent) — but injective-regressive (`[F] ≡_RK U` yet `[F] <ₘ [id]`) is
+still consistent-looking (RK-order ≠ Martin-order). Net: interesting structure (`pushCone_comp` is a
+clean correct fact), no crossing.
+
 **Live ideas still untried:** (i) formalize the ultrapower/Martin-order object to state "[id] least
 nonstandard" first-class (it equals the existing Martin order, so likely no new leverage). (ii) a
 *forcing-free* substitute for Posner–Robinson using `cone_contains_PPT` (pointed trees) to absorb an

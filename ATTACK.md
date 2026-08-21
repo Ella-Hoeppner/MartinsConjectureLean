@@ -69,6 +69,17 @@ cones are meager & null, orthogonal to category/measure).  So walls (1)/(2) [no 
 Turing] are *the same wall* as (3) [continuity lives on comeager, not cones], viewed through the
 "continuous-on-a-cone" reformulation.  This is the single sharpest statement of the obstruction.
 
+**Capstone (dichotomy vs uniformization).**  Determinacy's *only* cone-native tool is the cone
+**dichotomy** — `cone_theorem`: an invariant set contains a cone or its complement does.  Part 1
+needs cone **uniformization** — an effective (Turing, on a cone) *selection* from an invariant
+multifunction (e.g. `X ⇉ {codes e : Φ_e^X ≡ᵀ F X}`).  AD's *definable* uniformization (Moschovakis)
+applies to *definable* relations; the relation here is `F`-defined hence non-definable, so it doesn't
+apply.  And a general "cone uniformization" principle is *not* known to follow from AD — it is
+essentially **as hard as Part 1 itself**.  So the whole 50-year gap = **the distance between cone
+dichotomy (have) and cone uniformization (need)**.  Every attempt in this log is a failed attempt to
+manufacture uniformization from dichotomy; none succeeds, and there is a principled reason none can
+using only the tools determinacy is known to provide.
+
 **Progress made:** the counterexample profile is now machine-checked and sharp (below), and the
 barrier is precisely located. **Not found:** any crossing. A genuine crossing needs a *new idea*
 to get Turing-uniformity from AD for non-definable functions — or the two unformalized classical

@@ -70,8 +70,35 @@ theorem escapingMP_iff_no_fixedIncomparable (hTD : TuringDeterminacy fun _ => Tr
   ⟨fun h F hF hesc => (mp_iff_no_incomparableToFixed hTD hF hesc).mp (h F hF hesc),
    fun h F hF hesc => (mp_iff_no_incomparableToFixed hTD hF hesc).mpr (h F hF hesc)⟩
 
+/-! ### The kernel ideal
+
+The degrees `Z` that lie below `F` on a cone form a Turing ideal — downward closed
+and closed under join.  Measure-preservation is exactly this ideal being *all*
+degrees; so the obstruction to measure-preservation is a *proper* Turing ideal,
+`F`'s "kernel". -/
+
+/-- `Z` is **eventually below `F`**: `Z ≤ᵀ F X` on a cone. -/
+def BelowF (F : (ℕ → Bool) → ℕ → Bool) (Z : ℕ → Bool) : Prop :=
+  OnCone (fun X => Z ≤ₜ F X)
+
+/-- The kernel ideal is **downward closed**. -/
+theorem belowF_downward {Z W : ℕ → Bool} (h : BelowF F Z) (hWZ : W ≤ₜ Z) :
+    BelowF F W := by
+  obtain ⟨Y, hY⟩ := h
+  exact ⟨Y, fun X hX => hWZ.trans (hY X hX)⟩
+
+/-- The kernel ideal is **closed under join**. -/
+theorem belowF_join {Z W : ℕ → Bool} (hZ : BelowF F Z) (hW : BelowF F W) :
+    BelowF F (Cantor.join Z W) := by
+  obtain ⟨B, hB⟩ := onCone_and hZ hW
+  exact ⟨B, fun X hX => Cantor.join_le (hB X hX).1 (hB X hX).2⟩
+
+/-- **Measure-preservation is exactly the kernel ideal being everything.** -/
+theorem mp_iff_belowF_univ : MeasurePreserving F ↔ ∀ Z, BelowF F Z := Iff.rfl
+
 #print axioms mp_at_or_incomparable
 #print axioms mp_iff_no_incomparableToFixed
 #print axioms escapingMP_iff_no_fixedIncomparable
+#print axioms belowF_join
 
 end Martin

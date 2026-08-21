@@ -141,6 +141,31 @@ separate project needing AD, threaded as a hypothesis, never axiomatized.
    index via `rfind`, run the tail via `univCode ∘ shiftIdx`, region-select) and the composition
    monoid (`iterTrE`, `trE₂`), assembled into `v(i,j)` with `forward_correct`/`backward_correct`.
 
+## Frontier synthesis (Part 1, as of 2026-08-21)
+
+Part 1 now rests on two clean, orthogonal inputs, and both are sharply characterized:
+
+**Determinacy input** — `MartinDichotomy` (`≡ MartinPPT`, `martinPPT_iff_dichotomy`): every set contains a
+pointed perfect tree or its complement contains a cone. Its **invariant case is proved**
+(`perfectDichotomy_invariant`), and by `cone_contains_PPT` a cone is *unconditionally* a full pointed
+perfect tree (with `recover`). Via `dichotomy_of_hull`, the only remaining content is a **uniform
+degree-preserving selection** moving a tree from the invariant hull `Â` down into `A` (the complement-cone
+alternative is inherited from `Â` for free).
+
+**Class-specific input** — `escaping ⟹ MP`, recast as **incomparability-avoidance**: for escaping invariant
+`F`, at each fixed `Z` either `Z ≤ᵀ F X` on a cone or `F X ⊥ Z` on a cone (`mp_at_or_incomparable`); the
+degrees below `F` form a Turing ideal (the *kernel*), and MP ⟺ that ideal is cofinal (`mp_iff_belowF_cofinal`).
+So `escaping ⟹ MP ⟺` no escaping invariant `F` is incomparable to a fixed degree on a cone
+(`escapingMP_iff_no_fixedIncomparable`).
+
+**Counterexample profile** — combining the two, under `MartinPPT` a Part-1 counterexample is tightly
+constrained (`counterexample_incomparable_cone`): any invariant `F` that is neither constant nor above the
+identity on a cone is escaping, non-measure-preserving (MP ⟺ above-id, `mp_iff_aboveId_of_martinPPT`), and
+**Turing-incomparable to a whole cone of fixed degrees**. In the Turing-cone ultrapower this reads: its class
+`[F]` is a nonstandard degree above the kernel bound `W₀` yet incomparable to every standard degree above
+`W₀`. Part 1 asserts no such `[F]` exists; that (and the non-invariant selection) is exactly what remains
+open on the Turing degrees.
+
 ## Headline results (all sorry-free, standard axioms; believed new to Lean)
 
 Recursion-theory foundation (`OracleCode.*`, `Cantor.*`):

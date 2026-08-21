@@ -179,7 +179,9 @@ neither constant nor above-id on a cone must simultaneously be:
 1. **regressive or incomparable to its argument** on a cone;
 2. **incomparable to a whole cone of fixed degrees** `Z ≥ᵀ W₀`, uniformly over every
    countable interval `[W₀,W₁]`;
-3. **not uniformly Turing-invariant** (genuinely "wild" — no uniform witness transform);
+3. **not even computably-uniformly Turing-invariant** (genuinely "wild" — no uniform
+   witness transform, not even a computable-on-a-cone one; a fortiori not
+   `UniformlyTuringInvariant`);
 4. **uncountably-valued** — its values are not covered by any countable set of degrees.
 This is the sharpest fully-verified description of a hypothetical counterexample; Part I
 asserts no `F` meets it, and every known proof route to that assertion is blocked by the
@@ -190,11 +192,11 @@ theorem counterexample_complete_profile (hM : MartinPPT)
     (OnCone (fun X => F X <ₜ X) ∨ OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) ∧
     (∃ W₀, ∀ W₁, OnCone
       (fun X => ∀ Z, W₀ ≤ₜ Z → Z ≤ₜ W₁ → ¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) ∧
-    (¬ UniformlyTuringInvariant F) ∧
+    (¬ ComputablyUniformlyTuringInvariant F) ∧
     (∀ c : ℕ → (ℕ → Bool), ¬ OnCone (fun X => ∃ n, F X ≡ₜ c n)) :=
   ⟨(counterexample_full_profile hM hTD hF hnc hnai).1,
    (counterexample_full_profile hM hTD hF hnc hnai).2,
-   counterexample_not_uniformlyInvariant hTD F hnc hnai,
+   counterexample_not_computablyUniform hTD F hnc hnai,
    nonconstant_values_uncountable hTD hF hnc⟩
 
 #print axioms nonMP_incomparable_interval

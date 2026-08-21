@@ -5,7 +5,7 @@ This file adds a Gödel numbering for Mathlib's `Nat.RecursiveIn`, the inductive
 characterization of oracle computability due to Duve–Roth (Mathlib
 `Mathlib.Computability.RecursiveIn`). The numbering follows the design of
 `Nat.Partrec.Code` (Mathlib `Mathlib.Computability.PartrecCode`), with two
-deliberate deviations, documented in `blueprint.md`:
+deliberate deviations, documented here:
 
 * an extra `oracle` constructor (the point of the exercise);
 * a plain `rfind` constructor instead of `rfind'`-with-offset, chosen so that

@@ -215,8 +215,8 @@ theorem turingReducible_jumpFn (O : ℕ →. ℕ) : O ≤ᵀ jumpFn O := by
 If `A` is computed by code `cI` relative to `B`, every `A`-oracle code can be
 translated to a `B`-oracle code by splicing in `cI` for the `oracle`
 constructor.  This is the mathematical content of "the jump is order
-preserving"; what remains for the full theorem (see LEDGER.md) is only the
-primitive recursiveness of the translation on *encodings*. -/
+preserving"; the primitive recursiveness of the translation on *encodings* — the
+remaining ingredient — is discharged in `JumpInvariance.lean` (`trE_primrec`). -/
 
 /-- Splice the code `cI` in place of every `oracle` call. -/
 def trOracle (cI : OracleCode) : OracleCode → OracleCode
@@ -247,8 +247,8 @@ theorem eval_trOracle {A B : ℕ →. ℕ} {cI : OracleCode} (hI : eval B cI = A
 
 /-- The jump question about `A` at `e` is a jump question about `B` at an
 explicitly given translated code.  (The function `e ↦` that code is
-primitive recursive on encodings — not yet formalized; see LEDGER.md — which
-is the only missing ingredient for `A ≤ᵀ B → jumpFn A ≤ᵀ jumpFn B`.) -/
+primitive recursive on encodings — formalized in `JumpInvariance.lean`
+(`trE_primrec`), giving `A ≤ᵀ B → jumpFn A ≤ᵀ jumpFn B`.) -/
 theorem jumpP_trOracle {A B : ℕ →. ℕ} {cI : OracleCode} (hI : eval B cI = A) (e : ℕ) :
     jumpP A e
       ↔ jumpP B (encodeCode (.comp (trOracle cI (ofNatCode e)) (const e))) := by

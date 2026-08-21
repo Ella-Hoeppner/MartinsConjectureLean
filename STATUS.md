@@ -1,0 +1,99 @@
+# Status — Martin's conjecture in Lean 4 / Mathlib
+
+Machine-checked formal progress on **Martin's conjecture** on degree-invariant functions.
+Full `lake build` green; **0 sorries, 0 custom axioms** (every headline theorem audited via
+`#print axioms` — only `propext, Classical.choice, Quot.sound`). Determinacy is **never**
+axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (with
+`Γ := fun _ => True` the ZF+AD form; open/closed instances are ZFC theorems).
+
+This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
+(constraints + counterexample attempts). Everything below is in namespace `Martin`.
+
+---
+
+## The conjecture, and exactly what is open
+
+**Part 1** (`ConstantOnCone F ∨ AboveIdOnCone F` for Turing-invariant `F`) reduces, provably
+and losslessly, to two open cores (`CoreAnalysis.partI_iff_cores`):
+- `RegressiveImpliesConstant` — `F X <ᵀ X` on a cone ⟹ constant on a cone;
+- `IncomparableImpliesConstant` — `F X ⊥ᵀ X` on a cone ⟹ constant on a cone.
+
+Both cores hold for **uniformly**-invariant `F` (Slaman–Steel, `partI_uniform`) and for
+**degree-bounded** `F` (`bounded_implies_constant`). The general (non-uniform) case on the
+**Turing** degrees is the 50-year-open content (Lutz proved it on the *hyperarithmetic*
+degrees via ordinal machinery unavailable here).
+
+**The two orthogonal inputs Part 1 rests on** (both determinacy theorems; the class-specific
+one is the open one):
+
+1. **Determinacy input** — `MartinDichotomy` (≡ `MartinPPT`, `martinPPT_iff_dichotomy`): every
+   set contains a pointed perfect tree or its complement contains a cone. Its **invariant case
+   is proved** (`perfectDichotomy_invariant`); a cone is *unconditionally* a full pointed
+   perfect tree with the effective `recover` field (`cone_contains_PPT`). Only the
+   **non-invariant** case is unformalized (Martin's fusion). **This half is mathematically
+   known** — formalizing it is optional cleanup, not on the critical path; `MartinPPT` can
+   always be taken as a hypothesis (same trust level as `TuringDeterminacy`).
+
+2. **Class-specific input** — `escaping ⟹ MP` (`escapingMP_iff_no_fixedIncomparable`,
+   `EscapingDichotomy.lean`): equivalent to "no escaping invariant `F` is Turing-incomparable
+   to a fixed degree on a cone." **This is the actual open problem.** See `ATTACK.md`.
+
+`partI_of_dichotomy_noFixedIncomparable` (`PartIRecast.lean`) is the sharpest packaging:
+Part 1 ⟸ (1) + (2).
+
+---
+
+## What is machine-checked (headline map)
+
+**Recursion-theory foundation** (`OracleCode.*`, `Cantor.*`, `Universal.lean`, `Jump.lean`):
+oracle enumeration theorem, the step-indexed universal machine `evaln` + `evaln_prim`, the
+relativized Kleene recursion theorem (`exists_fixedPoint`), s-m-n/padding, Σ₁-completeness of
+the jump, Shoenfield limit lemma, jump strictness `X <ᵀ X′` and its degree-invariance.
+
+**Kleene–Post** (`KleenePost.lean`, `EffectiveKP.lean`): incomparable degrees exist, and the
+effective version `∅ <ᵀ A <ᵀ 0′`.
+
+**Cone theorem / Martin measure** (`ConeTheorem.lean`, `MartinMeasure.lean`, `ConeFilter.lean`):
+`cone_theorem` (dichotomy from `GameDetermined`), the σ-pigeonhole `exists_onCone_of_cover`,
+and the measure packaged as a first-class Mathlib `Filter` — `coneFilter`, proper + countably
+complete (`CountableInterFilter`), ultrafilter on invariant sets (`coneFilter_dichotomy`),
+and `pushCone_dichotomy` (the invariant pushforward is again an ultrafilter).
+
+**Lachlan's theorem, globalized** (`LachlanTheorem.lean`): for a computably-uniformly-invariant
+r.e. operator above id on a cone, `Wˣ ≡ᵀ X` or `Wˣ ≡ᵀ X′` on a cone (both cases built:
+`ContinuousCase.lean`, `DiscontinuousCase.lean`, `CodingFamily*.lean`).
+
+**Bard's Lemma 3.4** (`BardUniformity.lean`, `MartinResults.lean`): `uti_computable`
+(uniform ⟹ computably-uniform), unlocking `partI_uniform` and both cores for the uniform class.
+
+**Measure-preserving reduction** (`MeasurePreserving.lean`, `PointedTree.lean`, `MartinTree.lean`,
+`RawPPT.lean`, `PerfectEmbedding.lean`): Theorem 3.4 ⟸ `GroszekSlaman` ⟸ `MartinPPT`, with
+`recover` (Lutz–Siskind Lemma 2.1 = `lemma21`) and `realizes` (Prop 1.10 =
+`realizes_of_perfectEmbedding`) both **proved as theorems**, not assumed.
+
+**Pointed perfect trees, invariant case fully built** (`ConeTree.lean`, `ConeRawPPT.lean`):
+`invariant_cofinal_contains_PPT` — a Turing-invariant cofinal determined set contains a full
+`PPT`, via `codeReal_equiv` (`codeReal Y ≡ᵀ Y`, a two-direction `RecursiveIn` reduction).
+
+**Counterexample constraints** (`EscapingDichotomy.lean`, `PartIRecast.lean`): see `ATTACK.md`.
+
+---
+
+## Reusable engineering notes (Lean/Mathlib gotchas)
+
+- **`PFun` is not reducible.** `simp`/`rw` refuse to act on `Part.some x >>= f` for variable
+  `f : ℕ →. ℕ`. Workarounds: state things with `f : ℕ → Part ℕ`; use the `mem_eval_*`
+  characterizations in `OracleCode.lean`; `show _ = _ from Part.bind_some _ _` casts.
+- **`Nat.rec_add_one` won't fire** on `Nat.rec` with `Part ℕ` motive via `rw`/`simp`; use
+  `show (Nat.rec (motive := fun _ => Part ℕ) _ _ m).bind _ = _` to expose iota reduction.
+- **`rw` under `have`-binders fails** when the target is in the binder's proof term; `simp only`
+  often succeeds where `rw` fails.
+- **`Primrec.list_rec` step arg needs `.to₂`.** Deep/nested `list_foldr_prim` blows up `whnf`:
+  pass all implicits explicitly `(f := ..)(base := ..)(op := ..)` and
+  `set_option maxHeartbeats 8000000 in`. Use `cond b 1 0` (not `if b then`) to match `list_rec`.
+- **Search-over-`allBoolLists` + oracle-prefix pattern** (`existsOK_prim`/`consb_prim` in
+  `EffectiveTreeReduction.lean`): `list_foldr_prim` + `foldr_or_mem`/`foldr_and_mem`; read the
+  oracle via `graphEnc`/`graphEnc_recursiveIn`; bridge `==` to `Primrec.eq.decide` with
+  `beq_eq_decide` (`primrec_beq`). This is the template for any effective-reduction build.
+- **`Cantor.le_iff_bitg`** turns `X ≤ᵀ Y` into a `RecursiveIn {toPFun Y}` goal about `bitg X`.
+- `if_pos`/`if_neg` are deprecated in current Mathlib (warnings only).

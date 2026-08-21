@@ -1,5 +1,5 @@
 -- Root module: formal progress on Martin's conjecture in Lean 4 / Mathlib.
--- See blueprint.md, LEDGER.md, and REPORT.md at the repository root.
+-- See STATUS.md (codebase map) and ATTACK.md (open-problem log) at the repository root.
 import MartinsConjecture.OracleCode
 import MartinsConjecture.Jump
 import MartinsConjecture.CantorPoints

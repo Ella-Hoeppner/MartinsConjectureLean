@@ -145,8 +145,31 @@ irreducible open content (= the `partI_of_uniformization` hypothesis). Every att
 - **#2** `F X =` largest degree `≤ᵀ X` in a fixed countable ideal `I`: on `cone (⊕I)` it is the
   constant `⊕I`. Same collapse. Any definable regressive rule has a fixed "target" on a cone.
 
-**Live ideas to try next:** (i) the measure→function bridge — is there a determinacy argument that
-turns `F_*U` (ultrafilter) into a *code* on a cone, without Steel's game? (ii) look for a
-*second-order* constraint: iterate `pushCone_dichotomy` (apply to `F∘F`, `F⊕id`) to relate `[F]` to
-`[id]` in the ultrapower. (iii) formalize the ultrapower object itself to make the "`[id]` least
-nonstandard" statement first-class and attack it directly.
+**The reps→all-X gap, made precise (multiple angles all agree).** `exists_uniform_index_on_cone`
+gives a *single* code `e` with `F Y = Φ_e^Y` on a *representative* `Y` of each degree. For any `X`,
+picking a good rep `Y_X ≡ᵀ X` (so `Y_X = Φ_{b_X}^X`) gives `F X ≡ᵀ Φ_e^{Y_X} = Φ_{e∘b_X}^X`
+(via `eval_trE_comp`) — a *per-X* code `c_X = e∘b_X`. A *single* code on all `X` (⟹ the uniform
+case, `regressive_uniform`, done) needs a **uniform** `b` computing a good rep. But:
+- verifying "`Y` is a good rep" needs `F` (non-computable) ⟹ can't *search* for `Y_X`;
+- selecting `Y_X` uniformly is a **uniformization of the relation "`Y` good rep of `X`"**, which is
+  *defined via `F`* ⟹ non-definable ⟹ AD-uniformization doesn't apply.
+
+So the single unclosable gap = **uniform selection of a good representative**, blocked because `F`
+is non-definable. Every route (measure→function bridge, reps→all-X, good-rep uniformization) is the
+*same* barrier: no determinacy tool extracts a code from an arbitrary invariant function. This is
+why the known proofs all require a definability/uniformity input the general case lacks.
+
+**Assessment of this session.** Formalized 3 correct new constraints (`nonMP_incomparable_interval`,
+`counterexample_full_profile`, + the earlier `nonMP_incomparable_cone` family). Located the barrier
+precisely and confirmed it from 4 independent angles. No crossing found — none expected; a genuine
+crossing would be Steel's game (multi-session, and even then only bridges reps with the above gap)
+or Posner–Robinson (unformalized forcing). The constraint profile is now sharp enough that a future
+attempt should target the **uniform-good-rep-selection** gap directly (or accept Steel's game as the
+formalization target for the *uniform-on-reps* fragment).
+
+**Live ideas still untried:** (i) formalize the ultrapower/Martin-order object to state "[id] least
+nonstandard" first-class (it equals the existing Martin order, so likely no new leverage). (ii) a
+*forcing-free* substitute for Posner–Robinson using `cone_contains_PPT` (pointed trees) to absorb an
+incomparable degree into a jump — unclear if trees can replace Kumabe–Slaman forcing. (iii) attack
+the good-rep-selection gap under AD via a determinacy game whose payoff *is* "II codes a good rep"
+(needs the recursion theorem — now available — for honest play; this is essentially Steel's game).

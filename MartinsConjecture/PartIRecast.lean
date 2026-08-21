@@ -22,6 +22,15 @@ open Cantor
 
 namespace Martin
 
+/-- **Under `MartinPPT`, measure-preservation is exactly above-the-identity** for
+invariant functions (Theorem 3.4 and its converse).  So the "not above the
+identity" clause of the counterexample profile (`escaping_nonMP_profile`) is
+equivalent to failing measure-preservation — the profile is tight. -/
+theorem mp_iff_aboveId_of_martinPPT (hM : MartinPPT) {F : (ℕ → Bool) → ℕ → Bool}
+    (hF : TuringInvariant F) :
+    MeasurePreserving F ↔ AboveIdOnCone F :=
+  ⟨fun hmp => measurePreservingAboveId_of_martinPPT hM hF hmp, aboveId_measurePreserving⟩
+
 /-- **Part 1 from the two inputs.**  The perfect-set dichotomy (determinacy) and
 the incomparability-avoidance of escaping functions (class-specific) together give
 Part 1: every Turing-invariant function is constant on a cone or above the

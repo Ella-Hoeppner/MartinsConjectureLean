@@ -22,6 +22,16 @@ must collapse, and *understanding the collapse* is where a proof idea would hide
 construction would need to drop determinacy (ZFC-only), which proves the weaker "AD is
 necessary" — not a disproof of the AD conjecture.
 
+*Concrete disproof-side target (scoped, not yet attempted — the only accessible "disproof"
+result).* Formalize a **ZFC/AC counterexample** ⟹ "Part 1 is not a theorem of ZF+AC; determinacy
+is necessary." Recipe: a representative-choice `rep : ℝ→ℝ` with `rep X ≡ᵀ X`, constant on degrees
+(`Classical.choice` on the `≡ᵀ`-quotient); an injective `g` on degrees `≥ᵀ 0′` with `0 <ᵀ g(d) <ᵀ d`
+(intermediate degrees exist — the project has `EffectiveKP`: `∅ <ᵀ A <ᵀ 0′` relativizes; injectivity
+by AC since each `d` has continuum-many intermediates); then `F X = g(rep X)` is invariant, regressive,
+nonconstant. The subtle part is *provable* nonconstancy (needs the injective choice, a cardinality
+argument). ~50-100 lines; genuine but "known" (everyone knows AC breaks Part 1), and it does **not**
+touch the AD-frontier — it only delineates the role of determinacy. Left as a documented future target.
+
 ## BOTTOM LINE (the barrier — read this first)
 
 Explored ~a dozen angles (index stabilization, Steel's game, Posner–Robinson, descending

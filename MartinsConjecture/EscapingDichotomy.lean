@@ -96,9 +96,40 @@ theorem belowF_join {Z W : ℕ → Bool} (hZ : BelowF F Z) (hW : BelowF F W) :
 /-- **Measure-preservation is exactly the kernel ideal being everything.** -/
 theorem mp_iff_belowF_univ : MeasurePreserving F ↔ ∀ Z, BelowF F Z := Iff.rfl
 
+/-- **Measure-preservation is exactly the kernel ideal being cofinal.**  Since the
+ideal is downward closed, being *unbounded* already forces it to be everything.
+So the obstruction to measure-preservation is a **bounded** kernel: a non-MP
+function's values, on cones, lie below no fixed degree (escaping) yet compute only
+degrees below some fixed bound. -/
+theorem mp_iff_belowF_cofinal :
+    MeasurePreserving F ↔ ∀ W, ∃ Z, W ≤ₜ Z ∧ BelowF F Z := by
+  constructor
+  · exact fun hmp W => ⟨W, Cantor.le.refl W, hmp W⟩
+  · intro hcof Z
+    obtain ⟨Z', hZZ', hZ'⟩ := hcof Z
+    exact belowF_downward hZ' hZZ'
+
+/-- **A counterexample to `escaping ⟹ MP` is incomparable to a whole cone of
+degrees.**  If an escaping invariant `F` is not measure-preserving, its kernel is
+bounded by some `W₀`, and above `W₀` every fixed degree is Turing-*incomparable*
+to `F` on a cone.  This sharpens the escape theorem: not only does `F` avoid every
+fixed degree from below, it is incomparable to all sufficiently high ones. -/
+theorem nonMP_incomparable_cone (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (hesc : Escaping F) (hnmp : ¬ MeasurePreserving F) :
+    ∃ W₀, ∀ Z, W₀ ≤ₜ Z → IncomparableToFixed F Z := by
+  rw [mp_iff_belowF_cofinal] at hnmp
+  push_neg at hnmp
+  obtain ⟨W₀, hW₀⟩ := hnmp
+  refine ⟨W₀, fun Z hZ => ?_⟩
+  rcases mp_at_or_incomparable hTD hF hesc Z with hle | hinc
+  · exact absurd hle (hW₀ Z hZ)
+  · exact hinc
+
 #print axioms mp_at_or_incomparable
 #print axioms mp_iff_no_incomparableToFixed
 #print axioms escapingMP_iff_no_fixedIncomparable
 #print axioms belowF_join
+#print axioms mp_iff_belowF_cofinal
+#print axioms nonMP_incomparable_cone
 
 end Martin

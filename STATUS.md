@@ -57,7 +57,8 @@ effective version `∅ <ᵀ A <ᵀ 0′`.
 `cone_theorem` (dichotomy from `GameDetermined`), the σ-pigeonhole `exists_onCone_of_cover`,
 and the measure packaged as a first-class Mathlib `Filter` — `coneFilter`, proper + countably
 complete (`CountableInterFilter`), ultrafilter on invariant sets (`coneFilter_dichotomy`),
-and `pushCone_dichotomy` (the invariant pushforward is again an ultrafilter).
+and `pushCone_dichotomy`/`pushCone_comp`/`pushCone_id`/`pushCone_const` (the invariant
+pushforward `F ↦ F_*U` is a monoid action; carries `id ↦ U`, `const ↦ principal`).
 
 **Lachlan's theorem, globalized** (`LachlanTheorem.lean`): for a computably-uniformly-invariant
 r.e. operator above id on a cone, `Wˣ ≡ᵀ X` or `Wˣ ≡ᵀ X′` on a cone (both cases built:
@@ -75,7 +76,14 @@ r.e. operator above id on a cone, `Wˣ ≡ᵀ X` or `Wˣ ≡ᵀ X′` on a cone 
 `invariant_cofinal_contains_PPT` — a Turing-invariant cofinal determined set contains a full
 `PPT`, via `codeReal_equiv` (`codeReal Y ≡ᵀ Y`, a two-direction `RecursiveIn` reduction).
 
-**Counterexample constraints** (`EscapingDichotomy.lean`, `PartIRecast.lean`): see `ATTACK.md`.
+**Counterexample constraints** (`EscapingDichotomy.lean`, `PartIRecast.lean`,
+`CounterexampleConstraints.lean`): machine-checked profile of any Part-1 counterexample —
+`nonMP_incomparable_cone`/`_interval` (incomparable to a whole cone of fixed degrees, uniform
+over each countable interval), `nonMP_kernel_avoids_cone` (kernel ideal is proper),
+`nonconstant_values_uncountable`, `counterexample_full_profile`,
+`incomparable_case_doubly_incomparable`, and `regressive_conePreserving_descending_chain`.
+The precise barrier (no Turing-code extraction from a non-definable invariant `F`) and all
+construction probes are logged in `ATTACK.md`.
 
 ---
 

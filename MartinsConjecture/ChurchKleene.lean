@@ -74,8 +74,32 @@ theorem no_omega1_decreasing_conePreserving
     (hstep : ∀ X, base ≤ₜ X → churchKleene (F X) < churchKleene X ∧ base ≤ₜ F X) : False :=
   no_regressive_of_ordinal_rank hstep
 
+/-- **The `ω₁`-behavior dichotomy.**  A regressive invariant `F` (on a cone `F X ≤ᵀ X`) either
+**preserves** `ω₁^X` (`ω₁^{F X} = ω₁^X`) on a cone, or **strictly decreases** it (`ω₁^{F X} < ω₁^X`)
+on a cone.  This is the first step of Lutz's reduction; combined with
+`no_omega1_decreasing_conePreserving`, the strict-decrease branch forces `F` to escape its own cone,
+so a genuine (cone-preserving) counterexample lands in the `ω₁`-preserving branch — the open case. -/
+theorem regressive_omega1_dichotomy (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} (hF : TuringInvariant F)
+    (hreg : OnCone (fun X => F X ≤ₜ X)) :
+    OnCone (fun X => churchKleene (F X) = churchKleene X) ∨
+    OnCone (fun X => churchKleene (F X) < churchKleene X) := by
+  have hTI : TuringInvariantSet {X | churchKleene (F X) < churchKleene X} := by
+    intro X Y hXY
+    have hFeq : churchKleene (F X) = churchKleene (F Y) := churchKleene_invariant (hF X Y hXY)
+    have hXeq : churchKleene X = churchKleene Y := churchKleene_invariant hXY
+    constructor
+    · intro h; rw [Set.mem_setOf_eq, ← hFeq, ← hXeq]; exact h
+    · intro h; rw [Set.mem_setOf_eq, hFeq, hXeq]; exact h
+  rcases cone_theorem _ hTI (hTD _ trivial hTI) with ⟨W, hW⟩ | ⟨W, hW⟩
+  · exact Or.inr ⟨W, fun X hX => hW hX⟩
+  · obtain ⟨B, hB⟩ := onCone_and hreg ⟨W, fun X hX => hW hX⟩
+    exact Or.inl ⟨B, fun X hX =>
+      le_antisymm (churchKleene_mono (hB X hX).1) (not_lt.mp (hB X hX).2)⟩
+
 #print axioms churchKleene_mono
 #print axioms churchKleene_invariant
 #print axioms no_omega1_decreasing_conePreserving
+#print axioms regressive_omega1_dichotomy
 
 end Martin

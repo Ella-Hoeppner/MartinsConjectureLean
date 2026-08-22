@@ -57,6 +57,26 @@ hyperarithmetic development).  The finite-jump decomposition above is the *eleme
 transfinite picture: it reaches the finite-jump boundary (Case B) with only the countable σ-pigeonhole,
 and stops exactly where the `ω₁`-Fodor step would take over.
 
+**Why Lutz's hyperarithmetic theorem does NOT reduce the Turing case (a correction of a natural
+confusion, and the real reason it's open).**  Lutz proves Martin's conjecture for *hyp-invariant*
+functions on the **hyperarithmetic degrees** `D_h`.  A Turing-invariant `F` is generally **not**
+hyp-invariant: `X ≡_h Y` (hyp-equivalent, weaker than `≡ᵀ`) does not give `X ≡ᵀ Y`, so Turing-invariance
+does not force `F X ≡_h F Y`, and `F` induces no well-defined function on `D_h`.  So Lutz's theorem is
+about a *different invariance notion* and simply does not apply to the Turing regressive core — that
+invariance mismatch, not just the ordinal machinery, is why the Turing case is genuinely separate and open.
+
+*Bounded cases are the easy ones, not the residual.*  Both Turing-bounded (`F X ≤ᵀ Z`,
+`bounded_implies_constant`) **and** hyp-bounded (`F X ≤_h c`) force constancy: there are only *countably
+many* hyperarithmetic-in-`c` reals, so hyp-bounded values are countable and `nonconstant_values_uncountable`
+kills them.  So the difficulty is **not** boundedness.
+
+*So the open content is the escaping/preserving cases.*  A genuine counterexample has values that are
+*unbounded* — arithmetically escaping (`CaseBConstant` = arithmetic-*preserving* `F X ≡ₐ X`, values track
+`X` and are unbounded) — while dropping the Turing degree.  The obstruction is a `≤ᵀ`-normality
+(pressing-down) argument that works when the fiber is uncountable and the argument-tracking values escape
+every countable bound; neither the countable σ-pigeonhole (needs a countable value-set) nor Lutz's `D_h`
+Fodor (needs hyp-invariance) supplies it.  This is the exact gap.
+
 Equivalent single formulation (via the measure-preserving route): **escaping ⟹ MP**, i.e.
 every escaping invariant `F` reaches every degree from above on a cone. Recast as an
 incomparability statement (`escapingMP_iff_no_fixedIncomparable`): *no escaping invariant `F`

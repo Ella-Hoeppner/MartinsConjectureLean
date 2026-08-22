@@ -89,6 +89,12 @@ non-definable `F` is itself open. `escapingMP_of_uniformity_bridge`: the bridge 
 `invariant_cofinal_contains_PPT` — a Turing-invariant cofinal determined set contains a full
 `PPT`, via `codeReal_equiv` (`codeReal Y ≡ᵀ Y`, a two-direction `RecursiveIn` reduction).
 
+**Regressive-core decomposition** (`RegressiveJumpDecomp.lean`): `regressive_jump_dichotomy` — a
+new jump-distance σ-pigeonhole (each degree has countably many predecessors) splits the open
+regressive core into **Case B** (`X ≤ᵀ (F X)^(k)`: `F` preserves the arithmetic degree, finitary)
+or **Case A** (`X ≰ᵀ (F X)^(n)` ∀n: Lutz's `ω₁^x` hyperarithmetic regime). Pinpoints the obstruction
+as the lack of a well-founded rank on the Turing degrees; see `ATTACK.md`.
+
 **Counterexample constraints** (`EscapingDichotomy.lean`, `PartIRecast.lean`,
 `CounterexampleConstraints.lean`): machine-checked profile of any Part-1 counterexample —
 `nonMP_incomparable_cone`/`_interval` (incomparable to a whole cone of fixed degrees, uniform

@@ -87,4 +87,47 @@ theorem regressive_jump_dichotomy (hTD : TuringDeterminacy fun _ => True)
 
 #print axioms regressive_jump_dichotomy
 
+/-! ### Packaging as a core-reduction
+
+The dichotomy reduces the open regressive core to two sharper sub-cores, exactly
+parallel to `partI_iff_cores`.  A future proof need only settle each: `CaseBConstant`
+(the finitary, arithmetic-preserving case) and `CaseAConstant` (the transfinite,
+Lutz-`ω₁^x` case). -/
+
+/-- The regressive core: a regressive invariant function is constant on a cone. -/
+def RegressiveConstant : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+    OnCone (fun X => F X <ₜ X) → ConstantOnCone F
+
+/-- **Case B sub-core** (finitary): a regressive invariant `F` that, on a cone, has
+`X ≤ᵀ (F X)^(k)` for some fixed `k` (so `F` preserves the arithmetic degree) is
+constant on a cone. -/
+def CaseBConstant : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+    OnCone (fun X => F X <ₜ X) →
+    (∃ k, OnCone (fun X => X ≤ₜ Cantor.jump^[k] (F X))) → ConstantOnCone F
+
+/-- **Case A sub-core** (Lutz-`ω₁^x` regime): a regressive invariant `F` that, on a
+cone, has `X ≰ᵀ (F X)^(n)` for every `n` (so `F X` is arithmetically strictly below
+`X`) is constant on a cone. -/
+def CaseAConstant : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+    OnCone (fun X => F X <ₜ X) →
+    OnCone (fun X => ∀ k, ¬ X ≤ₜ Cantor.jump^[k] (F X)) → ConstantOnCone F
+
+/-- **The regressive core reduces to its two jump-distance sub-cores.**  If both the
+finitary Case B and the Lutz-hyperarithmetic Case A sub-cores hold, the full open
+regressive core follows — by `regressive_jump_dichotomy`, every regressive invariant
+`F` lands in one case on a cone.  This is the proof-directed payoff of the
+decomposition: it splits the open problem into a piece the elementary cone-measure
+method can reach (B) and the piece that genuinely needs `ω₁^x` (A). -/
+theorem regressiveCore_of_cases (hTD : TuringDeterminacy fun _ => True)
+    (hA : CaseAConstant) (hB : CaseBConstant) : RegressiveConstant := by
+  intro F hF hreg
+  rcases regressive_jump_dichotomy hTD hF with hcaseA | ⟨k, hcaseB⟩
+  · exact hA F hF hreg hcaseA
+  · exact hB F hF hreg ⟨k, hcaseB⟩
+
+#print axioms regressiveCore_of_cases
+
 end Martin

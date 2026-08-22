@@ -170,4 +170,51 @@ theorem regressiveCore_of_cases (hTD : TuringDeterminacy fun _ => True)
 
 #print axioms regressiveCore_of_cases
 
+/-! ### The incomparable core, decomposed two-dimensionally
+
+Applying *both* jump-distance dichotomies (`regressive_jump_dichotomy` for `X` vs `F X`'s
+jumps, `jump_dichotomy_dual` for `F X` vs `X`'s jumps) to an incomparable `F` (`F X ⊥ᵀ X`,
+where both raw comparisons fail) splits the open incomparable core into **four** sharper
+sub-cores by arithmetic position: `F X ≡ₐ X` / `F X <ₐ X` / `X <ₐ F X` / arithmetically
+incomparable. -/
+
+/-- The incomparable core: an invariant `F` incomparable to its argument on a cone is
+constant on a cone. -/
+def IncomparableConstant : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+    OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) → ConstantOnCone F
+
+/-- **The incomparable core reduces to its four jump-distance sub-cores.**  Given the four
+sub-cores — for the arithmetic-position cases `(An/Bn) × (Am/Bm)` where `An`: `X ≰ᵀ (F X)^(n)` ∀n,
+`Bn`: `X ≤ᵀ (F X)^(k)`, `Am`: `F X ≰ᵀ X^(n)` ∀n, `Bm`: `F X ≤ᵀ X^(k)` — the full open
+incomparable core follows: every incomparable `F` lands in one of the four on a cone. -/
+theorem incomparableCore_of_cases (hTD : TuringDeterminacy fun _ => True)
+    (hAnAm : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+      OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+      OnCone (fun X => ∀ k, ¬ X ≤ₜ Cantor.jump^[k] (G X)) →
+      OnCone (fun X => ∀ k, ¬ G X ≤ₜ Cantor.jump^[k] X) → ConstantOnCone G)
+    (hAnBm : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+      OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+      OnCone (fun X => ∀ k, ¬ X ≤ₜ Cantor.jump^[k] (G X)) →
+      (∃ k, OnCone (fun X => G X ≤ₜ Cantor.jump^[k] X)) → ConstantOnCone G)
+    (hBnAm : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+      OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+      (∃ k, OnCone (fun X => X ≤ₜ Cantor.jump^[k] (G X))) →
+      OnCone (fun X => ∀ k, ¬ G X ≤ₜ Cantor.jump^[k] X) → ConstantOnCone G)
+    (hBnBm : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+      OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+      (∃ k, OnCone (fun X => X ≤ₜ Cantor.jump^[k] (G X))) →
+      (∃ k, OnCone (fun X => G X ≤ₜ Cantor.jump^[k] X)) → ConstantOnCone G) :
+    IncomparableConstant := by
+  intro F hF hincomp
+  rcases regressive_jump_dichotomy hTD hF with hAn | hBn
+  · rcases jump_dichotomy_dual hTD hF with hAm | hBm
+    · exact hAnAm F hF hincomp hAn hAm
+    · exact hAnBm F hF hincomp hAn hBm
+  · rcases jump_dichotomy_dual hTD hF with hAm | hBm
+    · exact hBnAm F hF hincomp hBn hAm
+    · exact hBnBm F hF hincomp hBn hBm
+
+#print axioms incomparableCore_of_cases
+
 end Martin

@@ -173,6 +173,31 @@ theorem incomparable_case_doubly_incomparable (hM : MartinPPT)
     (fun hmp => hnai ((mp_iff_aboveId_of_martinPPT hM hF).mp hmp))
   exact ⟨W₀, fun Z hZ => onCone_and hincX (hW₀ Z hZ)⟩
 
+/-- **Arithmetically-bounded ⟹ constant** (strengthens `bounded_implies_constant`).
+If a Turing-invariant `F` has, on a cone, `F X ≤ᵀ c^(n)` for *some* finite `n` (i.e.
+`F X` is arithmetic in a fixed `c`), then `F` is constant on a cone.  Reason: the
+degrees `≤ᵀ c^(n)` over all `n` are a *countable* set (each `{≤ᵀ c^(n)}` is countable,
+countable union), so the values are countably covered and `nonconstant_values_uncountable`
+forces constancy.  Consequently **a counterexample is *arithmetically* escaping** — its
+values leave every fixed arithmetic cone, not merely every fixed Turing cone. -/
+theorem arithmetically_bounded_implies_constant (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) {c : ℕ → Bool}
+    (hbd : OnCone fun X => ∃ n, F X ≤ₜ Cantor.jump^[n] c) : ConstantOnCone F := by
+  by_contra hnc
+  set d : ℕ → (ℕ → Bool) :=
+    fun m => nthComputableIn (Cantor.jump^[m.unpair.1] c) m.unpair.2 with hd
+  have hcov : OnCone (fun X => ∃ m, F X ≡ₜ d m) := by
+    obtain ⟨Y, hY⟩ := hbd
+    refine ⟨Y, fun X hX => ?_⟩
+    obtain ⟨n, hn⟩ := hY X hX
+    obtain ⟨k, hk⟩ := exists_nthComputableIn hn
+    refine ⟨Nat.pair n k, ?_⟩
+    have hdeq : d (Nat.pair n k) = F X := by
+      rw [hd]; simp only [Nat.unpair_pair]; exact hk
+    rw [hdeq]
+    exact Cantor.equiv.refl (F X)
+  exact nonconstant_values_uncountable hTD hF hnc d hcov
+
 /-- **The complete machine-checked profile of a Part-I counterexample.**  Bundling
 every constraint proved here and in `MartinResults`, a Turing-invariant `F` that is
 neither constant nor above-id on a cone must simultaneously be:
@@ -205,6 +230,7 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms regressive_conePreserving_descending_chain
 #print axioms no_idempotent_conePreserving_regressive
 #print axioms incomparable_case_doubly_incomparable
+#print axioms arithmetically_bounded_implies_constant
 #print axioms counterexample_complete_profile
 
 end Martin

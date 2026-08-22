@@ -100,9 +100,20 @@ degrees; see `ATTACK.md`.
 ordinal ultrapower is well-founded (countable completeness ⟹ no infinite `≺`-descending sequence of
 ordinal-valued functions on cones). `no_regressive_of_ordinal_rank`: the regressive core follows from
 a degree-invariant ordinal rank a regressive `F` strictly decreases. This isolates the *sole* missing
-ingredient (the rank `ω₁^x`, which fails only in the `ω₁`-preserving case). New constraints
-(`CounterexampleConstraints.lean`): `arithmetically_bounded_implies_constant` (counterexample is
-*arithmetically* escaping), `nonconstant_above_or_incomparable_fixed` (per-degree trap).
+ingredient — the rank `ω₁^x`.
+
+**The Church–Kleene ordinal `ω₁^x`** (`ChurchKleene.lean`): `churchKleene` (relativized `ω₁^X` = sup of
+order types of `X`-computable well-orders, correctly guarded `≤ᵀ X`), with `churchKleene_mono` +
+`churchKleene_invariant` proven. Instantiating the engine: `no_omega1_decreasing_conePreserving` (no
+cone-preserving regressive `F` strictly decreases `ω₁^x`) and `regressive_omega1_dichotomy` (a regressive
+`F` preserves or strictly decreases `ω₁^x` on a cone). So a cone-preserving counterexample is
+**`ω₁`-preserving** — the genuinely open case (Lutz's hyperarithmetic method handles the `ω₁`-decreasing
+case on `D_h`; the `ω₁`-preserving Turing case needs `Σ¹₁`-bounding that fails on cones).
+
+New constraints (`CounterexampleConstraints.lean`): `arithmetically_bounded_implies_constant`
+(counterexample is *arithmetically* escaping), `nonconstant_above_or_incomparable_fixed` (per-degree
+trap). Both open cores are reduced to jump-distance sub-cores (`regressiveCore_of_cases`,
+`incomparableCore_of_cases`).
 
 **Counterexample constraints** (`EscapingDichotomy.lean`, `PartIRecast.lean`,
 `CounterexampleConstraints.lean`): machine-checked profile of any Part-1 counterexample —

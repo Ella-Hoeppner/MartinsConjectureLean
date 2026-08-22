@@ -227,7 +227,9 @@ neither constant nor above-id on a cone must simultaneously be:
 3. **not even computably-uniformly Turing-invariant** (genuinely "wild" — no uniform
    witness transform, not even a computable-on-a-cone one; a fortiori not
    `UniformlyTuringInvariant`);
-4. **uncountably-valued** — its values are not covered by any countable set of degrees.
+4. **uncountably-valued** — its values are not covered by any countable set of degrees; and
+5. **arithmetically escaping** — for every fixed `c`, on no cone is `F X ≤ᵀ c^(n)` for some
+   `n` (it leaves every fixed *arithmetic* cone, strictly stronger than Turing-escaping).
 This is the sharpest fully-verified description of a hypothetical counterexample; Part I
 asserts no `F` meets it, and every known proof route to that assertion is blocked by the
 barrier analysed in `ATTACK.md`. -/
@@ -238,11 +240,13 @@ theorem counterexample_complete_profile (hM : MartinPPT)
     (∃ W₀, ∀ W₁, OnCone
       (fun X => ∀ Z, W₀ ≤ₜ Z → Z ≤ₜ W₁ → ¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) ∧
     (¬ ComputablyUniformlyTuringInvariant F) ∧
-    (∀ c : ℕ → (ℕ → Bool), ¬ OnCone (fun X => ∃ n, F X ≡ₜ c n)) :=
+    (∀ c : ℕ → (ℕ → Bool), ¬ OnCone (fun X => ∃ n, F X ≡ₜ c n)) ∧
+    (∀ c : ℕ → Bool, ¬ OnCone (fun X => ∃ n, F X ≤ₜ Cantor.jump^[n] c)) :=
   ⟨(counterexample_full_profile hM hTD hF hnc hnai).1,
    (counterexample_full_profile hM hTD hF hnc hnai).2,
    counterexample_not_computablyUniform hTD F hnc hnai,
-   nonconstant_values_uncountable hTD hF hnc⟩
+   nonconstant_values_uncountable hTD hF hnc,
+   fun c hbd => hnc (arithmetically_bounded_implies_constant hTD hF hbd)⟩
 
 #print axioms nonMP_incomparable_interval
 #print axioms nonconstant_values_uncountable

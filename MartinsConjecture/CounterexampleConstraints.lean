@@ -198,6 +198,26 @@ theorem arithmetically_bounded_implies_constant (hTD : TuringDeterminacy fun _ =
     exact Cantor.equiv.refl (F X)
   exact nonconstant_values_uncountable hTD hF hnc d hcov
 
+/-- **Per-degree trap.**  For a nonconstant invariant `F` and *any* fixed degree `A`,
+on a cone either `A ≤ᵀ F X` (`F` reaches above `A`) or `F X ⊥ A` (`F` is incomparable
+to `A`) — `F` is never eventually `≤ᵀ A` (that would be bounded, hence constant).  A
+counterexample thus meets every fixed degree either from strictly above or sideways. -/
+theorem nonconstant_above_or_incomparable_fixed (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) (A : ℕ → Bool) :
+    OnCone (fun X => A ≤ₜ F X) ∨ OnCone (fun X => ¬ A ≤ₜ F X ∧ ¬ F X ≤ₜ A) := by
+  have hTIa : TuringInvariantSet {X | A ≤ₜ F X} :=
+    fun X Y hXY => ⟨fun h => h.trans (hF X Y hXY).1, fun h => h.trans (hF X Y hXY).2⟩
+  rcases cone_theorem _ hTIa (hTD _ trivial hTIa) with ⟨Y, hY⟩ | ⟨Y, hY⟩
+  · exact Or.inl ⟨Y, fun X hX => hY hX⟩
+  · have hnb : ¬ OnCone (fun X => F X ≤ₜ A) := fun hb => hnc (bounded_implies_constant hTD hF hb)
+    have hTIb : TuringInvariantSet {X | F X ≤ₜ A} :=
+      fun X Y hXY => ⟨fun h => (hF X Y hXY).2.trans h, fun h => (hF X Y hXY).1.trans h⟩
+    rcases cone_theorem _ hTIb (hTD _ trivial hTIb) with ⟨Z, hZ⟩ | ⟨Z, hZ⟩
+    · exact absurd ⟨Z, fun X hX => hZ hX⟩ hnb
+    · obtain ⟨B, hB⟩ := onCone_and (⟨Y, fun X hX => hY hX⟩ : OnCone (fun X => ¬ A ≤ₜ F X))
+        (⟨Z, fun X hX => hZ hX⟩ : OnCone (fun X => ¬ F X ≤ₜ A))
+      exact Or.inr ⟨B, hB⟩
+
 /-- **The complete machine-checked profile of a Part-I counterexample.**  Bundling
 every constraint proved here and in `MartinResults`, a Turing-invariant `F` that is
 neither constant nor above-id on a cone must simultaneously be:
@@ -231,6 +251,7 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms no_idempotent_conePreserving_regressive
 #print axioms incomparable_case_doubly_incomparable
 #print axioms arithmetically_bounded_implies_constant
+#print axioms nonconstant_above_or_incomparable_fixed
 #print axioms counterexample_complete_profile
 
 end Martin

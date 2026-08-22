@@ -87,6 +87,46 @@ theorem regressive_jump_dichotomy (hTD : TuringDeterminacy fun _ => True)
 
 #print axioms regressive_jump_dichotomy
 
+/-- **Dual jump-distance dichotomy** (`F X` vs `X`'s jumps).  For any invariant `F`, on
+a cone either `F X ≰ᵀ X^(n)` for all `n` (`F X` is arithmetically *not below* `X`) or there
+is a fixed `k` with `F X ≤ᵀ X^(k)` on a cone (`F X` is arithmetic in `X`).  Together with
+`regressive_jump_dichotomy` this two-dimensionally locates `F X` relative to `X` in the
+finite jump hierarchy — the structural map for the incomparable core (`F X ⊥ᵀ X`, where
+both `X ≰ᵀ F X` and `F X ≰ᵀ X`, so both raw comparisons fail and only the jump-distances
+carry information). -/
+theorem jump_dichotomy_dual (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) :
+    OnCone (fun X => ∀ k, ¬ F X ≤ₜ Cantor.jump^[k] X) ∨
+    ∃ k, OnCone (fun X => F X ≤ₜ Cantor.jump^[k] X) := by
+  set g : ℕ → Set (ℕ → Bool) := fun n => Nat.casesOn n
+    {X | ∀ k, ¬ F X ≤ₜ Cantor.jump^[k] X}
+    (fun k => {X | F X ≤ₜ Cantor.jump^[k] X}) with hg
+  have hjinv : ∀ (k : ℕ) X Y, X ≡ₜ Y → Cantor.jump^[k] X ≡ₜ Cantor.jump^[k] Y :=
+    fun k X Y hXY => (uniformlyTuringInvariant_jumpIterate k).turingInvariant _ _ hXY
+  have hinv : ∀ n, TuringInvariantSet (g n) := by
+    intro n
+    cases n with
+    | zero =>
+      intro X Y hXY
+      exact ⟨fun hX k hk => hX k (transport_le (hF Y X hXY.symm) (hjinv k Y X hXY.symm) hk),
+             fun hY k hk => hY k (transport_le (hF X Y hXY) (hjinv k X Y hXY) hk)⟩
+    | succ k =>
+      intro X Y hXY
+      exact ⟨fun hX => transport_le (hF X Y hXY) (hjinv k X Y hXY) hX,
+             fun hY => transport_le (hF Y X hXY.symm) (hjinv k Y X hXY.symm) hY⟩
+  have hcover : cone (fun _ => false) ⊆ ⋃ n, g n := by
+    intro X _
+    rw [Set.mem_iUnion]
+    by_cases hex : ∃ k, F X ≤ₜ Cantor.jump^[k] X
+    · obtain ⟨k, hk⟩ := hex; exact ⟨k + 1, hk⟩
+    · exact ⟨0, by push_neg at hex; exact hex⟩
+  obtain ⟨n, hn⟩ := exists_onCone_of_cover hTD (fun _ => trivial) hinv hcover
+  cases n with
+  | zero => exact Or.inl hn
+  | succ k => exact Or.inr ⟨k, hn⟩
+
+#print axioms jump_dichotomy_dual
+
 /-! ### Packaging as a core-reduction
 
 The dichotomy reduces the open regressive core to two sharper sub-cores, exactly

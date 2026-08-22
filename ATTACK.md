@@ -10,6 +10,31 @@ Part 1 ⟺ two cores (`partI_iff_cores`), each open on the Turing degrees:
 - **Regressive:** `F` invariant, `F X <ᵀ X` on a cone ⟹ `F` constant on a cone.
 - **Incomparable:** `F` invariant, `F X ⊥ᵀ X` on a cone ⟹ `F` constant on a cone.
 
+### Why the "contradictory constraint-set" strategy is BOUNDED (2026-08-22 finding)
+
+Goal of that strategy: pile up machine-checked constraints on a counterexample until they conflict
+(a conflict = a proof).  I pushed this hard and found a *structural reason it cannot succeed with
+cone-theorem-level tools alone*:
+
+> Every constraint derived from `cone_theorem`/σ-pigeonhole is satisfiable by a **consistent
+> descending model**, because `≤ᵀ` (and `≤ₐ`, and `≤_h`) is **ill-founded**.
+
+Concretely: the constraints say the counterexample's values escape every fixed bound (`escaping`,
+`arithmetically_bounded_implies_constant`), are incomparable to cones of fixed degrees, and either
+preserve or drop the arithmetic degree (`regressive_jump_dichotomy`).  Iterating `F` gives
+`X >ᵀ FX >ᵀ F²X >ᵀ …` (or `>ₐ`), all escaping every *fixed* `c`.  An infinite `≤ᵀ`-descending chain
+whose members are all incomparable to a fixed `c` **exists** (ill-foundedness), so no finite
+combination of these constraints is contradictory.  A genuine contradiction needs a **well-founded
+rank** that `F` must strictly decrease — and the only such rank on the degrees is the *ordinal*
+`ω₁^x`, which lives at the transfinite hyperarithmetic level and is not delivered by the cone theorem
+(this is exactly Lutz's `Σ¹₁`-bounding, hyp-only).  So the constraint-tightening strategy tops out
+precisely at the `ω₁^x` barrier — it sharpens the *shape* of a counterexample but cannot close it.
+
+(A different angle with the *same* ceiling: `≡ᵀ` is Lebesgue-**ergodic** — cones are Lebesgue-null,
+Sacks — so a measurable invariant `F` has `F_*Leb` a `{0,1}`-measure on invariant sets.  But
+`F_*Leb` concentrates on Lebesgue-conull sets, *orthogonal* to the (null) cones; and "regressive
+⟹ `F_*Leb` principal" needs the same well-founded rank.  Measure-ergodicity is not the cone measure.)
+
 ### NEW (2026-08-22): jump-distance decomposition of the regressive core (`RegressiveJumpDecomp.lean`)
 
 The regressive core = *"the cone measure is normal w.r.t. `≥ᵀ`-regression."*  Standard Fodor

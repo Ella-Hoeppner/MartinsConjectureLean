@@ -10,6 +10,37 @@ Part 1 ⟺ two cores (`partI_iff_cores`), each open on the Turing degrees:
 - **Regressive:** `F` invariant, `F X <ᵀ X` on a cone ⟹ `F` constant on a cone.
 - **Incomparable:** `F` invariant, `F X ⊥ᵀ X` on a cone ⟹ `F` constant on a cone.
 
+### NEW (2026-08-22): jump-distance decomposition of the regressive core (`RegressiveJumpDecomp.lean`)
+
+The regressive core = *"the cone measure is normal w.r.t. `≥ᵀ`-regression."*  Standard Fodor
+fails because `≥ᵀ` is not well-founded.  **New idea:** every Turing degree has only *countably
+many* predecessors, so a σ-pigeonhole runs on the degree-invariant, `ℕ∪{∞}`-valued jump-distance
+`n(X) = least n with X ≤ᵀ (F X)^(n)`.  `regressive_jump_dichotomy` (machine-checked, std axioms):
+on a cone, **either**
+- **Case B** `X ≤ᵀ (F X)^(k)` for a fixed `k` — with `F X ≤ᵀ X` this is `F X ≡ₐ X`, i.e. `F`
+  *preserves the arithmetic degree* while dropping the Turing degree (the finitary case), **or**
+- **Case A** `X ≰ᵀ (F X)^(n)` for all `n` — `F X` arithmetically *strictly* below `X`.
+
+This cleanly isolates the finitary part (Case B) from the transfinite part (Case A = Lutz's `ω₁^x`
+hyperarithmetic regime; the levels there are `ω₁^x`-many, X-varying, so the fixed-countable
+σ-pigeonhole cannot reach — this is exactly Lutz's `Σ¹₁`-bounding difficulty).
+
+**Where both cases stall (honest):** *the same core barrier survives in each.*
+- *Case B:* the reduction `X ≤ᵀ (F X)^(k)` has a code `e(X)` between the *reals* `X` and
+  `(F X)^(k)`, non-degree-invariant, so no second σ-pigeonhole stabilizes it; and `F X ≡ₐ X` only
+  says `F` descends *within one arithmetic degree*, which is **not** well-founded under `≤ᵀ` (so no
+  Fodor there either).  Iterating `F` gives a descending chain inside an arithmetic degree — consistent,
+  no contradiction.  Routing through Part 2's finite `[id, J_k]` interval structure is circular (Part 2
+  also open).
+- *Case A:* iterating `F` gives an *arithmetically*-descending chain `X >ₐ FX >ₐ F²X >ₐ …`; the
+  arithmetic degrees are **not** well-founded under `≤ₐ`, so this descends forever with no
+  contradiction unless one imports `ω₁^x` well-foundedness (Lutz, hyp-only).
+
+So the decomposition is a genuine new *reduction of the open core to two sharper sub-cores*, and it
+pinpoints that the sole obstruction is the **absence of a well-founded rank on the Turing degrees**
+(the `ω₁^x` rank that resolves it exists only on the hyperarithmetic degrees).  Not a proof; a precise
+map of exactly what a proof must supply.
+
 Equivalent single formulation (via the measure-preserving route): **escaping ⟹ MP**, i.e.
 every escaping invariant `F` reaches every degree from above on a cone. Recast as an
 incomparability statement (`escapingMP_iff_no_fixedIncomparable`): *no escaping invariant `F`

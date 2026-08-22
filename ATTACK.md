@@ -41,6 +41,22 @@ pinpoints that the sole obstruction is the **absence of a well-founded rank on t
 (the `ω₁^x` rank that resolves it exists only on the hyperarithmetic degrees).  Not a proof; a precise
 map of exactly what a proof must supply.
 
+**The resolution mechanism (what a proof of Case A must use).**  Under AD the cone measure `U`
+pushes forward to the **club filter on `ω₁`** via `X ↦ ω₁^x` (the Lutz connection), and the club
+filter *is* normal (Fodor on `ω₁`).  Split Case A by cone theorem on `{X : ω₁^{F X} < ω₁^X}`:
+- *strict* (`ω₁^{F X} < ω₁^X` on a cone): `X ↦ ω₁^{F X}` is a **strictly regressive** function on
+  `ω₁` mod the club filter, so **Fodor on `ω₁`** pins `ω₁^{F X} = γ₀` *fixed* on a cone.  (But `F X`'s
+  *degree* stays unbounded — reals with a fixed `ω₁` are cofinal — so this is not yet constancy;
+  Lutz's finer coding closes it.)
+- *preserving* (`ω₁^{F X} = ω₁^X`): `F` preserves `ω₁^x`; this is the delicate heart of Lutz's
+  hyperarithmetic argument.
+
+This is the exact path a Turing-degree proof would need — but it requires the `ω₁^x`/admissible-ordinal
+machinery and the AD pushforward-to-club theorem, none of which is formalized here (a multi-file
+hyperarithmetic development).  The finite-jump decomposition above is the *elementary shadow* of this
+transfinite picture: it reaches the finite-jump boundary (Case B) with only the countable σ-pigeonhole,
+and stops exactly where the `ω₁`-Fodor step would take over.
+
 Equivalent single formulation (via the measure-preserving route): **escaping ⟹ MP**, i.e.
 every escaping invariant `F` reaches every degree from above on a cone. Recast as an
 incomparability statement (`escapingMP_iff_no_fixedIncomparable`): *no escaping invariant `F`

@@ -76,6 +76,17 @@ filter *is* normal (Fodor on `ω₁`).  Split Case A by cone theorem on `{X : ω
 - *preserving* (`ω₁^{F X} = ω₁^X`): `F` preserves `ω₁^x`; this is the delicate heart of Lutz's
   hyperarithmetic argument.
 
+**NOW PARTLY FORMALIZED (2026-08-22, `OrdinalUltrapower.lean` + `ChurchKleene.lean`).** The *engine*
+is machine-checked: `no_descending_ordinal_cone` (the cone measure's ordinal ultrapower is well-founded
+— countable completeness) and `no_regressive_of_ordinal_rank` (regressive core ⟸ a degree-invariant
+ordinal rank `F` strictly decreases).  And the rank itself: `churchKleene` = relativized `ω₁^X` (sup of
+order types of `X`-computable well-orders, guarded `≤ᵀ X`), with `churchKleene_mono` + `churchKleene_invariant`
+proven; `no_omega1_decreasing_conePreserving` + `regressive_omega1_dichotomy` then give: **a
+cone-preserving regressive counterexample is `ω₁`-preserving** (`ω₁^{F X} = ω₁^X` on a cone) — the
+`ω₁`-decreasing case is killed by the engine.  So the reduction *to the `ω₁`-preserving case* is now
+machine-checked.  What remains unformalizable here (the genuinely open residual) is the `ω₁`-preserving
+case itself:
+
 This is the exact path a Turing-degree proof would need — but it requires the `ω₁^x`/admissible-ordinal
 machinery and the AD pushforward-to-club theorem, none of which is formalized here (a multi-file
 hyperarithmetic development).  The finite-jump decomposition above is the *elementary shadow* of this

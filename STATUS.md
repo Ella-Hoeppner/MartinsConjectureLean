@@ -92,8 +92,17 @@ non-definable `F` is itself open. `escapingMP_of_uniformity_bridge`: the bridge 
 **Regressive-core decomposition** (`RegressiveJumpDecomp.lean`): `regressive_jump_dichotomy` — a
 new jump-distance σ-pigeonhole (each degree has countably many predecessors) splits the open
 regressive core into **Case B** (`X ≤ᵀ (F X)^(k)`: `F` preserves the arithmetic degree, finitary)
-or **Case A** (`X ≰ᵀ (F X)^(n)` ∀n: Lutz's `ω₁^x` hyperarithmetic regime). Pinpoints the obstruction
-as the lack of a well-founded rank on the Turing degrees; see `ATTACK.md`.
+or **Case A** (`X ≰ᵀ (F X)^(n)` ∀n: Lutz's `ω₁^x` hyperarithmetic regime). Packaged as a core-reduction
+`regressiveCore_of_cases`. Pinpoints the obstruction as the lack of a well-founded rank on the Turing
+degrees; see `ATTACK.md`.
+
+**The Fodor engine** (`OrdinalUltrapower.lean`): `no_descending_ordinal_cone` — the cone measure's
+ordinal ultrapower is well-founded (countable completeness ⟹ no infinite `≺`-descending sequence of
+ordinal-valued functions on cones). `no_regressive_of_ordinal_rank`: the regressive core follows from
+a degree-invariant ordinal rank a regressive `F` strictly decreases. This isolates the *sole* missing
+ingredient (the rank `ω₁^x`, which fails only in the `ω₁`-preserving case). New constraints
+(`CounterexampleConstraints.lean`): `arithmetically_bounded_implies_constant` (counterexample is
+*arithmetically* escaping), `nonconstant_above_or_incomparable_fixed` (per-degree trap).
 
 **Counterexample constraints** (`EscapingDichotomy.lean`, `PartIRecast.lean`,
 `CounterexampleConstraints.lean`): machine-checked profile of any Part-1 counterexample —

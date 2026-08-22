@@ -217,4 +217,26 @@ theorem incomparableCore_of_cases (hTD : TuringDeterminacy fun _ => True)
 
 #print axioms incomparableCore_of_cases
 
+/-! ### Arithmetic reducibility: the meaning of Case B -/
+
+/-- **Arithmetic reducibility** `X ≤ₐ Y`: `X` is computable from some finite jump of `Y`. -/
+def arithLe (X Y : ℕ → Bool) : Prop := ∃ n, X ≤ₜ Cantor.jump^[n] Y
+
+/-- **Arithmetic equivalence** `X ≡ₐ Y`. -/
+def arithEquiv (X Y : ℕ → Bool) : Prop := arithLe X Y ∧ arithLe Y X
+
+/-- Turing-below implies arithmetic-below (take `n = 0`). -/
+theorem arithLe_of_le {X Y : ℕ → Bool} (h : X ≤ₜ Y) : arithLe X Y := ⟨0, h⟩
+
+/-- **Case B means `F` preserves the arithmetic degree.**  A regressive `F` (`F X ≤ᵀ X`) that,
+on a cone, satisfies the Case-B condition `X ≤ᵀ (F X)^(k)` has `F X ≡ₐ X` there: `F X ≤ᵀ X`
+gives `F X ≤ₐ X`, and `X ≤ᵀ (F X)^(k)` gives `X ≤ₐ F X`.  So the finitary case of the regressive
+core is exactly *arithmetic-degree-preserving, Turing-degree-dropping* — the shape where no finite
+jump (hence no elementary σ-pigeonhole) can distinguish `F X` from `X`. -/
+theorem arithEquiv_of_caseB {F : (ℕ → Bool) → ℕ → Bool} {X : ℕ → Bool} {k : ℕ}
+    (hreg : F X ≤ₜ X) (hB : X ≤ₜ Cantor.jump^[k] (F X)) : arithEquiv (F X) X :=
+  ⟨arithLe_of_le hreg, ⟨k, hB⟩⟩
+
+#print axioms arithEquiv_of_caseB
+
 end Martin

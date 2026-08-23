@@ -155,6 +155,28 @@ theorem partI_general_of_uniformity (hTD : TuringDeterminacy fun _ => True)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   fun F hF => partI_uniform_general hTD F (bridge F hF)
 
+/-- **Capstone sharpened to *Steel's conjecture*: Part I ⟸ every invariant `F` is
+cone-*equivalent* to a uniformly invariant one.**  This weakens the hypothesis of
+`partI_general_of_uniformity` from "`F` *is* uniformly invariant" to "`F` is `MartinEquiv` to
+some uniformly invariant `G`" (i.e. `F X ≡ᵀ G X` on a cone).  That is *exactly* Steel's
+conjecture — "every definable function on the Turing degrees is equivalent to a uniformly
+invariant one" — the canonical reduction target in the literature.  (In the enumeration degrees
+this bridge provably *fails* — Nakid-Cordero 2025 build a Borel e-invariant function uniformly
+invariant on no cone — so it is genuinely Turing-specific, not pure logic.)  Part I transfers
+across `MartinEquiv`: `constantOnCone_of_martinEquiv` handles the constant branch, and for the
+above-id branch `X ≤ᵀ G X ≡ᵀ F X` gives `X ≤ᵀ F X` on the intersection cone.  This *generalizes*
+`partI_general_of_uniformity` (take `G := F`, `MartinEquiv` reflexive). -/
+theorem partI_general_of_steelBridge (hTD : TuringDeterminacy fun _ => True)
+    (bridge : ∀ F, TuringInvariant F → ∃ G, UniformlyTuringInvariant G ∧ MartinEquiv F G) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F := by
+  intro F hF
+  obtain ⟨G, hGU, hFG⟩ := bridge F hF
+  rcases partI_uniform_general hTD G hGU with hc | hai
+  · exact Or.inl ⟨hc.choose, hFG.trans hc.choose_spec⟩
+  · refine Or.inr ?_
+    obtain ⟨W, hW⟩ := onCone_and hai hFG
+    exact ⟨W, fun X hX => (hW X hX).1.trans (hW X hX).2.2⟩
+
 /-- **The uniformity bridge subsumes the `escaping ⟹ MP` route.**  The two known
 sufficient conditions for Part I — the uniformity bridge (this file) and
 `MartinPPT ∧ (escaping ⟹ MP)` (`partI_of_martinPPT_escaping`) — are not independent:
@@ -176,6 +198,7 @@ theorem escapingMP_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
 #print axioms counterexample_not_computablyUniform
 #print axioms partI_uniform_general
 #print axioms partI_general_of_uniformity
+#print axioms partI_general_of_steelBridge
 #print axioms escapingMP_of_uniformity_bridge
 #print axioms regressive_uniform
 #print axioms incomparable_uniform

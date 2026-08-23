@@ -129,6 +129,16 @@ New constraints (`CounterexampleConstraints.lean`): `arithmetically_bounded_impl
 trap). Both open cores are reduced to jump-distance sub-cores (`regressiveCore_of_cases`,
 `incomparableCore_of_cases`).
 
+**Order-preserving case, reduced to the coding step** (`CounterexampleConstraints.lean`, following
+Lutz–Siskind §4).  `partI_orderPreserving_of_coding`: Part 1 for *every* order-preserving `F` follows
+from `MartinPPT` (⟹ Thm 3.4) plus the single atomic `OrderPreservingUncountableCofinal` — the
+Groszek–Slaman–Kihara perfect-set coding (Cor 4.5).  The elementary pieces are all **proved**:
+`nonconstant_values_uncountable` (Case 1: countable range ⟹ constant), `orderPreserving_mp_of_rangeCofinal`
+(cofinal ⟹ MP), `orderPreserving_range_countablyDirected` (§4.2 directedness, via the reusable
+`Cantor.component_le_joinFam`).  Chain: `avoidingImpliesConstant_of_theorem46` ⟶
+`orderPreservingNonconstantMP_of_uncountableCofinal` ⟶ `partI_orderPreserving_of_theorem46`.  So the
+sole remaining unformalized ingredient of the order-preserving case is the coding.
+
 **Counterexample constraints** (`EscapingDichotomy.lean`, `PartIRecast.lean`,
 `CounterexampleConstraints.lean`): machine-checked profile of any Part-1 counterexample —
 `nonMP_incomparable_cone`/`_interval` (incomparable to a whole cone of fixed degrees, uniform

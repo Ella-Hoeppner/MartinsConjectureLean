@@ -168,6 +168,18 @@ theorem incomparable_orderPreserving_constant (hTD : TuringDeterminacy fun _ => 
     obtain ⟨W, hW⟩ := onCone_and hincomp hai
     exact (hW W (Cantor.le.refl W)).1.2 (hW W (Cantor.le.refl W)).2
 
+/-- **A Part-1 counterexample is not order-preserving** (given `MartinPPT` and the coding): were it
+order-preserving, `partI_orderPreserving_of_coding` would force constant or above-id.  Sharpens the
+"wildness" profile — a counterexample is not order-preserving, not (computably-)uniformly invariant
+(`counterexample_not_uniformlyInvariant`), and incomparable to its argument. -/
+theorem counterexample_not_orderPreserving (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hcoding : OrderPreservingUncountableCofinal) (hnc : ¬ ConstantOnCone F)
+    (hnai : ¬ AboveIdOnCone F) : ¬ OrderPreserving F := by
+  intro hop
+  rcases partI_orderPreserving_of_coding hTD hM hcoding F hop with hc | hai
+  · exact hnc hc
+  · exact hnai hai
+
 /-- **Lutz–Siskind Theorem 4.6, stated verbatim** (modulo the coding, supplied as
 `OrderPreservingNonconstantMP`): every order-preserving invariant function is *constant on a cone or
 measure-preserving*.  By cases on constancy: a non-constant such `F` has uncountable range

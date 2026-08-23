@@ -284,6 +284,6 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms arithmetically_bounded_implies_constant
 #print axioms nonconstant_above_or_incomparable_fixed
 #print axioms counterexample_complete_profile
+#print axioms avoidingImpliesConstant_of_theorem46
 
 end Martin
-#print axioms avoidingImpliesConstant_of_theorem46

@@ -230,6 +230,16 @@ theorem partI_iff_escapingMP (hTD : TuringDeterminacy fun _ => True) (hM : Marti
       ↔ (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F → MeasurePreserving F) :=
   (partI_iff_incomparable hTD hSS).trans (escapingMP_iff_incomparable hTD hM hSS).symm
 
+/-- **The two natural formulations of the open core coincide** (given `MartinPPT` + the known regressive
+theorem): the incomparable core (`F X ⊥ᵀ X` on a cone ⟹ constant) is equivalent to "no escaping
+invariant `F` is incomparable to a *fixed* degree on a cone".  Chains `escapingMP_iff_incomparable`
+with `escapingMP_iff_no_fixedIncomparable`. -/
+theorem incomparable_iff_no_fixedIncomparable (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hSS : RegressiveSlamanSteel) :
+    IncomparableImpliesConstant ↔
+      (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F → ∀ Z, ¬ IncomparableToFixed F Z) :=
+  (escapingMP_iff_incomparable hTD hM hSS).symm.trans (escapingMP_iff_no_fixedIncomparable hTD)
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:

@@ -26,26 +26,28 @@ open Cantor
 
 namespace Martin
 
-/-- **The remaining computability step for Martin's fusion.**  Any degree-preserving perfect embedding
-into `A` with code `σ` (the pointedness `σ ≤ᵀ x` built into the membership predicate) re-presents as a
-`treeMem`-coded `PerfectTree` whose branches all lie in `A`.  This is the even-part-tree construction —
-a pure tree/computability step, the determinacy content having already been discharged. -/
-def PerfectEmbeddingPackages : Prop :=
-  ∀ (A : Set (ℕ → Bool)) (σ : ℕ → Bool),
-    PerfectEmbedding σ (fun x => x ∈ A ∧ σ ≤ₜ x) →
-      ∃ T : PerfectTree, ∀ x, IsBranch (treeMem T.code) x → x ∈ A
+/-- **The remaining computability step for Martin's fusion**, stated for the *winning strategy* itself
+(not a generic embedding — a generic Turing-computable embedding may have unbounded use, so its prefix
+tree need not be `σ`-computable, breaking pointedness).  From a player-I win `σ` of the Martin game for
+`A`, the **even-part tree** `Tσ = {s : s ⊑ evenPart(gamePlay σ (copyStrategy (z ⊕ σ)))}` is a
+`treeMem`-coded `PerfectTree` whose branches all lie in `A`: its code is `≤ᵀ σ` by a *bounded* search
+over player II's finitely many free bits (as `codeReal_le`), and its branches are exactly the game
+embedding's image `⊆ A` since a continuous image of compact `2^ω` is closed.  Isolated here as the sole
+remaining hypothesis; the game embedding `martinGamePerfectEmbedding hσ` supplies its `embedding` field. -/
+def MartinGameTreePackages : Prop :=
+  ∀ (A : Set (ℕ → Bool)) (σ : ℕ → Bool), WinsI (martinGame A) σ →
+    ∃ T : PerfectTree, ∀ x, IsBranch (treeMem T.code) x → x ∈ A
 
 /-- **Martin's Lemma 2.3 (natural form) reduces to the packaging step.**  Given full determinacy of the
-non-invariant Martin games and the `treeMem` packaging of the game embedding, every cofinal set contains
-a structural pointed perfect tree.  The determinacy game — the mathematical content — is fully
-machine-checked (`winsI_martinGame_of_cofinal`, `martinGamePerfectEmbedding`); only the tree bookkeeping
-is assumed. -/
-theorem martinPPT_perfect_of_packaging (hpkg : PerfectEmbeddingPackages)
+non-invariant Martin games and the even-part-tree packaging of a winning strategy, every cofinal set
+contains a structural pointed perfect tree.  The determinacy game — the mathematical content — is fully
+machine-checked (`winsI_martinGame_of_cofinal`); only the tree bookkeeping is assumed. -/
+theorem martinPPT_perfect_of_packaging (hpkg : MartinGameTreePackages)
     (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A)) :
     MartinPPT_perfect := by
   intro A hcof
   obtain ⟨σ, hσ⟩ := winsI_martinGame_of_cofinal (A := A) hcof (hdet A)
-  exact hpkg A σ (martinGamePerfectEmbedding hσ)
+  exact hpkg A σ hσ
 
 /-- **`MartinPPT'` from the (proven) game plus the packaging step.**  Chains
 `martinPPT_perfect_of_packaging` with the existing `martinPPT'_of_perfect`.  So the *entire* non-invariant

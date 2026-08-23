@@ -1,5 +1,11 @@
 /-
-**A new decomposition of the regressive core, by jump-distance.**
+**A jump-distance decomposition (of the regressive core).**
+
+**⚠️ NB (correction, 2026-08-23):** the *Turing* regressive core this file decomposes is in fact a
+**KNOWN Slaman–Steel theorem** (`Reduction.RegressiveSlamanSteel`), *not* open — the "open regressive
+core" language below reflects the earlier error (conflation with Lutz's *hyperarithmetic-degrees*
+result). This decomposition is valid mathematics but targets an already-solved problem; the sole open
+Part-1 content is the incomparable core.
 
 The regressive core (`F X <ᵀ X` on a cone ⟹ constant) is exactly the statement that
 the cone measure is *normal* with respect to `≥ᵀ`-regression.  The standard Fodor

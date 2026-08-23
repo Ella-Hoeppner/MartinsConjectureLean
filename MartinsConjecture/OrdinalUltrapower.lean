@@ -1,6 +1,11 @@
 /-
 **The cone measure's ordinal ultrapower is well-founded.**
 
+**⚠️ NB (correction, 2026-08-23):** this file's "Fodor engine" was built to attack the *Turing*
+regressive core, which is in fact a **KNOWN Slaman–Steel theorem** (`Reduction.RegressiveSlamanSteel`),
+*not* open.  The well-foundedness result is valid mathematics, but the "regressive core ⟸ a rank"
+framing targets an already-solved problem; the sole open Part-1 content is the incomparable core.
+
 The cone filter is countably complete (`coneFilter_iInter`), so — by Scott's argument —
 its ultrapower of the ordinals is *well-founded*: there is **no** infinite descending
 sequence `ρ₀ ≻ ρ₁ ≻ …` of ordinal-valued functions where each drop `ρ_{n+1} X < ρ_n X`

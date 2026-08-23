@@ -84,9 +84,10 @@ theorem counterexample_escapes (hTD : TuringDeterminacy fun _ => True)
   · exact absurd (bounded_implies_constant hTD hF ⟨Y, fun X hX => hY hX⟩) hnc
   · exact ⟨Y, fun X hX => hY hX⟩
 
-/-- The regressive core need only be proved for *escaping* functions: the
-open problem is exactly the case of a regressive invariant function whose
-values escape every fixed degree on cones. -/
+/-- The regressive core need only be proved for *escaping* functions: it reduces to the
+case of a regressive invariant function whose values escape every fixed degree on cones.
+(⚠️ The regressive core itself is a KNOWN Slaman–Steel theorem — not open; this remains a
+valid structural reduction.) -/
 theorem regressive_core_iff_escaping :
     TuringDeterminacy (fun _ => True) →
     (RegressiveImpliesConstant ↔

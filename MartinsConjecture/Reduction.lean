@@ -309,13 +309,12 @@ def HasInvariantGoodIndex : Prop :=
     ∃ idx : (ℕ → Bool) → ℕ, (∀ X X', X ≡ₜ X' → idx X = idx X') ∧
       OnCone fun X => eval (toPFun X) (ofNatCode (idx X)) = toPFun (F X)
 
-/-- **The open regressive core = invariant-index-selection, modulo the known continuous case.**
-`RegressiveImpliesConstant` follows from (i) `ContinuousRegressiveConstant` (the Slaman–Steel
-`continuous ⟹ constant` step, *known*) and (ii) `HasInvariantGoodIndex` (an invariant good-index on
-a cone).  Proof: (ii) gives an invariant index; `continuousOnCone_of_invariantIndex` upgrades it to
-continuity on a cone; (i) finishes.  This pins the open content precisely: of the two inputs, (i) is
-known mathematics and (ii) — cone uniformization of the good-representative relation — is the genuine
-open crux. -/
+/-- **A sufficient route to the (KNOWN) regressive core = invariant-index-selection, modulo the
+continuous case.**  `RegressiveImpliesConstant` (⚠️ itself a *known* Slaman–Steel theorem — see
+`regressiveImpliesConstant_of_slamanSteel`) *also* follows from (i) `ContinuousRegressiveConstant` and
+(ii) `HasInvariantGoodIndex`.  Proof: (ii) gives an invariant index; `continuousOnCone_of_invariantIndex`
+upgrades it to continuity on a cone; (i) finishes.  This is a *sufficient* route, from the era when the
+regressive core was mistakenly thought open; it is not the open content of Part 1. -/
 theorem regressiveCore_of_invariantIndex (hTD : TuringDeterminacy fun _ => True)
     (hcont : ContinuousRegressiveConstant) (hidx : HasInvariantGoodIndex) :
     RegressiveImpliesConstant := by
@@ -332,13 +331,12 @@ theorem continuousRegressiveConstant_of_slamanSteel (hSS : RegressiveSlamanSteel
     ContinuousRegressiveConstant :=
   fun F hF hreg _ => regressiveImpliesConstant_of_slamanSteel hSS F hF hreg
 
-/-- **Master reduction: full Part I in terms of the precise open content.**  Combining
-`partI_of_cores` with `regressiveCore_of_invariantIndex`, Part I holds given three named inputs:
-`ContinuousRegressiveConstant` (**known** — continuous ⟹ Borel ⟹ uniform ⟹ `regressive_uniform`),
-`HasInvariantGoodIndex` (the regressive open crux — cone uniformization of the good-representative
-relation), and `IncomparableImpliesConstant` (the incomparable open core — Posner–Robinson territory).
-So the entire gap between the machine-checked material and full Part I is exactly: one known lemma plus
-two genuinely-open cone-uniformization problems. -/
+/-- **Master reduction (a sufficient route), superseded by `partI_of_slamanSteel_incomparable`.**
+Combining `partI_of_cores` with `regressiveCore_of_invariantIndex`, Part I holds given
+`ContinuousRegressiveConstant`, `HasInvariantGoodIndex`, and `IncomparableImpliesConstant`.  ⚠️ Of
+these, the first two concern the *regressive* core, which is a **KNOWN Slaman–Steel theorem** (so this
+route is *sufficient* but unnecessary — prefer `partI_of_slamanSteel_incomparable`).  The **only
+genuinely-open** input is `IncomparableImpliesConstant` (cone uniformization / Posner–Robinson). -/
 theorem partI_of_invariantIndex_and_incomparable (hTD : TuringDeterminacy fun _ => True)
     (hcont : ContinuousRegressiveConstant) (hidx : HasInvariantGoodIndex)
     (hincomp : IncomparableImpliesConstant) :

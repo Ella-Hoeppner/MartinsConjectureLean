@@ -366,6 +366,16 @@ is non-definable. Every route (measure→function bridge, reps→all-X, good-rep
 *same* barrier: no determinacy tool extracts a code from an arbitrary invariant function. This is
 why the known proofs all require a definability/uniformity input the general case lacks.
 
+**NOW FORMALLY BRACKETED (2026-08-22, `Reduction.lean`, std axioms).** The gap is pinned by two
+machine-checked theorems around it: `exists_uniform_index_on_cone` (HAVE — code on one *representative*
+per degree, non-invariant selection) and `continuousOnCone_of_invariantIndex` (NEW — an *invariant*
+index `idx` with `F X = Φ_{idx X}^X` yields **continuity on a cone**, `F X = Φ_e^X`, via σ-pigeonhole on
+the invariant level sets `{idx=n}`). Capstone `regressiveCore_of_invariantIndex`: `RegressiveImpliesConstant
+⟸ ContinuousRegressiveConstant` (KNOWN — continuous ⟹ Borel ⟹ uniform ⟹ `regressive_uniform`) `∧
+HasInvariantGoodIndex` (the OPEN crux, = invariant good-index = cone uniformization). So of the two named
+inputs, one is known mathematics and the other is exactly the barrier above — now a formal `Prop`, not
+just prose. (Full Part I likewise ⟸ Steel's conjecture: `partI_general_of_steelBridge`, `MartinResults.lean`.)
+
 **Assessment of this session.** Formalized 3 correct new constraints (`nonMP_incomparable_interval`,
 `counterexample_full_profile`, + the earlier `nonMP_incomparable_cone` family). Located the barrier
 precisely and confirmed it from 4 independent angles. No crossing found — none expected; a genuine

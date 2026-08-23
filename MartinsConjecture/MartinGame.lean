@@ -41,6 +41,45 @@ theorem oddPart_le (z : ℕ → Bool) : oddPart z ≤ₜ z :=
     (Primrec.nat_mul.comp (Primrec.const 2) Primrec.id) (Primrec.const 1)))
     (fun _ => rfl)
 
+/-- **Locality of the play under `copyStrategy (z ⊕ σ)`.**  The history after `n` moves depends on `z`
+only below `n` — the crux behind `code ≤ᵀ σ` for the even-part tree (a *bounded* search over `z`'s
+finitely many relevant bits).  Proved by induction: player II's move at odd step `m` is `(z ⊕ σ)(m/2)`,
+reading `z` only at `m/4 < n`. -/
+theorem histPlay_copy_join_locality (σ : ℕ → Bool) :
+    ∀ (n : ℕ) (z z' : ℕ → Bool), (∀ j, j < n → z j = z' j) →
+      histPlay σ (copyStrategy (Cantor.join z σ)) n
+        = histPlay σ (copyStrategy (Cantor.join z' σ)) n := by
+  intro n
+  induction n with
+  | zero => intro z z' _; rfl
+  | succ n ih =>
+    intro z z' hagree
+    have hn := ih z z' (fun j hj => hagree j (by omega))
+    rw [histPlay, histPlay, hn]
+    congr 2
+    by_cases hpar : n % 2 = 0
+    · simp only [if_pos hpar]
+    · simp only [if_neg hpar]
+      congr 1
+      set H := histPlay σ (copyStrategy (Cantor.join z' σ)) n with hH
+      have hlenH : hlen H = n := by rw [hH]; exact hlen_histPlay σ _ n
+      simp only [copyStrategy, hlenH, Cantor.join]
+      by_cases hp2 : (n / 2) % 2 = 0
+      · simp only [if_pos hp2]
+        exact hagree (n / 2 / 2) (by omega)
+      · simp only [if_neg hp2]
+
+/-- **Locality of the game embedding.**  `emb z k = evenPart(gamePlay σ (copyStrategy (z ⊕ σ))) k`
+depends on `z` only below `2k`.  This is the bounded-use property that makes the even-part tree's code
+`≤ᵀ σ` (a bounded search over the finitely many relevant `z`-bits, as `codeReal_use`). -/
+theorem emb_locality (σ z z' : ℕ → Bool) (k : ℕ) (h : ∀ j, j < 2 * k → z j = z' j) :
+    evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) k
+      = evenPart (gamePlay σ (copyStrategy (Cantor.join z' σ))) k := by
+  show gamePlay σ (copyStrategy (Cantor.join z σ)) (2 * k)
+      = gamePlay σ (copyStrategy (Cantor.join z' σ)) (2 * k)
+  rw [gamePlay, gamePlay, if_pos (by omega), if_pos (by omega),
+    histPlay_copy_join_locality σ (2 * k) z z' h]
+
 /-- **Martin's asymmetric game payoff** for a set `A`.  Player I (even bits `x = evenPart z`) wins iff
 `y ≱ᵀ x` (II failed the domination requirement) or `x ≥ᵀ y ∧ x ∈ A`. -/
 def martinGame (A : Set (ℕ → Bool)) : Set (ℕ → Bool) :=

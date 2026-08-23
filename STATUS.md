@@ -43,9 +43,10 @@ Part 1 ⟸ (1) + (2).
 
 **Cleanest single-hypothesis form** (`partI_general_of_uniformity`, `MartinResults.lean`): full
 Part 1 ⟸ the *one* implication "`TuringInvariant F ⟹ UniformlyTuringInvariant F` (on a cone)" —
-a **sufficient** condition (the route by which the Borel case is proven; not necessary, since Part 1
-doesn't imply uniformity). Everything downstream is machine-checked; `ATTACK.md` analyses exactly why
-determinacy does not deliver this bridge for non-definable `F` (cone dichotomy vs cone uniformization).
+a **sufficient** condition (the intended route to the Borel case — though `Borel ⟹ uniform` is itself
+**open**, ≈ Steel's conjecture; not necessary, since Part 1 doesn't imply uniformity). Everything
+downstream is machine-checked; `ATTACK.md` analyses exactly why determinacy does not deliver this bridge
+for `F` (cone dichotomy vs cone uniformization).
 
 **Sharpened to Steel's conjecture** (`partI_general_of_steelBridge`, `MartinResults.lean`): full Part 1
 ⟸ "every `TuringInvariant F` is `MartinEquiv` (cone-`≡ᵀ`) to *some* uniformly-invariant `G`" — which is

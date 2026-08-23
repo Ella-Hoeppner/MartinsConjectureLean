@@ -150,6 +150,18 @@ theorem martinLE_jumpIter_of_le {m n : ℕ} (h : m ≤ n) :
       exact ⟨fun _ => false, fun X _ => le.refl _⟩
     · exact (ihn (by omega)).trans (martinLT_jumpIter n).1
 
+/-- The jump chain is **strictly** increasing: for `m < n`, `jumpⁿ` is strictly Martin-above `jumpᵐ`.
+So the Martin order contains an infinite strictly-increasing ω-chain of regular functions (the jump
+iterates) — the concrete witness that its order type is at least `ω`. -/
+theorem martinLT_jumpIter_of_lt {m n : ℕ} (h : m < n) :
+    MartinLT (fun X => Cantor.jump^[m] X) (fun X => Cantor.jump^[n] X) := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt h
+  have hstep : MartinLT (fun X => Cantor.jump^[m] X) (fun X => Cantor.jump^[m + 1] X) :=
+    martinLT_jumpIter m
+  have hle : MartinLE (fun X => Cantor.jump^[m + 1] X) (fun X => Cantor.jump^[m + k + 1] X) :=
+    martinLE_jumpIter_of_le (by omega)
+  exact ⟨hstep.1.trans hle, fun hc => hstep.2 (hle.trans hc)⟩
+
 /-- The provable half of the Part II successor claim, packaged: for every
 regular `F`, its jump-composition is again regular and strictly Martin above
 it.  (The open half of `PartII_Borel_Succ` is *minimality*: that nothing

@@ -72,8 +72,82 @@ theorem partI_of_packaging_escaping (hpkg : MartinGameTreePackages)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_perfect_escaping (martinPPT_perfect_of_packaging hpkg hdet) hTD hesc
 
+/-- The **even-part tree** of a winning strategy `σ`, as a predicate on finite strings: `s` is a node
+iff it is a prefix of some game-embedding value `emb z = evenPart(gamePlay σ (copyStrategy (z ⊕ σ)))`. -/
+def evenTree (σ : ℕ → Bool) (s : List Bool) : Prop :=
+  ∃ z, ∀ i, i < s.length →
+    evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) i = s.getD i false
+
+/-- **`MartinGameTreePackages` reduces to a single computability fact**: that the even-part tree of a
+winning strategy admits a `treeMem` code `≡ᵀ σ`.  Given such a code, *every* other requirement is
+discharged by the machine-checked math: branches `= {emb z}` (compactness, `exists_z_of_branch`), each
+branch is `∈ A` and `≡ᵀ z ⊕ σ` (`evenPart_realizes_of_winsI`), whence closedness, pointedness
+(`code ≤ᵀ σ ≤ᵀ` branch), the degree-preserving perfect embedding (`code ≡ᵀ σ` makes `forward` hold), and
+branches-in-`A`.  So the *entire* non-invariant Martin fusion is now reduced to the pure computability
+statement below — a `codeReal`-style bounded-search presentation — with all determinacy and all tree
+mathematics fully formalized. -/
+theorem martinGameTreePackages_of_code
+    (hcode : ∀ σ : ℕ → Bool, ∃ code : ℕ → Bool, code ≡ₜ σ ∧
+      ∀ s : List Bool, treeMem code s ↔ evenTree σ s) :
+    MartinGameTreePackages := by
+  intro A σ hσ
+  obtain ⟨code, hcodeσ, hcodetree⟩ := hcode σ
+  -- branch characterization via compactness
+  have hbranch : ∀ x, IsBranch (treeMem code) x →
+      ∃ z, ∀ i, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) i = x i := by
+    intro x hx
+    refine exists_z_of_branch σ x (fun n => ?_)
+    obtain ⟨z, hz⟩ := (hcodetree _).mp (hx n)
+    refine ⟨z, fun i hi => ?_⟩
+    have hi' : i < ((List.range n).map x).length := by rw [List.length_map, List.length_range]; exact hi
+    rw [← getD_range_map x n i hi]; exact hz i hi'
+  refine ⟨{ code := code
+            closed := ?_
+            pointed := ?_
+            embedding :=
+              { emb := fun z => evenPart (gamePlay σ (copyStrategy (Cantor.join z σ)))
+                maps_to := ?_
+                forward := ?_
+                invert := ?_ } }, ?_⟩
+  · -- closed
+    intro s b hs
+    rw [hcodetree] at hs ⊢
+    obtain ⟨z, hz⟩ := hs
+    refine ⟨z, fun i hi => ?_⟩
+    have hi' : i < (s ++ [b]).length := by rw [List.length_append]; simp; omega
+    rw [← getD_append_lt s [b] i hi]; exact hz i hi'
+  · -- pointed
+    intro x hx
+    obtain ⟨z, hz⟩ := hbranch x hx
+    have hxeq : x = evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) := funext fun i => (hz i).symm
+    have hxA := evenPart_realizes_of_winsI hσ (z := Cantor.join z σ) (Cantor.right_le_join z σ)
+    rw [hxeq]
+    exact hcodeσ.1.trans ((Cantor.right_le_join z σ).trans hxA.2.2)
+  · -- maps_to: emb z is a branch
+    intro z n
+    rw [hcodetree]
+    refine ⟨z, fun i hi => ?_⟩
+    rw [List.length_map, List.length_range] at hi
+    rw [getD_range_map _ n i hi]
+  · -- forward
+    intro z
+    have hxA := evenPart_realizes_of_winsI hσ (z := Cantor.join z σ) (Cantor.right_le_join z σ)
+    exact hxA.2.1.trans (Cantor.join_le (Cantor.left_le_join z code)
+      (hcodeσ.2.trans (Cantor.right_le_join z code)))
+  · -- invert
+    intro z
+    have hxA := evenPart_realizes_of_winsI hσ (z := Cantor.join z σ) (Cantor.right_le_join z σ)
+    exact ((Cantor.left_le_join z σ).trans hxA.2.2).trans (Cantor.left_le_join _ code)
+  · -- branches ⊆ A
+    intro x hx
+    obtain ⟨z, hz⟩ := hbranch x hx
+    have hxeq : x = evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) := funext fun i => (hz i).symm
+    rw [hxeq]
+    exact (evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).1
+
 #print axioms martinPPT_perfect_of_packaging
 #print axioms martinPPT'_of_packaging
 #print axioms partI_of_packaging_escaping
+#print axioms martinGameTreePackages_of_code
 
 end Martin

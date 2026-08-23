@@ -82,12 +82,12 @@ theorem emb_locality (σ z z' : ℕ → Bool) (k : ℕ) (h : ∀ j, j < 2 * k �
     histPlay_copy_join_locality σ (2 * k) z z' h]
 
 /-- Reading a `range`-map at an in-bounds index. -/
-private theorem getD_range_map (z : ℕ → Bool) (n j : ℕ) (hj : j < n) :
+theorem getD_range_map (z : ℕ → Bool) (n j : ℕ) (hj : j < n) :
     ((List.range n).map z).getD j false = z j := by
   rw [List.getD_eq_getElem?_getD, List.getElem?_map, List.getElem?_range hj]; rfl
 
 /-- Reading a prefix of an append (in-bounds). -/
-private theorem getD_append_lt (p q : List Bool) (j : ℕ) (hj : j < p.length) :
+theorem getD_append_lt (p q : List Bool) (j : ℕ) (hj : j < p.length) :
     (p ++ q).getD j false = p.getD j false := by
   rw [List.getD_eq_getElem?_getD, List.getD_eq_getElem?_getD, List.getElem?_append_left hj]
 

@@ -195,6 +195,15 @@ theorem escapingMP_iff_incomparable (hTD : TuringDeterminacy fun _ => True) (hM 
     · exact absurd hc (not_constant_of_escaping hescF)
     · exact aboveId_measurePreserving hai
 
+/-- **Part 1 ⟺ "escaping ⟹ measure-preserving"** (given `MartinPPT` and the known regressive theorem
+`RegressiveSlamanSteel`): the single clean statement of exactly what remains open in Part 1.  Chains
+`partI_iff_incomparable` with `escapingMP_iff_incomparable`. -/
+theorem partI_iff_escapingMP (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hSS : RegressiveSlamanSteel) :
+    (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F)
+      ↔ (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F → MeasurePreserving F) :=
+  (partI_iff_incomparable hTD hSS).trans (escapingMP_iff_incomparable hTD hM hSS).symm
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:

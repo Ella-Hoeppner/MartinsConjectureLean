@@ -297,6 +297,25 @@ theorem counterexample_sharp_profile (hM : MartinPPT) (hSS : RegressiveSlamanSte
   ⟨counterexample_incomparable_to_argument hTD hSS hF hnc hnai,
    (counterexample_full_profile hM hTD hF hnc hnai).2⟩
 
+/-- **The definitive counterexample profile.**  Under `MartinPPT`, the known regressive theorem
+(`RegressiveSlamanSteel`), and the order-preserving coding (`OrderPreservingUncountableCofinal`), any
+Part-1 counterexample `F` (invariant, non-constant, non-above-id) must simultaneously, on a cone, be
+**incomparable to its argument**, **incomparable to every fixed degree** over `[W₀, W₁]`, **not
+order-preserving**, and **not uniformly Turing-invariant**.  This is the sharpest machine-checked
+answer to "what must a counterexample look like" — it lives entirely in the incomparable core and is
+maximally "wild". -/
+theorem counterexample_wild_profile (hM : MartinPPT) (hSS : RegressiveSlamanSteel)
+    (hcoding : OrderPreservingUncountableCofinal) (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) ∧
+    (∃ W₀, ∀ W₁, OnCone
+      (fun X => ∀ Z, W₀ ≤ₜ Z → Z ≤ₜ W₁ → ¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) ∧
+    ¬ OrderPreserving F ∧ ¬ UniformlyTuringInvariant F :=
+  ⟨(counterexample_sharp_profile hM hSS hTD hF hnc hnai).1,
+   (counterexample_sharp_profile hM hSS hTD hF hnc hnai).2,
+   counterexample_not_orderPreserving hTD hM hcoding hnc hnai,
+   counterexample_not_uniformlyInvariant hTD F hnc hnai⟩
+
 /-- **A regressive cone-preserving function generates an infinite descending Martin
 chain.**  If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
 cone-preserving (`base ≤ᵀ F X`), then its iterates form an infinite strictly

@@ -55,6 +55,17 @@ theorem orderPreserving_measurePreserving_or_avoids (hop : OrderPreserving F) :
     push_neg at hcof
     exact hcof
 
+/-- **Cofinal range ⟹ measure-preserving** (order-preserving `F`, no determinacy).  The elementary
+half of Lutz–Siskind's Theorem 4.6 Case 2: if the range of an order-preserving `F` is cofinal in the
+Turing degrees (every `Z` is `≤ᵀ` some value), then `F` is measure-preserving — each value-cone is
+upward-closed by order-preservation.  So the entire content of Case 2 is the *coding* step producing
+cofinality from an uncountable range; this discharges the rest. -/
+theorem orderPreserving_mp_of_rangeCofinal (hop : OrderPreserving F)
+    (hcof : ∀ Z : ℕ → Bool, ∃ X, Z ≤ₜ F X) : MeasurePreserving F := by
+  intro Z
+  obtain ⟨X₀, hX₀⟩ := hcof Z
+  exact orderPreserving_onCone_of_exists hop hX₀
+
 /-- **Trichotomy for order-preserving functions** (with determinacy): `F` is
 measure preserving, or constant on a cone, or — the residual open-to-us
 configuration — escaping while avoiding a cone. -/

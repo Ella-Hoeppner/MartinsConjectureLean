@@ -114,6 +114,22 @@ theorem partI_orderPreserving_of_theorem46 (hTD : TuringDeterminacy fun _ => Tru
     ∀ F : (ℕ → Bool) → ℕ → Bool, OrderPreserving F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_orderPreserving_of_lemmas h1 (avoidingImpliesConstant_of_theorem46 hTD h46)
 
+/-- **The perfect-set coding step, isolated** (Lutz–Siskind Corollary 4.5 content): for an
+order-preserving invariant `F` with uncountable range, the range is *cofinal*.  This is the sole
+remaining unformalized ingredient of the order-preserving case — the Groszek–Slaman–Kihara
+finite-extension coding on a perfect subset of the range (their §4.1). -/
+def OrderPreservingUncountableCofinal : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, OrderPreserving F → TuringInvariant F →
+    (∀ c : ℕ → (ℕ → Bool), ¬ OnCone (fun X => ∃ n, F X ≡ₜ c n)) → ∀ Z : ℕ → Bool, ∃ X, Z ≤ₜ F X
+
+/-- **Theorem 4.6 reduces further to just the coding step.**  The elementary `cofinal ⟹ MP` half is
+discharged by `orderPreserving_mp_of_rangeCofinal`, so `OrderPreservingNonconstantMP` (Thm 4.6) follows
+from `OrderPreservingUncountableCofinal` alone.  Net: the entire order-preserving case now rests on
+exactly the perfect-set coding step plus the already-proved `MeasurePreservingAboveId`. -/
+theorem orderPreservingNonconstantMP_of_uncountableCofinal
+    (h : OrderPreservingUncountableCofinal) : OrderPreservingNonconstantMP :=
+  fun F hop hinv huncount => orderPreserving_mp_of_rangeCofinal hop (h F hop hinv huncount)
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -297,5 +313,6 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms counterexample_complete_profile
 #print axioms avoidingImpliesConstant_of_theorem46
 #print axioms partI_orderPreserving_of_theorem46
+#print axioms orderPreservingNonconstantMP_of_uncountableCofinal
 
 end Martin

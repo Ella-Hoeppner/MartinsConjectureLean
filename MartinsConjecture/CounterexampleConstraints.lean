@@ -341,6 +341,26 @@ theorem incomparable_escapes_params (hSS : RegressiveSlamanSteel) (hF : TuringIn
   · obtain ⟨W, hW⟩ := onCone_and hincomp hai
     exact (hW W (Cantor.le.refl W)).1.2 (hW W (Cantor.le.refl W)).2
 
+/-- **Strengthened escaping** (under determinacy): an incomparable counterexample has `F X ≰ᵀ X ⊕ p`
+on a *whole cone*, for every fixed `p`.  The property `F X ≤ᵀ X ⊕ p` is degree-invariant in `X`, so
+the cone dichotomy (`cone_theorem_onCone`) upgrades `incomparable_escapes_params`' "not on a cone"
+into "the negation holds on a cone".  Thus a counterexample's values are eventually *strictly* not
+`X`-plus-a-parameter computable — the sharpest available form of the escaping constraint. -/
+theorem incomparable_escapes_params_onCone (hTD : TuringDeterminacy fun _ => True)
+    (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F)
+    (hincomp : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (p : ℕ → Bool) :
+    OnCone (fun X => ¬ F X ≤ₜ Cantor.join X p) := by
+  have hinv : TuringInvariantSet {X | F X ≤ₜ Cantor.join X p} := by
+    intro X Y hXY
+    have hFXY : F X ≡ₜ F Y := hF X Y hXY
+    have hJ : Cantor.join X p ≡ₜ Cantor.join Y p :=
+      ⟨Cantor.join_le (hXY.1.trans (Cantor.left_le_join Y p)) (Cantor.right_le_join Y p),
+       Cantor.join_le (hXY.2.trans (Cantor.left_le_join X p)) (Cantor.right_le_join X p)⟩
+    exact ⟨fun h => (hFXY.2.trans h).trans hJ.1, fun h => (hFXY.1.trans h).trans hJ.2⟩
+  rcases cone_theorem_onCone {X | F X ≤ₜ Cantor.join X p} hinv (hTD _ trivial hinv) with hle | hnle
+  · exact absurd hle (incomparable_escapes_params hSS hF hincomp p)
+  · exact hnle
+
 /-- **A regressive cone-preserving function generates an infinite descending Martin
 chain.**  If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
 cone-preserving (`base ≤ᵀ F X`), then its iterates form an infinite strictly

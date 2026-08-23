@@ -191,6 +191,20 @@ theorem partI_of_slamanSteel_incomparable (hTD : TuringDeterminacy fun _ => True
     ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_cores hTD (regressiveImpliesConstant_of_slamanSteel hSS) h2
 
+/-- **A Part-1 counterexample is incomparable to its argument** — the sharpened profile, using the
+KNOWN regressive theorem.  A Turing-invariant `F` that is neither constant nor above-id on a cone is,
+on a cone, `F X ⊥ᵀ X`: the `≡ᵀ`/`>ᵀ` regimes give above-id, and the regressive `<ᵀ` regime gives
+constant (Slaman–Steel).  So any counterexample lives entirely in the incomparable core. -/
+theorem counterexample_incomparable_to_argument (hTD : TuringDeterminacy fun _ => True)
+    (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F)
+    (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) := by
+  rcases comparability_on_cone hTD hF with heq | hgt | hlt | hincomp
+  · exact absurd (onCone_mono (fun _ hX => hX.2) heq) hnai
+  · exact absurd (onCone_mono (fun _ hX => hX.1) hgt) hnai
+  · exact absurd (regressiveImpliesConstant_of_slamanSteel hSS F hF hlt) hnc
+  · exact hincomp
+
 /-! ### Index stabilization -/
 
 /-- **Index stabilization**: under Turing determinacy, if `F` is Turing
@@ -305,6 +319,7 @@ theorem partI_of_invariantIndex_and_incomparable (hTD : TuringDeterminacy fun _ 
 #print axioms exists_uniform_index_on_cone
 #print axioms regressiveImpliesConstant_of_slamanSteel
 #print axioms partI_of_slamanSteel_incomparable
+#print axioms counterexample_incomparable_to_argument
 #print axioms continuousOnCone_of_invariantIndex
 #print axioms regressiveCore_of_invariantIndex
 #print axioms partI_of_invariantIndex_and_incomparable

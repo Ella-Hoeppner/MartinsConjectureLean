@@ -303,6 +303,16 @@ theorem winsI_realizes {A : Set (ℕ → Bool)} {σ : ℕ → Bool} (hσ : WinsI
     congr 1
     omega
 
+/-- **A player-I win implies the payoff set is cofinal.**  By `winsI_realizes`, `A` realizes every
+degree `≥ᵀ σ`, hence meets every cone (`w ≤ᵀ w ⊕ σ ≡ᵀ` some member of `A`).  This is the *easy*
+direction relating the game to cofinality; the **converse** — a cofinal set yields a player-I winning
+strategy — is the hard content of Martin's Lemma 2.3 and does *not* follow from cofinality alone. -/
+theorem winsI_cofinal {A : Set (ℕ → Bool)} {σ : ℕ → Bool} (hσ : WinsI A σ) :
+    ∀ w : ℕ → Bool, ∃ x, w ≤ₜ x ∧ x ∈ A := by
+  intro w
+  obtain ⟨z, hzA, hzeq⟩ := winsI_realizes hσ (X := Cantor.join w σ) (Cantor.right_le_join w σ)
+  exact ⟨z, (Cantor.left_le_join w σ).trans hzeq.2, hzA⟩
+
 /-- Cone-theorem consequence in "on a cone" form: a determined Turing
 invariant set either holds on a cone or fails on a cone. -/
 theorem cone_theorem_onCone (A : Set (ℕ → Bool))

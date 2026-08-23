@@ -136,7 +136,8 @@ def IncomparableImpliesConstant : Prop :=
     OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) → ConstantOnCone F
 
 /-- **The reduction**: under Turing determinacy, Part I of Martin's
-conjecture follows from its two open cores. -/
+conjecture follows from its two cores (the regressive one being a known
+Slaman–Steel theorem; see `partI_of_slamanSteel_incomparable`). -/
 theorem partI_of_cores (hTD : TuringDeterminacy fun _ => True)
     (h1 : RegressiveImpliesConstant) (h2 : IncomparableImpliesConstant) :
     ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
@@ -204,6 +205,27 @@ theorem counterexample_incomparable_to_argument (hTD : TuringDeterminacy fun _ =
   · exact absurd (onCone_mono (fun _ hX => hX.1) hgt) hnai
   · exact absurd (regressiveImpliesConstant_of_slamanSteel hSS F hF hlt) hnc
   · exact hincomp
+
+/-- **The reverse direction**: Part 1 implies the incomparable core (an above-id `F` cannot be
+incomparable to its argument). -/
+theorem incomparableImpliesConstant_of_partI
+    (hpartI : ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F) :
+    IncomparableImpliesConstant := by
+  intro F hF hincomp
+  rcases hpartI F hF with hc | hai
+  · exact hc
+  · exfalso
+    obtain ⟨W, hW⟩ := onCone_and hincomp hai
+    exact (hW W (Cantor.le.refl W)).1.2 (hW W (Cantor.le.refl W)).2
+
+/-- **Part 1 ⟺ the incomparable core** (given the KNOWN regressive theorem).  Since Slaman–Steel's
+regressive theorem is established (`RegressiveSlamanSteel`), Part 1 of Martin's conjecture is
+*equivalent* to its single open core — the incomparable case.  This is the precise corrected statement
+of exactly what remains open in Part 1. -/
+theorem partI_iff_incomparable (hTD : TuringDeterminacy fun _ => True) (hSS : RegressiveSlamanSteel) :
+    (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F)
+      ↔ IncomparableImpliesConstant :=
+  ⟨incomparableImpliesConstant_of_partI, partI_of_slamanSteel_incomparable hTD hSS⟩
 
 /-! ### Index stabilization -/
 
@@ -320,6 +342,7 @@ theorem partI_of_invariantIndex_and_incomparable (hTD : TuringDeterminacy fun _ 
 #print axioms regressiveImpliesConstant_of_slamanSteel
 #print axioms partI_of_slamanSteel_incomparable
 #print axioms counterexample_incomparable_to_argument
+#print axioms partI_iff_incomparable
 #print axioms continuousOnCone_of_invariantIndex
 #print axioms regressiveCore_of_invariantIndex
 #print axioms partI_of_invariantIndex_and_incomparable

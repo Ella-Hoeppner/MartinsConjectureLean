@@ -46,6 +46,12 @@ one is the open one):
 `partI_of_dichotomy_noFixedIncomparable` (`PartIRecast.lean`) is the sharpest packaging:
 Part 1 ⟸ (1) + (2).
 
+**Cleanest corrected statements of the open content** (2026-08-23, given the KNOWN regressive theorem
+`RegressiveSlamanSteel` and `MartinPPT`): `partI_iff_incomparable` — Part 1 ⟺ the incomparable core;
+`escapingMP_iff_incomparable` — `escaping ⟹ MP` ⟺ the incomparable core; `partI_iff_escapingMP` — the
+chain, so **all three coincide**.  There is genuinely *one* open problem (the incomparable core =
+`escaping ⟹ MP`), the regressive core being a Slaman–Steel theorem.
+
 **Cleanest single-hypothesis form** (`partI_general_of_uniformity`, `MartinResults.lean`): full
 Part 1 ⟸ the *one* implication "`TuringInvariant F ⟹ UniformlyTuringInvariant F` (on a cone)" —
 a **sufficient** condition (the intended route to the Borel case — though `Borel ⟹ uniform` is itself

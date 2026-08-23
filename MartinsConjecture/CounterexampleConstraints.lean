@@ -130,6 +130,16 @@ theorem orderPreservingNonconstantMP_of_uncountableCofinal
     (h : OrderPreservingUncountableCofinal) : OrderPreservingNonconstantMP :=
   fun F hop hinv huncount => orderPreserving_mp_of_rangeCofinal hop (h F hop hinv huncount)
 
+/-- **The range of an order-preserving function is countably directed** (Lutz–Siskind §4.2 — the
+directedness used inside Corollary 4.5).  Any countable family of reals each `≤ᵀ` some value of `F`
+has a common upper bound that is itself `≤ᵀ` a single value of `F`: join the witnesses `Xₙ` (each
+`Xₙ ≤ᵀ joinFam X` by `component_le_joinFam`) and push through order-preservation.  This discharges the
+directedness hypothesis of the perfect-set coding step, leaving only the perfect-set/coding core. -/
+theorem orderPreserving_range_countablyDirected (hop : OrderPreserving F)
+    (d : ℕ → (ℕ → Bool)) (hd : ∀ n, ∃ X, d n ≤ₜ F X) : ∃ Y, ∀ n, d n ≤ₜ F Y := by
+  choose X hX using hd
+  exact ⟨joinFam X, fun n => (hX n).trans (hop (X n) (joinFam X) (Cantor.component_le_joinFam X n))⟩
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -314,5 +324,6 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms avoidingImpliesConstant_of_theorem46
 #print axioms partI_orderPreserving_of_theorem46
 #print axioms orderPreservingNonconstantMP_of_uncountableCofinal
+#print axioms orderPreserving_range_countablyDirected
 
 end Martin

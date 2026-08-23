@@ -73,8 +73,20 @@ theorem joinFam_le {A : ℕ → Bool} {t : ℕ → ℕ} (ht : Primrec t) {R : �
   rw [hR (Nat.unpair m).1]
   rfl
 
+/-- **Each component of a countable join is Turing-below the join** (the reverse of `joinFam_le`):
+`R n ≤ᵀ joinFam R`, since `R n k = joinFam R ⟨n, k⟩` is computed from `joinFam R` by pairing `k` with the
+fixed column `n`. -/
+theorem component_le_joinFam (R : ℕ → ℕ → Bool) (n : ℕ) : R n ≤ₜ joinFam R := by
+  rw [le_iff_bitg]
+  refine (Nat.RecursiveIn.comp (le_iff_bitg.mp (Cantor.le.refl (joinFam R)))
+    ((Primrec.nat_iff.mp (Primrec₂.natPair.comp (Primrec.const n) Primrec.id)).recursiveIn)).of_eq
+    fun k => ?_
+  rw [Part.coe_some, Part.bind_eq_bind, Part.bind_some]
+  simp only [bitg, joinFam, Nat.unpair_pair, id_eq]
+
 end Cantor
 
 #print axioms Cantor.le_iff_bitg
 #print axioms OracleCode.eval_trE_comp
 #print axioms Cantor.joinFam_le
+#print axioms Cantor.component_le_joinFam

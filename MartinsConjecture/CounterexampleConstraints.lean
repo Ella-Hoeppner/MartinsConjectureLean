@@ -103,6 +103,17 @@ theorem avoidingImpliesConstant_of_theorem46 (hTD : TuringDeterminacy fun _ => T
   obtain ⟨W, hW⟩ := hmp Z₀
   exact hZ₀ W (hW W (Cantor.le.refl W))
 
+/-- **Part 1 for order-preserving functions, reduced to the two *actual* Lutz–Siskind theorems.**
+Combining `partI_orderPreserving_of_lemmas` with the reduction above: Part 1 for order-preserving `F`
+follows from `MeasurePreservingAboveId` (their **Theorem 3.4** — measure-preserving ⟹ above-id, already
+proved here from `MartinPPT`) and `OrderPreservingNonconstantMP` (their **Theorem 4.6** — non-constant
+order-preserving ⟹ measure-preserving).  Case 1 (countable range ⟹ constant) is *discharged*, so the
+only unformalized inputs are the two named paper theorems themselves. -/
+theorem partI_orderPreserving_of_theorem46 (hTD : TuringDeterminacy fun _ => True)
+    (h1 : MeasurePreservingAboveId) (h46 : OrderPreservingNonconstantMP) :
+    ∀ F : (ℕ → Bool) → ℕ → Bool, OrderPreserving F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_orderPreserving_of_lemmas h1 (avoidingImpliesConstant_of_theorem46 hTD h46)
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -285,5 +296,6 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms nonconstant_above_or_incomparable_fixed
 #print axioms counterexample_complete_profile
 #print axioms avoidingImpliesConstant_of_theorem46
+#print axioms partI_orderPreserving_of_theorem46
 
 end Martin

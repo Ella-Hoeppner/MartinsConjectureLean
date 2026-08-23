@@ -180,8 +180,39 @@ theorem exists_uniform_index_on_cone (hTD : TuringDeterminacy fun _ => True)
       by rw [ofNatCode_encodeCode]; exact hc⟩
   exact exists_onCone_of_cover hTD (fun _ => trivial) hTI hcover
 
+/-- **The exact gap to continuity (hence to the Borel route), formalized.**
+`exists_uniform_index_on_cone` computes `F` by a single code `e` on *one representative* `Y ≡ᵀ X`
+of every degree — but that choice of representative is non-invariant.  This is the other side: *if*
+the good code can be chosen **invariantly** (an index `idx` constant on each degree, with
+`F X = Φ_{idx X}^X` on a cone), then `F` is **continuous on a cone** — a single functional `Φ_e`
+computes `F X` from `X` itself.  Proof: an invariant `ℕ`-valued `idx` is constant `= e` on a cone
+(σ-pigeonhole over its invariant level sets `{idx = n}`), and there `Φ_{idx X} = Φ_e`.  So the sole
+obstruction between the machine-checked `exists_uniform_index_on_cone` and continuity — whence Part I
+via Slaman–Steel's `continuous ⟹ Borel ⟹ uniform` — is precisely **invariance of the index
+selection** (equivalently, uniformization of the good-representative relation on a cone). -/
+theorem continuousOnCone_of_invariantIndex (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool} {idx : (ℕ → Bool) → ℕ}
+    (hinv : ∀ X X', X ≡ₜ X' → idx X = idx X')
+    (hgood : OnCone fun X => eval (toPFun X) (ofNatCode (idx X)) = toPFun (F X)) :
+    ∃ e : ℕ, OnCone fun X => eval (toPFun X) (ofNatCode e) = toPFun (F X) := by
+  set B : ℕ → Set (ℕ → Bool) := fun n => {X | idx X = n} with hB
+  have hTI : ∀ n, TuringInvariantSet (B n) := by
+    intro n X X' hXX'
+    constructor
+    · intro h; show idx X' = n; rw [← hinv X X' hXX']; exact h
+    · intro h; show idx X = n; rw [hinv X X' hXX']; exact h
+  have hcover : cone (fun _ => false) ⊆ ⋃ n, B n := fun X _ =>
+    Set.mem_iUnion.mpr ⟨idx X, rfl⟩
+  obtain ⟨n, hn⟩ := exists_onCone_of_cover hTD (fun _ => trivial) hTI hcover
+  obtain ⟨W, hW⟩ := onCone_and hn hgood
+  refine ⟨n, W, fun X hX => ?_⟩
+  have hidx : idx X = n := (hW X hX).1
+  have hg := (hW X hX).2
+  rwa [hidx] at hg
+
 #print axioms comparability_on_cone
 #print axioms partI_of_cores
 #print axioms exists_uniform_index_on_cone
+#print axioms continuousOnCone_of_invariantIndex
 
 end Martin

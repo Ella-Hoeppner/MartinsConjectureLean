@@ -342,6 +342,18 @@ theorem winsII_cofinal_compl {A : Set (ℕ → Bool)} {τ : ℕ → Bool} (hτ :
   obtain ⟨z, hzA, hzeq⟩ := winsII_avoids hτ (X := Cantor.join w τ) (Cantor.right_le_join w τ)
   exact ⟨z, (Cantor.left_le_join w τ).trans hzeq.2, hzA⟩
 
+/-- **The cofinal dichotomy: any determined payoff set is cofinal or has cofinal complement** — the
+invariance-free weakening of Martin's cone theorem.  This is exactly what the membership game delivers
+for a *non-invariant* `A`.  It is strictly weaker than the cone theorem (which needs invariance to
+upgrade "cofinal" to "contains a cone"), and — crucially — **insufficient for `MartinPPT'`**: a cofinal
+set `A` can have cofinal complement, so this dichotomy never rules out the `Aᶜ` branch.  Martin's
+Lemma 2.3 must therefore build a genuine pointed *perfect tree*, not merely land in the cofinal branch. -/
+theorem cofinal_or_compl_cofinal_of_determined {A : Set (ℕ → Bool)} (hDet : GameDetermined A) :
+    (∀ w : ℕ → Bool, ∃ x, w ≤ₜ x ∧ x ∈ A) ∨ (∀ w : ℕ → Bool, ∃ x, w ≤ₜ x ∧ x ∉ A) := by
+  rcases hDet with ⟨σ, hσ⟩ | ⟨τ, hτ⟩
+  · exact Or.inl (winsI_cofinal hσ)
+  · exact Or.inr (winsII_cofinal_compl hτ)
+
 /-- Cone-theorem consequence in "on a cone" form: a determined Turing
 invariant set either holds on a cone or fails on a cone. -/
 theorem cone_theorem_onCone (A : Set (ℕ → Bool))

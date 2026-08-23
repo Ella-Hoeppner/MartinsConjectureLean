@@ -151,6 +151,14 @@ theorem MartinLE.trans_lt {F G H : (ℕ → Bool) → ℕ → Bool}
     (h1 : MartinLE F G) (h2 : MartinLT G H) : MartinLT F H :=
   ⟨h1.trans h2.1, fun hc => h2.2 (hc.trans h1)⟩
 
+/-- The strict Martin order is irreflexive. -/
+theorem MartinLT.irrefl (F : (ℕ → Bool) → ℕ → Bool) : ¬ MartinLT F F :=
+  fun h => h.2 h.1
+
+/-- The strict Martin order is asymmetric. -/
+theorem MartinLT.asymm {F G : (ℕ → Bool) → ℕ → Bool} (h : MartinLT F G) : ¬ MartinLT G F :=
+  fun h' => h.2 h'.1
+
 /-- Any two jump iterates are Martin comparable — the totality half of the
 Part II prewellordering claim, verified on the jump chain. -/
 theorem martinLE_jumpIter_of_le {m n : ℕ} (h : m ≤ n) :

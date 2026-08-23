@@ -361,6 +361,18 @@ theorem incomparable_escapes_params_onCone (hTD : TuringDeterminacy fun _ => Tru
   · exact absurd hle (incomparable_escapes_params hSS hF hincomp p)
   · exact hnle
 
+/-- **Counterexample-level escaping.**  A Part-1 counterexample `F` (invariant, not constant, not
+above-id) has, for *every* fixed parameter `p`, `F X ≰ᵀ X ⊕ p` on a cone.  Combines
+`counterexample_incomparable_to_argument` (the comparability trichotomy + the known regressive theorem
+force incomparability) with `incomparable_escapes_params_onCone`.  So a hypothetical counterexample's
+values are, uniformly in `X`, not computable from `X` together with any single fixed oracle. -/
+theorem counterexample_escapes_all_params (hSS : RegressiveSlamanSteel)
+    (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvariant F)
+    (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) (p : ℕ → Bool) :
+    OnCone (fun X => ¬ F X ≤ₜ Cantor.join X p) :=
+  incomparable_escapes_params_onCone hTD hSS hF
+    (counterexample_incomparable_to_argument hTD hSS hF hnc hnai) p
+
 /-- **A regressive cone-preserving function generates an infinite descending Martin
 chain.**  If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
 cone-preserving (`base ≤ᵀ F X`), then its iterates form an infinite strictly

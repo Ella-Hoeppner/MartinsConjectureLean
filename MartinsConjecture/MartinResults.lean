@@ -144,7 +144,8 @@ theorem counterexample_not_computablyUniform (hTD : TuringDeterminacy fun _ => T
 (AD-general) Part I.**  Given determinacy, if *every* Turing-invariant `F` is
 uniformly Turing-invariant (on a cone), then Part I holds for *every* Turing-invariant
 `F` — no `Measurable`, no class restriction — because `partI_uniform_general` is already
-machine-checked.  This is the route by which the Borel case is proven (Borel ⟹ uniform).
+machine-checked.  This is the *intended* route to the Borel case (via `Borel ⟹ uniform`) — but note
+that `Borel ⟹ uniform` is itself **open** (Part 1 for general Borel is open; ≈ Steel's conjecture).
 
 *Honesty:* the bridge is **sufficient but not necessary**.  Part I says constant-or-above-id,
 and neither implies uniformity (a constant `F` is not uniform; an above-id `F` need not be).

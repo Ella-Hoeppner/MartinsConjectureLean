@@ -83,9 +83,9 @@ r.e. operator above id on a cone, `Wˣ ≡ᵀ X` or `Wˣ ≡ᵀ X′` on a cone 
 `partI_uniform_general` (the `Measurable`-free uniform Part I) and the capstones
 `partI_Borel_of_uniformity_bridge` / `partI_general_of_uniformity`: the bridge
 "Turing-invariant ⟹ uniformly Turing-invariant" is a **sufficient condition** for Part I
-(everything downstream is machine-checked) — the route by which the Borel case is proven. It is
-sufficient, *not* necessary (constant/above-id functions needn't be uniform), and its truth for
-non-definable `F` is itself open. `escapingMP_of_uniformity_bridge`: the bridge subsumes the
+(everything downstream is machine-checked) — the intended route to the Borel case, **but the bridge is
+open even for Borel** (Part 1 for general Borel is open; ≈ Steel's conjecture). It is sufficient, *not*
+necessary (constant/above-id functions needn't be uniform), and its truth for `F` is itself open. `escapingMP_of_uniformity_bridge`: the bridge subsumes the
 `escaping ⟹ MP` route. (Why determinacy doesn't deliver the bridge: `ATTACK.md`.)
 
 **Measure-preserving reduction** (`MeasurePreserving.lean`, `PointedTree.lean`, `MartinTree.lean`,

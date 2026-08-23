@@ -18,9 +18,15 @@ or a complementary cone (where `Wˣ ≰ᵀ X`, so `W` is discontinuous at every 
 
 Determinacy is threaded explicitly (`TuringDeterminacy`); nothing is axiomatized.
 This is Lachlan's 1975 theorem [JSL 40.3], in the form of Lutz's thesis Cor 3.11,
-with the coding construction fully formalized.  The one classical input left
-external is Bard's Lemma 3.8 (bare uniform invariance ⟹ *computable* uniform
-invariance), which is why the hypothesis here is computable uniformity.
+with the coding construction fully formalized.
+
+The theorems here hypothesize *computable* uniform invariance
+(`ComputablyUniformlyTuringInvariant`).  **Bard's Lemma 3.8 (bare uniform
+invariance ⟹ computable uniform invariance) is discharged** by
+`Martin.uti_computable` (`BardUniformity.lean`), so the *bare-uniformity* forms
+`lachlan_dichotomy_cone_uniform` and `lachlan_no_post_solution_cone_uniform`
+(`MartinResults.lean`) drop the computable-uniformity hypothesis entirely — nothing
+classical is left external for this thread.
 -/
 import MartinsConjecture.CodingFamilyCode
 import MartinsConjecture.MartinMeasure

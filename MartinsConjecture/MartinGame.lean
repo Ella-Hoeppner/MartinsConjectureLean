@@ -20,6 +20,7 @@ Determinacy of the (non-invariant) payoff is threaded as an explicit hypothesis,
 -/
 import MartinsConjecture.ConeTheorem
 import MartinsConjecture.PerfectEmbedding
+import MartinsConjecture.Konig
 
 open scoped Computability
 open OracleCode Cantor
@@ -79,6 +80,49 @@ theorem emb_locality (σ z z' : ℕ → Bool) (k : ℕ) (h : ∀ j, j < 2 * k �
       = gamePlay σ (copyStrategy (Cantor.join z' σ)) (2 * k)
   rw [gamePlay, gamePlay, if_pos (by omega), if_pos (by omega),
     histPlay_copy_join_locality σ (2 * k) z z' h]
+
+/-- Reading a `range`-map at an in-bounds index. -/
+private theorem getD_range_map (z : ℕ → Bool) (n j : ℕ) (hj : j < n) :
+    ((List.range n).map z).getD j false = z j := by
+  rw [List.getD_eq_getElem?_getD, List.getElem?_map, List.getElem?_range hj]; rfl
+
+/-- Reading a prefix of an append (in-bounds). -/
+private theorem getD_append_lt (p q : List Bool) (j : ℕ) (hj : j < p.length) :
+    (p ++ q).getD j false = p.getD j false := by
+  rw [List.getD_eq_getElem?_getD, List.getD_eq_getElem?_getD, List.getElem?_append_left hj]
+
+/-- **Compactness: the even-part tree's branches are exactly the embedding's image.**  If `x` is
+approximated arbitrarily well by embedding values (for every `n`, some `z` has
+`emb z ↾ n = x ↾ n`), then `x` itself is an embedding value `emb z`.  This is the closedness of the
+(continuous, by `emb_locality`) image of the compact space `2^ω`, proved constructively via König's
+lemma on the tree of `z`-prefixes.  Together with `emb_locality` it is the full *mathematical* content
+of the even-part tree; only the `treeMem` σ-computability plumbing (à la `codeReal_le`) then remains. -/
+theorem exists_z_of_branch (σ x : ℕ → Bool)
+    (hbr : ∀ n, ∃ z, ∀ i, i < n →
+      evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) i = x i) :
+    ∃ z, ∀ i, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) i = x i := by
+  classical
+  let S : List Bool → Prop := fun p => ∀ k, 2 * k < p.length →
+    evenPart (gamePlay σ (copyStrategy (Cantor.join (fun i => p.getD i false) σ))) k = x k
+  have hclosed : ∀ p b, S (p ++ [b]) → S p := by
+    intro p b hp k hk
+    have hk' : 2 * k < (p ++ [b]).length := by rw [List.length_append]; simp; omega
+    rw [← hp k hk']
+    exact emb_locality σ _ _ k (fun j hj => (getD_append_lt p [b] j (by omega)).symm)
+  have h0 : Konig.HasInf S [] := by
+    intro m
+    obtain ⟨z, hz⟩ := hbr m
+    refine ⟨(List.range m).map z, fun k hk => ?_, List.nil_prefix, by
+      rw [List.length_map, List.length_range]⟩
+    rw [List.length_map, List.length_range] at hk
+    rw [emb_locality σ _ z k (fun j hj => getD_range_map z m j (by omega))]
+    exact hz k (by omega)
+  obtain ⟨y, hy⟩ := Konig.exists_branch hclosed h0
+  refine ⟨y, fun k => ?_⟩
+  have hlen : 2 * k < ((List.range (2 * k + 1)).map y).length := by
+    rw [List.length_map, List.length_range]; omega
+  rw [← hy (2 * k + 1) k hlen]
+  exact emb_locality σ y _ k (fun j hj => (getD_range_map y (2 * k + 1) j (by omega)).symm)
 
 /-- **Martin's asymmetric game payoff** for a set `A`.  Player I (even bits `x = evenPart z`) wins iff
 `y ≱ᵀ x` (II failed the domination requirement) or `x ≥ᵀ y ∧ x ∈ A`. -/

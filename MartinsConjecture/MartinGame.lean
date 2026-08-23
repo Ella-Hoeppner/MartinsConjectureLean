@@ -222,8 +222,24 @@ theorem cofinal_realizes_cone {A : Set (ℕ → Bool)}
   obtain ⟨σ, hσ⟩ := winsI_martinGame_of_cofinal hcof hDet
   exact ⟨σ, fun z hz => realizes_of_winsI_martinGame hσ hz⟩
 
+/-- **The asymmetric game recovers Martin's cone theorem** (invariant case).  For a Turing-*invariant*
+cofinal set whose Martin game is determined, `cofinal_realizes_cone` gives a representative of every
+degree `≥ᵀ σ` in `A`, and invariance promotes each realized degree to the whole degree — so `cone σ ⊆ A`.
+This is a sanity check that the (non-invariant) asymmetric game is correct: on invariant sets it yields
+the classical conclusion `cone_theorem`/`cone_of_invariant_cofinal` give (here via full determinacy of
+the payoff rather than the invariant cone theorem). -/
+theorem cone_of_invariant_cofinal_game {A : Set (ℕ → Bool)}
+    (hInv : ∀ X Y : ℕ → Bool, X ≡ₜ Y → (X ∈ A ↔ Y ∈ A))
+    (hcof : ∀ w, ∃ x, w ≤ₜ x ∧ x ∈ A) (hDet : GameDetermined (martinGame A)) :
+    ∃ Y, ∀ X, Y ≤ₜ X → X ∈ A := by
+  obtain ⟨σ, hσ⟩ := cofinal_realizes_cone hcof hDet
+  refine ⟨σ, fun X hX => ?_⟩
+  obtain ⟨x, hxA, hxX⟩ := hσ X hX
+  exact (hInv x X hxX).mp hxA
+
 #print axioms winsI_martinGame_of_cofinal
 #print axioms realizes_of_winsI_martinGame
 #print axioms cofinal_realizes_cone
+#print axioms cone_of_invariant_cofinal_game
 
 end Martin

@@ -316,6 +316,37 @@ theorem counterexample_wild_profile (hM : MartinPPT) (hSS : RegressiveSlamanStee
    counterexample_not_orderPreserving hTD hM hcoding hnc hnai,
    counterexample_not_uniformlyInvariant hTD F hnc hnai⟩
 
+/-- **Parameter-boundedness dichotomy** (via the KNOWN regressive theorem; no determinacy needed).
+For an invariant `F`, its values are computable from `X` together with a *single fixed* parameter `p`
+on a cone — `F X ≤ᵀ X ⊕ p` on a cone for some `p` — **iff** `F` is trivial on a cone: constant, or
+`≡ᵀ` the identity.  So the only parameter-bounded invariant functions are the two trivial Part-1
+endpoints; anything genuinely non-trivial (in particular any Part-1 counterexample, which is neither
+constant nor `≡ᵀ`-identity) escapes every parameter.  This is the clean statement underlying the
+escaping corollaries below.  Forward: `F X ≤ᵀ X ⊕ p` makes `F` regressive on `cone p`, so Slaman–Steel
+gives constant or above-id, and above-id collapses with `F X ≤ᵀ X` to `≡ᵀ`-identity. -/
+theorem paramBounded_iff_trivial (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F) :
+    (∃ p : ℕ → Bool, OnCone (fun X => F X ≤ₜ Cantor.join X p))
+      ↔ (ConstantOnCone F ∨ MartinEquiv F (fun X => X)) := by
+  constructor
+  · rintro ⟨p, hp⟩
+    have hreg : OnCone (fun X => F X ≤ₜ X) := by
+      obtain ⟨W, hW⟩ := hp
+      refine ⟨Cantor.join W p, fun X hX => ?_⟩
+      have hWX : W ≤ₜ X := (Cantor.left_le_join W p).trans hX
+      have hpX : p ≤ₜ X := (Cantor.right_le_join W p).trans hX
+      exact (hW X hWX).trans (Cantor.join_le (Cantor.le.refl X) hpX)
+    rcases hSS F hF hreg with hc | hai
+    · exact Or.inl hc
+    · right
+      obtain ⟨W, hW⟩ := onCone_and hreg hai
+      exact ⟨W, fun X hX => ⟨(hW X hX).1, (hW X hX).2⟩⟩
+  · rintro (hc | he)
+    · obtain ⟨c, hcE⟩ := hc
+      obtain ⟨W, hW⟩ := hcE
+      exact ⟨c, W, fun X hX => (hW X hX).1.trans (Cantor.right_le_join X c)⟩
+    · obtain ⟨W, hW⟩ := he
+      exact ⟨fun _ => false, W, fun X hX => (hW X hX).1.trans (Cantor.left_le_join X _)⟩
+
 /-- **An incomparable counterexample escapes every parameter** (a NEW constraint, using the KNOWN
 regressive theorem).  If an invariant `F` is incomparable to its argument on a cone, then for *no*
 fixed real `p` is `F X ≤ᵀ X ⊕ p` on a cone.  Reason: if it were, then on `cone p` we'd have `F X ≤ᵀ X`

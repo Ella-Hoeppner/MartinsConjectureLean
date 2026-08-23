@@ -210,9 +210,43 @@ theorem continuousOnCone_of_invariantIndex (hTD : TuringDeterminacy fun _ => Tru
   have hg := (hW X hX).2
   rwa [hidx] at hg
 
+/-- **The Slaman–Steel `continuous ⟹ constant` step**, as a named hypothesis: a regressive
+invariant function that is *continuous on a cone* (`F X = Φ_e^X` for a single code `e`) is constant
+on a cone.  This is *known mathematics* (it is how the Borel/hyperarithmetic cases finish), not
+formalized here — the general continuous-regressive argument needs Posner–Robinson. -/
+def ContinuousRegressiveConstant : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → OnCone (fun X => F X <ₜ X) →
+    (∃ e : ℕ, OnCone fun X => eval (toPFun X) (ofNatCode e) = toPFun (F X)) →
+    ConstantOnCone F
+
+/-- **The genuine open crux, isolated**: every regressive invariant `F` admits an **invariant**
+good-index on a cone — a degree-invariant `idx` with `F X = Φ_{idx X}^X`.  This is exactly
+uniformization of the good-representative relation on a cone, which determinacy does not deliver
+(see `ATTACK.md`); it is the 50-year-open content. -/
+def HasInvariantGoodIndex : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → OnCone (fun X => F X <ₜ X) →
+    ∃ idx : (ℕ → Bool) → ℕ, (∀ X X', X ≡ₜ X' → idx X = idx X') ∧
+      OnCone fun X => eval (toPFun X) (ofNatCode (idx X)) = toPFun (F X)
+
+/-- **The open regressive core = invariant-index-selection, modulo the known continuous case.**
+`RegressiveImpliesConstant` follows from (i) `ContinuousRegressiveConstant` (the Slaman–Steel
+`continuous ⟹ constant` step, *known*) and (ii) `HasInvariantGoodIndex` (an invariant good-index on
+a cone).  Proof: (ii) gives an invariant index; `continuousOnCone_of_invariantIndex` upgrades it to
+continuity on a cone; (i) finishes.  This pins the open content precisely: of the two inputs, (i) is
+known mathematics and (ii) — cone uniformization of the good-representative relation — is the genuine
+open crux. -/
+theorem regressiveCore_of_invariantIndex (hTD : TuringDeterminacy fun _ => True)
+    (hcont : ContinuousRegressiveConstant) (hidx : HasInvariantGoodIndex) :
+    RegressiveImpliesConstant := by
+  intro F hF hreg
+  obtain ⟨idx, hinv, hgood⟩ := hidx F hF hreg
+  obtain ⟨e, he⟩ := continuousOnCone_of_invariantIndex hTD hinv hgood
+  exact hcont F hF hreg ⟨e, he⟩
+
 #print axioms comparability_on_cone
 #print axioms partI_of_cores
 #print axioms exists_uniform_index_on_cone
 #print axioms continuousOnCone_of_invariantIndex
+#print axioms regressiveCore_of_invariantIndex
 
 end Martin

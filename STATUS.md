@@ -47,6 +47,14 @@ a **sufficient** condition (the route by which the Borel case is proven; not nec
 doesn't imply uniformity). Everything downstream is machine-checked; `ATTACK.md` analyses exactly why
 determinacy does not deliver this bridge for non-definable `F` (cone dichotomy vs cone uniformization).
 
+**Sharpened to Steel's conjecture** (`partI_general_of_steelBridge`, `MartinResults.lean`): full Part 1
+⟸ "every `TuringInvariant F` is `MartinEquiv` (cone-`≡ᵀ`) to *some* uniformly-invariant `G`" — which is
+**exactly Steel's conjecture** ("every definable Turing-degree function is equivalent to a uniformly
+invariant one"), the literature's canonical reduction target. This *generalizes* the uniformity-bridge
+form (take `G := F`). The contrapositive `counterexample_refutes_steel` shows a Part-1 counterexample
+refutes Steel's conjecture. Grounding: Nakid-Cordero 2025 (arXiv:2510.19147) prove the bridge *fails* in
+the enumeration degrees — so it is genuinely Turing-specific, not pure logic.
+
 ---
 
 ## What is machine-checked (headline map)
@@ -104,11 +112,16 @@ ingredient — the rank `ω₁^x`.
 
 **The Church–Kleene ordinal `ω₁^x`** (`ChurchKleene.lean`): `churchKleene` (relativized `ω₁^X` = sup of
 order types of `X`-computable well-orders, correctly guarded `≤ᵀ X`), with `churchKleene_mono` +
-`churchKleene_invariant` proven. Instantiating the engine: `no_omega1_decreasing_conePreserving` (no
-cone-preserving regressive `F` strictly decreases `ω₁^x`) and `regressive_omega1_dichotomy` (a regressive
-`F` preserves or strictly decreases `ω₁^x` on a cone). So a cone-preserving counterexample is
-**`ω₁`-preserving** — the genuinely open case (Lutz's hyperarithmetic method handles the `ω₁`-decreasing
-case on `D_h`; the `ω₁`-preserving Turing case needs `Σ¹₁`-bounding that fails on cones).
+`churchKleene_invariant` + `omega_le_churchKleene` (`ω₁^X ≥ ω`, non-degeneracy — the rank is not
+trivially `0`, so the engine constraint is non-vacuous) proven. Instantiating the engine:
+`no_omega1_decreasing_conePreserving` (no cone-preserving regressive `F` strictly decreases `ω₁^x`) and
+`regressive_omega1_dichotomy` (a regressive `F` preserves or strictly decreases `ω₁^x` on a cone). So a
+cone-preserving counterexample is **`ω₁`-preserving**. **Sharper framing** (see `ATTACK.md`): the engine
+*already* kills the `ω₁`-**decreasing** case (= `F X <_h X`, which is *all* of Lutz's `D_h` regressive
+setting) via ordinal well-foundedness — no `Σ¹₁`-bounding. So the genuine open residual is the
+`ω₁`-**preserving** = **hyp-preserving Turing case** (`F X ≡_h X`, `F X <ᵀ X`), a Turing-specific
+phenomenon *vacuous* on `D_h` (Lutz never sees it), with no ordinal rank (the Turing degrees inside one
+hyperarithmetic degree are ill-founded).
 
 New constraints (`CounterexampleConstraints.lean`): `arithmetically_bounded_implies_constant`
 (counterexample is *arithmetically* escaping), `nonconstant_above_or_incomparable_fixed` (per-degree

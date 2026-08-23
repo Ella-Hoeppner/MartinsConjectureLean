@@ -10,9 +10,13 @@ oracle computations, which land in `X′`, are excluded), prove it is **monotone
 > no `base`-cone-preserving regressive `F` strictly decreases `ω₁^X`.
 
 Equivalently a regressive counterexample must be **`ω₁`-preserving** — it cannot strictly drop
-the Church–Kleene ordinal.  That is *exactly* the case where Lutz's hyperarithmetic argument
-would apply on `D_h`, and where the Turing case remains open (the hyp-jump-distance is unbounded
-on Turing cones; no `Σ¹₁`-bounding).  See `ATTACK.md`.
+the Church–Kleene ordinal.
+
+**⚠️ NB (correction, 2026-08-23):** the *Turing* regressive core this file was built to attack is in
+fact a **KNOWN Slaman–Steel theorem** (see `Reduction.RegressiveSlamanSteel`), *not* open — the earlier
+framing conflated it with Lutz's *hyperarithmetic-degrees* result (`D_h`, a different structure).  The
+machinery here is valid mathematics but targets an already-solved problem; the sole open Part-1 content
+is the incomparable core.  See `ATTACK.md` and `Reduction.partI_iff_incomparable`.
 -/
 import MartinsConjecture.OrdinalUltrapower
 import MartinsConjecture.BoundedCase

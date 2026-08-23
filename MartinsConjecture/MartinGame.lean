@@ -19,6 +19,7 @@ This file formalizes the **degree-realization core** (`cofinal_realizes_cone`). 
 Determinacy of the (non-invariant) payoff is threaded as an explicit hypothesis, never axiomatized.
 -/
 import MartinsConjecture.ConeTheorem
+import MartinsConjecture.PerfectEmbedding
 
 open scoped Computability
 open OracleCode Cantor
@@ -69,11 +70,12 @@ theorem winsI_martinGame_of_cofinal {A : Set (ℕ → Bool)}
     · rw [heven]; exact (oddPart_le _).trans hle
     · rw [heven]; exact hx₀A
 
-/-- **A player-I win in Martin's game makes `A` realize a cone of degrees.**  For `z ≥ᵀ σ`, player II
-copies `z`; since I wins the resulting play, its even part `x` satisfies `x ≡ᵀ z` and `x ∈ A`. -/
-theorem realizes_of_winsI_martinGame {A : Set (ℕ → Bool)} {σ : ℕ → Bool}
+/-- **The winning play's even part realizes the copied degree.**  For `z ≥ᵀ σ`, when player II copies
+`z` the resulting winning play `gamePlay σ (copyStrategy z)` has even part `≡ᵀ z` and lying in `A`.
+This is the value-level form (exposes the specific witness for the perfect embedding below). -/
+theorem evenPart_realizes_of_winsI {A : Set (ℕ → Bool)} {σ : ℕ → Bool}
     (hσ : WinsI (martinGame A) σ) {z : ℕ → Bool} (hz : σ ≤ₜ z) :
-    ∃ x, x ∈ A ∧ x ≡ₜ z := by
+    evenPart (gamePlay σ (copyStrategy z)) ∈ A ∧ evenPart (gamePlay σ (copyStrategy z)) ≡ₜ z := by
   have hle : gamePlay σ (copyStrategy z) ≤ₜ z := by
     refine gamePlay_le 1 σ (copyStrategy z) σ z hz (fun n hn => ?_) (fun n hn => ?_)
     · rw [if_pos (by omega)]
@@ -89,7 +91,42 @@ theorem realizes_of_winsI_martinGame {A : Set (ℕ → Bool)} {σ : ℕ → Bool
     apply h1
     rw [hodd]; exact heven_le
   · rw [hodd] at h2a
-    exact ⟨evenPart (gamePlay σ (copyStrategy z)), h2b, heven_le, h2a⟩
+    exact ⟨h2b, heven_le, h2a⟩
+
+/-- **A player-I win in Martin's game makes `A` realize a cone of degrees.**  For `z ≥ᵀ σ`, some member
+of `A` is `≡ᵀ z` (the winning play's even part). -/
+theorem realizes_of_winsI_martinGame {A : Set (ℕ → Bool)} {σ : ℕ → Bool}
+    (hσ : WinsI (martinGame A) σ) {z : ℕ → Bool} (hz : σ ≤ₜ z) :
+    ∃ x, x ∈ A ∧ x ≡ₜ z :=
+  ⟨_, evenPart_realizes_of_winsI hσ hz⟩
+
+/-- **The determinacy game supplies the pointed perfect embedding into `A`** — the "game half" that
+`PerfectEmbedding.lean` left open (it proved the other half, that such an embedding realizes a cone).
+From a player-I win, `z ↦ evenPart(play against II copying z ⊕ σ)` is a degree-preserving perfect
+embedding with code `σ`, whose branches lie in `A` and above `σ`.  Its three defining computations are
+exactly `evenPart_realizes_of_winsI` at `z ⊕ σ` together with the join inequalities. -/
+def martinGamePerfectEmbedding {A : Set (ℕ → Bool)} {σ : ℕ → Bool}
+    (hσ : WinsI (martinGame A) σ) :
+    PerfectEmbedding σ (fun x => x ∈ A ∧ σ ≤ₜ x) where
+  emb z := evenPart (gamePlay σ (copyStrategy (Cantor.join z σ)))
+  maps_to z :=
+    ⟨(evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).1,
+     (Cantor.right_le_join z σ).trans (evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).2.2⟩
+  forward z := (evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).2.1
+  invert z :=
+    ((Cantor.left_le_join z σ).trans (evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).2.2).trans
+      (Cantor.left_le_join _ σ)
+
+/-- **Martin's Lemma 2.3, at the perfect-embedding level.**  A cofinal set `A` (whose Martin game is
+determined) admits a code `σ` and a degree-preserving perfect embedding of Cantor space whose branches
+lie in `A` and above `σ` — i.e. `A` contains a pointed perfect set.  Combined with
+`realizes_of_perfectEmbedding` this recovers `cofinal_realizes_cone`; the only remaining step to
+`MartinPPT'` is re-presenting this pointed perfect set as a tree in the `treeMem` format. -/
+theorem cofinal_perfectEmbedding {A : Set (ℕ → Bool)}
+    (hcof : ∀ w, ∃ x, w ≤ₜ x ∧ x ∈ A) (hDet : GameDetermined (martinGame A)) :
+    ∃ σ, Nonempty (PerfectEmbedding σ (fun x => x ∈ A ∧ σ ≤ₜ x)) := by
+  obtain ⟨σ, hσ⟩ := winsI_martinGame_of_cofinal hcof hDet
+  exact ⟨σ, ⟨martinGamePerfectEmbedding hσ⟩⟩
 
 /-- **Martin's theorem, degree-realization core** (Lemma 2.3, via the asymmetric game).  A cofinal set
 `A` realizes a whole cone of degrees: given its Martin game is determined, there is a `σ` so that every

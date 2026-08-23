@@ -424,6 +424,22 @@ theorem nontrivial_escapes_params (hTD : TuringDeterminacy fun _ => True) (hSS :
   escapes_param_of_not_paramBounded hTD hF p
     (fun hb => ((paramBounded_iff_trivial hSS hF).mp ⟨p, hb⟩).elim hnc hne)
 
+/-- **The jump escapes every parameter** — a concrete witness that `nontrivial_escapes_params` is
+non-vacuous.  For every fixed `p`, `X′ ≰ᵀ X ⊕ p` on a cone.  The jump is invariant, non-constant
+(`X′ <ᵀ X″` rules out a single value), and strictly above the identity (`X <ᵀ X′`), hence non-trivial;
+so its values are, on a cone, not computable from `X` plus any fixed oracle. -/
+theorem jump_escapes_params (hTD : TuringDeterminacy fun _ => True) (hSS : RegressiveSlamanSteel)
+    (p : ℕ → Bool) :
+    OnCone (fun X => ¬ Cantor.jump X ≤ₜ Cantor.join X p) := by
+  have hne : ¬ MartinEquiv Cantor.jump (fun X => X) := by
+    rintro ⟨W, hW⟩
+    exact not_jump_le W (hW W (Cantor.le.refl W)).1
+  have hnc : ¬ ConstantOnCone Cantor.jump := by
+    rintro ⟨c, W, hW⟩
+    exact (lt_jump (Cantor.jump W)).2
+      ((hW (Cantor.jump W) (le_jump W)).1.trans (hW W (Cantor.le.refl W)).2)
+  exact nontrivial_escapes_params hTD hSS turingInvariant_jump hnc hne p
+
 /-- **The definitive counterexample profile.**  Collects every machine-checked constraint a Part-1
 counterexample must satisfy: incomparable to its argument, incomparable to every fixed degree across
 an interval, escaping every fixed parameter (`F X ≰ᵀ X ⊕ p` on a cone, for all `p`), and outside every

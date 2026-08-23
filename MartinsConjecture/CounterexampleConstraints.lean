@@ -140,6 +140,20 @@ theorem orderPreserving_range_countablyDirected (hop : OrderPreserving F)
   choose X hX using hd
   exact ⟨joinFam X, fun n => (hX n).trans (hop (X n) (joinFam X) (Cantor.component_le_joinFam X n))⟩
 
+/-- **Capstone: Part 1 for order-preserving functions rests on exactly `MartinPPT` + the coding step.**
+Assembling this session's reductions: given `MartinPPT` (which supplies Theorem 3.4 via
+`measurePreservingAboveId_of_martinPPT`) and `OrderPreservingUncountableCofinal` (the
+Groszek–Slaman–Kihara perfect-set coding, Corollary 4.5), Part 1 holds for every order-preserving `F`.
+Case 1 (countable range ⟹ constant), the `cofinal ⟹ MP` step, and the directedness of the range are
+all *proved*; only the coding remains unformalized.  So the order-preserving case is now formally
+reduced to a single atomic determinacy/coding statement. -/
+theorem partI_orderPreserving_of_coding (hTD : TuringDeterminacy fun _ => True)
+    (hM : MartinPPT) (hcoding : OrderPreservingUncountableCofinal) :
+    ∀ F : (ℕ → Bool) → ℕ → Bool, OrderPreserving F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_orderPreserving_of_theorem46 hTD
+    (fun _ hF hmp => measurePreservingAboveId_of_martinPPT hM hF hmp)
+    (orderPreservingNonconstantMP_of_uncountableCofinal hcoding)
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -325,5 +339,6 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms partI_orderPreserving_of_theorem46
 #print axioms orderPreservingNonconstantMP_of_uncountableCofinal
 #print axioms orderPreserving_range_countablyDirected
+#print axioms partI_orderPreserving_of_coding
 
 end Martin

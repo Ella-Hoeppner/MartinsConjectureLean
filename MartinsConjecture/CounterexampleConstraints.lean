@@ -266,6 +266,20 @@ theorem counterexample_full_profile (hM : MartinPPT)
   · exact Or.inl hlt
   · exact Or.inr hincomp
 
+/-- **The sharpened counterexample profile, using the KNOWN regressive theorem.**  Given
+`RegressiveSlamanSteel`, a Part-1 counterexample is, on a cone, **incomparable to its argument** (not
+merely "regressive or incomparable" — the regressive alternative is ruled out by Slaman–Steel), and
+simultaneously incomparable to every fixed degree over `[W₀, W₁]`.  So a counterexample lives purely in
+the incomparable core. -/
+theorem counterexample_sharp_profile (hM : MartinPPT) (hSS : RegressiveSlamanSteel)
+    (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvariant F)
+    (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) ∧
+    (∃ W₀, ∀ W₁, OnCone
+      (fun X => ∀ Z, W₀ ≤ₜ Z → Z ≤ₜ W₁ → ¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) :=
+  ⟨counterexample_incomparable_to_argument hTD hSS hF hnc hnai,
+   (counterexample_full_profile hM hTD hF hnc hnai).2⟩
+
 /-- **A regressive cone-preserving function generates an infinite descending Martin
 chain.**  If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
 cone-preserving (`base ≤ᵀ F X`), then its iterates form an infinite strictly

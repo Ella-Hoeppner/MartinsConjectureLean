@@ -164,10 +164,71 @@ theorem partI_of_gameTreeCodable_escaping (hc : GameTreeCodable)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_packaging_escaping (martinGameTreePackages_of_treeCode hc) hdet hTD hesc
 
+/-! ### A cleaner route: discharging `MartinPPT` directly via the abstract `PPT`
+
+`PPT.mem` is an abstract predicate (not a `treeMem` tree), so we may take `code := σ` outright.  Then
+pointedness, `realizes`, and `mem ⊆ A` are immediate from `evenPart_realizes_of_winsI`, and the **only**
+remaining obligation is `PPT.recover` — recovering a branch `emb z` from a computable injective image
+`g (emb z)` together with `σ`.  This bypasses the `treeMem` σ-encoding subtlety entirely: `code = σ` is
+`≡ᵀ σ` by fiat, so `realizes` (degrees `≥ᵀ σ`) and pointedness hold on the nose. -/
+
+/-- **The `recover` obligation** (Lemma 2.1) for the game embedding: for any winning `σ`, a computable
+injective functional `g` on the branch set `{emb z}` recovers each branch from its image and `σ`
+(`emb z ≤ᵀ g(emb z) ⊕ σ`).  A bounded-search inversion using `emb_locality` (`g(emb z') ↾ m` depends on
+`z' ↾` a bound, so `z` is found by a `σ`-bounded search) — a `lemma21`-scale `RecursiveIn` statement, and
+the sole remaining piece of Martin's Lemma 2.3 on this route. -/
+def GameRecover : Prop :=
+  ∀ (σ : ℕ → Bool) (g : (ℕ → Bool) → ℕ → Bool),
+    CompFunctionalOn (fun x => ∃ z, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) = x) g →
+    (∀ x y, (∃ z, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) = x) →
+        (∃ z, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) = y) → g x = g y → x = y) →
+    ∀ x, (∃ z, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) = x) →
+      x ≤ₜ Cantor.join (g x) σ
+
+/-- **`MartinPPT` directly from the game, modulo `recover`.**  Every cofinal set contains a pointed
+perfect tree with code `σ`, branches the game-embedding image, `mem ⊆ A`, pointedness and `realizes`
+all discharged from `evenPart_realizes_of_winsI`; the one hypothesis is `GameRecover`.  This avoids the
+`treeMem`/σ-encoding route (`GameTreeCodable`) entirely. -/
+theorem martinPPT_of_recover (hrec : GameRecover)
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A)) :
+    MartinPPT := by
+  intro A hcof
+  obtain ⟨σ, hσ⟩ := winsI_martinGame_of_cofinal (A := A) hcof (hdet A)
+  refine ⟨{ code := σ
+            mem := fun x => ∃ z, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) = x
+            pointed := ?_
+            realizes := ?_
+            recover := hrec σ }, ?_⟩
+  · rintro x ⟨z, rfl⟩
+    exact (Cantor.right_le_join z σ).trans
+      (evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).2.2
+  · intro d hd
+    refine ⟨_, ⟨d, rfl⟩, ?_⟩
+    have hz := evenPart_realizes_of_winsI hσ (z := Cantor.join d σ) (Cantor.right_le_join d σ)
+    have hjoin : Cantor.join d σ ≡ₜ d :=
+      ⟨Cantor.join_le (Cantor.le.refl d) hd, Cantor.left_le_join d σ⟩
+    exact ⟨hz.2.1.trans hjoin.1, hjoin.2.trans hz.2.2⟩
+  · rintro x ⟨z, rfl⟩
+    exact (evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).1
+
+/-- **Part 1 of Martin's conjecture from `GameRecover` (the clean route).**  Part 1 holds given
+`GameRecover` (the `recover` inversion — a computability lemma), full determinacy of the Martin games,
+Turing determinacy, and `escaping ⟹ MP`.  Only the last is genuinely open.  This is the sharpest and
+cleanest reduction: Martin's Lemma 2.3 (`MartinPPT`) is down to a single `lemma21`-scale inversion, with
+its entire mathematical content (the asymmetric game, `emb_locality`, degree-realization) proved. -/
+theorem partI_of_gameRecover_escaping (hrec : GameRecover)
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A))
+    (hTD : TuringDeterminacy fun _ => True)
+    (hesc : ∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_martinPPT_escaping (martinPPT_of_recover hrec hdet) hTD hesc
+
 #print axioms martinPPT_perfect_of_packaging
 #print axioms martinPPT'_of_packaging
 #print axioms partI_of_packaging_escaping
 #print axioms martinGameTreePackages_of_treeCode
 #print axioms partI_of_gameTreeCodable_escaping
+#print axioms martinPPT_of_recover
+#print axioms partI_of_gameRecover_escaping
 
 end Martin

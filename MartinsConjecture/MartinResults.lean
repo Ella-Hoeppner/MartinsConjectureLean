@@ -177,6 +177,23 @@ theorem partI_general_of_steelBridge (hTD : TuringDeterminacy fun _ => True)
     obtain ⟨W, hW⟩ := onCone_and hai hFG
     exact ⟨W, fun X hX => (hW X hX).1.trans (hW X hX).2.2⟩
 
+/-- **A Part-I counterexample would refute Steel's conjecture** (contrapositive of
+`partI_general_of_steelBridge`).  A Turing-invariant `F` that is neither constant on a cone nor
+above the identity on a cone is not `MartinEquiv` to *any* uniformly-invariant function.  This
+strengthens `counterexample_not_uniformlyInvariant` from "`F` is not uniformly invariant" to "`F`
+is not even cone-equivalent to a uniformly-invariant function" — i.e. a counterexample directly
+contradicts Steel's conjecture.  Since Steel's conjecture is widely believed, this is further
+evidence Part I holds. -/
+theorem counterexample_refutes_steel (hTD : TuringDeterminacy fun _ => True)
+    (F : (ℕ → Bool) → ℕ → Bool) (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    ¬ ∃ G, UniformlyTuringInvariant G ∧ MartinEquiv F G := by
+  rintro ⟨G, hGU, hFG⟩
+  rcases partI_uniform_general hTD G hGU with hc | hai
+  · exact hnc ⟨hc.choose, hFG.trans hc.choose_spec⟩
+  · refine hnai ?_
+    obtain ⟨W, hW⟩ := onCone_and hai hFG
+    exact ⟨W, fun X hX => (hW X hX).1.trans (hW X hX).2.2⟩
+
 /-- **The uniformity bridge subsumes the `escaping ⟹ MP` route.**  The two known
 sufficient conditions for Part I — the uniformity bridge (this file) and
 `MartinPPT ∧ (escaping ⟹ MP)` (`partI_of_martinPPT_escaping`) — are not independent:
@@ -199,6 +216,7 @@ theorem escapingMP_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
 #print axioms partI_uniform_general
 #print axioms partI_general_of_uniformity
 #print axioms partI_general_of_steelBridge
+#print axioms counterexample_refutes_steel
 #print axioms escapingMP_of_uniformity_bridge
 #print axioms regressive_uniform
 #print axioms incomparable_uniform

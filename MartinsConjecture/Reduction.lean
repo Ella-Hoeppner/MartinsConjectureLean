@@ -152,6 +152,43 @@ theorem partI_Borel_of_cores (hTD : TuringDeterminacy fun _ => True)
     PartI_Borel :=
   fun F _ hF => partI_of_cores hTD h1 h2 F hF
 
+/-! ### The regressive core is KNOWN (Slaman–Steel); only the incomparable core is open -/
+
+/-- **Slaman–Steel's regressive theorem, as a named KNOWN hypothesis** (ZF+AD): a regressive
+Turing-invariant function (`F X ≤ᵀ X` on a cone) is constant on a cone or above the identity on a cone.
+This is **established mathematics** — Slaman–Steel proved Part 1 of Martin's conjecture for *all*
+regressive functions on the Turing degrees (Lutz–Siskind Thm 1.4; independently confirmed: "if `f` is
+Turing-invariant with `f(x) ≤ᵀ x` for all `x`, then `f` is constant on a cone or `f(x) ≡ᵀ x` on a
+cone").  It is **not open** — merely unformalized here.  (Earlier framing in this project mislabeled the
+regressive core as the open ~50-year problem, conflating it with Lutz's *hyperarithmetic-degrees*
+result, `arXiv:2306.05746`, which concerns a different degree structure.) -/
+def RegressiveSlamanSteel : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+    OnCone (fun X => F X ≤ₜ X) → ConstantOnCone F ∨ AboveIdOnCone F
+
+/-- **The regressive core is a consequence of Slaman–Steel's theorem — i.e. it is NOT open.**  A
+strictly-regressive `F` (`F X <ᵀ X` on a cone) is in particular regressive (`F X ≤ᵀ X`), so Slaman–Steel
+gives constant-or-above-id; strict regressivity rules out above-id (it would force `X <ᵀ X`).  Hence
+`RegressiveImpliesConstant` holds outright given `RegressiveSlamanSteel`. -/
+theorem regressiveImpliesConstant_of_slamanSteel (hSS : RegressiveSlamanSteel) :
+    RegressiveImpliesConstant := by
+  intro F hF hreg
+  rcases hSS F hF (onCone_mono (fun _ h => h.1) hreg) with hc | hai
+  · exact hc
+  · exfalso
+    obtain ⟨W, hW⟩ := onCone_and hreg hai
+    exact (hW W (Cantor.le.refl W)).1.2 (hW W (Cantor.le.refl W)).2
+
+/-- **The corrected picture of Part 1's open content.**  Part 1 follows from `RegressiveSlamanSteel`
+(a KNOWN Slaman–Steel theorem) together with `IncomparableImpliesConstant`.  Since the former is known,
+the **sole genuinely-open content of Part 1 is the incomparable core** — ruling out functions "off to
+the side" (`F X ⊥ᵀ X`, incomparable to their argument), exactly the remaining case Lutz–Siskind
+identify (their Figure 1). -/
+theorem partI_of_slamanSteel_incomparable (hTD : TuringDeterminacy fun _ => True)
+    (hSS : RegressiveSlamanSteel) (h2 : IncomparableImpliesConstant) :
+    ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_cores hTD (regressiveImpliesConstant_of_slamanSteel hSS) h2
+
 /-! ### Index stabilization -/
 
 /-- **Index stabilization**: under Turing determinacy, if `F` is Turing
@@ -264,6 +301,8 @@ theorem partI_of_invariantIndex_and_incomparable (hTD : TuringDeterminacy fun _ 
 #print axioms comparability_on_cone
 #print axioms partI_of_cores
 #print axioms exists_uniform_index_on_cone
+#print axioms regressiveImpliesConstant_of_slamanSteel
+#print axioms partI_of_slamanSteel_incomparable
 #print axioms continuousOnCone_of_invariantIndex
 #print axioms regressiveCore_of_invariantIndex
 #print axioms partI_of_invariantIndex_and_incomparable

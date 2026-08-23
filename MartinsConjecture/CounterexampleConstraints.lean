@@ -76,6 +76,33 @@ theorem nonconstant_values_uncountable (hTD : TuringDeterminacy fun _ => True)
   obtain ⟨n, hn⟩ := exists_onCone_of_cover hTD (fun _ => trivial) hTI hcover
   exact hnc ⟨c n, hn⟩
 
+/-- **Lutz–Siskind Theorem 4.6, as a named hypothesis**: a *non-constant* order-preserving invariant
+function is measure-preserving.  Phrased via the exact conclusion of `nonconstant_values_uncountable`
+(the values escape every countable family on every cone — this is what "non-constant" delivers) so it
+composes directly.  Its proof (the perfect-set theorem + the Groszek–Slaman–Kihara coding of §4 of
+Lutz–Siskind) is the genuine hard content and is not formalized here. -/
+def OrderPreservingNonconstantMP : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, OrderPreserving F → TuringInvariant F →
+    (∀ c : ℕ → (ℕ → Bool), ¬ OnCone (fun X => ∃ n, F X ≡ₜ c n)) → MeasurePreserving F
+
+/-- **`AvoidingImpliesConstant` reduces to Theorem 4.6, with Case 1 discharged.**  The order-preserving
+skeleton (`partI_orderPreserving_of_lemmas`) takes `AvoidingImpliesConstant` as a raw hypothesis.  Here
+it is *derived* from `OrderPreservingNonconstantMP` — the content of Lutz–Siskind's Theorem 4.6 — with
+the "countable range ⟹ constant" **Case 1 discharged** via the already-proved
+`nonconstant_values_uncountable`.  Proof: a non-constant such `F` is measure-preserving (Thm 4.6), so its
+values reach the cone above `Z₀` — contradicting that its range avoids that cone.  This isolates the
+sole remaining unformalized ingredient of the order-preserving case as the *actual paper theorem*
+(non-constant order-preserving ⟹ measure-preserving), rather than the ad-hoc `AvoidingImpliesConstant`. -/
+theorem avoidingImpliesConstant_of_theorem46 (hTD : TuringDeterminacy fun _ => True)
+    (h46 : OrderPreservingNonconstantMP) : AvoidingImpliesConstant := by
+  intro F hop havoid
+  by_contra hnc
+  have hinv : TuringInvariant F := fun X Y hXY => ⟨hop X Y hXY.1, hop Y X hXY.2⟩
+  have hmp : MeasurePreserving F := h46 F hop hinv (nonconstant_values_uncountable hTD hinv hnc)
+  obtain ⟨Z₀, hZ₀⟩ := havoid
+  obtain ⟨W, hW⟩ := hmp Z₀
+  exact hZ₀ W (hW W (Cantor.le.refl W))
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -259,3 +286,4 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms counterexample_complete_profile
 
 end Martin
+#print axioms avoidingImpliesConstant_of_theorem46

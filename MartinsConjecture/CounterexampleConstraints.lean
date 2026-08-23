@@ -177,6 +177,24 @@ theorem incomparableImpliesConstant_of_steelBridge (hTD : TuringDeterminacy fun 
     IncomparableImpliesConstant :=
   incomparableImpliesConstant_of_partI (partI_general_of_steelBridge hTD bridge)
 
+/-- **The project's two framings of Part 1's open content coincide** (given `MartinPPT` and the KNOWN
+regressive theorem).  The "class-specific" open input `escaping ⟹ measure-preserving` and the sole
+open core `IncomparableImpliesConstant` are **equivalent** — both are equivalent to Part 1 itself:
+`escaping ⟹ MP` gives Part 1 via `partI_of_martinPPT_escaping`, and Part 1 gives `escaping ⟹ MP` since
+an escaping function is non-constant, hence above-id, hence measure-preserving.  So there is genuinely
+*one* open problem, viewable either way. -/
+theorem escapingMP_iff_incomparable (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hSS : RegressiveSlamanSteel) :
+    (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F → MeasurePreserving F)
+      ↔ IncomparableImpliesConstant := by
+  constructor
+  · intro hesc
+    exact incomparableImpliesConstant_of_partI (partI_of_martinPPT_escaping hM hTD hesc)
+  · intro hincomp F hF hescF
+    rcases partI_of_slamanSteel_incomparable hTD hSS hincomp F hF with hc | hai
+    · exact absurd hc (not_constant_of_escaping hescF)
+    · exact aboveId_measurePreserving hai
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -363,6 +381,7 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms orderPreservingNonconstantMP_of_uncountableCofinal
 #print axioms orderPreserving_range_countablyDirected
 #print axioms partI_orderPreserving_of_coding
+#print axioms escapingMP_iff_incomparable
 #print axioms orderPreserving_constant_or_mp
 
 end Martin

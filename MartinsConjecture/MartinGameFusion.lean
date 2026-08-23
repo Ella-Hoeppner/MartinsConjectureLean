@@ -51,9 +51,9 @@ theorem martinPPT_perfect_of_packaging (hpkg : MartinGameTreePackages)
 
 /-- **`MartinPPT'` from the (proven) game plus the packaging step.**  Chains
 `martinPPT_perfect_of_packaging` with the existing `martinPPT'_of_perfect`.  So the *entire* non-invariant
-half of Martin's pointed-perfect-tree theorem is now reduced to `PerfectEmbeddingPackages` — a single
+half of Martin's pointed-perfect-tree theorem is now reduced to `MartinGameTreePackages` — a single
 computability construction — with the determinacy argument fully formalized. -/
-theorem martinPPT'_of_packaging (hpkg : PerfectEmbeddingPackages)
+theorem martinPPT'_of_packaging (hpkg : MartinGameTreePackages)
     (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A)) :
     MartinPPT' :=
   martinPPT'_of_perfect (martinPPT_perfect_of_packaging hpkg hdet)

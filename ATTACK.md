@@ -371,7 +371,8 @@ machine-checked theorems around it: `exists_uniform_index_on_cone` (HAVE — cod
 per degree, non-invariant selection) and `continuousOnCone_of_invariantIndex` (NEW — an *invariant*
 index `idx` with `F X = Φ_{idx X}^X` yields **continuity on a cone**, `F X = Φ_e^X`, via σ-pigeonhole on
 the invariant level sets `{idx=n}`). Capstone `regressiveCore_of_invariantIndex`: `RegressiveImpliesConstant
-⟸ ContinuousRegressiveConstant` (KNOWN — continuous ⟹ Borel ⟹ uniform ⟹ `regressive_uniform`) `∧
+⟸ ContinuousRegressiveConstant` (KNOWN — a continuous `F` is a *recursive* function, and Slaman–Steel
+proved Part 1 for recursive functions via rates-of-convergence; NOT via "Borel⟹uniform", which is open) `∧
 HasInvariantGoodIndex` (the OPEN crux, = invariant good-index = cone uniformization). So of the two named
 inputs, one is known mathematics and the other is exactly the barrier above — now a formal `Prop`, not
 just prose. (Full Part I likewise ⟸ Steel's conjecture: `partI_general_of_steelBridge`, `MartinResults.lean`.)
@@ -419,10 +420,12 @@ this way; `regressive_conePreserving_descending_chain` stays genuinely condition
 
 **Triage of remaining targets (honest — most are KNOWN cleanup, not the open frontier):**
 
-*Known-but-unformalized (cleanup; would complete the published Slaman–Steel Part 1 for the natural
-class, NOT the AD-general frontier).* Currently proven: only `partI_uniform` (the uniform sub-class)
-and `partI_of_bounded`. `PartI_Borel` is NOT proven; `escaping ⟹ MP` is proven for NO nontrivial
-class (only stated as the reduction hypothesis).
+*Status of the natural (Borel/`Measurable`) class (CORRECTED 2026-08-22).* Part 1 for **general Borel**
+functions is **OPEN**, not published cleanup — it is known only for the uniform (Slaman–Steel),
+order-preserving, and measure-preserving (Lutz–Siskind) sub-classes. Currently proven here: `partI_uniform`
+(uniform sub-class) and `partI_of_bounded`. `PartI_Borel` is NOT proven, and the bridge to it
+(`Borel ⟹ uniform`) is itself open (≈ Steel's conjecture for Borel); `escaping ⟹ MP` is proven for NO
+nontrivial class (only stated as the reduction hypothesis).
 - **`Measurable/Borel invariant F ⟹ UniformlyTuringInvariant on a cone`** — the missing bridge; with
   it, `partI_uniform` upgrades to `partI_Borel` (the actual Slaman–Steel theorem). Substantial (a
   core S–S lemma), fully classical, but a well-defined bounded target.
@@ -441,7 +444,9 @@ counterexample profile* + the *precise localization of the barrier*, not a cross
 **Capstones FORMALIZED (`MartinResults.lean`, std axioms).** `partI_general_of_uniformity`: full
 (AD-general) Part I ⟸ the single implication "`TuringInvariant F ⟹ UniformlyTuringInvariant F`" —
 everything downstream (`partI_uniform_general`, the trichotomy + the two Steel cores) is machine-checked.
-`partI_Borel_of_uniformity_bridge`: same for the natural (`Measurable`) class = published S–S Part I.
+`partI_Borel_of_uniformity_bridge`: same for the natural (`Measurable`) class — but the bridge is OPEN
+for general Borel `F` (Part 1 for general Borel is open; only uniform/order-preserving/measure-preserving
+sub-classes are known), so this isolates OPEN content, not a published theorem.
 `escapingMP_of_uniformity_bridge`: the bridge subsumes the `escaping ⟹ MP` route (so it's the stronger
 of the two open sufficient conditions).  **Honesty caveat:** the bridge is *sufficient, not necessary*
 — Part I (constant-or-above-id) does not imply uniformity, so this is a natural strengthening (the Borel

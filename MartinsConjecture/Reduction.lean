@@ -212,11 +212,12 @@ theorem continuousOnCone_of_invariantIndex (hTD : TuringDeterminacy fun _ => Tru
 
 /-- **The `continuous ⟹ constant` step**, as a named hypothesis: a regressive invariant function
 that is *continuous on a cone* (`F X = Φ_e^X` for a single code `e`) is constant on a cone.  This is
-*known mathematics*: a continuous function is Borel, so Slaman–Steel's `Borel ⟹ uniform` makes it
-uniformly invariant, whence the already-machine-checked `regressive_uniform` gives constancy.  Only
-`Borel ⟹ uniform` itself is unformalized here (note: continuity does *not* give uniformity directly —
-`EquivVia` needs reduction codes uniform in `(i,j)`, which the fixed functional does not supply for a
-regressive `F`; the Slaman–Steel argument is genuinely required). -/
+*known mathematics*: a continuous `F` is a **recursive** function (a Turing functional), and Slaman–Steel
+proved Martin's conjecture Part 1 for recursive functions directly, via a rates-of-convergence argument.
+So this hypothesis is genuinely a theorem — it is simply not formalized here.  (It is *not* obtained via
+a hypothetical "`Borel ⟹ uniform`", which is *not* a known theorem — that is essentially Steel's
+conjecture, still open.  And continuity does not give uniformity directly: `EquivVia` needs reduction
+codes uniform in `(i,j)`, which a fixed functional does not supply for a regressive `F`.) -/
 def ContinuousRegressiveConstant : Prop :=
   ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → OnCone (fun X => F X <ₜ X) →
     (∃ e : ℕ, OnCone fun X => eval (toPFun X) (ofNatCode e) = toPFun (F X)) →

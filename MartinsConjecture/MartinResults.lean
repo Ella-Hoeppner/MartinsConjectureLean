@@ -89,14 +89,16 @@ theorem measurePreservingAboveId_uniform (hTD : TuringDeterminacy fun _ => True)
 
 /-- **The uniformity bridge is the *entire* gap to the natural-class Part I.**
 `PartI_Borel` and `PartI_Uniform_Borel` differ only by `TuringInvariant` vs
-`UniformlyTuringInvariant` (both already assume `Measurable F`).  So, given
-determinacy, the sole missing ingredient between the proven uniform case
-(`partI_uniform`, Slaman–Steel) and the full published Borel Part I is the single
-bridge **"measurable Turing-invariant ⟹ uniformly Turing-invariant"**.  For the Borel
-class this bridge is a *known theorem* (Slaman–Steel), merely unformalized here — so this
-isolates the single unformalized lemma between our machine-checked uniform case and the
-published Borel Part I.  (The AD-*general* case — dropping `Measurable` — needs the bridge
-for non-definable `F`, which is not known to hold; see `ATTACK.md`.) -/
+`UniformlyTuringInvariant` (both already assume `Measurable F`).  So, given determinacy, the sole
+missing ingredient between the proven uniform case (`partI_uniform`, Slaman–Steel) and Part I for
+*all* Borel functions is the single bridge **"measurable Turing-invariant ⟹ uniformly Turing-invariant"**.
+*Honesty (corrected 2026-08-22):* this bridge is **NOT a known theorem** — Part 1 of Martin's conjecture
+for *general* Borel functions is **open** (known only for the uniform, order-preserving, and
+measure-preserving sub-classes: Slaman–Steel, Lutz–Siskind).  The bridge is essentially Steel's
+conjecture restricted to Borel, and reducing an arbitrary Borel invariant `F` to a uniformly-invariant
+one is exactly the open difficulty ("the non-uniform case appears considerably more difficult", Slaman–
+Steel; see Marks's survey).  So this theorem isolates the *open* content of the Borel case, not a
+"merely unformalized known lemma". -/
 theorem partI_Borel_of_uniformity_bridge (hTD : TuringDeterminacy fun _ => True)
     (bridge : ∀ F, Measurable F → TuringInvariant F → UniformlyTuringInvariant F) :
     PartI_Borel :=

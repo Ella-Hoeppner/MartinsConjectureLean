@@ -316,30 +316,37 @@ theorem counterexample_wild_profile (hM : MartinPPT) (hSS : RegressiveSlamanStee
    counterexample_not_orderPreserving hTD hM hcoding hnc hnai,
    counterexample_not_uniformlyInvariant hTD F hnc hnai⟩
 
+/-- **The regressive dichotomy, sharpened to constant-or-identity.**  A regressive-`≤` invariant `F`
+(`F X ≤ᵀ X` on a cone) is, on a cone, *constant* or *equal to the identity* (`MartinEquiv F id`).
+This sharpens `RegressiveSlamanSteel`'s "constant or above-id": since `F X ≤ᵀ X`, the above-id
+alternative `X ≤ᵀ F X` collapses to `F X ≡ᵀ X`. -/
+theorem regressiveLE_constant_or_id (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F)
+    (hreg : OnCone (fun X => F X ≤ₜ X)) :
+    ConstantOnCone F ∨ MartinEquiv F (fun X => X) := by
+  rcases hSS F hF hreg with hc | hai
+  · exact Or.inl hc
+  · right
+    obtain ⟨W, hW⟩ := onCone_and hreg hai
+    exact ⟨W, fun X hX => ⟨(hW X hX).1, (hW X hX).2⟩⟩
+
 /-- **Parameter-boundedness dichotomy** (via the KNOWN regressive theorem; no determinacy needed).
 For an invariant `F`, its values are computable from `X` together with a *single fixed* parameter `p`
 on a cone — `F X ≤ᵀ X ⊕ p` on a cone for some `p` — **iff** `F` is trivial on a cone: constant, or
 `≡ᵀ` the identity.  So the only parameter-bounded invariant functions are the two trivial Part-1
-endpoints; anything genuinely non-trivial (in particular any Part-1 counterexample, which is neither
-constant nor `≡ᵀ`-identity) escapes every parameter.  This is the clean statement underlying the
-escaping corollaries below.  Forward: `F X ≤ᵀ X ⊕ p` makes `F` regressive on `cone p`, so Slaman–Steel
-gives constant or above-id, and above-id collapses with `F X ≤ᵀ X` to `≡ᵀ`-identity. -/
+endpoints; anything genuinely non-trivial (in particular any Part-1 counterexample) escapes every
+parameter.  This is the clean statement underlying the escaping corollaries below.  Forward: a fixed
+parameter `p` is absorbed on `cone p` (`X ⊕ p ≡ᵀ X`), reducing to `regressiveLE_constant_or_id`. -/
 theorem paramBounded_iff_trivial (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F) :
     (∃ p : ℕ → Bool, OnCone (fun X => F X ≤ₜ Cantor.join X p))
       ↔ (ConstantOnCone F ∨ MartinEquiv F (fun X => X)) := by
   constructor
   · rintro ⟨p, hp⟩
-    have hreg : OnCone (fun X => F X ≤ₜ X) := by
-      obtain ⟨W, hW⟩ := hp
-      refine ⟨Cantor.join W p, fun X hX => ?_⟩
-      have hWX : W ≤ₜ X := (Cantor.left_le_join W p).trans hX
-      have hpX : p ≤ₜ X := (Cantor.right_le_join W p).trans hX
-      exact (hW X hWX).trans (Cantor.join_le (Cantor.le.refl X) hpX)
-    rcases hSS F hF hreg with hc | hai
-    · exact Or.inl hc
-    · right
-      obtain ⟨W, hW⟩ := onCone_and hreg hai
-      exact ⟨W, fun X hX => ⟨(hW X hX).1, (hW X hX).2⟩⟩
+    refine regressiveLE_constant_or_id hSS hF ?_
+    obtain ⟨W, hW⟩ := hp
+    refine ⟨Cantor.join W p, fun X hX => ?_⟩
+    have hWX : W ≤ₜ X := (Cantor.left_le_join W p).trans hX
+    have hpX : p ≤ₜ X := (Cantor.right_le_join W p).trans hX
+    exact (hW X hWX).trans (Cantor.join_le (Cantor.le.refl X) hpX)
   · rintro (hc | he)
     · obtain ⟨c, hcE⟩ := hc
       obtain ⟨W, hW⟩ := hcE

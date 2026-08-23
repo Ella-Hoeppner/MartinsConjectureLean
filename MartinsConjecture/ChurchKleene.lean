@@ -74,6 +74,32 @@ theorem no_omega1_decreasing_conePreserving
     (hstep : ∀ X, base ≤ₜ X → churchKleene (F X) < churchKleene X ∧ base ≤ₜ F X) : False :=
   no_regressive_of_ordinal_rank hstep
 
+/-- **`ω₁^X ≥ ω` (non-degeneracy).**  The standard order on `ℕ`, coded via Cantor pairing, is a
+computable well-order of type `ω`; being computable it is `≤ᵀ X`, so it contributes `ω` to the
+supremum.  This confirms the rank is not the trivial `0` — the engine constraint is non-vacuous. -/
+theorem omega_le_churchKleene (X : ℕ → Bool) : (Ordinal.omega0 : Ordinal) ≤ churchKleene X := by
+  have hcomp : Computable (fun k => decide ((Nat.unpair k).1 < (Nat.unpair k).2)) := by
+    obtain ⟨_, hpr⟩ := (Primrec.nat_lt.comp (Primrec.fst.comp Primrec.unpair)
+      (Primrec.snd.comp Primrec.unpair) : PrimrecPred fun k => (Nat.unpair k).1 < (Nat.unpair k).2)
+    exact hpr.to_comp.of_eq (fun k => by congr 1)
+  set O : ℕ → Bool := fun k => decide ((Nat.unpair k).1 < (Nat.unpair k).2) with hOdef
+  have hle : O ≤ₜ X := le_of_computable hcomp
+  obtain ⟨n, hn⟩ := exists_nthComputableIn hle
+  have hrel : codedRel O = (· < · : ℕ → ℕ → Prop) := by
+    funext m k
+    simp only [O, codedRel, Nat.unpair_pair, decide_eq_true_eq]
+  have hwo : IsWellOrder ℕ (codedRel O) := by rw [hrel]; infer_instance
+  have htype : wellOrderType O = Ordinal.omega0 := by
+    unfold wellOrderType
+    rw [dif_pos hwo]
+    have heq : @Ordinal.type ℕ (codedRel O) hwo = @Ordinal.type ℕ (· < ·) inferInstance := by
+      congr 1
+    rw [heq]; exact Ordinal.type_nat_lt
+  calc (Ordinal.omega0 : Ordinal) = wellOrderType O := htype.symm
+    _ = ckTerm X n := by
+        unfold ckTerm; rw [if_pos (by rw [hn]; exact hle), hn]
+    _ ≤ churchKleene X := Ordinal.le_iSup _ n
+
 /-- **The `ω₁`-behavior dichotomy.**  A regressive invariant `F` (on a cone `F X ≤ᵀ X`) either
 **preserves** `ω₁^X` (`ω₁^{F X} = ω₁^X`) on a cone, or **strictly decreases** it (`ω₁^{F X} < ω₁^X`)
 on a cone.  This is the first step of Lutz's reduction; combined with
@@ -97,6 +123,7 @@ theorem regressive_omega1_dichotomy (hTD : TuringDeterminacy fun _ => True)
     exact Or.inl ⟨B, fun X hX =>
       le_antisymm (churchKleene_mono (hB X hX).1) (not_lt.mp (hB X hX).2)⟩
 
+#print axioms omega_le_churchKleene
 #print axioms churchKleene_mono
 #print axioms churchKleene_invariant
 #print axioms no_omega1_decreasing_conePreserving

@@ -141,6 +141,23 @@ theorem martinConjectureAD_iff_cores (hTD : TuringDeterminacy fun _ => True) :
       (ComparisonCore ∧ DescendingChainCore ∧ JumpMinimalityCore) := by
   rw [MartinConjectureAD, partI_iff_cores hTD, partII_iff_cores hTD]
 
+/-- **The corrected capstone** (given the KNOWN regressive theorem `RegressiveSlamanSteel`).  Since the
+regressive core is a Slaman–Steel theorem (`regressiveImpliesConstant_of_slamanSteel`), it drops out of
+`martinConjectureAD_iff_cores`: the full AD-style Martin conjecture is equivalent to just **four** open
+cores — the Part-I *incomparable* core together with the three Part-II cores (comparison, descending
+chains, jump minimality).  This is the sharpest lossless isolation of the whole conjecture's genuinely
+open content. -/
+theorem martinConjectureAD_iff_fourCores (hTD : TuringDeterminacy fun _ => True)
+    (hSS : RegressiveSlamanSteel) :
+    MartinConjectureAD ↔
+      IncomparableImpliesConstant ∧
+      (ComparisonCore ∧ DescendingChainCore ∧ JumpMinimalityCore) := by
+  rw [martinConjectureAD_iff_cores hTD]
+  constructor
+  · rintro ⟨⟨_, h2⟩, h345⟩; exact ⟨h2, h345⟩
+  · rintro ⟨h2, h345⟩
+    exact ⟨⟨regressiveImpliesConstant_of_slamanSteel hSS, h2⟩, h345⟩
+
 #print axioms not_constant_and_incomparable
 #print axioms incomparable_core_iff_never
 #print axioms partI_iff_cores

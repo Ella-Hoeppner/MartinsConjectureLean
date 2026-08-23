@@ -240,6 +240,23 @@ theorem incomparable_iff_no_fixedIncomparable (hTD : TuringDeterminacy fun _ => 
       (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F → ∀ Z, ¬ IncomparableToFixed F Z) :=
   (escapingMP_iff_incomparable hTD hM hSS).symm.trans (escapingMP_iff_no_fixedIncomparable hTD)
 
+/-- **The definitive statement of Part 1's open content** (given `MartinPPT` and the known regressive
+theorem): the following four are *all equivalent* — Part 1 itself, the incomparable core, "escaping ⟹
+measure-preserving", and "no escaping `F` is incomparable to a fixed degree".  There is genuinely **one**
+open problem, and this is exactly it. -/
+theorem partI_open_content_TFAE (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hSS : RegressiveSlamanSteel) :
+    List.TFAE
+      [ (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F),
+        IncomparableImpliesConstant,
+        (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F → MeasurePreserving F),
+        (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F →
+          ∀ Z, ¬ IncomparableToFixed F Z) ] := by
+  tfae_have 1 ↔ 2 := partI_iff_incomparable hTD hSS
+  tfae_have 2 ↔ 3 := (escapingMP_iff_incomparable hTD hM hSS).symm
+  tfae_have 3 ↔ 4 := escapingMP_iff_no_fixedIncomparable hTD
+  tfae_finish
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -441,6 +458,7 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms orderPreserving_range_countablyDirected
 #print axioms partI_orderPreserving_of_coding
 #print axioms escapingMP_iff_incomparable
+#print axioms partI_open_content_TFAE
 #print axioms orderPreserving_constant_or_mp
 
 end Martin

@@ -58,7 +58,22 @@ theorem martinPPT'_of_packaging (hpkg : MartinGameTreePackages)
     MartinPPT' :=
   martinPPT'_of_perfect (martinPPT_perfect_of_packaging hpkg hdet)
 
+/-- **Part 1 of Martin's conjecture, all the way from the determinacy game.**  Chaining
+`martinPPT_perfect_of_packaging` with `partI_of_perfect_escaping`, Part 1 holds given: (i) the even-part
+tree packaging (`MartinGameTreePackages`, a computability construction), (ii) full determinacy of the
+Martin games, (iii) Turing determinacy, and (iv) `escaping ⟹ measure-preserving`.  The **determinacy
+game** — Martin's Lemma 2.3's actual content — is fully machine-checked here; the only genuinely open
+input is (iv), the incomparable core.  This exhibits the complete path from the newly-formalized game to
+Part 1, with the residual `MartinPPT` gap now pinned to a single tree-bookkeeping step. -/
+theorem partI_of_packaging_escaping (hpkg : MartinGameTreePackages)
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A))
+    (hTD : TuringDeterminacy fun _ => True)
+    (hesc : ∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_perfect_escaping (martinPPT_perfect_of_packaging hpkg hdet) hTD hesc
+
 #print axioms martinPPT_perfect_of_packaging
 #print axioms martinPPT'_of_packaging
+#print axioms partI_of_packaging_escaping
 
 end Martin

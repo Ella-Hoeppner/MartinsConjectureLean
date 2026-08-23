@@ -372,14 +372,12 @@ theorem incomparable_escapes_params (hSS : RegressiveSlamanSteel) (hF : TuringIn
   · obtain ⟨W, hW⟩ := onCone_and hincomp hai
     exact (hW W (Cantor.le.refl W)).1.2 (hW W (Cantor.le.refl W)).2
 
-/-- **Strengthened escaping** (under determinacy): an incomparable counterexample has `F X ≰ᵀ X ⊕ p`
-on a *whole cone*, for every fixed `p`.  The property `F X ≤ᵀ X ⊕ p` is degree-invariant in `X`, so
-the cone dichotomy (`cone_theorem_onCone`) upgrades `incomparable_escapes_params`' "not on a cone"
-into "the negation holds on a cone".  Thus a counterexample's values are eventually *strictly* not
-`X`-plus-a-parameter computable — the sharpest available form of the escaping constraint. -/
-theorem incomparable_escapes_params_onCone (hTD : TuringDeterminacy fun _ => True)
-    (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F)
-    (hincomp : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (p : ℕ → Bool) :
+/-- **Cone-dichotomy upgrade.**  Since `F X ≤ᵀ X ⊕ p` is degree-invariant in `X`, if it holds on no
+cone then (`cone_theorem_onCone`) its negation `F X ≰ᵀ X ⊕ p` holds on a cone.  The shared step behind
+the `…_onCone` escaping theorems. -/
+theorem escapes_param_of_not_paramBounded (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (p : ℕ → Bool)
+    (hnb : ¬ OnCone (fun X => F X ≤ₜ Cantor.join X p)) :
     OnCone (fun X => ¬ F X ≤ₜ Cantor.join X p) := by
   have hinv : TuringInvariantSet {X | F X ≤ₜ Cantor.join X p} := by
     intro X Y hXY
@@ -389,8 +387,18 @@ theorem incomparable_escapes_params_onCone (hTD : TuringDeterminacy fun _ => Tru
        Cantor.join_le (hXY.2.trans (Cantor.left_le_join X p)) (Cantor.right_le_join X p)⟩
     exact ⟨fun h => (hFXY.2.trans h).trans hJ.1, fun h => (hFXY.1.trans h).trans hJ.2⟩
   rcases cone_theorem_onCone {X | F X ≤ₜ Cantor.join X p} hinv (hTD _ trivial hinv) with hle | hnle
-  · exact absurd hle (incomparable_escapes_params hSS hF hincomp p)
+  · exact absurd hle hnb
   · exact hnle
+
+/-- **Strengthened escaping** (under determinacy): an incomparable counterexample has `F X ≰ᵀ X ⊕ p`
+on a *whole cone*, for every fixed `p`.  The `cone_theorem_onCone` dichotomy
+(`escapes_param_of_not_paramBounded`) upgrades `incomparable_escapes_params`' "not on a cone" into
+"the negation holds on a cone" — the sharpest form of the escaping constraint. -/
+theorem incomparable_escapes_params_onCone (hTD : TuringDeterminacy fun _ => True)
+    (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F)
+    (hincomp : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (p : ℕ → Bool) :
+    OnCone (fun X => ¬ F X ≤ₜ Cantor.join X p) :=
+  escapes_param_of_not_paramBounded hTD hF p (incomparable_escapes_params hSS hF hincomp p)
 
 /-- **Counterexample-level escaping.**  A Part-1 counterexample `F` (invariant, not constant, not
 above-id) has, for *every* fixed parameter `p`, `F X ≰ᵀ X ⊕ p` on a cone.  Combines
@@ -403,6 +411,18 @@ theorem counterexample_escapes_all_params (hSS : RegressiveSlamanSteel)
     OnCone (fun X => ¬ F X ≤ₜ Cantor.join X p) :=
   incomparable_escapes_params_onCone hTD hSS hF
     (counterexample_incomparable_to_argument hTD hSS hF hnc hnai) p
+
+/-- **Every non-trivial invariant function escapes every parameter.**  If invariant `F` is neither
+constant nor `≡ᵀ`-identity on a cone, then `F X ≰ᵀ X ⊕ p` on a cone, for every fixed `p`.  The general
+form behind `counterexample_escapes_all_params` (a counterexample is a fortiori non-trivial); it also
+applies e.g. to the jump `X ↦ X′`.  Immediate from `paramBounded_iff_trivial` (non-trivial ⟹ not
+parameter-bounded) via `escapes_param_of_not_paramBounded`. -/
+theorem nontrivial_escapes_params (hTD : TuringDeterminacy fun _ => True) (hSS : RegressiveSlamanSteel)
+    (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) (hne : ¬ MartinEquiv F (fun X => X))
+    (p : ℕ → Bool) :
+    OnCone (fun X => ¬ F X ≤ₜ Cantor.join X p) :=
+  escapes_param_of_not_paramBounded hTD hF p
+    (fun hb => ((paramBounded_iff_trivial hSS hF).mp ⟨p, hb⟩).elim hnc hne)
 
 /-- **The definitive counterexample profile.**  Collects every machine-checked constraint a Part-1
 counterexample must satisfy: incomparable to its argument, incomparable to every fixed degree across

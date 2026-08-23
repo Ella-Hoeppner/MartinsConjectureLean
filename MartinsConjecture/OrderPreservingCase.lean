@@ -66,6 +66,16 @@ theorem orderPreserving_mp_of_rangeCofinal (hop : OrderPreserving F)
   obtain ⟨X₀, hX₀⟩ := hcof Z
   exact orderPreserving_onCone_of_exists hop hX₀
 
+/-- **Measure-preserving ⟺ cofinal range**, for order-preserving `F` (no determinacy).  A clean
+characterization: an order-preserving function is measure-preserving exactly when its range is cofinal
+in the Turing degrees.  (`←` is `orderPreserving_mp_of_rangeCofinal`; `→` is immediate since a
+value-cone witnesses `∃ X, Z ≤ᵀ F X`.) -/
+theorem orderPreserving_mp_iff_rangeCofinal (hop : OrderPreserving F) :
+    MeasurePreserving F ↔ ∀ Z : ℕ → Bool, ∃ X, Z ≤ₜ F X := by
+  refine ⟨fun hmp Z => ?_, orderPreserving_mp_of_rangeCofinal hop⟩
+  obtain ⟨W, hW⟩ := hmp Z
+  exact ⟨W, hW W (Cantor.le.refl W)⟩
+
 /-- **Trichotomy for order-preserving functions** (with determinacy): `F` is
 measure preserving, or constant on a cone, or — the residual open-to-us
 configuration — escaping while avoiding a cone. -/

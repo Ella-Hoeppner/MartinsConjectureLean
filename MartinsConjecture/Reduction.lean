@@ -298,10 +298,12 @@ def ContinuousRegressiveConstant : Prop :=
     (∃ e : ℕ, OnCone fun X => eval (toPFun X) (ofNatCode e) = toPFun (F X)) →
     ConstantOnCone F
 
-/-- **The genuine open crux, isolated**: every regressive invariant `F` admits an **invariant**
-good-index on a cone — a degree-invariant `idx` with `F X = Φ_{idx X}^X`.  This is exactly
-uniformization of the good-representative relation on a cone, which determinacy does not deliver
-(see `ATTACK.md`); it is the 50-year-open content. -/
+/-- **A sufficient condition for the regressive core** (⚠️ *not* the open content — the regressive
+core is a KNOWN Slaman–Steel theorem, `regressiveImpliesConstant_of_slamanSteel`): every regressive
+invariant `F` admits an **invariant** good-index on a cone — a degree-invariant `idx` with
+`F X = Φ_{idx X}^X`.  This is uniformization of the good-representative relation on a cone.  (Prior
+framing called this "the 50-year-open content"; that was the regressive-is-open error.  It remains a
+valid *sufficient* route, but Slaman–Steel proved the regressive core outright by other means.) -/
 def HasInvariantGoodIndex : Prop :=
   ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → OnCone (fun X => F X <ₜ X) →
     ∃ idx : (ℕ → Bool) → ℕ, (∀ X X', X ≡ₜ X' → idx X = idx X') ∧
@@ -321,6 +323,14 @@ theorem regressiveCore_of_invariantIndex (hTD : TuringDeterminacy fun _ => True)
   obtain ⟨idx, hinv, hgood⟩ := hidx F hF hreg
   obtain ⟨e, he⟩ := continuousOnCone_of_invariantIndex hTD hinv hgood
   exact hcont F hF hreg ⟨e, he⟩
+
+/-- **`ContinuousRegressiveConstant` is subsumed by the KNOWN regressive theorem.**  The
+continuity hypothesis is unnecessary: Slaman–Steel's regressive theorem already gives constancy for
+*every* strictly-regressive `F`.  (So the `hcont` input of `regressiveCore_of_invariantIndex` is free,
+confirming that reduction targets an already-solved core.) -/
+theorem continuousRegressiveConstant_of_slamanSteel (hSS : RegressiveSlamanSteel) :
+    ContinuousRegressiveConstant :=
+  fun F hF hreg _ => regressiveImpliesConstant_of_slamanSteel hSS F hF hreg
 
 /-- **Master reduction: full Part I in terms of the precise open content.**  Combining
 `partI_of_cores` with `regressiveCore_of_invariantIndex`, Part I holds given three named inputs:

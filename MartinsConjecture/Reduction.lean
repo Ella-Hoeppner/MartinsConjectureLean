@@ -246,10 +246,25 @@ theorem regressiveCore_of_invariantIndex (hTD : TuringDeterminacy fun _ => True)
   obtain ⟨e, he⟩ := continuousOnCone_of_invariantIndex hTD hinv hgood
   exact hcont F hF hreg ⟨e, he⟩
 
+/-- **Master reduction: full Part I in terms of the precise open content.**  Combining
+`partI_of_cores` with `regressiveCore_of_invariantIndex`, Part I holds given three named inputs:
+`ContinuousRegressiveConstant` (**known** — continuous ⟹ Borel ⟹ uniform ⟹ `regressive_uniform`),
+`HasInvariantGoodIndex` (the regressive open crux — cone uniformization of the good-representative
+relation), and `IncomparableImpliesConstant` (the incomparable open core — Posner–Robinson territory).
+So the entire gap between the machine-checked material and full Part I is exactly: one known lemma plus
+two genuinely-open cone-uniformization problems. -/
+theorem partI_of_invariantIndex_and_incomparable (hTD : TuringDeterminacy fun _ => True)
+    (hcont : ContinuousRegressiveConstant) (hidx : HasInvariantGoodIndex)
+    (hincomp : IncomparableImpliesConstant) :
+    ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+      ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_cores hTD (regressiveCore_of_invariantIndex hTD hcont hidx) hincomp
+
 #print axioms comparability_on_cone
 #print axioms partI_of_cores
 #print axioms exists_uniform_index_on_cone
 #print axioms continuousOnCone_of_invariantIndex
 #print axioms regressiveCore_of_invariantIndex
+#print axioms partI_of_invariantIndex_and_incomparable
 
 end Martin

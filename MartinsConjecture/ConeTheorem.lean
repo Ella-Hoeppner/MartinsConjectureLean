@@ -281,6 +281,28 @@ theorem cone_theorem (A : Set (ℕ → Bool))
       omega
     exact hτ (copyStrategy X) ((hTI _ X ⟨hZle, hXle⟩).mpr hXA)
 
+/-- **A player-I winning strategy makes `A` realize a cone of degrees — without invariance.**  If `σ`
+wins the payoff-`A` game for player I, then for every `X ≥ᵀ σ` some member of `A` is Turing-equivalent
+to `X`: the play `gamePlay σ (copyStrategy X)`, which is `≡ᵀ X` (as in `cone_theorem`) and lies in `A`
+because `σ` wins.  This is the `WinsI` branch of `cone_theorem` with the *final invariance transfer
+omitted* — exactly what survives for a **non-invariant** `A`, and the "realizes" content of Martin's
+pointed-perfect-tree extraction (Lemma 2.3) from a winning strategy. -/
+theorem winsI_realizes {A : Set (ℕ → Bool)} {σ : ℕ → Bool} (hσ : WinsI A σ)
+    {X : ℕ → Bool} (hX : σ ≤ₜ X) :
+    ∃ z, z ∈ A ∧ z ≡ₜ X := by
+  refine ⟨gamePlay σ (copyStrategy X), hσ (copyStrategy X), ?_, ?_⟩
+  · refine gamePlay_le 1 σ (copyStrategy X) σ X hX (fun n hn => ?_) (fun n hn => ?_)
+    · rw [if_pos (by omega)]
+    · rw [if_neg (by omega), copyStrategy, hlen_histPlay]
+  · refine le_of_precomp (g := fun k => 2 * k + 1)
+      (Primrec.nat_iff.mp
+        (Primrec.nat_add.comp
+          (Primrec.nat_mul.comp (Primrec.const 2) Primrec.id) (Primrec.const 1)))
+      fun k => ?_
+    rw [gamePlay_copy_odd σ X (2 * k + 1) (by omega)]
+    congr 1
+    omega
+
 /-- Cone-theorem consequence in "on a cone" form: a determined Turing
 invariant set either holds on a cone or fails on a cone. -/
 theorem cone_theorem_onCone (A : Set (ℕ → Bool))

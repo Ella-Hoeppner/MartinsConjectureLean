@@ -145,9 +145,38 @@ theorem martinGameTreePackages_of_code
     rw [hxeq]
     exact (evenPart_realizes_of_winsI hσ (Cantor.right_le_join z σ)).1
 
+/-- **The single remaining computability statement** for Martin's Lemma 2.3: every winning strategy's
+even-part tree admits a `treeMem` code that is `≡ᵀ σ` (a `codeReal`-style bounded-search presentation —
+`emb_locality` shows the search is bounded, so `code ≤ᵀ σ`; the code embeds `σ` for `code ≡ᵀ σ`). -/
+def EvenTreeComputable : Prop :=
+  ∀ σ : ℕ → Bool, ∃ code : ℕ → Bool, code ≡ₜ σ ∧ ∀ s : List Bool, treeMem code s ↔ evenTree σ s
+
+/-- **`MartinPPT'` from the single computability statement plus determinacy.**  Everything else — the
+whole determinacy game and all the tree mathematics — is machine-checked. -/
+theorem martinPPT'_of_evenTreeComputable (hc : EvenTreeComputable)
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A)) :
+    MartinPPT' :=
+  martinPPT'_of_packaging (martinGameTreePackages_of_code hc) hdet
+
+/-- **Part 1 of Martin's conjecture from the single computability statement.**  Part 1 holds given:
+(i) `EvenTreeComputable` (the `codeReal`-style tree presentation — a computability lemma, *not* open),
+(ii) full determinacy of the Martin games, (iii) Turing determinacy, and (iv) `escaping ⟹ MP`.  Of these
+the *only genuinely open* input is (iv), the incomparable core; the determinacy games (ii),(iii) are
+standard AD, and (i) is a machine-checkable computability construction.  This is the sharpest statement
+of how the newly-formalized Martin fusion sits in the whole proof: the pointed-perfect-tree theorem —
+Martin's Lemma 2.3, the last black-box in the reduction's determinacy input — is now down to one
+computability lemma, with its entire mathematical content proved. -/
+theorem partI_of_evenTreeComputable_escaping (hc : EvenTreeComputable)
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A))
+    (hTD : TuringDeterminacy fun _ => True)
+    (hesc : ∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_packaging_escaping (martinGameTreePackages_of_code hc) hdet hTD hesc
+
 #print axioms martinPPT_perfect_of_packaging
 #print axioms martinPPT'_of_packaging
 #print axioms partI_of_packaging_escaping
 #print axioms martinGameTreePackages_of_code
+#print axioms partI_of_evenTreeComputable_escaping
 
 end Martin

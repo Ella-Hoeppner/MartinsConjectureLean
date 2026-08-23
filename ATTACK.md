@@ -1,14 +1,24 @@
 # Attack log — the open core of Martin's conjecture
 
-Living record of the direct attack on the **open** content of Part 1: the constraints a
-counterexample must satisfy, prior proof attempts + exactly where they died, and a running
-log of new counterexample-construction attempts. See `STATUS.md` for the codebase map.
+Living record of the direct attack on the **open** content of Part 1. See `STATUS.md` for the map.
+
+> **⚠️ MAJOR CORRECTION (2026-08-23).** The **regressive core is NOT open** — it is a KNOWN
+> Slaman–Steel theorem (Part 1 holds for all regressive functions on the *Turing* degrees;
+> Lutz–Siskind Thm 1.4).  The **sole genuinely-open content of Part 1 is the incomparable core.**
+> Almost everything below (the ω₁^x machinery, the jump-distance decomposition, the "reduction of
+> the regressive core to the ω₁-preserving case", the whole "regressive is 50-year-open" framing)
+> was built on the mistaken premise that the *Turing* regressive core is open — it isn't; that was a
+> conflation with Lutz's **hyperarithmetic-degrees** regressive result (`arXiv:2306.05746`, a
+> different degree structure).  The ω₁^x formalization is still valid mathematics, but it was aimed
+> at an already-solved problem.  Read the rest of this file with this correction in mind; the genuine
+> open target is the incomparable core.  See `Reduction.lean`: `RegressiveSlamanSteel`,
+> `regressiveImpliesConstant_of_slamanSteel`, `partI_of_slamanSteel_incomparable`.
 
 ## The open problem, precisely
 
-Part 1 ⟺ two cores (`partI_iff_cores`), each open on the Turing degrees:
-- **Regressive:** `F` invariant, `F X <ᵀ X` on a cone ⟹ `F` constant on a cone.
-- **Incomparable:** `F` invariant, `F X ⊥ᵀ X` on a cone ⟹ `F` constant on a cone.
+Part 1 ⟺ two cores (`partI_iff_cores`):
+- **Regressive:** `F X <ᵀ X` on a cone ⟹ constant.  **KNOWN (Slaman–Steel), not open.**
+- **Incomparable:** `F X ⊥ᵀ X` on a cone ⟹ constant.  **The sole open core.**
 
 ### Why the "contradictory constraint-set" strategy is BOUNDED (2026-08-22 finding)
 

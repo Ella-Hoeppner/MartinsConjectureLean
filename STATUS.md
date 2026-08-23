@@ -14,14 +14,19 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
 ## The conjecture, and exactly what is open
 
 **Part 1** (`ConstantOnCone F ∨ AboveIdOnCone F` for Turing-invariant `F`) reduces, provably
-and losslessly, to two open cores (`CoreAnalysis.partI_iff_cores`):
+and losslessly, to two cores (`CoreAnalysis.partI_iff_cores`):
 - `RegressiveImpliesConstant` — `F X <ᵀ X` on a cone ⟹ constant on a cone;
 - `IncomparableImpliesConstant` — `F X ⊥ᵀ X` on a cone ⟹ constant on a cone.
 
-Both cores hold for **uniformly**-invariant `F` (Slaman–Steel, `partI_uniform`) and for
-**degree-bounded** `F` (`bounded_implies_constant`). The general (non-uniform) case on the
-**Turing** degrees is the 50-year-open content (Lutz proved it on the *hyperarithmetic*
-degrees via ordinal machinery unavailable here).
+**⚠️ CORRECTION (2026-08-23): the regressive core is NOT open — it is a KNOWN Slaman–Steel theorem.**
+Slaman–Steel proved Part 1 for *all* regressive functions on the Turing degrees (Lutz–Siskind Thm 1.4:
+`f(x) ≤ᵀ x ⟹ f` constant or `f(x) ≡ᵀ x` on a cone).  So `RegressiveImpliesConstant` follows outright
+(`regressiveImpliesConstant_of_slamanSteel`, from `RegressiveSlamanSteel`).  The **sole genuinely-open
+content of Part 1 is the incomparable core** (`IncomparableImpliesConstant`, functions "off to the
+side").  Earlier sections of this file (and the ω₁^x work below) mislabeled the *Turing* regressive core
+as open, conflating it with Lutz's *hyperarithmetic-degrees* regressive result (`arXiv:2306.05746`, a
+different degree structure); read them with that correction in mind.  Both cores additionally hold for
+**uniformly**-invariant `F` (`partI_uniform`) and **degree-bounded** `F` (`bounded_implies_constant`).
 
 **The two orthogonal inputs Part 1 rests on** (both determinacy theorems; the class-specific
 one is the open one):

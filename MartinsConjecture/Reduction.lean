@@ -12,10 +12,12 @@ incomparable.  In the first two regimes Part I holds outright.  Hence
 * `IncomparableImpliesConstant` — a Turing-invariant function pointwise
   incomparable with the identity on a cone is constant on a cone.
 
-These are exactly the open cores of the conjecture: both are known when the
-function is uniformly invariant (Steel; Slaman–Steel) or order preserving
-(Lutz–Siskind), and open in general — for Borel functions this is the open
-part of the Borel Martin conjecture.  We also prove the classical first step
+Of these two, the **regressive core is a KNOWN theorem** in general — Slaman–Steel
+proved Part 1 for all regressive functions on the Turing degrees (Thm 1.4; see
+`RegressiveSlamanSteel` / `regressiveImpliesConstant_of_slamanSteel`).  The
+**incomparable core is the sole genuinely-open** content of Part 1 (both are, in
+addition, known for uniformly-invariant and order-preserving functions).  We also
+prove the classical first step
 of every known attack on the cores: **index stabilization**
 (`exists_uniform_index_on_cone`) — on a cone, every degree has a
 representative on which `F` is computed by a single fixed oracle machine.
@@ -118,17 +120,17 @@ theorem comparability_on_cone (hTD : TuringDeterminacy fun _ => True)
 
 /-! ### The open cores, and the reduction -/
 
-/-- **Open core 1 (the regressive case)**: every Turing-invariant function
-strictly below the identity on a cone is constant on a cone.  Known for
-uniformly invariant and for order-preserving functions; open in general. -/
+/-- **The regressive case** — *not open*, a **Slaman–Steel theorem** (see
+`regressiveImpliesConstant_of_slamanSteel`): every Turing-invariant function
+strictly below the identity on a cone is constant on a cone. -/
 def RegressiveImpliesConstant : Prop :=
   ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
     OnCone (fun X => F X <ₜ X) → ConstantOnCone F
 
-/-- **Open core 2 (the incomparable case)**: every Turing-invariant function
-pointwise incomparable with the identity on a cone is constant on a cone.
-Known for uniformly invariant and for order-preserving functions; open in
-general. -/
+/-- **The incomparable case — the SOLE genuinely-open core of Part 1**: every
+Turing-invariant function pointwise incomparable with the identity on a cone is
+constant on a cone.  (Known for uniformly-invariant and order-preserving functions;
+open in general — this is the "off to the side" case of Lutz–Siskind's Figure 1.) -/
 def IncomparableImpliesConstant : Prop :=
   ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
     OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) → ConstantOnCone F

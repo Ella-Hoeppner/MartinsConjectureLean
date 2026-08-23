@@ -36,10 +36,19 @@ one is the open one):
 1. **Determinacy input** — `MartinDichotomy` (≡ `MartinPPT`, `martinPPT_iff_dichotomy`): every
    set contains a pointed perfect tree or its complement contains a cone. Its **invariant case
    is proved** (`perfectDichotomy_invariant`); a cone is *unconditionally* a full pointed
-   perfect tree with the effective `recover` field (`cone_contains_PPT`). Only the
-   **non-invariant** case is unformalized (Martin's fusion). **This half is mathematically
-   known** — formalizing it is optional cleanup, not on the critical path; `MartinPPT` can
-   always be taken as a hypothesis (same trust level as `TuringDeterminacy`).
+   perfect tree with the effective `recover` field (`cone_contains_PPT`).
+   **The non-invariant case (Martin's Lemma 2.3 / "Martin's fusion") — its mathematical content
+   is now MACHINE-CHECKED** (`MartinGame.lean`, 2026-08-23). The correct proof (Marks–Slaman–Steel
+   Lemma 3.5) uses the *asymmetric* game — I plays `x`, II plays `y`, II loses unless `y ≥ᵀ x`, else
+   I wins iff `x ≥ᵀ y ∧ x ∈ A`. Proved: `winsI_martinGame_of_cofinal` (cofinal ⟹ player I wins),
+   `cofinal_realizes_cone`, and `martinGamePerfectEmbedding`/`cofinal_perfectEmbedding` (the pointed
+   perfect embedding into `A` — the "game half" `PerfectEmbedding.lean` flagged as the sole gap).
+   `MartinGameFusion.lean` reduces the **whole** non-invariant case to a single computability step
+   `MartinGameTreePackages` (present the game's even-part tree in `treeMem` format — a `codeReal`-scale
+   build, `code ≤ᵀ σ` by bounded search, branches `= {emb z}` by compactness), and chains it all the way
+   to Part 1 (`partI_of_packaging_escaping`). So `MartinPPT` is no longer a black-box hypothesis: its
+   determinacy content is proved, and only tree-bookkeeping remains (not on the critical path — the open
+   content is still the incomparable core).
 
 2. **Class-specific input** — `escaping ⟹ MP` (`escapingMP_iff_no_fixedIncomparable`,
    `EscapingDichotomy.lean`): equivalent to "no escaping invariant `F` is Turing-incomparable

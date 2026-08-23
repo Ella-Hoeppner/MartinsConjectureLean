@@ -154,6 +154,18 @@ theorem partI_orderPreserving_of_coding (hTD : TuringDeterminacy fun _ => True)
     (fun _ hF hmp => measurePreservingAboveId_of_martinPPT hM hF hmp)
     (orderPreservingNonconstantMP_of_uncountableCofinal hcoding)
 
+/-- **Lutz–Siskind Theorem 4.6, stated verbatim** (modulo the coding, supplied as
+`OrderPreservingNonconstantMP`): every order-preserving invariant function is *constant on a cone or
+measure-preserving*.  By cases on constancy: a non-constant such `F` has uncountable range
+(`nonconstant_values_uncountable`), so Theorem 4.6's content applies. -/
+theorem orderPreserving_constant_or_mp (hTD : TuringDeterminacy fun _ => True)
+    (h46 : OrderPreservingNonconstantMP) (hop : OrderPreserving F) :
+    ConstantOnCone F ∨ MeasurePreserving F := by
+  by_cases hnc : ConstantOnCone F
+  · exact Or.inl hnc
+  · exact Or.inr (h46 F hop hop.turingInvariant
+      (nonconstant_values_uncountable hTD hop.turingInvariant hnc))
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:
@@ -340,5 +352,6 @@ theorem counterexample_complete_profile (hM : MartinPPT)
 #print axioms orderPreservingNonconstantMP_of_uncountableCofinal
 #print axioms orderPreserving_range_countablyDirected
 #print axioms partI_orderPreserving_of_coding
+#print axioms orderPreserving_constant_or_mp
 
 end Martin

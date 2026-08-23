@@ -316,6 +316,31 @@ theorem counterexample_wild_profile (hM : MartinPPT) (hSS : RegressiveSlamanStee
    counterexample_not_orderPreserving hTD hM hcoding hnc hnai,
    counterexample_not_uniformlyInvariant hTD F hnc hnai⟩
 
+/-- **An incomparable counterexample escapes every parameter** (a NEW constraint, using the KNOWN
+regressive theorem).  If an invariant `F` is incomparable to its argument on a cone, then for *no*
+fixed real `p` is `F X ≤ᵀ X ⊕ p` on a cone.  Reason: if it were, then on `cone p` we'd have `F X ≤ᵀ X`
+(regressive), so Slaman–Steel (`RegressiveSlamanSteel`) makes `F` constant or above-id — but
+incomparability rules out above-id (`¬ X ≤ᵀ F X`), and a constant `c` is `≤ᵀ X` on `cone c`
+(contradicting `¬ F X ≤ᵀ X`).  So a counterexample's values are not "`X`-plus-a-fixed-parameter"
+computable — a strong escaping property beyond `nonMP_incomparable_cone`. -/
+theorem incomparable_escapes_params (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F)
+    (hincomp : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (p : ℕ → Bool) :
+    ¬ OnCone (fun X => F X ≤ₜ Cantor.join X p) := by
+  intro hbound
+  have hreg : OnCone (fun X => F X ≤ₜ X) := by
+    obtain ⟨W, hW⟩ := hbound
+    refine ⟨Cantor.join W p, fun X hX => ?_⟩
+    have hWX : W ≤ₜ X := (Cantor.left_le_join W p).trans hX
+    have hpX : p ≤ₜ X := (Cantor.right_le_join W p).trans hX
+    exact (hW X hWX).trans (Cantor.join_le (Cantor.le.refl X) hpX)
+  rcases hSS F hF hreg with hc | hai
+  · obtain ⟨c, hcE⟩ := hc
+    obtain ⟨W, hW⟩ := onCone_and hincomp hcE
+    obtain ⟨h1, h2⟩ := hW (Cantor.join W c) (Cantor.left_le_join W c)
+    exact h1.1 (h2.1.trans (Cantor.right_le_join W c))
+  · obtain ⟨W, hW⟩ := onCone_and hincomp hai
+    exact (hW W (Cantor.le.refl W)).1.2 (hW W (Cantor.le.refl W)).2
+
 /-- **A regressive cone-preserving function generates an infinite descending Martin
 chain.**  If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
 cone-preserving (`base ≤ᵀ F X`), then its iterates form an infinite strictly

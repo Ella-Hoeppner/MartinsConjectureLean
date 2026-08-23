@@ -76,6 +76,19 @@ filter *is* normal (Fodor on `ω₁`).  Split Case A by cone theorem on `{X : ω
 - *preserving* (`ω₁^{F X} = ω₁^X`): `F` preserves `ω₁^x`; this is the delicate heart of Lutz's
   hyperarithmetic argument.
 
+**SHARPER FRAMING (2026-08-22, a correction).**  A regressive `F` splits via `regressive_omega1_dichotomy`
+into **hyp-decreasing** (`ω₁^{F X} < ω₁^X`, i.e. `F X <_h X`) and **hyp-preserving** (`ω₁^{F X} = ω₁^X`,
+i.e. `F X ≡_h X` since `F X ≤_h X`).  Crucially, the **hyp-decreasing case is killed by the engine**
+(`no_omega1_decreasing_conePreserving`): iterating a cone-preserving such `F` gives a strictly
+`≺`-descending `ω₁^x` sequence, impossible by countable completeness — *no Σ¹₁-bounding needed*.  And
+hyp-decreasing is *all* of Lutz's `D_h` regressive setting (on `D_h`, `F X <_h X` always strictly drops
+`ω₁`).  So the engine gives a clean, novel handling of the "Lutz-hard" case on the Turing degrees
+(modulo cone-preservation).  The genuinely-open residual is the **hyp-preserving Turing case**
+(`F X ≡_h X`, `F X <ᵀ X`, nonconstant) — a *Turing-specific* phenomenon that is **vacuous on `D_h`** (so
+Lutz's method never sees it) and admits no ordinal rank (the Turing degrees inside a single hyperarithmetic
+degree are ill-founded).  This is the precise, corrected open content — NOT "port Lutz's Σ¹₁-bounding",
+but a new phenomenon needing a new idea (or the cone-escaping cases, the cone-preservation caveat).
+
 **NOW PARTLY FORMALIZED (2026-08-22, `OrdinalUltrapower.lean` + `ChurchKleene.lean`).** The *engine*
 is machine-checked: `no_descending_ordinal_cone` (the cone measure's ordinal ultrapower is well-founded
 — countable completeness) and `no_regressive_of_ordinal_rank` (regressive core ⟸ a degree-invariant

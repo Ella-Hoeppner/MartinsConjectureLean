@@ -373,6 +373,25 @@ theorem counterexample_escapes_all_params (hSS : RegressiveSlamanSteel)
   incomparable_escapes_params_onCone hTD hSS hF
     (counterexample_incomparable_to_argument hTD hSS hF hnc hnai) p
 
+/-- **The definitive counterexample profile.**  Collects every machine-checked constraint a Part-1
+counterexample must satisfy: incomparable to its argument, incomparable to every fixed degree across
+an interval, escaping every fixed parameter (`F X ≰ᵀ X ⊕ p` on a cone, for all `p`), and outside every
+known regularity class (not order-preserving, not uniformly invariant).  Extends
+`counterexample_wild_profile` with the new escaping constraint.  This is the sharpest description the
+corrected framework yields; only the incomparable-core proof (Posner–Robinson) would close the gap. -/
+theorem counterexample_definitive_profile (hM : MartinPPT) (hSS : RegressiveSlamanSteel)
+    (hcoding : OrderPreservingUncountableCofinal) (hTD : TuringDeterminacy fun _ => True)
+    (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) (hnai : ¬ AboveIdOnCone F) :
+    OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) ∧
+    (∃ W₀, ∀ W₁, OnCone (fun X => ∀ Z, W₀ ≤ₜ Z → Z ≤ₜ W₁ → ¬ F X ≤ₜ Z ∧ ¬ Z ≤ₜ F X)) ∧
+    (∀ p, OnCone (fun X => ¬ F X ≤ₜ Cantor.join X p)) ∧
+    ¬ OrderPreserving F ∧ ¬ UniformlyTuringInvariant F :=
+  ⟨(counterexample_sharp_profile hM hSS hTD hF hnc hnai).1,
+   (counterexample_sharp_profile hM hSS hTD hF hnc hnai).2,
+   fun p => counterexample_escapes_all_params hSS hTD hF hnc hnai p,
+   counterexample_not_orderPreserving hTD hM hcoding hnc hnai,
+   counterexample_not_uniformlyInvariant hTD F hnc hnai⟩
+
 /-- **A regressive cone-preserving function generates an infinite descending Martin
 chain.**  If an invariant `F` is, on `cone base`, both regressive (`F X <ᵀ X`) and
 cone-preserving (`base ≤ᵀ F X`), then its iterates form an infinite strictly

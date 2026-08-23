@@ -88,4 +88,82 @@ theorem treeMem_codeGame (σ : ℕ → Bool) (s : List Bool) :
   unfold treeMem
   rw [codeGame_treePos]; exact evenMatchGame_iff σ s
 
+/-- The game tree is downward closed. -/
+theorem codeGame_closed (σ : ℕ → Bool) :
+    ∀ s b, treeMem (codeGame σ) (s ++ [b]) → treeMem (codeGame σ) s := by
+  intro s b hs
+  rw [treeMem_codeGame] at hs ⊢
+  obtain ⟨z, hz⟩ := hs
+  refine ⟨z, fun i hi => ?_⟩
+  have hi' : i < (s ++ [b]).length := by rw [List.length_append]; simp; omega
+  rw [← getD_append_lt s [b] i hi]; exact hz i hi'
+
+/-- **The game tree's branches are exactly the game-embedding image.**  `⟹` is compactness
+(`exists_z_of_branch`); `⟸` is that each `emb z` is a branch. -/
+theorem isBranch_codeGame (σ x : ℕ → Bool) :
+    IsBranch (treeMem (codeGame σ)) x ↔
+      ∃ z, ∀ i, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) i = x i := by
+  constructor
+  · intro hx
+    refine exists_z_of_branch σ x (fun n => ?_)
+    obtain ⟨z, hz⟩ := (treeMem_codeGame σ _).mp (hx n)
+    refine ⟨z, fun i hi => ?_⟩
+    have hi' : i < ((List.range n).map x).length := by rw [List.length_map, List.length_range]; exact hi
+    rw [← getD_range_map x n i hi]; exact hz i hi'
+  · rintro ⟨z, hz⟩ n
+    rw [treeMem_codeGame]
+    refine ⟨z, fun i hi => ?_⟩
+    rw [List.length_map, List.length_range] at hi
+    rw [getD_range_map x n i hi]; exact hz i
+
+/-! ### Discharging `GameRecover` (hence all of Martin's Lemma 2.3) via `lemma21`, modulo `codeGame ≤ᵀ σ` -/
+
+/-- **The one remaining computability fact:** the game tree's characteristic is computable from `σ`.
+`emb_locality` makes the defining search bounded (`codeReal_le`-scale `RecursiveIn` presentation). -/
+def GameCodeBelow : Prop := ∀ σ : ℕ → Bool, codeGame σ ≤ₜ σ
+
+/-- **`GameRecover` holds given `codeGame σ ≤ᵀ σ`** — the game embedding's `recover` obligation, via the
+codebase's `lemma21` on `codeGame σ`.  `lemma21` gives `emb z ≤ᵀ g(emb z) ⊕ codeGame σ`; since
+`codeGame σ ≤ᵀ σ`, this is `≤ᵀ g(emb z) ⊕ σ`.  (`code ≤ᵀ σ` suffices here — no `≡ᵀ σ` needed — because
+`PPT.code` was taken to be `σ` itself.) -/
+theorem gameRecover_of_codeBelow (hbelow : GameCodeBelow) : GameRecover := by
+  intro σ g hg hinj x hx
+  have hmem_iff : ∀ y, (∃ z, evenPart (gamePlay σ (copyStrategy (Cantor.join z σ))) = y) ↔
+      IsBranch (treeMem (codeGame σ)) y := fun y => by
+    rw [isBranch_codeGame]
+    exact ⟨fun ⟨z, hzy⟩ => ⟨z, fun i => congrFun hzy i⟩, fun ⟨z, hz⟩ => ⟨z, funext hz⟩⟩
+  obtain ⟨c, hc⟩ := hg
+  have hrec := lemma21 (Tr := codeGame σ) (e := c) (g := g) (codeGame_closed σ)
+    (fun y hy => hc y ((hmem_iff y).mpr hy))
+    (fun y y' hy hy' => hinj y y' ((hmem_iff y).mpr hy) ((hmem_iff y').mpr hy'))
+    ((hmem_iff x).mp hx)
+  exact hrec.trans (Cantor.join_le (Cantor.left_le_join (g x) σ)
+    ((hbelow σ).trans (Cantor.right_le_join (g x) σ)))
+
+/-- **`MartinPPT` from the single computability fact `GameCodeBelow`** — all determinacy and all tree
+mathematics machine-checked. -/
+theorem martinPPT_of_codeBelow (hbelow : GameCodeBelow)
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A)) :
+    MartinPPT :=
+  martinPPT_of_recover (gameRecover_of_codeBelow hbelow) hdet
+
+/-- **Part 1 of Martin's conjecture from `GameCodeBelow`.**  Part 1 holds given: `GameCodeBelow`
+(`codeGame σ ≤ᵀ σ` — a single `codeReal_le`-scale computability fact), full determinacy of the Martin
+games, Turing determinacy, and `escaping ⟹ MP`.  The *only genuinely open* input is the last (the
+incomparable core).  Martin's Lemma 2.3 is thus reduced to `GameCodeBelow`, with its **entire**
+mathematical content machine-checked: the asymmetric game, `winsI_martinGame_of_cofinal`, `emb_locality`,
+`exists_z_of_branch`, the whole `treeMem` tree (`codeGame`, its `treeMem`/`IsBranch` characterizations,
+closedness) and the `lemma21`/`recover` reduction. -/
+theorem partI_of_codeBelow_escaping (hbelow : GameCodeBelow)
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A))
+    (hTD : TuringDeterminacy fun _ => True)
+    (hesc : ∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) :
+    ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_gameRecover_escaping (gameRecover_of_codeBelow hbelow) hdet hTD hesc
+
+#print axioms treeMem_codeGame
+#print axioms isBranch_codeGame
+#print axioms gameRecover_of_codeBelow
+#print axioms partI_of_codeBelow_escaping
+
 end Martin

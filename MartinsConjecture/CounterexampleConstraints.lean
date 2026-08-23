@@ -154,6 +154,20 @@ theorem partI_orderPreserving_of_coding (hTD : TuringDeterminacy fun _ => True)
     (fun _ hF hmp => measurePreservingAboveId_of_martinPPT hM hF hmp)
     (orderPreservingNonconstantMP_of_uncountableCofinal hcoding)
 
+/-- **The sole open core, handled for the order-preserving sub-class.**  An order-preserving function
+that is incomparable to its argument on a cone is constant on a cone (given `MartinPPT` and the coding):
+by `partI_orderPreserving_of_coding` it is constant or above-id, and incomparability rules out above-id.
+So the incomparable core holds for order-preserving `F` — connecting the order-preserving reduction to
+the genuinely-open incomparable core. -/
+theorem incomparable_orderPreserving_constant (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hcoding : OrderPreservingUncountableCofinal) (hop : OrderPreserving F)
+    (hincomp : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ConstantOnCone F := by
+  rcases partI_orderPreserving_of_coding hTD hM hcoding F hop with hc | hai
+  · exact hc
+  · exfalso
+    obtain ⟨W, hW⟩ := onCone_and hincomp hai
+    exact (hW W (Cantor.le.refl W)).1.2 (hW W (Cantor.le.refl W)).2
+
 /-- **Lutz–Siskind Theorem 4.6, stated verbatim** (modulo the coding, supplied as
 `OrderPreservingNonconstantMP`): every order-preserving invariant function is *constant on a cone or
 measure-preserving*.  By cases on constancy: a non-constant such `F` has uncountable range

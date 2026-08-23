@@ -177,7 +177,23 @@ theorem partI_of_martinPPT_escaping (hM : MartinPPT)
     ∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
   partI_of_martinPPT hM ((nonconstant_mp_iff_escaping_mp hTD).mpr hesc)
 
+/-- **The sharpest possible statement of Part 1's open content: given `MartinPPT`, Part 1 is *exactly*
+`escaping ⟹ measure-preserving`.**  This is an `↔`, and — unlike `partI_iff_escapingMP` (which routes
+through the cores and so needlessly assumes `RegressiveSlamanSteel`) — it needs *only* `MartinPPT`: the
+measure-preserving decomposition (`partI_iff_measurePreserving`) already absorbs both the regressive and
+incomparable cores into the single class-half `escaping ⟹ MP`, while `MartinPPT` discharges the
+general-half Theorem 3.4 (`measurePreservingAboveId_of_martinPPT`).  So, modulo Martin's standard
+pointed-perfect-tree theorem, the entire remaining content of Part 1 of Martin's conjecture is the one
+implication "a function that avoids every degree from below on a cone reaches every degree from above on
+a cone." -/
+theorem partI_iff_escapingMP_of_martinPPT (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT) :
+    (∀ F, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F) ↔
+      (∀ F, TuringInvariant F → Escaping F → MeasurePreserving F) := by
+  refine ⟨fun hpartI F hF hesc => measurePreserving_of_partI hpartI hF (not_constant_of_escaping hesc),
+    fun hesc => partI_of_martinPPT_escaping hM hTD hesc⟩
+
 #print axioms groszekSlaman_of_martinPPT
+#print axioms partI_iff_escapingMP_of_martinPPT
 #print axioms measurePreservingAboveId_of_martinPPT
 #print axioms partI_of_martinPPT_escaping
 

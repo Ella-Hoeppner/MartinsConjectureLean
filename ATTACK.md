@@ -172,9 +172,11 @@ things about `F`, and an arbitrary invariant `F` denies all three:
 3. *Cone-compatible regularity* — AD's measure / Baire regularity lives on comeager/conull sets,
    which are **orthogonal** to Turing cones (cones are meager AND null); regularity never transfers
    to a cone.
-The three known proofs each *supply* a missing wall by hypothesis: uniform/Borel give (1)+(2)
-(a code), hyperarithmetic gives an ordinal-effective handle.  The general case has none.  A crossing
-must manufacture one of the three for non-definable `F` — no formalizable route does.
+The known proofs each *supply* a missing wall by hypothesis: uniform / order-preserving / measure-
+preserving (the proven Borel *sub-classes*) give (1)+(2) (a code / structural effectiveness),
+hyperarithmetic-regressive gives an ordinal-effective handle.  The general case (general Borel and
+general Turing, both open) has none.  A crossing must manufacture one of the three for `F` — no
+formalizable route does.
 
 **How the walls tie together (a clean reformulation, and a correction of my own earlier notes).**
 There are TWO distinct "uniformities", and conflating them is a trap:

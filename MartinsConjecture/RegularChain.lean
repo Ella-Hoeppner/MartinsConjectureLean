@@ -136,6 +136,21 @@ theorem MartinEquiv.trans {F G H : (ℕ → Bool) → ℕ → Bool}
     (h1 : MartinEquiv F G) (h2 : MartinEquiv G H) : MartinEquiv F H :=
   onCone_mono (fun _X h => h.1.trans h.2) (onCone_and h1 h2)
 
+/-- The strict Martin order is transitive. -/
+theorem MartinLT.trans {F G H : (ℕ → Bool) → ℕ → Bool}
+    (h1 : MartinLT F G) (h2 : MartinLT G H) : MartinLT F H :=
+  ⟨h1.1.trans h2.1, fun hc => h2.2 (hc.trans h1.1)⟩
+
+/-- Strict-below followed by `≤` in the Martin order. -/
+theorem MartinLT.trans_le {F G H : (ℕ → Bool) → ℕ → Bool}
+    (h1 : MartinLT F G) (h2 : MartinLE G H) : MartinLT F H :=
+  ⟨h1.1.trans h2, fun hc => h1.2 (h2.trans hc)⟩
+
+/-- `≤` followed by strict-below in the Martin order. -/
+theorem MartinLE.trans_lt {F G H : (ℕ → Bool) → ℕ → Bool}
+    (h1 : MartinLE F G) (h2 : MartinLT G H) : MartinLT F H :=
+  ⟨h1.trans h2.1, fun hc => h2.2 (hc.trans h1)⟩
+
 /-- Any two jump iterates are Martin comparable — the totality half of the
 Part II prewellordering claim, verified on the jump chain. -/
 theorem martinLE_jumpIter_of_le {m n : ℕ} (h : m ≤ n) :
@@ -156,11 +171,7 @@ iterates) — the concrete witness that its order type is at least `ω`. -/
 theorem martinLT_jumpIter_of_lt {m n : ℕ} (h : m < n) :
     MartinLT (fun X => Cantor.jump^[m] X) (fun X => Cantor.jump^[n] X) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt h
-  have hstep : MartinLT (fun X => Cantor.jump^[m] X) (fun X => Cantor.jump^[m + 1] X) :=
-    martinLT_jumpIter m
-  have hle : MartinLE (fun X => Cantor.jump^[m + 1] X) (fun X => Cantor.jump^[m + k + 1] X) :=
-    martinLE_jumpIter_of_le (by omega)
-  exact ⟨hstep.1.trans hle, fun hc => hstep.2 (hle.trans hc)⟩
+  exact (martinLT_jumpIter m).trans_le (martinLE_jumpIter_of_le (by omega))
 
 /-- The provable half of the Part II successor claim, packaged: for every
 regular `F`, its jump-composition is again regular and strictly Martin above

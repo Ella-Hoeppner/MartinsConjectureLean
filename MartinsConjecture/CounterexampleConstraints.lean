@@ -166,6 +166,17 @@ theorem orderPreserving_constant_or_mp (hTD : TuringDeterminacy fun _ => True)
   · exact Or.inr (h46 F hop hop.turingInvariant
       (nonconstant_values_uncountable hTD hop.turingInvariant hnc))
 
+/-- **The sole open core follows from Steel's conjecture.**  Since the regressive core is a KNOWN
+Slaman–Steel theorem (`regressiveImpliesConstant_of_slamanSteel`), the only open content of Part 1 is
+`IncomparableImpliesConstant` — and it in turn follows from Steel's conjecture (every invariant `F` is
+`MartinEquiv` to a uniformly-invariant one), via `partI_general_of_steelBridge`.  So the incomparable
+core is squarely a cone-uniformization problem. -/
+theorem incomparableImpliesConstant_of_steelBridge (hTD : TuringDeterminacy fun _ => True)
+    (bridge : ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
+      ∃ G, UniformlyTuringInvariant G ∧ MartinEquiv F G) :
+    IncomparableImpliesConstant :=
+  incomparableImpliesConstant_of_partI (partI_general_of_steelBridge hTD bridge)
+
 /-- **The complete profile of a Part-1 counterexample.**  Under `MartinPPT` and
 determinacy, a Turing-invariant `F` that is neither constant on a cone nor above
 the identity on a cone must simultaneously:

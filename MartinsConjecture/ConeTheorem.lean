@@ -313,6 +313,35 @@ theorem winsI_cofinal {A : Set (ℕ → Bool)} {σ : ℕ → Bool} (hσ : WinsI 
   obtain ⟨z, hzA, hzeq⟩ := winsI_realizes hσ (X := Cantor.join w σ) (Cantor.right_le_join w σ)
   exact ⟨z, (Cantor.left_le_join w σ).trans hzeq.2, hzA⟩
 
+/-- **Mirror of `winsI_realizes` for player II.**  A player-II winning strategy `τ` makes the
+*complement* `Aᶜ` realize every degree `≥ᵀ τ`: for `X ≥ᵀ τ`, the play `gamePlay (copyStrategy X) τ` is
+`≡ᵀ X` and lies outside `A`. -/
+theorem winsII_avoids {A : Set (ℕ → Bool)} {τ : ℕ → Bool} (hτ : WinsII A τ)
+    {X : ℕ → Bool} (hX : τ ≤ₜ X) :
+    ∃ z, z ∉ A ∧ z ≡ₜ X := by
+  refine ⟨gamePlay (copyStrategy X) τ, hτ (copyStrategy X), ?_, ?_⟩
+  · refine gamePlay_le 0 (copyStrategy X) τ τ X hX (fun n hn => ?_) (fun n hn => ?_)
+    · rw [if_neg (by omega)]
+    · rw [if_pos (by omega), copyStrategy, hlen_histPlay]
+  · refine le_of_precomp (g := fun k => 2 * k)
+      (Primrec.nat_iff.mp (Primrec.nat_mul.comp (Primrec.const 2) Primrec.id))
+      fun k => ?_
+    rw [gamePlay_copy_even τ X (2 * k) (by omega)]
+    congr 1
+    omega
+
+/-- A player-II win implies the **complement** `Aᶜ` is cofinal.  Together with `winsI_cofinal`, this is
+why the membership game cannot decide `MartinPPT'` for a non-invariant `A`: determinacy yields a
+winning strategy for I (⟹ `A` cofinal) or for II (⟹ `Aᶜ` cofinal), and **both are consistent with `A`
+cofinal** (a degree can have one representative in `A` and another in `Aᶜ`).  The invariance used in
+`cone_theorem` is exactly what upgrades "cofinal" to "contains a cone"; without it Martin's Lemma 2.3
+needs a genuine perfect-tree fusion, not this game. -/
+theorem winsII_cofinal_compl {A : Set (ℕ → Bool)} {τ : ℕ → Bool} (hτ : WinsII A τ) :
+    ∀ w : ℕ → Bool, ∃ x, w ≤ₜ x ∧ x ∉ A := by
+  intro w
+  obtain ⟨z, hzA, hzeq⟩ := winsII_avoids hτ (X := Cantor.join w τ) (Cantor.right_le_join w τ)
+  exact ⟨z, (Cantor.left_le_join w τ).trans hzeq.2, hzA⟩
+
 /-- Cone-theorem consequence in "on a cone" form: a determined Turing
 invariant set either holds on a cone or fails on a cone. -/
 theorem cone_theorem_onCone (A : Set (ℕ → Bool))

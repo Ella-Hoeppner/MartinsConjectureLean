@@ -43,12 +43,17 @@ one is the open one):
    I wins iff `x ≥ᵀ y ∧ x ∈ A`. Proved: `winsI_martinGame_of_cofinal` (cofinal ⟹ player I wins),
    `cofinal_realizes_cone`, and `martinGamePerfectEmbedding`/`cofinal_perfectEmbedding` (the pointed
    perfect embedding into `A` — the "game half" `PerfectEmbedding.lean` flagged as the sole gap).
-   `MartinGameFusion.lean` reduces the **whole** non-invariant case to a single computability step
-   `MartinGameTreePackages` (present the game's even-part tree in `treeMem` format — a `codeReal`-scale
-   build, `code ≤ᵀ σ` by bounded search, branches `= {emb z}` by compactness), and chains it all the way
-   to Part 1 (`partI_of_packaging_escaping`). So `MartinPPT` is no longer a black-box hypothesis: its
-   determinacy content is proved, and only tree-bookkeeping remains (not on the critical path — the open
-   content is still the incomparable core).
+   `MartinGameFusion.lean`/`MartinGameTree.lean` reduce the **whole** non-invariant case to a single
+   computability fact `GameCodeBelow` (`codeGame σ ≤ᵀ σ`). **✅ That fact is now PROVED**
+   (`MartinGameCode.gameCodeBelow`, 2026-08-23): `embVal_le` presents the game embedding as recursive-in-`σ`
+   (primitive recursion on histories via `Nat.RecursiveIn.prec`), wrapped in the graph-prefix+`Primrec`
+   pattern of `codeReal_le`. **So `MartinPPT` (Martin's Lemma 2.3) is now a THEOREM modulo only determinacy**:
+   `martinPPT_of_gameDeterminacy` (`MartinGameCode.lean`). Downstream, everything that assumed `MartinPPT`
+   is now dischargeable from determinacy — `GameCapstone.lean`: `measurePreservingAboveId_of_gameDeterminacy`
+   (Lutz–Siskind **Theorem 3.4 from determinacy alone**), `partI_of_gameDeterminacy_escaping`,
+   `partI_iff_escapingMP_of_gameDeterminacy` (**Part 1 ⟺ escaping⟹MP on determinacy alone**),
+   `partI_iff_pushforward_of_gameDeterminacy`. All standard axioms only. Nothing here is a hypothesis
+   anymore except determinacy itself; the open content is the incomparable core (input 2 below).
 
 2. **Class-specific input** — `escaping ⟹ MP` (`escapingMP_iff_no_fixedIncomparable`,
    `EscapingDichotomy.lean`): equivalent to "no escaping invariant `F` is Turing-incomparable

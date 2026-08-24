@@ -11,6 +11,7 @@ implication **escaping ⟹ measure-preserving**.
 -/
 import MartinsConjecture.MartinGameCode
 import MartinsConjecture.MeasurePreservingFilter
+import MartinsConjecture.CounterexampleConstraints
 
 open scoped Computability
 open Cantor
@@ -56,8 +57,22 @@ theorem measurePreservingAboveId_of_gameDeterminacy
   measurePreservingAboveId_of_groszekSlaman'
     (groszekSlaman_of_martinPPT (martinPPT_of_gameDeterminacy hdet))
 
+/-- **Part 1 for order-preserving functions, on determinacy + the coding step.**  With
+`MartinPPT` discharged by the game, `partI_orderPreserving_of_coding` needs only determinacy of
+the Martin games, Turing determinacy, and the Groszek–Slaman–Kihara perfect-set coding
+(`OrderPreservingUncountableCofinal`): every order-preserving invariant function is constant on
+a cone or above the identity on a cone.  So the order-preserving branch of Part 1 (Lutz–Siskind)
+now rests on exactly determinacy plus that one atomic coding statement. -/
+theorem partI_orderPreserving_of_gameDeterminacy
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A))
+    (hTD : TuringDeterminacy fun _ => True)
+    (hcoding : OrderPreservingUncountableCofinal) :
+    ∀ F, OrderPreserving F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_orderPreserving_of_coding hTD (martinPPT_of_gameDeterminacy hdet) hcoding
+
 #print axioms partI_iff_escapingMP_of_gameDeterminacy
 #print axioms partI_iff_pushforward_of_gameDeterminacy
 #print axioms measurePreservingAboveId_of_gameDeterminacy
+#print axioms partI_orderPreserving_of_gameDeterminacy
 
 end Martin

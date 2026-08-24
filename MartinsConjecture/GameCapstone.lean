@@ -45,7 +45,19 @@ theorem partI_iff_pushforward_of_gameDeterminacy
           Filter.map F coneFilter ≤ coneFilter) :=
   partI_iff_pushforward_of_martinPPT (martinPPT_of_gameDeterminacy hdet)
 
+/-- **Lutz–Siskind's Theorem 3.4, from determinacy alone.**  A Turing-invariant
+measure-preserving function is above the identity on a cone — now with *no* `MartinPPT` or
+`GroszekSlaman` hypothesis: the Martin game supplies `MartinPPT` (`martinPPT_of_gameDeterminacy`),
+which supplies the Groszek–Slaman inverting-tree construction (`groszekSlaman_of_martinPPT`),
+which yields Theorem 3.4.  The entire §§2–3 pointed-perfect-tree pipeline of Lutz–Siskind is
+machine-checked, resting only on determinacy of the Martin games. -/
+theorem measurePreservingAboveId_of_gameDeterminacy
+    (hdet : ∀ A : Set (ℕ → Bool), GameDetermined (martinGame A)) : MeasurePreservingAboveId :=
+  measurePreservingAboveId_of_groszekSlaman'
+    (groszekSlaman_of_martinPPT (martinPPT_of_gameDeterminacy hdet))
+
 #print axioms partI_iff_escapingMP_of_gameDeterminacy
 #print axioms partI_iff_pushforward_of_gameDeterminacy
+#print axioms measurePreservingAboveId_of_gameDeterminacy
 
 end Martin

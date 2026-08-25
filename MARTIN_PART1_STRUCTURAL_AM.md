@@ -280,3 +280,28 @@ the (easy) ordinal setting.
 > excluded case is *exactly* the machine-checked `incomparable_not_measurePreserving` witness — a would-be
 > "sideways" invariant function, which linearity forbids for ordinals but partiality permits a priori for
 > degrees. Ruling it out is the content of AD's rigidity of the Turing degrees (Steel/Siskind).
+
+## 11. Literature calibration — this route matches the published frontier (Lutz–Siskind)
+
+Checking the conclusions of §7–9 against the state of the art: Lutz–Siskind (*Part 1 of Martin's Conjecture
+for order-preserving and measure-preserving functions*, arXiv:2305.19646) prove Part 1 for measure-preserving
+functions and — crucially — establish **an equivalence between Part 1 of the conjecture and a statement about
+the structure of the Rudin–Keisler order on ultrafilters on the Turing degrees.**
+
+This is *exactly* the reformulation §9 arrived at independently this session (the incomparable core ⟺
+`U`-preservation / RK-structure of invariant pushforwards of the Martin measure). So:
+
+- **The measure-theoretic route (§7) is the correct one** — it is the published frontier, not a detour.
+- **The coordinated-tree route being circular (§2.6) is consistent** with why the field moved to the
+  measure/ultrafilter framing: Slaman–Steel coordinated trees settle the *regressive* case, and the
+  incomparable core needed the genuinely different measure-preserving/RK-order machinery.
+- This session's *added* value over restating the equivalence: (a) the machine-checked substrate
+  (`incomparableConstant_iff_noIncomparableSelfMap`, the graph-orbit device, `incomparable_jump_not_below`,
+  `incomparable_not_measurePreserving`); (b) **Theorem A** (Borel `F` at a fixed jump level ⟹ Lutz's
+  rank-unboundedness is ∞-Borel-specific); (c) the explicit **circularity proof** that coordinated trees
+  cannot reach the incomparable core; (d) the **non-linearity** conceptual account (§10) of why the
+  incomparable case exists at all (partial vs linear order).
+
+So the honest bottom line stands and is *confirmed against the literature*: the sole open content of Part 1 is
+a Rudin–Keisler / ultrafilter-structure statement about the Martin measure, in AD ultrafilter theory
+(Lutz–Siskind, Steel–Woodin, Siskind) — a genuine frontier, and the right place for a proof to live.

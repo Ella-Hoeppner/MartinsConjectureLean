@@ -795,3 +795,22 @@ many arithmetic classes), so the Martin measure does not restrict to a single fi
 locus (Marks, arXiv:1109.1875): a Borel-flavoured invariant selector within `≡ₐ`, blocked by non-smoothness
 of `≡ᵀ`. No crossing; BnBm is genuinely the inner-model-theoretic residue. Value: a clean, self-contained
 statement of the *one* remaining native piece.
+
+**(B9+) The e-degree contrast, made concrete via the SKIP operator (2026-08-25, WebSearch).**
+Nakid-Cordero (arXiv:2510.19147, Oct 2025) classify uniformly-invariant functions on the *enumeration*
+degrees: they are "constant, increasing, or **above the skip operator**", AND there is a definable
+e-function equivalent to a uniformly-invariant one on NO cone. The "wider spectrum" (a genuinely new
+behavior class absent from the Turing degrees) hinges on the **skip** — the e-degree analogue of the jump —
+which, unlike the Turing jump, is **not strictly increasing** (`X <ᵀ X'` always holds on the Turing side;
+the e-degree skip does not have the corresponding strict increase). This is a *concrete* handle on B9's
+question "why doesn't the phenomenon transfer to Turing?": my formalized Part-2 leak
+`am_graph_not_finite_jump` — showing the whole `Am` region produces a transfinite-rank Part-2 object — is
+proved from `self_le_jumpIter` (`A ≤ᵀ jump^[k] A`), i.e. from the jump's monotone strict increase. That
+exact property is what the e-degree skip lacks. So the Turing incomparable core's conjectural rigidity, and
+specifically the Am-region-leaks-to-Part-2 mechanism, rest on the strict-increase of the jump; the
+enumeration degrees, whose skip is not strictly increasing, are precisely where the analogous rigidity
+fails and non-uniform definable functions appear. (Honest scope: the paper's abstract gives the "above the
+skip" classification and the wider spectrum; the identification of *strict jump-increase* as the pivotal
+Turing-only property is my reading, grounded in that my own leak proof consumes exactly that property. Not
+a crossing — a sharpened articulation of the positive direction: a Turing-side proof must exploit
+`X <ᵀ X'` in a way that has no e-degree analogue.)

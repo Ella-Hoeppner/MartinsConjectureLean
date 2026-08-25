@@ -30,7 +30,20 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
   `partI_of_three_cases_and_arith`: Part 1 ⟸ `RegressiveSlamanSteel` (known) + `StrictArithRegressiveConstant`
   (the arithmetic-degrees regressive theorem, discharging the `AnBm` jump-distance sub-case) + three
   arithmetically-typed sub-cases (`AnAm`/`BnAm`/`BnBm`). Honest: a structural sharpening (one sub-case
-  identified with a recognized open theorem), not a crossing.
+  identified with a recognized open theorem), not a crossing. Also: `incomparableConstant_iff_four_subcases`
+  (the four-way split is LOSSLESS) and `incomparable_not_below_argJoin` (a counterexample value escapes
+  `X⊕Z` for every fixed `Z` — sharper than escaping).
+- **`ArithRegressiveSkeleton.lean`**: `StrictArithRegressiveConstant` (the `AnBm` target) opened into its
+  three *relativized* Slaman–Steel steps (tree / domination / coding relative to `X^(k)`); assembly PROVED,
+  including the AnBm twist that step-3's `x ≤ᵀ F x` on a branch is a *contradiction* (vs the Turing case's
+  "above identity"), the three steps bracketed.
+- **`BnAmPartTwo.lean` + `OpenContentCapstone.lean`**: **the incomparable core has a COHERENT FOUR-FACE MAP.**
+  For `G X := jump^[k](F X)` (invariant, above-id on the `Bn` cone): `bnAm_jumpComp_not_finite_jump` —
+  `BnAm` forces `G` to *infinite* Part-2 rank (Part 2 in disguise); `bnBm_jumpComp_finite_bounded` — `BnBm`
+  keeps `G` at *finite* rank (`X ≤ᵀ G X ≤ᵀ X^(k+m)`). So the `An`/`Bm` split IS the infinite/finite Part-2-
+  rank split. Two of the four faces are the two known Martin regimes (AnBm=Part-1-regressive,
+  BnAm=Part-2-increasing); only `BnBm`/`AnAm` (the transfinite residue) is native to the core.
+  `escapingMP_of_three_cases_and_arith` ports the decomposition to the canonical `escaping⟹MP` phrasing.
 - **`RegressiveSkeleton.lean`**: the KNOWN Slaman–Steel regressive theorem opened into its three steps
   (coordinated tree / branch domination / branch coding); assembly + downstream PROVED
   (`regressiveSlamanSteel_of_cores`, `regressiveImpliesConstant_of_cores`), the two hard steps bracketed.
@@ -40,7 +53,7 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
   provable half proved; the three cores (comparison/well-foundedness/jump-minimality) bracketed.
 - Extensive `ATTACK.md` original-research log: every fresh angle on the incomparable core funnels to the
   same barrier; sharpest new proof-level localization = the S-S *domination* step needs `x ≥ᵀ f x`, which
-  incomparability denies. No crossing (expected). 77 files, full build green, all std axioms.
+  incomparability denies. No crossing (expected). 82 files, full build green, all std axioms.
 
 ---
 

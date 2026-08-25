@@ -168,3 +168,27 @@ This is real progress on the actual open problem: it shows the Borel case is *no
 lives (contrary to the natural first guess, and to §3 of the ω₁ note as first drafted), and pins the genuine
 obstruction to the ordinal-code transfer. The most promising concrete crossing is the **level-`ρ` coordinated
 tree for Borel `F`** — where "Borel graph rank `ρ`" gives exactly the fixed level a coordinated tree needs.
+
+## 7. Strategic synthesis: the ONLY viable route is measure-preserving, not coordinated trees
+
+Combining §2.6 with the codebase's engine (this supersedes the "§6 open step 1" optimism):
+
+- **Coordinated trees are ruled out** for the incomparable core (§2.6): a regressive tool whose domination
+  bracket is *equivalent to* the core. "Open step 1 (the level-ρ tree)" is therefore not an easier target —
+  it is the core in disguise.
+- **The measure-preserving engine is different and viable.** `measurePreservingAboveId_of_martinPPT`
+  (= Groszek–Slaman, machine-checked) proves `MP ⟹ above-id` *without* coordinated-tree coding — it exploits
+  the cofinal value distribution of an MP function on a pointed perfect tree and does **not** derive
+  `x ≤ᵀ F x` for the target `F`. So it is *not* circular for the incomparable core.
+- Hence the sole open content — `escaping ⟹ MP` (≡ the incomparable core, `escapingMP_iff_incomparable`) —
+  must be attacked **measure-theoretically**: show an *escaping* `F` (values `≰ᵀ` every fixed `Z` from below)
+  is *measure-preserving* (values `≥ᵀ` every fixed `Z`, i.e. cofinal). Equivalently, the pushforward
+  ultrafilter `F_*U` avoids all lower cones ⟹ `F_*U = U`. Graph identity: since `G = id ⊕ F` is above-id so
+  `G_*U = U`, and `F = oddPart ∘ G`, we get **`F_*U = (oddPart)_*U`** — so `escaping ⟹ MP` is exactly
+  "`(oddPart)_*U` avoids lower cones ⟹ it equals `U`".
+
+> **Bottom line of the whole attack.** The incomparable core is *not* a coordinated-tree problem (that route
+> is provably circular). It is a **value-distribution / ultrafilter** problem — `escaping ⟹ MP`: an
+> unbounded-below invariant pushforward of the Martin measure is cofinal-above. That is the single crux; it
+> uses a genuinely non-regressive engine (Groszek–Slaman for the `MP ⟹ above-id` half); and it is where any
+> real proof must land.

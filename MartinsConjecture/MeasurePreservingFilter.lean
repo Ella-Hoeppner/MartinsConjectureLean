@@ -146,6 +146,37 @@ pushforward of `coneFilter` by the constant map, so `pure c ≤_RK [id]` — the
 theorem pure_rkle_coneFilter (c : ℕ → Bool) : RKle (pure c) coneFilter :=
   ⟨fun _ => c, (Filter.map_const).symm⟩
 
+/-- **The Martin-measure pushforward depends only on cone-behavior.**  Functions agreeing on a cone
+have equal pushforwards of `coneFilter`.  (The general form of `pushCone_congr_of_martinEquiv`, now for
+pointwise equality on a cone rather than `≡ᵀ` on invariant sets.) -/
+theorem map_congr_of_onCone {g h : (ℕ → Bool) → ℕ → Bool} (H : OnCone (fun X => g X = h X)) :
+    Filter.map g coneFilter = Filter.map h coneFilter := by
+  obtain ⟨B, hB⟩ := H
+  apply Filter.ext; intro S
+  rw [Filter.mem_map, Filter.mem_map]
+  constructor
+  · rintro ⟨C, hC⟩
+    refine ⟨Cantor.join C B, fun X hX => ?_⟩
+    have hgS : g X ∈ S := hC ((Cantor.left_le_join C B).trans hX)
+    show h X ∈ S
+    rwa [hB X ((Cantor.right_le_join C B).trans hX)] at hgS
+  · rintro ⟨C, hC⟩
+    refine ⟨Cantor.join C B, fun X hX => ?_⟩
+    have hhS : h X ∈ S := hC ((Cantor.left_le_join C B).trans hX)
+    show g X ∈ S
+    rwa [← hB X ((Cantor.right_le_join C B).trans hX)] at hhS
+
+/-- **A cone-left-invertible function is RK-equivalent to `[id]`.**  If some `k` left-inverts `F` on a
+cone (`k (F X) = X` there), then `[id] ≤_RK [F]` (witness `k`, via `map_congr_of_onCone`); with
+`pushCone_rkle_id` this gives `[F] ≡_RK [id]`.  So the RK-top pushforwards include exactly the
+cone-invertible functions — consistent with RK carrying no Part-1 information (a counterexample need not
+be invertible). -/
+theorem id_rkle_of_leftInverse {F : (ℕ → Bool) → ℕ → Bool} {k : (ℕ → Bool) → ℕ → Bool}
+    (H : OnCone (fun X => k (F X) = X)) : RKle coneFilter (Filter.map F coneFilter) := by
+  have hkF : Filter.map (fun X => k (F X)) coneFilter = coneFilter := by
+    rw [map_congr_of_onCone (h := fun X => X) H]; exact Filter.map_id'
+  exact ⟨k, by rw [Filter.map_map]; exact hkF.symm⟩
+
 #print axioms measurePreserving_iff_map_le
 #print axioms escaping_iff_map_avoids_lowerCone
 #print axioms constantOnCone_iff_map_principal
@@ -153,5 +184,7 @@ theorem pure_rkle_coneFilter (c : ℕ → Bool) : RKle (pure c) coneFilter :=
 #print axioms partI_iff_pushforward_of_martinPPT
 #print axioms pushCone_congr_of_martinEquiv
 #print axioms pushCone_rkle_id
+#print axioms map_congr_of_onCone
+#print axioms id_rkle_of_leftInverse
 
 end Martin

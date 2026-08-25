@@ -152,6 +152,38 @@ theorem incomparableConstant_iff_four_subcases (hTD : TuringDeterminacy fun _ =>
   · rintro ⟨hAnAm, hAnBm, hBnAm, hBnBm⟩
     exact incomparableCore_of_cases hTD hAnAm hAnBm hBnAm hBnBm
 
+/-! ### The primary two-way divide: `F X ≤ₐ X` versus `F X ≰ₐ X` -/
+
+/-- **`Bm` half** — the arithmetically-bounded region `F X ≤ₐ X` (= `AnBm ∪ BnBm`): an incomparable `F`
+whose value is arithmetic in its argument is constant. -/
+def ArithBelowHalf : Prop :=
+  ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+    OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+    (∃ k, OnCone (fun X => G X ≤ₜ Cantor.jump^[k] X)) → ConstantOnCone G
+
+/-- **`Am` half** — the arithmetically-escaping region `F X ≰ₐ X` (= `BnAm ∪ AnAm`): an incomparable `F`
+whose value is *not* arithmetic in its argument is constant.  (Both faces here produce a transfinite-rank
+Part-2 object via the graph — see `BnAmPartTwo.am_graph_not_finite_jump`.) -/
+def ArithEscapingHalf : Prop :=
+  ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+    OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+    OnCone (fun X => ∀ k, ¬ G X ≤ₜ Cantor.jump^[k] X) → ConstantOnCone G
+
+/-- **The incomparable core splits LOSSLESSLY by the single arithmetic comparison `F X ≤ₐ X`.**  This is
+the *primary* divide (one dichotomy, `jump_dichotomy_dual`), coarser than the four-way split: the `Bm`
+half (`F X ≤ₐ X`, arithmetic-regressive-or-equal) refines into `AnBm ∪ BnBm`, and the `Am` half
+(`F X ≰ₐ X`) into `BnAm ∪ AnAm`. -/
+theorem incomparableConstant_iff_arith_halves (hTD : TuringDeterminacy fun _ => True) :
+    IncomparableConstant ↔ (ArithBelowHalf ∧ ArithEscapingHalf) := by
+  constructor
+  · intro h
+    exact ⟨fun G hG hinc _ => h G hG hinc, fun G hG hinc _ => h G hG hinc⟩
+  · rintro ⟨hBm, hAm⟩ G hG hinc
+    rcases jump_dichotomy_dual hTD hG with hAmc | hBmc
+    · exact hAm G hG hinc hAmc
+    · exact hBm G hG hinc hBmc
+
+#print axioms incomparableConstant_iff_arith_halves
 #print axioms incomparable_not_below_argJoin
 #print axioms incomparable_AnBm_of_strictArithRegressive
 #print axioms incomparableCore_of_three_cases_and_arith

@@ -814,3 +814,16 @@ skip" classification and the wider spectrum; the identification of *jump-increas
 pivotal Turing-only property is my reading, grounded in that my own leak proof consumes exactly that
 property. Not a crossing — a sharpened articulation of the positive direction: a Turing-side proof of the
 `Am` region must exploit that the jump is increasing, in a way that has no e-degree analogue.)
+
+**(B10-followup) BnBm is NOT structurally exotic — it reduces to the same skeleton as AnBm (verified).**
+B10 framed BnBm as "the sole face native to neither regime / a fiber-rigidity question". `BnBmSkeleton.lean`
+(machine-checked, `bnBm_of_cores`) REFINES this: BnBm reduces to the *same* relativized Slaman–Steel
+coordinated-tree skeleton as AnBm. The AnBm assembly consumes its branch data through one channel only
+(`arith_strict_branch` : `X ≰ₐ F X ⟹ ¬ x ≤ᵀ F x`), and BnBm's *incomparability* supplies `¬ x ≤ᵀ F x`
+directly (branches on the incomparability cone). So step-3's `x ≤ᵀ F x` contradicts the branch-field
+identically. The whole Bm region (AnBm∪BnBm) is thus uniformly "relativized-S-S step 1". The genuine
+CBER/MSS difficulty of B10 is not gone — it is exactly the content of the *step-1 bracket*
+`HasBnBmUniformTree` (a tree computing an arith-*preserving* injective `F` from `x^(k)`, branches on the
+incomp cone), a distinct and plausibly harder bracket than AnBm's. So the honest statement is: BnBm needs
+the *same method* (coordinated tree) with a *harder step-1 instance*, not a wholly new idea. The fiber-
+rigidity/CBER framing of B10 is precisely what that step-1 bracket encapsulates.

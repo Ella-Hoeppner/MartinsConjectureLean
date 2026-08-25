@@ -43,13 +43,22 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
   `bnBm_jumpComp_finite_bounded` — `BnBm`
   keeps `G` at *finite* rank (`X ≤ᵀ G X ≤ᵀ X^(k+m)`). So the `Am`/`Bm` split (`F X ≰ₐ X` vs `F X ≤ₐ X`) IS
   the infinite/finite Part-2-rank split. Two of the four faces are the two known Martin regimes (AnBm=Part-1-regressive,
-  BnAm=Part-2-increasing); only `BnBm`/`AnAm` (the transfinite residue) is native to the core.
+  BnAm=Part-2-increasing).
   `escapingMP_of_three_cases_and_arith` ports the decomposition to the canonical `escaping⟹MP` phrasing.
   The leak is abstracted to `am_not_finite_jump_of_increasing` (it uses *only* that the operator is
   increasing, `A ≤ᵀ op A`) — the precise property the enumeration-degree *skip* lacks, machine-connecting
   the analysis to Nakid-Cordero's e-degree contrast (arXiv:2510.19147; `ATTACK.md` B9+). Primary packaging
   `partI_of_arith_bnBm_escaping`: Part 1 ⟸ known SS + arith-regressive theorem + `ArithEscapingHalf` (Am,
-  Part-2-flavoured) + `SubcaseBnBm` (the single face native to neither Martin regime).
+  Part-2-flavoured) + `SubcaseBnBm`.
+- **`BnBmSkeleton.lean`**: **`BnBm` reduces to the SAME relativized Slaman–Steel skeleton as `AnBm`**
+  (`bnBm_of_cores`, machine-checked): the coordinated tree computing `F` from `x^(k)`, step-3's `x ≤ᵀ F x`
+  on branches contradicting *incomparability* (branches on the incomp cone) exactly as `AnBm`'s contradicts
+  arith-strictness. So the whole `Bm` region (`AnBm ∪ BnBm`) is uniformly relativized-S-S coordinated-tree
+  brackets; the genuine CBER difficulty is concentrated in `BnBm`'s step-1 (`HasBnBmUniformTree`, an
+  arith-*preserving* injective uniformization) — a distinct, plausibly harder bracket, NOT a separate
+  method. `arithBelowHalf_of_bnBm_cores`: `ArithBelowHalf` ⟸ the `AnBm` + `BnBm` step-1 brackets.
+  (Honest correction to earlier framing: `BnBm` is not "native to neither regime" — it is the
+  incomparable-core instance of the Part-1 coordinated-tree method.)
 - **`RegressiveSkeleton.lean`**: the KNOWN Slaman–Steel regressive theorem opened into its three steps
   (coordinated tree / branch domination / branch coding); assembly + downstream PROVED
   (`regressiveSlamanSteel_of_cores`, `regressiveImpliesConstant_of_cores`), the two hard steps bracketed.

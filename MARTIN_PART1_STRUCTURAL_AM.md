@@ -220,3 +220,34 @@ So one cannot isolate "MP at the single code `Tr.code`" — the code depends on 
 > `x ≤ᵀ F x`-coding content — GS supplies all of that for free once MP is in hand. This correctly separates
 > "the hard part" (MP itself, a statement about where `F`'s values land) from "the downstream part" (GS,
 > machine-checked). It is the measure-theoretic route, and it is monolithic.
+
+## 9. Cleanest measure-theoretic form: RK-minimality / selectivity of the Martin measure
+
+Chasing the value-distribution crux to its cleanest form. A counterexample `F` has `F_*U` **non-principal**
+(escaping ⟹ non-constant) and, at an avoided `Z_0`, concentrated on the `U`-null set `{d ⊥ Z_0}` — i.e.
+`F_*U ⊥ U` (mutually singular). Since `F_*U ≤_RK U` always (it is a pushforward), the core becomes:
+
+> **`escaping ⟹ MP ⟺` every non-principal `F_*U` (invariant `F`) equals `U`** ⟺ `U` admits no non-trivial
+> non-principal Rudin–Keisler predecessor among invariant pushforwards ⟺ (a form of) **`U` is RK-minimal /
+> selective**: every invariant `F` is constant on a cone or "injective enough" that `F_*U = U`.
+
+This places the sole open content of Part 1 squarely in the **descriptive-set-theoretic theory of
+countably-complete ultrafilters under AD** (RK order, selectivity of the Martin measure) — *not* in
+recursion-theoretic coordinated-tree machinery. Whether the Martin measure is RK-minimal (equivalently, the
+incomparable core) is open; if it were a known theorem, Part 1 would be settled. So this is a faithful
+reformulation, not a reduction to something easier — but it correctly identifies the *field* (AD ultrafilter
+theory / Steel–Woodin) where a proof must live, consistent with the inner-model-theoretic flavour (Siskind),
+and derived here concretely from the escaping/MP value distribution rather than asserted.
+
+### Summary of the whole session's attack (honest)
+1. Reframed the core as an impossibility; built the choice-free graph-orbit device (machine-checked).
+2. The ω₁-chain and Fodor approaches are provable no-gos (both need `ω₁↪ℝ`, AD-forbidden): unified obstruction.
+3. Theorem A: Borel `F` sits at a fixed jump level ρ ⟹ Borel `Am` is a transfinite `Bm`, Lutz's
+   rank-unboundedness is ∞-Borel-specific (a genuine, correct clarification). Caveat: type-A ≠ type-B uniformity.
+4. **The coordinated-tree method is circular for the incomparable core** (its domination bracket ≡ the core);
+   uniform domination is provably impossible. So S-S machinery cannot reach it — corrects earlier framing.
+5. The viable route is measure-theoretic `escaping ⟹ MP`, whose engine (Groszek–Slaman) is downstream and
+   non-circular; the crux is monolithic value-distribution content, cleanest form = RK-minimality of `U`.
+
+No crossing (expected for a ~50-year-open problem), but a precise, honest map of where the difficulty is and
+is *not*, with the machine-checked substrate and two correct new theorems (the reframing; `incomparable_jump_not_below`).

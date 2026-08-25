@@ -183,6 +183,29 @@ theorem incomparableConstant_iff_arith_halves (hTD : TuringDeterminacy fun _ => 
     · exact hAm G hG hinc hAmc
     · exact hBm G hG hinc hBmc
 
+/-- **The `Bm` half reduces to the arithmetic regressive theorem plus the single native `BnBm` handler.**
+On the arithmetically-bounded region `F X ≤ₐ X`, the `An`/`Bn` dichotomy (`regressive_jump_dichotomy`)
+splits into `AnBm` (`F X <ₐ X`, discharged by `StrictArithRegressiveConstant` — note incomparability is not
+even needed there) and `BnBm` (`F X ≡ₐ X`). So `ArithBelowHalf` needs exactly one *recognizable* open
+theorem and the one genuinely-native sub-case. -/
+theorem arithBelowHalf_of_cases (hTD : TuringDeterminacy fun _ => True)
+    (harith : StrictArithRegressiveConstant) (hBnBm : SubcaseBnBm) : ArithBelowHalf := by
+  intro G hG hinc hBm
+  rcases regressive_jump_dichotomy hTD hG with hAn | hBn
+  · exact incomparable_AnBm_of_strictArithRegressive harith G hG hAn hBm
+  · exact hBnBm G hG hinc hBn hBm
+
+/-- **Consequently: the incomparable core = arithmetic-regressive theorem + `BnBm` handler + `Am` half.**
+Combining `incomparableConstant_iff_arith_halves` with `arithBelowHalf_of_cases`. The two "recognizable"
+inputs are `StrictArithRegressiveConstant` (Part-1 method) and `ArithEscapingHalf` (Part-2-flavoured via
+the graph); the single genuinely Turing-specific residue is `SubcaseBnBm`. -/
+theorem incomparableConstant_of_arith_bnBm_escaping (hTD : TuringDeterminacy fun _ => True)
+    (harith : StrictArithRegressiveConstant) (hBnBm : SubcaseBnBm) (hAm : ArithEscapingHalf) :
+    IncomparableConstant :=
+  (incomparableConstant_iff_arith_halves hTD).mpr ⟨arithBelowHalf_of_cases hTD harith hBnBm, hAm⟩
+
+#print axioms arithBelowHalf_of_cases
+#print axioms incomparableConstant_of_arith_bnBm_escaping
 #print axioms incomparableConstant_iff_arith_halves
 #print axioms incomparable_not_below_argJoin
 #print axioms incomparable_AnBm_of_strictArithRegressive

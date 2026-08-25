@@ -9,7 +9,25 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
-### Session 2026-08-25 additions (autonomous run)
+### Session 2026-08-25 — GENUINE ATTACK on the open core (not bookkeeping)
+- **`MartinOmega1Approach.lean`**: reframe `IncomparableConstant ⟺ NoIncomparableSelfMap` (no invariant
+  `F` has `F X ⊥ᵀ X` on a cone); the **graph-orbit device** `graphOrbit_strictMono` (iterate `X⊕F X`,
+  choice-free strict increase on cone). The ω₁-chain approach it points to is a **provable no-go**
+  (limit stages need `ω₁↪ℝ`, which AD forbids); Fodor-on-`ω₁ˣ` dies identically → unified obstruction:
+  lifting per-degree info to ω₁-level needs a Turing code (Am region has none) or choice (AD-forbidden).
+  Full writeup `MARTIN_PART1_APPROACH_OMEGA1.md`. Also `incomparable_jump_not_below` (`X≰ᵀF X ⟹ X'≰ᵀF X`).
+- **`LevelCoordinatedTree.lean`** + `MARTIN_PART1_STRUCTURAL_AM.md`: the structural/∞-Borel route.
+  **Theorem A** (math): Borel invariant `F` of Baire rank ρ has `F X ≤ᵀ X^(ρ)`, ρ **fixed** ⟹ Borel `Am`
+  is a *transfinite `Bm`* at fixed level (Lutz's rank-unboundedness is **∞-Borel-specific**, not Borel).
+  `level_of_cores` unifies finite `Bm` (`L=jump^[k]`) + Borel `Am` (`L=X^(ρ)`) at any invariant increasing
+  level `L`. **Sharpened crux**: for Borel `F` the coordinated tree is dischargeable (Theorem A gives the
+  code uniformly=NO good-rep barrier; Silver gives injectivity), so Borel `Am` collapses to the
+  **domination step** — and the *uniform* half of domination is **provably impossible** for incomparable `F`
+  (`incomparable_jump_not_below`); only *per-function* domination survives = the exact recursion-theoretic
+  open crux. Caveat verified: Theorem A is type-A uniformity (`F X=Φ_e^{X^(ρ)}`) NOT type-B uniform
+  invariance (`F X≤ᵀF Y` fails), so it does NOT solve Borel Part 1.
+
+### Session 2026-08-25 additions (autonomous run — earlier structural bookkeeping)
 - **`MartinGameCode.lean` + `GameCapstone.lean`** (prior session, verified): `GameCodeBelow`
   (`codeGame σ ≤ᵀ σ`) PROVED ⟹ **`MartinPPT` (Martin's Lemma 2.3) is a theorem modulo determinacy**
   (`martinPPT_of_gameDeterminacy`); hence Thm 3.4, Part 1 ⟺ escaping⟹MP, and order-preserving Part 1

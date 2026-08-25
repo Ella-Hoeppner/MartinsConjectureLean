@@ -227,17 +227,18 @@ Chasing the value-distribution crux to its cleanest form. A counterexample `F` h
 (escaping ⟹ non-constant) and, at an avoided `Z_0`, concentrated on the `U`-null set `{d ⊥ Z_0}` — i.e.
 `F_*U ⊥ U` (mutually singular). Since `F_*U ≤_RK U` always (it is a pushforward), the core becomes:
 
-> **`escaping ⟹ MP ⟺` every non-principal `F_*U` (invariant `F`) equals `U`** ⟺ `U` admits no non-trivial
-> non-principal Rudin–Keisler predecessor among invariant pushforwards ⟺ (a form of) **`U` is RK-minimal /
-> selective**: every invariant `F` is constant on a cone or "injective enough" that `F_*U = U`.
+> **`escaping ⟹ MP` ⟺ every non-principal `F_*U` (invariant `F`) *equals* `U`** — i.e. `U` has no
+> non-principal invariant-pushforward Rudin–Keisler predecessor strictly below it.
 
-This places the sole open content of Part 1 squarely in the **descriptive-set-theoretic theory of
-countably-complete ultrafilters under AD** (RK order, selectivity of the Martin measure) — *not* in
-recursion-theoretic coordinated-tree machinery. Whether the Martin measure is RK-minimal (equivalently, the
-incomparable core) is open; if it were a known theorem, Part 1 would be settled. So this is a faithful
-reformulation, not a reduction to something easier — but it correctly identifies the *field* (AD ultrafilter
-theory / Steel–Woodin) where a proof must live, consistent with the inner-model-theoretic flavour (Siskind),
-and derived here concretely from the escaping/MP value distribution rather than asserted.
+**Precision (honest).** This exact statement (`F_*U = U`) is *stronger* than plain RK-minimality of `U`
+(which would only give `F_*U` principal or `≡_RK U`, an isomorphic copy, not literally `= U`). So the crux is
+"`U`-preservation by invariant pushforwards", a **selectivity/RK-minimality-adjacent** property, not RK-minimality
+verbatim. Still, it places the sole open content of Part 1 squarely in the **descriptive-set-theoretic theory
+of countably-complete ultrafilters under AD** (RK order, selectivity/normality of the Martin measure) — *not*
+in recursion-theoretic coordinated-tree machinery. If this `U`-preservation were a known theorem, Part 1 would
+be settled; it is open. So this is a faithful reformulation (not a reduction to something easier), correctly
+identifying the *field* (AD ultrafilter theory / Steel–Woodin) where a proof must live — consistent with the
+inner-model-theoretic flavour (Siskind), and derived here concretely from the escaping/MP value distribution.
 
 ### Summary of the whole session's attack (honest)
 1. Reframed the core as an impossibility; built the choice-free graph-orbit device (machine-checked).

@@ -93,7 +93,19 @@ theorem graphOrbit_strictMono
   rw [hstep]
   exact ⟨arg_le_graphFn F _, graphFn_strict_of_not_le (hinc _ hBn).1⟩
 
+/-- **The uniform-domination obstruction (why the Slaman–Steel domination is half-impossible for the
+incomparable core).**  For an incomparable value (`X ≰ᵀ F X`), the jump `X′` is not `≤ᵀ F X` — since
+`X ≤ᵀ X′`, `X′ ≤ᵀ F X` would give `X ≤ᵀ F X`.  A *single* function dominating every `X`-computable function
+computes `X′` (the modulus); so this shows the **uniform** domination step (one `F X`-computable function
+dominating all `X`-computable ones — equivalently `X′ ≤ᵀ F X`) is **impossible** for an incomparable `F`.
+The coordinated-tree method can therefore only survive on *per-function* domination, isolating exactly the
+open crux.  See `MARTIN_PART1_STRUCTURAL_AM.md` §2.5. -/
+theorem incomparable_jump_not_below {F : (ℕ → Bool) → ℕ → Bool} {X : ℕ → Bool}
+    (h : ¬ X ≤ₜ F X) : ¬ Cantor.jump X ≤ₜ F X :=
+  fun hj => h ((Cantor.le_jump X).trans hj)
+
 #print axioms incomparableConstant_iff_noIncomparableSelfMap
 #print axioms graphOrbit_strictMono
+#print axioms incomparable_jump_not_below
 
 end Martin

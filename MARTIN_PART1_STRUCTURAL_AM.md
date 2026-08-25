@@ -85,6 +85,23 @@ recursion-theoretic property at the fixed level `ρ`.
 > Turing-incomparable `F`?* Equivalently, must `x`-computable functions be dominated by `F x`-computable ones
 > on a coordinated tree. This is the exact recursion-theoretic heart, at fixed level `ρ`.
 
+**Uniform vs. per-function domination — the obstruction is half-provable.** There are two readings:
+- **Uniform:** a *single* `h ≤ᵀ F x` dominates *every* `g ≤ᵀ x`. Such an `h` is (up to `≡ᵀ`) a modulus
+  dominating all `x`-computable functions, hence computes `x'`; so uniform domination forces `x' ≤ᵀ F x`,
+  whence `x ≤ᵀ F x` — **contradicting incomparability**. So **uniform domination is provably impossible for
+  incomparable `F`.** The Slaman–Steel method, *if it needs uniform domination, provably cannot reach the
+  incomparable core.*
+- **Per-function:** for *each* `g ≤ᵀ x`, *some* `h_g ≤ᵀ F x` dominates `g` (`h_g` may depend on `g`). This
+  does **not** force `x' ≤ᵀ F x` (no single dominant), so it is not immediately contradictory. It is the
+  only version that could survive, and whether a coordinated tree can *arrange* per-`g` domination for an
+  incomparable `F` (via Kumabe–Slaman genericity, without making `F x` high over `x`) is **the** open crux.
+
+> **Net.** The half of the domination that is *uniform* is killed by incomparability outright; the surviving
+> open content is exactly "per-function domination on a coordinated tree for incomparable `F`", at the fixed
+> Borel level `ρ`. This is a sharp, concrete recursion-theoretic target — and it explains structurally why the
+> Slaman–Steel machinery (built to derive `x ≤ᵀ F x`) sits in tension with the incomparable core (where
+> `x ≤ᵀ F x` is false): the tension is precisely the uniform-domination impossibility.
+
 ## 3. The graph confirms it: Borel `F` gives a hyp-preserving `BnBm`
 
 For Borel `F`, `G X = X ⊕ F X ≡_h X` (since `F X ≤ᵀ X^(ρ) ≤_h X`) while `G X >ᵀ X` (incomparability). So the

@@ -255,3 +255,28 @@ inner-model-theoretic flavour (Siskind), and derived here concretely from the es
 
 No crossing (expected for a ~50-year-open problem), but a precise, honest map of where the difficulty is and
 is *not*, with the machine-checked substrate and two correct new theorems (the reframing; `incomparable_jump_not_below`).
+
+## 10. The deepest "why": the incomparable core is the *non-linearity* of the Turing degrees
+
+A clean conceptual explanation of why the incomparable core is the crux, and why the measure-theoretic route
+is the right frame. Consider the **ordinal analogue**: a normal measure `μ` on `ω₁` (e.g. the club filter,
+which is exactly what the Martin measure `U` pushes to via `X ↦ ω₁ˣ`). For any `f : ω₁ → ω₁`, since ordinals
+are **linearly** ordered, either `f(α) < α` on a `μ`-large set — then `f` is *constant* `μ`-a.e. (Fodor /
+normality) — or `f(α) ≥ α` `μ`-a.e. (above-id). **There is no incomparable case.** So "Part 1 for
+`ω₁`-functions under a normal measure" is *trivially true*, purely from linearity + Fodor.
+
+The Turing degrees are only **partially** ordered. So the trichotomy `regressive / above-id` acquires a
+**fourth case with no ordinal analogue: `F X ⊥ᵀ X` (incomparable)**. The regressive case is Slaman–Steel (the
+degree analogue of Fodor); the above-id case is trivial; and the **incomparable case is exactly the extra
+content created by non-linearity** — which is why it is the sole open core and why it has no counterpart in
+the (easy) ordinal setting.
+
+> **Reframing.** Part 1 ⟺ (essentially) `[id]` is comparable to every `[F]` in the Martin ultrapower of the
+> degrees, i.e. the degrees are "linear enough under `U`" that invariant functions can't go sideways. The
+> normal-measure/Fodor argument works precisely because `ω₁` *is* linear; the whole difficulty of Martin's
+> conjecture is transporting that argument to a **partial** order, where the incomparable case must be
+> separately excluded. This is why (a) the measure-theoretic route is the right one (it mirrors the
+> normal-measure argument), (b) it is genuinely harder than the ordinal case (non-linearity), and (c) the
+> excluded case is *exactly* the machine-checked `incomparable_not_measurePreserving` witness — a would-be
+> "sideways" invariant function, which linearity forbids for ordinals but partiality permits a priori for
+> degrees. Ruling it out is the content of AD's rigidity of the Turing degrees (Steel/Siskind).

@@ -694,3 +694,25 @@ independent problems but three plus one arithmetic-regressive theorem — the na
 (mirrors how the finite/transfinite split organizes the regressive core). The dual `BnAm` (`X <ₐ F X`)
 would need an arithmetic *above-id* theorem; `BnBm` (`F X ≡ₐ X`) and `AnAm` (arithmetically incomparable)
 are the genuinely transfinite residue.
+
+### Sharpest structured reduction of Part 1 (2026-08-25, `IncomparableArithReduction.partI_of_three_cases_and_arith`)
+
+The whole of Part 1 is now reduced to: `RegressiveSlamanSteel` (KNOWN) + `StrictArithRegressiveConstant`
+(the arithmetic-degrees regressive theorem) + three jump-distance sub-cases (AnAm/BnAm/BnBm). Honest
+assessment of this decomposition:
+- **AnBm ↔ arithmetic-regressive theorem (a genuine classification, not a magic reduction).** The `AnBm`
+  sub-case (`F X <ₐ X`, Turing-incomparable) is exactly the open content of the arithmetic-degrees
+  regressive theorem. This is valuable *framing* — it identifies an ad-hoc sub-case with a recognizable
+  target (the natural intermediate between Slaman–Steel/Turing and Lutz/hyperarithmetic), attackable by
+  the same coordinated-tree + domination + coding method — but its difficulty equals AnBm's, not less.
+- **It does NOT collapse to the known Turing theorem.** Induction on the arithmetic level fails: `F X ≤ᵀ
+  X^(k+1) = (X')^(k)` would need `F` to be *jump*-invariant to apply level `k` relative to `X'`, but a
+  Turing-invariant `F` is not jump-invariant (the jump is not degree-injective downward). So the
+  arithmetic case is genuinely separate from the Turing one — as expected (it's why Lutz's hyperarithmetic
+  result and Slaman–Steel's Turing result are distinct theorems, with the arithmetic level in between).
+- The other three sub-cases resist even reframing: `BnAm` (arithmetic-above) has no strictly-weaker
+  named target; `BnBm` (arithmetic-equivalent, Turing-incomparable) is the arith-preserving Turing-dropping
+  phenomenon; `AnAm` (arithmetically incomparable) hits the ω₁-engine's cone-preservation caveat.
+Net: a genuine finer *classification* of the sole open Part-1 content into four arithmetically-typed
+pieces, one identified with a recognized open theorem — the sharpest structural map to date, honestly not
+a crossing.

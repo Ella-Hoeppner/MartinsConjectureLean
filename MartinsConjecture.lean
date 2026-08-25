@@ -77,6 +77,7 @@ import MartinsConjecture.IncomparableArithReduction
 import MartinsConjecture.ArithRegressiveSkeleton
 import MartinsConjecture.BnBmSkeleton
 import MartinsConjecture.MartinOmega1Approach
+import MartinsConjecture.LevelCoordinatedTree
 import MartinsConjecture.BnAmPartTwo
 import MartinsConjecture.OpenContentCapstone
 import MartinsConjecture.CounterexampleConstraints

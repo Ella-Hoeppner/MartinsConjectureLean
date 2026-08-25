@@ -161,7 +161,13 @@ sharpest proof-level statement of why the one method that settles the regressive
   `F` maps `X` to another Turing degree in the same arithmetic degree. This is genuinely `Turing`-specific
   (vacuous on `D_h`, where `F X <_h X` always strictly drops `ω₁^x`), which is precisely why Lutz's
   method never encounters it. No ordinal rank is available (the Turing degrees inside one hyperarithmetic
-  degree are ill-founded).
+  degree are ill-founded). **However, `BnBm` is not structurally exotic: it reduces to the *same*
+  relativized Slaman–Steel skeleton as `AnBm`** (`BnBmSkeleton.bnBm_of_cores`, machine-checked) — the
+  coordinated tree computing `F` from `x^(k)`, with step-3's `x ≤ᵀ F x` on branches contradicting
+  *incomparability* `¬ x ≤ᵀ F x` (branches sit on the incomparability cone) exactly as `AnBm`'s
+  contradicts arith-strictness. The genuine CBER difficulty is concentrated in the step-1 bracket
+  `HasBnBmUniformTree` (an arith-*preserving* injective uniformization coordinated with the tree) — a
+  distinct, plausibly harder, open bracket, but the *method* is not new.
 - **AnAm** (arithmetically incomparable): the transfinite residue. Splitting by `ω₁^{F X}` vs `ω₁^X` and
   invoking the project's ordinal-ultrapower engine (`no_omega1_decreasing_conePreserving`, formalized)
   would kill the `ω₁`-decreasing case — *but only under cone-preservation* (`base ≤ᵀ F X` on the cone),
@@ -199,9 +205,15 @@ lifted to the canonical open statement as `escapingMP_iff_arith_halves` (`escapi
   `X ⊕ F X` (`am_graph_not_finite_jump`) — Part-2-flavoured (structurally, not by reduction);
 - the `Bm` half is `AnBm` (the arithmetic **regressive** theorem, structured) together with `BnBm`.
 
-Hence the *single* face native to **neither** known Martin regime is **`BnBm`** (`F X ≡ₐ X`,
-arithmetic-preserving Turing-dropping) — the CBER/MSS heart. The other three faces each land in a
-recognizable regime (Part-1-regressive, or Part-2 via the graph).
+Both faces of the `Bm` half now reduce to the **same relativized Slaman–Steel skeleton**
+(`ArithRegressiveSkeleton` for `AnBm`, `BnBmSkeleton` for `BnBm`; both machine-checked assemblies),
+differing only in the source of the step-3 contradiction — arith-strictness for `AnBm`, incomparability
+for `BnBm`. So **every one of the four faces lands in a recognizable regime**: `AnBm`/`BnBm` are
+relativized-S-S coordinated-tree brackets (Part-1 method), `BnAm`/`AnAm` produce transfinite-rank Part-2
+objects via the graph. The genuine Turing-specific/CBER difficulty is not a *separate method* — it is
+concentrated in the `BnBm` step-1 bracket `HasBnBmUniformTree` (arithmetic-preserving injective
+uniformization), a distinct and plausibly harder instance of the same coordinated-tree crux that `AnBm`
+also brackets.
 
 **Concrete open questions this raises:**
 1. *Does the arithmetic-degrees regressive theorem hold?* I.e. is a Turing-invariant `F` with
@@ -230,10 +242,14 @@ by recognizability:
    structured into three relativized Slaman–Steel steps);
 3. `ArithEscapingHalf` — the `F X ≰ₐ X` region, which **produces a transfinite-rank Part-2 object** via the
    graph (Part-2-flavoured);
-4. `SubcaseBnBm` — the arithmetic-preserving Turing-dropping case, the **single** piece native to neither
-   known Martin regime (the CBER/MSS heart).
-So the open content of Part 1, stripped to its irreducible core, is `BnBm` plus two recognizable
-regime-theorems and one Part-2-flavoured region — not a monolithic mystery.
+4. `SubcaseBnBm` — the arithmetic-preserving Turing-dropping case; itself reduces to the *same* relativized
+   Slaman–Steel skeleton as (2) (`BnBmSkeleton.bnBm_of_cores`), so its residual open content is the step-1
+   bracket `HasBnBmUniformTree` — the CBER/MSS heart, a distinct and plausibly harder instance of the same
+   coordinated-tree crux.
+So the open content of Part 1, stripped to its irreducible core, is **two coordinated-tree brackets**
+(the `AnBm` and `BnBm` step-1's of relativized Slaman–Steel) plus the Part-2-flavoured `Am` region — one
+method, not a monolithic mystery. The genuine difficulty lives entirely in whether determinacy supplies a
+coordinated tree computing an incomparable/arith-regressive `F` from a finite jump of the branch.
 
 ## 8. The barrier, precisely (why no available tool crosses)
 

@@ -546,3 +546,62 @@ bounded); the only cofinal set canonically built from `F` is `X⊕FX`, which is 
 `F`'s incomparability (the join computes any `Z` the argument does). So the barrier survives the strongest
 cone-native tool now available; the obstruction is confirmed to be the reps→all-X (uniform-good-rep)
 gap, not a missing regularity principle.
+
+### Status RESOLVED + regressive proof strategy (2026-08-25, literature check)
+
+Web-confirmed (Lutz thesis "Results on Martin's Conjecture"; Marks–Slaman–Steel): **Slaman–Steel DID
+prove Part 1 for all regressive functions on the *Turing* degrees** — a regressive Turing-invariant `f`
+is constant-on-a-cone or above-id-on-a-cone. So the attack log's MAJOR CORRECTION stands:
+`RegressiveSlamanSteel` is a KNOWN theorem (a real formalization target), and the **incomparable core is
+the SOLE open Part-1 content**. Lutz's `D_h` result is the separate hyperarithmetic question.
+
+**The S-S regressive proof strategy** (now a formalization target — pieces partly available):
+1. Determinacy ⟹ a **pointed perfect tree** on which `f` is **computable and injective** (a coordinated
+   tree + uniformization — STRONGER than plain `MartinPPT`, which gives a tree in a cofinal set not
+   coordinated with `f`'s code; this coupling is the crux and is exactly why the *incomparable* core has
+   no analogue: `f x ≰ᵀ x` gives no code to uniformize).
+2. **Domination:** for `x` on the tree, every function `≤ᵀ x` is dominated by a function `≤ᵀ f x` — else
+   `x` diagonalizes against `f x`.
+3. **Coding:** code the bits of `x` into the relative growth rates of two fast-growing `f(x)`-computable
+   functions ⟹ `f x ≥ᵀ x` on the tree. With `f x ≤ᵀ x` (regressive) ⟹ `f x ≡ᵀ x` ⟹ `f ≡ id` on the
+   tree's cone (nonconstant case); constant otherwise.
+The barrier for the incomparable core is precisely that step 1 fails there (no code from `f x ≤ᵀ x`).
+Launching a subagent to attempt this (high value: discharges the regressive core).
+
+### Frontier confirmed + new leads (2026-08-25, literature)
+
+Confirmed current status (Lutz–Siskind JAMS 2025; Slaman–Steel; Marks–Slaman–Steel; Nakid-Cordero 2025):
+- KNOWN: uniform (Slaman–Steel), regressive-Turing (Slaman–Steel), order-preserving & measure-preserving
+  (Lutz–Siskind). Bard: uniform Part 1 ⟸ a LOCAL phenomenon (nonconstant invariant `x→y` ⟹ `x ≤ᵀ y`).
+- OPEN: the **incomparable core** — functions "off to the side of the constants" (incomparable to the
+  nonzero constants in the Martin order). No known technique.
+- Cautionary analogue: in the ENUMERATION degrees there IS a definable function not equivalent to a
+  uniformly-invariant one (Nakid-Cordero) — i.e. the definable≠uniform gap is *realized* there. That it
+  does NOT transfer to the Turing degrees (Turing Part 1 believed true) is a Turing-specific phenomenon;
+  understanding the non-transfer is a possible research handle (not pursued — requires the e-degree
+  construction).
+
+**New lead — the jump-bounded incomparable sub-case (`F X ≤ᵀ X'`).** A genuinely new potential sub-class:
+if `F X ≤ᵀ X'` on a cone (values arithmetic-in-the-argument) AND `F X ⊥ X`, then `F X = Φ_{e(X)}^{X'}`
+gives a CODE from the jump — so Slaman–Steel step 1 (coordinated tree + uniform code) has an analogue
+*relative to the jump*, and the S-S domination/coding argument may run relativized, forcing `F X ≥ᵀ X`
+(contra ⊥). This would be a new sub-case of the incomparable core (everything with jump-bounded values),
+downstream of the regressive-theorem formalization (subagent C) via relativization to `'`. The general
+incomparable core is exactly where NO such code exists (`F X ≰ᵀ X` and `F X ≰ᵀ X'` possible) — the
+irreducible barrier. Noted as a follow-up once the regressive machinery lands.
+
+**PR does not help the general incomparable core (re-confirmed).** Even with Posner–Robinson formalized
+(subagent B) and pointed perfect trees available (MartinPPT), reviving Attempt C fails for the *general*
+case: PR needs `F` as an oracle (wall 1), and the general incomparable `F` yields no code to feed it. PR's
+value is as a library building block / the uniform case, not a frontier crossing.
+
+### Subagent A result (order-preserving coding) — 2026-08-25
+
+Attempted `OrderPreservingUncountableCofinal` via MartinPPT. Outcome (honest): NOT dischargeable from
+determinacy — it is equivalent to `AvoidingImpliesConstant` = the Groszek–Slaman value-side perfect-set
+coding (Lutz–Siskind Thm 4.3), a genuinely-open/substantial forcing lemma. Concrete witness that
+OP+uncountable is INSUFFICIENT: the ideal of hyperarithmetic degrees is uncountable, downward-closed and
+directed, yet not cofinal (misses Kleene's O). The MartinPPT/InvertingTree machinery is for the OPPOSITE
+direction (MP ⟹ above-id; uniformizes an already-increasing F), so does not supply the value-side coding.
+Captured on main as `OrderPreservingCore.uncountableCofinal_iff_avoiding` (the two OP hypotheses are one).
+Net: the order-preserving case rests on exactly one open coding lemma; no crossing.

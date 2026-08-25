@@ -72,3 +72,10 @@ account (§10 of the structural note: ordinals are linear ⇒ Fodor ⇒ easy; de
 case), the target for a proof is: *use `A ≤ᵀ jump A` and the cone/ultrafilter structure to force an
 unbounded-below invariant pushforward of `U_M` to be cofinal-above (= `U_M`).* That is the sharpest concrete
 handle this attack produced on the actual open frontier.
+
+**Honesty caveat on the lead (I tested it).** The *direct* deployment fails: for a fixed avoided `Z_0` that
+is hyperarithmetically generic relative to `F X` (`Z_0 ≰_h F X`), *no* jump `(F X)^(α)` computes `Z_0`, so the
+jump-tower alone does not force `F X` (or its jumps) above `Z_0`. Increasing-ness is the right *feature*
+(it is what the e-degree skip lacks and what `am_not_finite_jump_of_increasing` consumes), but it must be
+combined with the cone/ultrafilter/measure structure — it is not, by itself, a proof. So the lead names the
+correct property to exploit, not a shortcut; the genuine work remains in AD ultrafilter theory.

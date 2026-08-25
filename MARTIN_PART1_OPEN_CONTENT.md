@@ -234,10 +234,16 @@ also brackets.
    on a branch is a *contradiction* (against branch-strictness `X ≰ₐ F X`) rather than the Turing case's
    "above identity". What remains open is exactly the three bracketed steps (the relativized tree
    existence, domination, and coding).
-2. *Is the arithmetic-preserving Turing-dropping phenomenon (BnBm) possible for a Turing-invariant
-   function under determinacy?* Ruling it out is the deepest Turing-specific piece.
-3. *Can the ordinal-ultrapower engine be freed of the cone-preservation hypothesis?* This would settle
-   the `ω₁`-decreasing part of AnAm.
+2. *Does determinacy supply the `BnBm` coordinated tree* (`HasBnBmUniformTree`)? `BnBm` reduces to the
+   same relativized-S-S skeleton as `AnBm` (`BnBmSkeleton.bnBm_of_cores`, machine-checked), so its open
+   content is exactly this step-1 bracket: a tree computing an arithmetic-*preserving* injective `F` from
+   `x^(k)`, with branches on the incomparability cone. This is the CBER/MSS heart — the same coordinated-tree
+   crux as (1), in a distinct and plausibly harder instance.
+3. *Can the `Am` region (`F X ≰ₐ X`) be reduced, not merely leaked, to Part 2?* The graph `X ⊕ F X` is a
+   transfinite-rank Part-2 object, but recovering `F` from it is the non-invariant "odd-part" problem; and
+   the `ω₁`-decreasing part of `AnAm` needs the ordinal-ultrapower engine freed of cone-preservation.
+   Unlike the `Bm` region, the `Am` region is *not* coordinated-tree-amenable (`F X` escapes every finite
+   jump of `x`), so it genuinely needs the transfinite machinery or a new idea.
 
 None of these is a two-line corollary of the tools available; the incomparable core's resistance is
 inner-model-theoretic in flavour (cf. Siskind, *Aspects of Martin's Conjecture and Inner Model Theory*),

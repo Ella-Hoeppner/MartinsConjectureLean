@@ -746,3 +746,13 @@ So cone-preservation is genuinely UN-manufacturable for an incomparable `F`: a f
 reason the ordinal-ultrapower engine — which handles the regressive-cone-preserving case cleanly — cannot
 reach the incomparable core. (Ties `nonMP_kernel_avoids_cone` to the cone-preservation caveat: they are
 the same obstruction viewed measure-theoretically vs ordinally.)
+
+**(B8) BnBm sub-case ⟹ F preserves the ω-jump (a clean necessary condition).** If `F X ≡ₐ X` (BnBm:
+arithmetically equivalent, Turing-incomparable), then `(F X)^(ω) ≡ᵀ X^(ω)`: from `F X ≤ᵀ X^(k)` we get
+`(F X)^(n) ≤ᵀ X^(k+n)` so `(F X)^(ω) ≤ᵀ X^(ω)`, and dually. So on the BnBm cone `F` is the IDENTITY on the
+ω-jump degrees (`X^(ω) ↦ (F X)^(ω) = X^(ω)`) while being Turing-incomparable to the identity BELOW the
+ω-jump. Reframing: BnBm asserts an invariant `F` that is ω-jump-trivial yet Turing-nontrivial — a
+"rigidity relative to the ω-jump" question. This is genuinely Turing-specific and sits below the
+hyperarithmetic level Lutz reaches (it does NOT preserve `ω₁^x`, since finite jumps strictly increase
+`ω₁^x`, so `X ≡ₐ F X` gives no `ω₁^x` control — confirming BnBm is invisible to the ω₁-engine, cf. B7).
+No crossing, but a clean characterization of the hardest residue sub-case.

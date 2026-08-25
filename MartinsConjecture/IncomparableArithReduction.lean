@@ -93,6 +93,9 @@ theorem partI_of_three_cases_and_arith (hTD : TuringDeterminacy fun _ => True)
   partI_of_slamanSteel_incomparable hTD hSS
     (incomparableCore_of_three_cases_and_arith hTD harith hAnAm hBnAm hBnBm)
 
+/-! ### Note: the cleanest Part-1 packaging (`partI_of_arith_bnBm_escaping`) appears below, after the
+primary two-way divide and `arithBelowHalf_of_cases` on which it depends. -/
+
 /-- **A counterexample's value escapes the join with its argument and any fixed oracle.**  For an
 incomparable `F` (`F X ⊥ᵀ X` on a cone) and any fixed `Z`, `F X ≰ᵀ X ⊕ Z` on a cone: above `Z` we have
 `X ⊕ Z ≡ᵀ X`, so `F X ≤ᵀ X ⊕ Z` would give `F X ≤ᵀ X`, contradicting incomparability.  This is *stronger*
@@ -204,6 +207,18 @@ theorem incomparableConstant_of_arith_bnBm_escaping (hTD : TuringDeterminacy fun
     IncomparableConstant :=
   (incomparableConstant_iff_arith_halves hTD).mpr ⟨arithBelowHalf_of_cases hTD harith hBnBm, hAm⟩
 
+/-- **The cleanest Part-1 packaging.**  Part 1 holds given: `RegressiveSlamanSteel` (known);
+`StrictArithRegressiveConstant` (the arithmetic regressive theorem — a recognizable open theorem);
+`ArithEscapingHalf` (the `F X ≰ₐ X` region, Part-2-flavoured via the graph); and `SubcaseBnBm` (the single
+genuinely Turing-specific residue). -/
+theorem partI_of_arith_bnBm_escaping (hTD : TuringDeterminacy fun _ => True)
+    (hSS : RegressiveSlamanSteel) (harith : StrictArithRegressiveConstant)
+    (hBnBm : SubcaseBnBm) (hAm : ArithEscapingHalf) :
+    ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_slamanSteel_incomparable hTD hSS
+    (incomparableConstant_of_arith_bnBm_escaping hTD harith hBnBm hAm)
+
+#print axioms partI_of_arith_bnBm_escaping
 #print axioms arithBelowHalf_of_cases
 #print axioms incomparableConstant_of_arith_bnBm_escaping
 #print axioms incomparableConstant_iff_arith_halves

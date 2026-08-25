@@ -726,3 +726,23 @@ decomposition. Rigorous writeup done: `MARTIN_PART1_OPEN_CONTENT.md`. Now: fresh
 residue sub-cases (BnBm arith-preserving, BnAm arith-above, AnAm arith-incomparable) and the
 arithmetic-regressive theorem (AnBm), formalizing any clean structural results, documenting all attempts.
 Running probe log below.
+
+### Probe log (option-3 continuation)
+
+**(B7) Why the ω₁-engine's cone-preservation caveat is ESSENTIAL for the incomparable core (AnAm).**
+The engine `no_omega1_decreasing_conePreserving` would kill the ω₁-decreasing part of AnAm (`ω₁^{F X} <
+ω₁^X` on a cone) — but only for CONE-PRESERVING `F` (`base ≤ᵀ F X`). Can one manufacture cone-preservation?
+- **Fixed base `G := F ⊕ base` floors the descent.** `G X = F X ⊕ base ≥ᵀ base` is cone-preserving, and
+  `ω₁^{G X} = max(ω₁^{F X}, ω₁^{base})`. But then the ω₁-descent of the iterates `G, G², …` is BOUNDED
+  BELOW by `ω₁^{base}` (a fixed countable ordinal): once `ω₁^{F(·)}` drops below `ω₁^{base}`, the join
+  floors `ω₁^{G(·)}` at `ω₁^{base}` and the descent stalls. No *infinite* descent ⟹ no contradiction. So
+  any fixed base introduces a floor and defeats the engine — this is precisely the attack log's
+  "`G := F ⊕ base` fails," now explained ordinally.
+- **A varying, unbounded base `≤ᵀ F X` would avoid the floor — but none exists.** For a counterexample
+  `F` the kernel `{Z : Z ≤ᵀ F X on a cone}` is BOUNDED (`nonMP_kernel_avoids_cone`, formalized: non-MP ⟹
+  proper kernel), so there is no unbounded family of degrees below `F X` to serve as a growing base.
+So cone-preservation is genuinely UN-manufacturable for an incomparable `F`: a fixed base floors the
+ω₁-descent, and incomparability (bounded kernel) forbids an unbounded base. This is the precise, structural
+reason the ordinal-ultrapower engine — which handles the regressive-cone-preserving case cleanly — cannot
+reach the incomparable core. (Ties `nonMP_kernel_avoids_cone` to the cone-preservation caveat: they are
+the same obstruction viewed measure-theoretically vs ordinally.)

@@ -93,8 +93,52 @@ theorem partI_of_three_cases_and_arith (hTD : TuringDeterminacy fun _ => True)
   partI_of_slamanSteel_incomparable hTD hSS
     (incomparableCore_of_three_cases_and_arith hTD harith hAnAm hBnAm hBnBm)
 
+/-! ### The four-way decomposition is lossless -/
+
+/-- The `AnAm` sub-case (both arithmetically incomparable) of the incomparable core. -/
+def SubcaseAnAm : Prop :=
+  ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+    OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+    OnCone (fun X => ∀ k, ¬ X ≤ₜ Cantor.jump^[k] (G X)) →
+    OnCone (fun X => ∀ k, ¬ G X ≤ₜ Cantor.jump^[k] X) → ConstantOnCone G
+
+/-- The `AnBm` sub-case (`G X <ₐ X`). -/
+def SubcaseAnBm : Prop :=
+  ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+    OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+    OnCone (fun X => ∀ k, ¬ X ≤ₜ Cantor.jump^[k] (G X)) →
+    (∃ k, OnCone (fun X => G X ≤ₜ Cantor.jump^[k] X)) → ConstantOnCone G
+
+/-- The `BnAm` sub-case (`X <ₐ G X`). -/
+def SubcaseBnAm : Prop :=
+  ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+    OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+    (∃ k, OnCone (fun X => X ≤ₜ Cantor.jump^[k] (G X))) →
+    OnCone (fun X => ∀ k, ¬ G X ≤ₜ Cantor.jump^[k] X) → ConstantOnCone G
+
+/-- The `BnBm` sub-case (`G X ≡ₐ X`). -/
+def SubcaseBnBm : Prop :=
+  ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+    OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+    (∃ k, OnCone (fun X => X ≤ₜ Cantor.jump^[k] (G X))) →
+    (∃ k, OnCone (fun X => G X ≤ₜ Cantor.jump^[k] X)) → ConstantOnCone G
+
+/-- **The four-way jump-distance decomposition of the incomparable core is LOSSLESS.**  The incomparable
+core is *equivalent* to the conjunction of its four arithmetically-typed sub-cases — the split loses
+nothing in either direction (`⟸` by `incomparableCore_of_cases`; `⟹` because each sub-case is the core
+with extra hypotheses). Parallels `CoreAnalysis.partII_iff_cores`. -/
+theorem incomparableConstant_iff_four_subcases (hTD : TuringDeterminacy fun _ => True) :
+    IncomparableConstant ↔ (SubcaseAnAm ∧ SubcaseAnBm ∧ SubcaseBnAm ∧ SubcaseBnBm) := by
+  constructor
+  · intro h
+    exact ⟨fun G hG hinc _ _ => h G hG hinc, fun G hG hinc _ _ => h G hG hinc,
+           fun G hG hinc _ _ => h G hG hinc, fun G hG hinc _ _ => h G hG hinc⟩
+  · rintro ⟨hAnAm, hAnBm, hBnAm, hBnBm⟩
+    exact incomparableCore_of_cases hTD hAnAm hAnBm hBnAm hBnBm
+
 #print axioms incomparable_AnBm_of_strictArithRegressive
 #print axioms incomparableCore_of_three_cases_and_arith
 #print axioms partI_of_three_cases_and_arith
+#print axioms incomparableConstant_iff_four_subcases
 
 end Martin

@@ -68,8 +68,23 @@ theorem bnBm_jumpComp_finite_bounded {F : (ℕ → Bool) → ℕ → Bool} (k m 
     jumpIter_mono (hB X hX).2 k
   rwa [← Function.iterate_add_apply] at hmono
 
+/-- **Both `Am`-faces (`BnAm` and `AnAm`) leak to Part 2 via the graph.**  Whenever `F X ≰ₐ X` on a cone
+(`Am` — the shared component of `BnAm` and `AnAm`), the *graph* `X ↦ X ⊕ F X` is an invariant above-identity
+function (`X ≤ᵀ X ⊕ F X` always) whose Part-2 rank is not finite: `jump^[k](X ⊕ F X) ≡ᵀ jump^[j] X` on a
+cone would force `F X ≤ᵀ X ⊕ F X ≤ᵀ (X ⊕ F X)^(k) ≡ᵀ X^(j)`, contradicting `Am`.  Unlike `jump^[k]∘F`
+(above-id only on the `Bn` cone), the graph is *unconditionally* above-id, so this exhibits a genuine
+transfinite-rank Part-2 object for the whole `Am` region — the two "arithmetically-non-regressive"
+incomparable faces are Part-2 phenomena in disguise. -/
+theorem am_graph_not_finite_jump {F : (ℕ → Bool) → ℕ → Bool} (k : ℕ)
+    (hAm : OnCone (fun X => ∀ m, ¬ F X ≤ₜ Cantor.jump^[m] X)) :
+    ¬ ∃ j, OnCone (fun X => Cantor.jump^[k] (Cantor.join X (F X)) ≡ₜ Cantor.jump^[j] X) := by
+  apply bnAm_jumpComp_not_finite_jump (F := fun X => Cantor.join X (F X)) k
+  obtain ⟨B, hB⟩ := hAm
+  exact ⟨B, fun X hX m hle => hB X hX m ((Cantor.right_le_join X (F X)).trans hle)⟩
+
 #print axioms self_le_jumpIter
 #print axioms bnAm_jumpComp_not_finite_jump
 #print axioms bnBm_jumpComp_finite_bounded
+#print axioms am_graph_not_finite_jump
 
 end Martin

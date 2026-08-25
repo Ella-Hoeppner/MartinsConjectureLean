@@ -10,6 +10,10 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
 ### Session 2026-08-25 — GENUINE ATTACK on the open core (not bookkeeping)
+**→ Entry point: `MARTIN_ATTACK_SUMMARY.md`** (1-page honest summary: the 5 approaches tried, coordinated
+trees ruled out as circular, the frontier `escaping⟹MP` = `U_M` RK-rigidity validated verbatim against
+Lutz–Siskind arXiv:2305.19646, and the next-attempt lead). Full detail in `MARTIN_PART1_APPROACH_OMEGA1.md`
+(ω₁ no-go + unified obstruction) and `MARTIN_PART1_STRUCTURAL_AM.md` (Theorem A + measure route §7–11).
 - **`MartinOmega1Approach.lean`**: reframe `IncomparableConstant ⟺ NoIncomparableSelfMap` (no invariant
   `F` has `F X ⊥ᵀ X` on a cone); the **graph-orbit device** `graphOrbit_strictMono` (iterate `X⊕F X`,
   choice-free strict increase on cone). The ω₁-chain approach it points to is a **provable no-go**

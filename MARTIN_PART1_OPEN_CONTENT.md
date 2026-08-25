@@ -205,6 +205,15 @@ lifted to the canonical open statement as `escapingMP_iff_arith_halves` (`escapi
   `X ⊕ F X` (`am_graph_not_finite_jump`) — Part-2-flavoured (structurally, not by reduction);
 - the `Bm` half is `AnBm` (the arithmetic **regressive** theorem, structured) together with `BnBm`.
 
+**Why `Bm`/`Am` is exactly the right divide.** `Bm` (`F X ≤ₐ X`) says `F X` is computable from a *finite
+jump* `x^(k)` of the argument — precisely the hypothesis a coordinated tree needs (a single code
+`F x = Φ_e^{x^(k)}` on branches). So the `Bm` half is exactly the **coordinated-tree-amenable** region,
+and both its faces (`AnBm`, `BnBm`) reduce to that method (`arithBelowHalf_of_all_tree_cores`). `Am`
+(`F X ≰ₐ X`) says `F X` *escapes every finite jump* of `x`, so no such code exists and the coordinated-tree
+method cannot even start — which is exactly why the `Am` half instead routes through the graph into Part-2
+(transfinite) territory. The primary arithmetic divide is therefore the boundary of the relativized
+Slaman–Steel method itself.
+
 Both faces of the `Bm` half now reduce to the **same relativized Slaman–Steel skeleton**
 (`ArithRegressiveSkeleton` for `AnBm`, `BnBmSkeleton` for `BnBm`; both machine-checked assemblies),
 differing only in the source of the step-3 contradiction — arith-strictness for `AnBm`, incomparability

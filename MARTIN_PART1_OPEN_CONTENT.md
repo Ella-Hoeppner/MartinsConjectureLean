@@ -222,6 +222,18 @@ inner-model-theoretic in flavour (cf. Siskind, *Aspects of Martin's Conjecture a
 consistent with its ~50-year-open status. The value here is a **sharp, machine-checked map** of exactly
 what a proof of Part 1 must still supply.
 
+**Bottom line (machine-checked, `partI_of_arith_bnBm_escaping`).** Part 1 holds given four inputs, sorted
+by recognizability:
+1. `RegressiveSlamanSteel` — **known** (the Turing regressive theorem);
+2. `StrictArithRegressiveConstant` — the arithmetic-degrees **regressive** theorem (a recognizable target,
+   structured into three relativized Slaman–Steel steps);
+3. `ArithEscapingHalf` — the `F X ≰ₐ X` region, which **produces a transfinite-rank Part-2 object** via the
+   graph (Part-2-flavoured);
+4. `SubcaseBnBm` — the arithmetic-preserving Turing-dropping case, the **single** piece native to neither
+   known Martin regime (the CBER/MSS heart).
+So the open content of Part 1, stripped to its irreducible core, is `BnBm` plus two recognizable
+regime-theorems and one Part-2-flavoured region — not a monolithic mystery.
+
 ## 8. The barrier, precisely (why no available tool crosses)
 
 Every attempted proof of the incomparable core reduces to one demand on the (non-definable) invariant

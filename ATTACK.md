@@ -776,3 +776,22 @@ construction would be a concrete, positive handle on why the incomparable core s
 line distinct from the (barriered) determinacy-tool attacks. Not pursued here (needs the e-degree
 construction details), but flagged as the most promising *positive* direction: contrast a structure where
 the phenomenon occurs against the Turing degrees where it (conjecturally) cannot.
+
+**(B10) BnBm as a fiber-rigidity question (the sole native face, documented probe — inconclusive).**
+After the four-face map, the single sub-case native to neither known Martin regime is **BnBm**
+(`F X ≡ₐ X`, `F X ⊥ᵀ X`): the Am region (BnAm∪AnAm) produces a transfinite-rank Part-2 object via the
+graph (`am_graph_not_finite_jump`), and AnBm is the arithmetic regressive theorem. So the genuinely
+Turing-specific heart is exactly BnBm. Precise restatement: **`F` is a Turing-invariant lift of the
+identity on the arithmetic degrees** — it maps each `≡ₐ`-class into *itself* (`F X ≡ₐ X`) and permutes the
+Turing degrees inside each class, moving every degree to a Turing-*incomparable* one (`F X ⊥ᵀ X`). BnBm ⟹
+const is thus: *the fiber `{d : d ≡ₐ c}` (the Turing degrees in a fixed arithmetic degree), as a poset
+under `≤ᵀ`, admits no nontrivial invariant self-map that displaces everything incomparably.* Probes that
+FAIL to give an elementary handle: (i) **orbit/iteration** — `X, FX, F²X, …` all `≡ₐ`, but `F` is not
+cone-preserving (`FX` need not be above the base), so the orbit escapes the cone and `F²X ⊥ᵀ FX` is not
+available; (ii) **fiber rigidity** — `D_T` has no nontrivial *automorphisms* (Slaman–Woodin), but `F` is
+not an automorphism (not order-preserving, not bijective) and the fiber is not the full degrees, so the
+rigidity does not transfer; (iii) **relative cone measure** — cones are `≡ₐ`-heterogeneous (a cone meets
+many arithmetic classes), so the Martin measure does not restrict to a single fiber. This is the CBER/MSS
+locus (Marks, arXiv:1109.1875): a Borel-flavoured invariant selector within `≡ₐ`, blocked by non-smoothness
+of `≡ᵀ`. No crossing; BnBm is genuinely the inner-model-theoretic residue. Value: a clean, self-contained
+statement of the *one* remaining native piece.

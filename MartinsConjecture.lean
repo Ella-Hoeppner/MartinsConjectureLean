@@ -45,6 +45,7 @@ import MartinsConjecture.DiscontinuousCase
 import MartinsConjecture.CodingFamily
 import MartinsConjecture.CodingFamilyCode
 import MartinsConjecture.JumpInversion
+import MartinsConjecture.PosnerRobinson
 import MartinsConjecture.DegreeCapstone
 import MartinsConjecture.LachlanTheorem
 import MartinsConjecture.UniformCores

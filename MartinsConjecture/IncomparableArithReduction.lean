@@ -16,6 +16,7 @@ is a named `Prop`, NOT claimed proved.  This is a structural reduction of the op
 conditional.)
 -/
 import MartinsConjecture.RegressiveJumpDecomp
+import MartinsConjecture.Reduction
 
 open scoped Computability
 open Cantor
@@ -63,7 +64,34 @@ theorem incomparableCore_of_three_cases_and_arith (hTD : TuringDeterminacy fun _
     (fun G hG _hinc hAn hBm => incomparable_AnBm_of_strictArithRegressive harith G hG hAn hBm)
     hBnAm hBnBm
 
+/-- **Part 1 of Martin's conjecture, structured to its sharpest open residue.**  Combining the KNOWN
+Slaman–Steel regressive theorem (`RegressiveSlamanSteel`) with the incomparable-core reduction: Part 1
+holds given (i) `RegressiveSlamanSteel` (known), (ii) `StrictArithRegressiveConstant` (the
+arithmetic-degrees regressive lemma — a strictly weaker input than the open core, discharging the `AnBm`
+sub-case), and (iii) handlers for the three remaining jump-distance sub-cases (`AnAm` arithmetically-
+incomparable, `BnAm` arithmetically-above, `BnBm` arithmetically-equivalent).  So the *entire* open
+content of Part 1 is now: an arithmetic-regressive theorem plus three sharp, arithmetically-classified
+sub-cases — a strictly finer target than "the incomparable core." -/
+theorem partI_of_three_cases_and_arith (hTD : TuringDeterminacy fun _ => True)
+    (hSS : RegressiveSlamanSteel) (harith : StrictArithRegressiveConstant)
+    (hAnAm : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+      OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+      OnCone (fun X => ∀ k, ¬ X ≤ₜ Cantor.jump^[k] (G X)) →
+      OnCone (fun X => ∀ k, ¬ G X ≤ₜ Cantor.jump^[k] X) → ConstantOnCone G)
+    (hBnAm : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+      OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+      (∃ k, OnCone (fun X => X ≤ₜ Cantor.jump^[k] (G X))) →
+      OnCone (fun X => ∀ k, ¬ G X ≤ₜ Cantor.jump^[k] X) → ConstantOnCone G)
+    (hBnBm : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G →
+      OnCone (fun X => ¬ G X ≤ₜ X ∧ ¬ X ≤ₜ G X) →
+      (∃ k, OnCone (fun X => X ≤ₜ Cantor.jump^[k] (G X))) →
+      (∃ k, OnCone (fun X => G X ≤ₜ Cantor.jump^[k] X)) → ConstantOnCone G) :
+    ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_slamanSteel_incomparable hTD hSS
+    (incomparableCore_of_three_cases_and_arith hTD harith hAnAm hBnAm hBnBm)
+
 #print axioms incomparable_AnBm_of_strictArithRegressive
 #print axioms incomparableCore_of_three_cases_and_arith
+#print axioms partI_of_three_cases_and_arith
 
 end Martin

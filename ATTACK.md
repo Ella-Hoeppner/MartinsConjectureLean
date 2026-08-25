@@ -605,3 +605,31 @@ directed, yet not cofinal (misses Kleene's O). The MartinPPT/InvertingTree machi
 direction (MP ⟹ above-id; uniformizes an already-increasing F), so does not supply the value-side coding.
 Captured on main as `OrderPreservingCore.uncountableCofinal_iff_avoiding` (the two OP hypotheses are one).
 Net: the order-preserving case rests on exactly one open coding lemma; no crossing.
+
+### Incomparable-core four-way decomposition — synthesis (2026-08-25)
+
+The incomparable core is ALREADY decomposed four ways (`RegressiveJumpDecomp.incomparableCore_of_cases`,
+applying both jump-distance dichotomies): by the arithmetic position of `F X` vs `X`, into
+`(An/Bn)×(Am/Bm)` where `Bm`: `F X ≤ᵀ X^(k)` (F X arithmetic-in X), `Am`: `F X ≰ᵀ X^(n)` ∀n (F X
+arithmetic-escapes X), dually for `An/Bn`. Assessed whether the now-confirmed-KNOWN *Turing* regressive
+theorem (`RegressiveSlamanSteel`) discharges any case: **it does NOT.** The `Bm` cases (`F X ≤ᵀ X^(k)`)
+are *arithmetic*-regressive, not Turing-regressive — they would need the **arithmetic-degrees** regressive
+theorem (`F X ≤ₐ X ⟹ const or ≡ₐ id`), whose status is uncertain (Lutz did the *hyperarithmetic*
+degrees; the arithmetic case is intermediate and not obviously in hand). The `Am/An` cases
+(arithmetic-escaping) are the transfinite residual. And the naive "regressive-ification"
+`G X = if F X ≤ᵀ X then F X else X` (regressive, invariant) collapses to `id` on the incomparable cone,
+so `RegressiveSlamanSteel` gives no information about an incomparable `F`. Net: the four sub-cases are all
+genuinely open; the known Turing regressive theorem does not crack any. The natural next reduction would
+be an **arithmetic-degrees regressive theorem** (would kill the two `Bm` cases), leaving the
+arithmetic-escaping cases — mirroring how the finite/transfinite split works for the regressive core.
+
+**Precise localization at the level of the S-S proof (2026-08-25).** WHY the Slaman–Steel regressive
+argument does not transfer to the incomparable core, pinned to a single step: the argument's **domination**
+step ("every function `≤ᵀ x` is dominated by one `≤ᵀ f x`, else `x` diagonalizes against `f x`") requires
+`x` to COMPUTE `f x` (to diagonalize against `f x = Φ_e^x`). For regressive `f` this holds (`f x ≤ᵀ x`);
+for INCOMPARABLE `f`, `x ≰ᵀ f x`, so `x` cannot access `f x` to diagonalize — the domination step has no
+purchase. So the incomparable core is not just "no code" (barrier wall 1) but specifically
+"no domination handle": even granting a code for `f` on a tree, the growth-rate coding argument cannot
+start because the argument needs the argument to dominate the value, and incomparability forbids exactly
+that. This is the crispest proof-level statement of why the sole open core resists the one method that
+settles the regressive case.

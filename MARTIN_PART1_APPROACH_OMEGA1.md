@@ -125,3 +125,14 @@ identical `ω₁ ↪ ℝ` step, and the escape (a code) is exactly what `AD` alo
 down — even showing the core is *not* provable from the abstract cone-measure axioms alone (a model where
 cone dichotomy + countable completeness hold but the core fails) — would be a genuine limitative result and a
 natural next target.
+
+---
+**Continued in `MARTIN_PART1_STRUCTURAL_AM.md`.** That note develops the structural/∞-Borel route and reaches
+the session's main conclusions: (a) Borel `F` sits at a fixed jump level (Theorem A), so Lutz's
+rank-unboundedness is ∞-Borel-specific; (b) **the coordinated-tree method is circular for the incomparable
+core** (its domination bracket is core-equivalent; uniform domination is provably impossible,
+`incomparable_jump_not_below`) — correcting the earlier "reduces to a coordinated tree" framing; (c) hence
+the **only viable route is measure-theoretic** `escaping ⟹ MP`, whose engine (Groszek–Slaman) is non-circular,
+and whose cleanest form is `U`-preservation by invariant pushforwards (RK-minimality-adjacent), placing the
+open content in AD ultrafilter theory. Machine-checked: the reframing, the graph-orbit device,
+`incomparable_jump_not_below`, and `incomparable_not_measurePreserving` (a counterexample is escaping-not-MP).

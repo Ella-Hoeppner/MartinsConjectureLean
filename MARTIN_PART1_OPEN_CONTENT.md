@@ -144,9 +144,14 @@ sharpest proof-level statement of why the one method that settles the regressive
 
 ## 6. Status of the other three sub-cases
 
-- **BnAm** (`X <ₐ F X`, Turing-incomparable): `F X` is arithmetically strictly above `X`. There is no
-  strictly-weaker *named* target: the natural analogue would be an "arithmetic above-identity" theorem,
-  which is itself the arithmetic Part 1 for the above case — no more tractable than the sub-case.
+- **BnAm** (`X <ₐ F X`, Turing-incomparable): `F X` is arithmetically strictly above `X`. **This
+  sub-case leaks into Part 2** (`BnAmPartTwo.bnAm_jumpComp_not_finite_jump`, formalized). The derived
+  function `G X := jump^[k](F X)` is Turing-invariant and, on the `Bn` cone, above identity
+  (`X ≤ᵀ (F X)^(k) = G X`), so Part 2 assigns it a jump-hierarchy rank. That rank cannot be *finite*:
+  `G ≡ᵀ jump^[j]` on a cone would give `F X ≤ᵀ (F X)^(k) ≡ᵀ X^(j)`, contradicting `An` at `m = j`. So
+  `BnAm` survives only by exhibiting a *transfinite*-rank increasing function — precisely a Part-2 object,
+  whose existence off the uniform class is itself open. `BnAm` is therefore not native to the incomparable
+  core; it is Part 2 in disguise.
 - **BnBm** (`F X ≡ₐ X`, Turing-incomparable): the *arithmetic-preserving, Turing-dropping* phenomenon —
   `F` maps `X` to another Turing degree in the same arithmetic degree. This is genuinely `Turing`-specific
   (vacuous on `D_h`, where `F X <_h X` always strictly drops `ω₁^x`), which is precisely why Lutz's
@@ -159,16 +164,31 @@ sharpest proof-level statement of why the one method that settles the regressive
 
 ## 7. Summary and open questions
 
-The sole open content of Part 1 is now decomposed into four arithmetically-typed pieces, exactly one of
-which (AnBm) is a **recognizable open theorem** — the arithmetic-degrees regressive theorem, the missing
-middle of the Turing/arithmetic/hyperarithmetic hierarchy. The other three are the genuinely Turing-
-specific residue, each with a precise obstruction.
+The sole open content of Part 1 is now decomposed into four arithmetically-typed pieces, and each connects
+to a **recognizable regime**:
+- **AnBm** (`F X <ₐ X`) is the arithmetic-degrees regressive theorem — the missing middle of the
+  Turing/arithmetic/hyperarithmetic hierarchy — now structured via relativized Slaman–Steel
+  (`ArithRegressiveSkeleton`).
+- **BnAm** (`X <ₐ F X`) is **Part 2 in disguise**: it forces `jump^[k]∘F` to be a transfinite-rank
+  above-identity function (`bnAm_jumpComp_not_finite_jump`).
+- **BnBm** (`F X ≡ₐ X`) and **AnAm** (arithmetically incomparable) are the genuinely Turing-specific
+  transfinite residue — the arithmetic-preserving-Turing-dropping phenomenon and the `ω₁`-decreasing
+  case respectively, each with a precise obstruction below.
+
+So the incomparable core is not a monolith: two of its four faces are the two *known* Martin-conjecture
+regimes (Part-1-regressive and Part-2-increasing), and only the transfinite residue (`BnBm`/`AnAm`) is
+native to it.
 
 **Concrete open questions this raises:**
 1. *Does the arithmetic-degrees regressive theorem hold?* I.e. is a Turing-invariant `F` with
    `F X <ₐ X` on a cone constant on a cone? A proof would carry the Slaman–Steel coordinated-tree +
    domination + coding argument out relative to a finite jump — the obstacle being that the tree and the
-   domination must be arranged relative to `X^(k)` while `F` is only Turing-invariant.
+   domination must be arranged relative to `X^(k)` while `F` is only Turing-invariant. This is now
+   **structured in full** (`ArithRegressiveSkeleton`): the three relativized Slaman–Steel steps are named
+   `Prop`s, and the assembly is machine-checked — including the AnBm-specific twist that step 3's `x ≤ᵀ F x`
+   on a branch is a *contradiction* (against branch-strictness `X ≰ₐ F X`) rather than the Turing case's
+   "above identity". What remains open is exactly the three bracketed steps (the relativized tree
+   existence, domination, and coding).
 2. *Is the arithmetic-preserving Turing-dropping phenomenon (BnBm) possible for a Turing-invariant
    function under determinacy?* Ruling it out is the deepest Turing-specific piece.
 3. *Can the ordinal-ultrapower engine be freed of the cone-preservation hypothesis?* This would settle

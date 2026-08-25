@@ -1,7 +1,8 @@
 # The open content of Part 1 of Martin's conjecture: an arithmetic decomposition
 
 *A rigorous exposition of the structural findings formalized in this project
-(`RegressiveJumpDecomp.lean`, `IncomparableArithReduction.lean`, `RegressiveSkeleton.lean`).
+(`RegressiveJumpDecomp.lean`, `IncomparableArithReduction.lean`, `RegressiveSkeleton.lean`,
+`ArithRegressiveSkeleton.lean`, `BnAmPartTwo.lean`, `OpenContentCapstone.lean`).
 All claims marked "formalized" are machine-checked in Lean 4 with only the standard axioms
 `propext, Classical.choice, Quot.sound`, with determinacy threaded as an explicit hypothesis.*
 

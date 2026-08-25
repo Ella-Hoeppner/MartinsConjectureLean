@@ -37,6 +37,18 @@ theorem escapingMP_of_three_cases_and_arith (hTD : TuringDeterminacy fun _ => Tr
   (escapingMP_iff_incomparable hTD hM hSS).mpr
     (incomparableCore_of_three_cases_and_arith hTD harith hAnAm hBnAm hBnBm)
 
+/-- **The canonical open statement equals the two arithmetic halves.**  `escaping ⟹ MP` (given `MartinPPT`
+and the known `RegressiveSlamanSteel`) is *equivalent* to `ArithBelowHalf ∧ ArithEscapingHalf` — the
+incomparable core split by the single arithmetic comparison `F X ≤ₐ X`.  This is the cleanest packaging of
+Part 1's open content: the whole problem is (i) the arithmetically-bounded incomparable case and (ii) the
+arithmetically-escaping incomparable case. -/
+theorem escapingMP_iff_arith_halves (hTD : TuringDeterminacy fun _ => True)
+    (hM : MartinPPT) (hSS : RegressiveSlamanSteel) :
+    (∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → Escaping F → MeasurePreserving F) ↔
+      (ArithBelowHalf ∧ ArithEscapingHalf) :=
+  (escapingMP_iff_incomparable hTD hM hSS).trans (incomparableConstant_iff_arith_halves hTD)
+
 #print axioms escapingMP_of_three_cases_and_arith
+#print axioms escapingMP_iff_arith_halves
 
 end Martin

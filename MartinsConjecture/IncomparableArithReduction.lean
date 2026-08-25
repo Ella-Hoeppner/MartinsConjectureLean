@@ -93,6 +93,22 @@ theorem partI_of_three_cases_and_arith (hTD : TuringDeterminacy fun _ => True)
   partI_of_slamanSteel_incomparable hTD hSS
     (incomparableCore_of_three_cases_and_arith hTD harith hAnAm hBnAm hBnBm)
 
+/-- **A counterexample's value escapes the join with its argument and any fixed oracle.**  For an
+incomparable `F` (`F X ⊥ᵀ X` on a cone) and any fixed `Z`, `F X ≰ᵀ X ⊕ Z` on a cone: above `Z` we have
+`X ⊕ Z ≡ᵀ X`, so `F X ≤ᵀ X ⊕ Z` would give `F X ≤ᵀ X`, contradicting incomparability.  This is *stronger*
+than escaping (`F X ≰ᵀ Z`): a counterexample's value is not even computable from its argument together
+with any fixed oracle — it is "generic over `X` relative to every fixed `Z`".  Equivalently: a
+counterexample is not *relative-regressive* (`F X ≤ᵀ X ⊕ Z` for a fixed `Z`), a class otherwise settled by
+`RegressiveSlamanSteel` (relative-regressive ⟹ regressive on the cone above `Z`). -/
+theorem incomparable_not_below_argJoin {F : (ℕ → Bool) → ℕ → Bool}
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (Z : ℕ → Bool) :
+    OnCone (fun X => ¬ F X ≤ₜ Cantor.join X Z) := by
+  obtain ⟨B, hB⟩ := hinc
+  refine ⟨Cantor.join B Z, fun X hX hle => ?_⟩
+  have hZX : Z ≤ₜ X := (Cantor.right_le_join B Z).trans hX
+  have hBX : B ≤ₜ X := (Cantor.left_le_join B Z).trans hX
+  exact (hB X hBX).1 (hle.trans (Cantor.join_le (Cantor.le.refl X) hZX))
+
 /-! ### The four-way decomposition is lossless -/
 
 /-- The `AnAm` sub-case (both arithmetically incomparable) of the incomparable core. -/
@@ -136,6 +152,7 @@ theorem incomparableConstant_iff_four_subcases (hTD : TuringDeterminacy fun _ =>
   · rintro ⟨hAnAm, hAnBm, hBnAm, hBnBm⟩
     exact incomparableCore_of_cases hTD hAnAm hAnBm hBnAm hBnBm
 
+#print axioms incomparable_not_below_argJoin
 #print axioms incomparable_AnBm_of_strictArithRegressive
 #print axioms incomparableCore_of_three_cases_and_arith
 #print axioms partI_of_three_cases_and_arith

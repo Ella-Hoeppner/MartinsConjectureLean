@@ -336,3 +336,27 @@ measure-preserving framework and its precise open frontier** (`V ≤_RK U_M` non
 adding the machine-checked substrate, Theorem A, the coordinated-tree circularity proof, and the
 non-linearity account. The proof must show `U_M` has no nonprincipal RK-predecessor other than itself — a
 statement in AD ultrafilter theory (needs at least `Uniformization_ℝ`; the AD-vs-AD⁺ question stands).
+
+## 12. A model-theoretic reformulation of the frontier (via Łoś, derived this session)
+
+Let `j : V → M = Ult(V, U_M)` be the (well-founded) ultrapower embedding by the Martin measure, `[F]` the
+class of an invariant `F`. By Łoś's theorem, for any invariant set `A`:
+`F_*U_M(A) = 1 ⟺ [id] ∈ j(F⁻¹A) ⟺ j(F)([id]) ∈ j(A) ⟺ [F] ∈ j(A)`, while `U_M(A) = 1 ⟺ [id] ∈ j(A)`.
+Therefore:
+
+> **`F_*U_M = U_M`  ⟺  `[F]` and `[id]` lie in exactly the same `j(A)` for every invariant `A`** — i.e. `[F]`
+> and `[id]` realize the **same type over the invariant sets** in `M`. And escaping ⟺ `[F]` is *nonstandard*
+> (below no standard `[c]`).
+
+So the RK-rigidity frontier (nonprincipal `F_*U_M ⟹ = U_M`) is equivalent to a **homogeneity** statement:
+
+> **Every nonstandard degree `[F]` in the Martin ultrapower `M` is invariant-type-indistinguishable from the
+> generic degree `[id]`** — the nonstandard part of `M` is homogeneous over the invariant sets.
+
+This is a clean, previously-unstated (in this project) frame: it turns "no sideways invariant function" into
+"the ultrapower's nonstandard degrees all look alike to invariant sets", squarely a model-theoretic
+homogeneity of `M`. It is the same open frontier — homogeneity here *is* the RK-rigidity — but the framing
+connects it to the model theory / iterated-ultrapower analysis of `M` (§11, Steel/Siskind) and may be a
+more tractable lens: proving homogeneity of the nonstandard part of a well-understood ultrapower is a
+recognizable model-theoretic goal. (Derived, machine-uncheckable here — it needs the ultrapower, not in the
+repo — but rigorous, and a genuine reformulation the attack produced.)

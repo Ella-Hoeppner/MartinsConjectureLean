@@ -102,6 +102,33 @@ recursion-theoretic property at the fixed level `ρ`.
 > Slaman–Steel machinery (built to derive `x ≤ᵀ F x`) sits in tension with the incomparable core (where
 > `x ≤ᵀ F x` is false): the tension is precisely the uniform-domination impossibility.
 
+## 2.6. HONEST LIMITATION: the coordinated-tree method is *circular* for the incomparable core
+
+Chasing the domination step to its end forces a correction to the optimistic "the incomparable core reduces
+to a coordinated tree" framing (the `BnBmSkeleton` / `LevelCoordinatedTree` reductions). The three brackets
+combine as:
+`(coordinated tree) ∧ (domination) ∧ (coding: domination ⟹ x ≤ᵀ F x)  ⟹  x ≤ᵀ F x`.
+For **regressive** `F` (`F x ≤ᵀ x`) this is fine — with `F x ≤ᵀ x` it gives `F x ≡ᵀ x`, the "≡ identity"
+outcome — and Slaman–Steel *prove* domination and coding, so the method works. For the **incomparable** core,
+`x ≤ᵀ F x` is **false** (`F x ⊥ᵀ x`). Hence:
+
+> For an incomparable `F`, establishing (tree ∧ domination ∧ coding) yields `⊥`. So proving the domination
+> bracket (given the tree and coding) is *equivalent to* proving the core itself — the coordinated-tree
+> method provides **no genuine reduction** of the incomparable core. The `level_of_cores` / `bnBm_of_cores`
+> assemblies are valid implications whose hypotheses are jointly **as hard as the conclusion**.
+
+Concretely: the *uniform* half of domination is outright impossible (`incomparable_jump_not_below`:
+`X ≰ᵀ F X ⟹ X′ ≰ᵀ F X`), and the *per-function* half + coding is equivalent to the core. Slaman–Steel's
+machinery is **inherently a regressive-case tool** (its engine derives `x ≤ᵀ F x`), and it is *structurally
+incapable* of reaching the incomparable core without a genuinely new ingredient.
+
+**Correction of record.** Earlier this session I framed the incomparable core as "reducing to the same
+relativized-Slaman–Steel coordinated tree as the regressive case" (the four-face map, `BnBmSkeleton`). That
+reduction is *logically valid but circular*: its domination bracket is not an independent, easier sub-problem
+— it is the core in disguise. The genuine content is negative and clarifying: **the coordinated-tree method
+cannot prove the incomparable core**, so a fundamentally different mechanism (measure-preserving / structural
+/ inner-model) is required. This is the honest state.
+
 ## 3. The graph confirms it: Borel `F` gives a hyp-preserving `BnBm`
 
 For Borel `F`, `G X = X ⊕ F X ≡_h X` (since `F X ≤ᵀ X^(ρ) ≤_h X`) while `G X >ᵀ X` (incomparability). So the

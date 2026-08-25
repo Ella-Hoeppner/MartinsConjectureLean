@@ -52,6 +52,39 @@ incomparable case `F Y ⊥ᵀ Y`). So Slaman–Steel's uniform-invariance Part 1
 level-`ρ` coordinated tree (bridging type-A uniformity to Part 1 via domination+coding) is genuinely required.
 This `(A) ↛ (B)` gap is the reason Borel Part 1 is open despite Theorem A.
 
+## 2.5. For Borel `F`, the coordinated TREE is dischargeable — the open step is DOMINATION
+
+The level-`ρ` coordinated tree (`LevelCoordinatedTree.LevelUniformTree`) has five fields; for Borel `F`
+**four of them come for free**, leaving only the domination/coding steps:
+
+- `computes` and `regressive_branch` (`F x = Φ_e^{x^(ρ)}`, `F x ≤ᵀ x^(ρ)`): **Theorem A** gives these
+  *uniformly on the whole cone*, with a **single** `e` from the Borel code — so there is **no
+  good-representative barrier** for Borel `F` (the barrier that blocks the general case is dissolved by the
+  Borel code).
+- `injective` (`F` injective on branches): the relation `F X ≡ᵀ F Y` is a Borel equivalence relation with
+  **uncountably many classes** (`nonconstant_values_uncountable`), so **Silver's dichotomy** yields a perfect
+  set of pairwise-`≢ᵀ` (hence distinct) values — `F` is injective on it.
+- `incomparable_branch` (`¬ x ≤ᵀ F x`): holds on the incomparability cone.
+
+Modulo a pointed-perfect refinement (intersecting Silver's perfect set with the cone's pointed tree,
+`MartinPPT`-style), `HasLevelUniformTree` **holds for Borel `F`**. So the entire open content of Borel `Am`
+collapses to the **domination step** `LevelBranchDomination`: on a branch `x`, every `≤ᵀ x` function is
+dominated by a `≤ᵀ F x` function.
+
+**And domination is exactly where incomparability bites.** In the *regressive* case (`F x ≤ᵀ x`) the
+`F x`-computable functions sit inside the `x`-computable ones and Slaman–Steel *derive* domination; the coding
+then gives `x ≤ᵀ F x`. For **incomparable** `F` (`F x ⊥ᵀ x`), `x` carries information `F x` lacks, so whether
+`F x`-computable functions dominate `x`-computable ones depends on the relative domination degrees of two
+*incomparable* reals — genuinely unclear, and (by the coding) domination would *force* `x ≤ᵀ F x`,
+contradicting incomparability. So **domination cannot hold on a tree unless the incomparable case is already
+impossible** — the domination bracket *is* the incomparable core in disguise, now pinned to a single
+recursion-theoretic property at the fixed level `ρ`.
+
+> **Sharpened localization.** For Borel `F`, Part 1 (`Am`) reduces — with the tree, the code, and injectivity
+> all discharged — to the *single* question: *can the Slaman–Steel domination hold on a coordinated tree for a
+> Turing-incomparable `F`?* Equivalently, must `x`-computable functions be dominated by `F x`-computable ones
+> on a coordinated tree. This is the exact recursion-theoretic heart, at fixed level `ρ`.
+
 ## 3. The graph confirms it: Borel `F` gives a hyp-preserving `BnBm`
 
 For Borel `F`, `G X = X ⊕ F X ≡_h X` (since `F X ≤ᵀ X^(ρ) ≤_h X`) while `G X >ᵀ X` (incomparability). So the

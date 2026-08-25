@@ -316,8 +316,23 @@ coincides with theirs:
   studied via the Rudin–Keisler order" is exactly §9's `U`-preservation framing;
 - the open general Part 1 = "every non-constant invariant `f` is measure-preserving" = `escaping ⟹ MP`.
 
-The one thing not yet extracted is the *precise* §5.2 RK-order statement Part 1 reduces to (the paper PDF is
-compressed); obtaining it verbatim is the natural next calibration step, and it is the exact statement a
-proof must target. Everything else confirms: **this session's attack independently reconstructed the
-Lutz–Siskind measure-preserving framework and correctly identified its open frontier**, while adding the
-machine-checked substrate, Theorem A, the coordinated-tree circularity proof, and the non-linearity account.
+**The precise frontier statement (Lutz–Siskind, obtained verbatim).**
+
+> Under **ZF + AD + Uniformization_ℝ**, Part 1 of Martin's Conjecture is *equivalent* to: **if `V` is a
+> nonprincipal ultrafilter on the Turing degrees with `V ≤_RK U_M`, then `V = U_M`** (where `U_M` is the
+> Martin measure). They explicitly note this is **stronger than `U_M` being RK-minimal** — it also rules out
+> a nonprincipal `V` that is *weakly RK-equivalent* to `U_M` but not literally equal.
+
+This is **exactly** what §9 derived independently, *including the subtle strength point*: I wrote "the crux is
+`F_*U = U` (`U`-preservation), which is *stronger* than plain RK-minimality (which would only give `≡_RK U`,
+an isomorphic copy, not literally `= U`)." That is verbatim their "stronger than RK-minimal, rules out
+`≡_RK U_M` but `≠ U_M`." So the session's measure-theoretic derivation reconstructed the **precise** published
+equivalence and its precise subtlety — the strongest possible confirmation that the attack landed on the true
+frontier. A counterexample is precisely a nonprincipal `F_*U ≤_RK U_M` with `F_*U ≠ U_M` (escaping-but-not-MP,
+machine-checked as `incomparable_not_measurePreserving`).
+
+Everything else confirms: **this session's attack independently reconstructed the Lutz–Siskind
+measure-preserving framework and its precise open frontier** (`V ≤_RK U_M` nonprincipal ⟹ `V = U_M`), while
+adding the machine-checked substrate, Theorem A, the coordinated-tree circularity proof, and the
+non-linearity account. The proof must show `U_M` has no nonprincipal RK-predecessor other than itself — a
+statement in AD ultrafilter theory (needs at least `Uniformization_ℝ`; the AD-vs-AD⁺ question stands).

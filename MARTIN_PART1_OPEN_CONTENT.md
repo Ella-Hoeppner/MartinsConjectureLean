@@ -290,8 +290,15 @@ This splits into three "walls," each of which an arbitrary invariant `F` denies:
 
 The **regressive core is settled** because regressivity supplies wall 1: `F X ≤ᵀ X` gives a code, and the
 Slaman–Steel coordinated tree + *domination* (which needs `x ≥ᵀ F x` — §5) + coding then run. The
-incomparable core denies wall 1 in the strongest way: `F X ⊥ᵀ X` gives no code *either direction*, and
-specifically no domination handle.
+incomparable core denies wall 1 *at the level of `x` itself*: `F X ⊥ᵀ X` gives no code from `x` directly.
+But the decomposition refines this. On the **`Bm` region** (`F X ≤ₐ X`, i.e. `AnBm ∪ BnBm`) there *is* a
+code — from a **finite jump** `x^(k)` — and the whole coordinated-tree method runs relative to `x^(k)`
+(`arithBelowHalf_of_all_tree_cores`), the residual barrier being only the *uniformity* of that code (the
+step-1 brackets `HasArithRegressiveUniformTree` / `HasBnBmUniformTree`). On the **`Am` region**
+(`F X ≰ₐ X`) there is no code from *any* finite jump — the strongest denial of wall 1 — which is exactly
+why the `Am` region is not coordinated-tree-amenable and leaks instead to (transfinite) Part 2. So wall 1
+is not monolithic: it is overcome at the finite-jump level on `Bm` (leaving a uniformity bracket) and
+genuinely absent on `Am`.
 
 ## 9. Characterizations of the three residue sub-cases
 

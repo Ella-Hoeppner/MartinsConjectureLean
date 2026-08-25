@@ -186,9 +186,9 @@ Combining §2.6 with the codebase's engine (this supersedes the "§6 open step 1
 - Hence the sole open content — `escaping ⟹ MP` (≡ the incomparable core, `escapingMP_iff_incomparable`) —
   must be attacked **measure-theoretically**: show an *escaping* `F` (values `≰ᵀ` every fixed `Z` from below)
   is *measure-preserving* (values `≥ᵀ` every fixed `Z`, i.e. cofinal). Equivalently, the pushforward
-  ultrafilter `F_*U` avoids all lower cones ⟹ `F_*U = U`. Graph identity: since `G = id ⊕ F` is above-id so
-  `G_*U = U`, and `F = oddPart ∘ G`, we get **`F_*U = (oddPart)_*U`** — so `escaping ⟹ MP` is exactly
-  "`(oddPart)_*U` avoids lower cones ⟹ it equals `U`".
+  ultrafilter `F_*U` avoids all lower cones ⟹ `F_*U = U`. (A tempting "graph identity" `F_*U = (oddPart)_*U`
+  via `G_*U = U` and `F = oddPart ∘ G` is **tautological** — `oddPart(G X) = F X` by definition — so it gives
+  no leverage; flagged to avoid a false lead.)
 
 > **Bottom line of the whole attack.** The incomparable core is *not* a coordinated-tree problem (that route
 > is provably circular). It is a **value-distribution / ultrafilter** problem — `escaping ⟹ MP`: an

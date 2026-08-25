@@ -847,3 +847,17 @@ coordinated-tree construction (open, and the `ω₁`-level is exactly the projec
 engine). Not formalized. But it is a concrete, testable articulation of how the two known Martin-conjecture
 methods (Slaman–Steel finite, Lutz hyperarithmetic) might be two levels of a single coordinated-tree
 method — with the incomparable core the instance where the branch-field is Turing-incomparability.
+
+**(B12-correction, later 2026-08-25)** B12 conjectured the coordinated-tree method as "one method
+stratified by ordinal level (finite=S-S, <ω₁=Lutz, ≥ω₁=open)". **This is undermined by a later finding**
+(`MARTIN_PART1_STRUCTURAL_AM.md` §2.6): the coordinated-tree method is **circular for the incomparable
+core** at EVERY level — its domination bracket, combined with coding, yields `x ≤ᵀ F x`, which contradicts
+`F x ⊥ᵀ X`; so proving domination ≡ proving the core, not an easier sub-problem. The uniform half of
+domination is outright impossible (`incomparable_jump_not_below`). Slaman–Steel is inherently a
+regressive-case tool (its engine derives `x ≤ᵀ F x`, consistent for regressive → "≡id", fatal for
+incomparable). So B12's "coordinated tree at each level" does NOT reduce the incomparable core; the viable
+route is measure-theoretic (`escaping ⟹ MP`, Groszek–Slaman engine, which does NOT derive `x ≤ᵀ F x`).
+The whole earlier "four-face map / BnBmSkeleton reduces the core to coordinated trees" framing is corrected
+by this: those are valid implications with circular (core-equivalent) hypotheses. Net honest state: the
+incomparable core is a **value-distribution / ultrafilter** problem (`U`-preservation by invariant
+pushforwards), NOT a coordinated-tree problem.

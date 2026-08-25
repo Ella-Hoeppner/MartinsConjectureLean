@@ -9,6 +9,27 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-25 additions (autonomous run)
+- **`MartinGameCode.lean` + `GameCapstone.lean`** (prior session, verified): `GameCodeBelow`
+  (`codeGame σ ≤ᵀ σ`) PROVED ⟹ **`MartinPPT` (Martin's Lemma 2.3) is a theorem modulo determinacy**
+  (`martinPPT_of_gameDeterminacy`); hence Thm 3.4, Part 1 ⟺ escaping⟹MP, and order-preserving Part 1
+  all rest on determinacy (+ at most one named lemma).
+- **`MeasurePreservingFilter.lean`**: MP/escaping/above-id/constant and Part 1 itself as
+  Martin-measure-pushforward (ultrafilter/Rudin–Keisler) statements; `RKle` + `pushCone_rkle_id` (the
+  RK order on pushforwards is trivial — why RK-descent cannot prove Part 1).
+- **`GraphFunction.lean`**: the graph `X ↦ X ⊕ F X = id ⊔ F`; the Martin order is an upper semilattice
+  (`martinJoin_le`); precise reason MartinPPT cannot grip a counterexample.
+- **`OrderPreservingCore.lean`**: `uncountableCofinal_iff_avoiding` — the order-preserving branch rests
+  on **exactly one** open coding lemma (its two named hypotheses are equivalent).
+- **`PosnerRobinson.lean`**: relativized Posner–Robinson (`A ⊕ G ≡ᵀ G'` on the cone above `0'`, via
+  Friedberg); full arbitrary-`A` case honestly left open (needs a read-back construction).
+- **`RegressiveSkeleton.lean`**: the KNOWN Slaman–Steel regressive theorem opened into its three steps
+  (coordinated tree / branch domination / branch coding); assembly + downstream PROVED
+  (`regressiveSlamanSteel_of_cores`, `regressiveImpliesConstant_of_cores`), the two hard steps bracketed.
+- Extensive `ATTACK.md` original-research log: every fresh angle on the incomparable core funnels to the
+  same barrier; sharpest new proof-level localization = the S-S *domination* step needs `x ≥ᵀ f x`, which
+  incomparability denies. No crossing (expected). 77 files, full build green, all std axioms.
+
 ---
 
 ## The conjecture, and exactly what is open

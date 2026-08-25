@@ -55,6 +55,11 @@ Lutz–Siskind arXiv:2305.19646, and the next-attempt lead). Full detail in `MAR
   identified with a recognized open theorem), not a crossing. Also: `incomparableConstant_iff_four_subcases`
   (the four-way split is LOSSLESS) and `incomparable_not_below_argJoin` (a counterexample value escapes
   `X⊕Z` for every fixed `Z` — sharper than escaping).
+> ⚠️ **The coordinated-tree material below (ArithRegressiveSkeleton / BnBmSkeleton / LevelCoordinatedTree,
+> and the "four-face map reduces the core to coordinated trees" framing) is SUPERSEDED by the genuine-attack
+> section above and `MARTIN_PART1_STRUCTURAL_AM.md` §2.6: the coordinated-tree method is CIRCULAR for the
+> incomparable core (its domination bracket ≡ the core). The files are honest (brackets open) but are NOT a
+> viable route. The viable route is measure-theoretic (`escaping⟹MP`). Keep the below as record, not as a plan.**
 - **`ArithRegressiveSkeleton.lean`**: `StrictArithRegressiveConstant` (the `AnBm` target) opened into its
   three *relativized* Slaman–Steel steps (tree / domination / coding relative to `X^(k)`); assembly PROVED,
   including the AnBm twist that step-3's `x ≤ᵀ F x` on a branch is a *contradiction* (vs the Turing case's

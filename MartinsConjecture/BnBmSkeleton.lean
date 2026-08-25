@@ -24,6 +24,7 @@ instance of the same coordinated-tree method — so the open content of the whol
 -/
 import MartinsConjecture.MartinTree
 import MartinsConjecture.IncomparableArithReduction
+import MartinsConjecture.ArithRegressiveSkeleton
 
 open scoped Computability
 open OracleCode Cantor
@@ -136,8 +137,26 @@ theorem arithBelowHalf_of_bnBm_cores {Dominates : (ℕ → ℕ) → (ℕ → ℕ
     ArithBelowHalf :=
   arithBelowHalf_of_cases hTD harith (bnBm_of_cores hTree hdom hcoding)
 
+/-- **The whole `Bm` region reduces to TWO coordinated-tree brackets.**  `ArithBelowHalf`
+(the arithmetically-bounded incomparable region `F X ≤ₐ X`) follows from the `AnBm` relativized-S-S
+ingredients (`HasArithRegressiveUniformTree` + domination + coding, via `arithRegressive_of_cores`) and the
+`BnBm` ones (`HasBnBmUniformTree` + domination + coding, via `bnBm_of_cores`).  Same three-step method,
+two step-1 brackets — the `AnBm` tree and the (CBER-harder) `BnBm` tree.  This is the precise sense in which
+the open content of the `Bm` region is *uniformly* "relativized Slaman–Steel step 1". -/
+theorem arithBelowHalf_of_all_tree_cores {D₁ D₂ : (ℕ → ℕ) → (ℕ → ℕ) → Prop}
+    (hTD : TuringDeterminacy fun _ => True)
+    (hTreeA : HasArithRegressiveUniformTree)
+    (hdomA : ArithBranchDomination D₁) (hcodingA : ArithBranchCoding D₁)
+    (hTreeB : HasBnBmUniformTree)
+    (hdomB : BnBmBranchDomination D₂) (hcodingB : BnBmBranchCoding D₂) :
+    ArithBelowHalf :=
+  arithBelowHalf_of_cases hTD
+    (arithRegressive_of_cores hTreeA hdomA hcodingA)
+    (bnBm_of_cores hTreeB hdomB hcodingB)
+
 #print axioms bnBmBranchAboveId_absurd
 #print axioms bnBm_of_cores
 #print axioms arithBelowHalf_of_bnBm_cores
+#print axioms arithBelowHalf_of_all_tree_cores
 
 end Martin

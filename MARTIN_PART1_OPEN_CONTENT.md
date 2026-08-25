@@ -312,10 +312,16 @@ These are the machine-adjacent findings that pin *why* each residue sub-case res
   increase `ω₁^x`, so arithmetic equivalence gives no `ω₁^x` control). This is the *arithmetic-preserving,
   Turing-dropping* phenomenon: `F` shuffles the Turing degrees *inside a single arithmetic equivalence
   class*, which is precisely the domain of Marks–Slaman–Steel's work on arithmetic equivalence `≡_A` and
-  countable Borel equivalence relations — the natural framework for attacking this sub-case.
-- **BnAm (arithmetically above, Turing-incomparable).** `F X >ₐ X`; the natural target would be an
-  "arithmetic above-identity" theorem, itself the arithmetic Part 1 for the above case — no strictly
-  weaker named reduction.
+  countable Borel equivalence relations. **This `≡_A`/CBER content is exactly the step-1 bracket
+  `HasBnBmUniformTree`** (`BnBmSkeleton`): `BnBm` reduces to the same relativized-S-S coordinated-tree
+  skeleton as `AnBm`, and the arith-preserving injective uniformization the tree demands *is* the MSS
+  transversal question. So the MSS framework is not an alternative to the coordinated-tree method — it is
+  what that method's step 1 asks for on this sub-case.
+- **BnAm (arithmetically above, Turing-incomparable).** `F X >ₐ X`; the derived above-identity function
+  `jump^[k]∘F` has *infinite* Part-2 rank (`bnAm_jumpComp_not_finite_jump`, formalized), so `BnAm` produces
+  a transfinite-rank Part-2 object — a structural leak into Part 2 (not a reduction; recovering `F` is the
+  odd-part problem). Together with `AnAm` it forms the `Am` region, uniformly leaked to Part 2 via the
+  graph (`am_graph_not_finite_jump`).
 
 ## 10. Why no counterexample can be exhibited
 

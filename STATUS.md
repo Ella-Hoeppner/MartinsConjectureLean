@@ -26,6 +26,10 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
 - **`RegressiveSkeleton.lean`**: the KNOWN Slaman–Steel regressive theorem opened into its three steps
   (coordinated tree / branch domination / branch coding); assembly + downstream PROVED
   (`regressiveSlamanSteel_of_cores`, `regressiveImpliesConstant_of_cores`), the two hard steps bracketed.
+- **`PartIIUniform.lean`**: **Part 2 opened for the uniform class** (previously untouched — Part 2 was
+  proven for no class). `UniformRegular` + the Steel jump-chain inside it; assembly + exactness both ways
+  (`partIIUniform_iff_cores`: uniform Part 2 ⟺ its three cores); comparison trichotomy + successor
+  provable half proved; the three cores (comparison/well-foundedness/jump-minimality) bracketed.
 - Extensive `ATTACK.md` original-research log: every fresh angle on the incomparable core funnels to the
   same barrier; sharpest new proof-level localization = the S-S *domination* step needs `x ≥ᵀ f x`, which
   incomparability denies. No crossing (expected). 77 files, full build green, all std axioms.

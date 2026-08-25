@@ -198,6 +198,15 @@ theorem arithBelowHalf_of_cases (hTD : TuringDeterminacy fun _ => True)
   · exact incomparable_AnBm_of_strictArithRegressive harith G hG hAn hBm
   · exact hBnBm G hG hinc hBn hBm
 
+/-- **The `Am` half refines into its two faces `AnAm` and `BnAm`** (symmetric to `arithBelowHalf_of_cases`).
+The `An`/`Bn` dichotomy (`regressive_jump_dichotomy`) splits the arithmetically-escaping region. -/
+theorem arithEscapingHalf_of_cases (hTD : TuringDeterminacy fun _ => True)
+    (hBnAm : SubcaseBnAm) (hAnAm : SubcaseAnAm) : ArithEscapingHalf := by
+  intro G hG hinc hAm
+  rcases regressive_jump_dichotomy hTD hG with hAn | hBn
+  · exact hAnAm G hG hinc hAn hAm
+  · exact hBnAm G hG hinc hBn hAm
+
 /-- **Consequently: the incomparable core = arithmetic-regressive theorem + `BnBm` handler + `Am` half.**
 Combining `incomparableConstant_iff_arith_halves` with `arithBelowHalf_of_cases`. The two "recognizable"
 inputs are `StrictArithRegressiveConstant` (Part-1 method) and `ArithEscapingHalf` (Part-2-flavoured via

@@ -827,3 +827,23 @@ CBER/MSS difficulty of B10 is not gone — it is exactly the content of the *ste
 incomp cone), a distinct and plausibly harder bracket than AnBm's. So the honest statement is: BnBm needs
 the *same method* (coordinated tree) with a *harder step-1 instance*, not a wholly new idea. The fiber-
 rigidity/CBER framing of B10 is precisely what that step-1 bracket encapsulates.
+
+**(B12) A unification conjecture: the coordinated-tree method at TRANSFINITE level (Am region).**
+The `Bm` region reduces to a coordinated tree computing `F x = Φ_e^{x^(k)}` from a *finite* jump `x^(k)`
+(machine-checked: `arithBelowHalf_of_all_tree_cores`). The `Am` region (`F X ≰ₐ X`) is *not* finite-jump
+amenable — but the graph `X ⊕ F X` is a transfinite-rank Part-2 object. **Conjecture:** the whole
+incomparable core reduces to a coordinated tree computing `F` from `x^(level)`, where `level` is *finite*
+`k` on the `Bm` region and a *transfinite ordinal* `α` on the `Am` region; the primary `Bm`/`Am` divide is
+then exactly *finite vs transfinite level*. Grounding: if Part 2 assigns the graph a fixed transfinite rank
+`α` on a cone (`X ⊕ F X ≡ᵀ X^(α)`), then `F X ≤ᵀ X^(α)`, so a coordinated tree computing `F` from `x^(α)`
+could run, with step-3's `x ≤ᵀ F x` again contradicting incomparability — the *same* assembly as `Bm`,
+one level up. Two sub-regimes: (a) `α < ω₁^X` (graph is hyperarithmetic-in-`X`) — this is **Lutz's
+territory** (he proved the regressive case on the hyperarithmetic degrees via "reduce to a continuous
+function"); (b) `α ≥ ω₁^X` — genuinely beyond hyperarithmetic, the deepest residue. So the incomparable
+core would be ONE method (coordinated tree from `x^(level)`) across all four faces, stratified by the
+ordinal `level`: finite (`Bm`, relativized Slaman–Steel), `< ω₁^X` (Lutz), `≥ ω₁^X` (open). **Honest scope:
+speculative.** It needs (i) Part-2 uniformity for the graph (open) to pin `α`, and (ii) the transfinite-jump
+coordinated-tree construction (open, and the `ω₁`-level is exactly the project's blocked ordinal-ultrapower
+engine). Not formalized. But it is a concrete, testable articulation of how the two known Martin-conjecture
+methods (Slaman–Steel finite, Lutz hyperarithmetic) might be two levels of a single coordinated-tree
+method — with the incomparable core the instance where the branch-field is Turing-incomparability.

@@ -192,3 +192,24 @@ Combining §2.6 with the codebase's engine (this supersedes the "§6 open step 1
 > unbounded-below invariant pushforward of the Martin measure is cofinal-above. That is the single crux; it
 > uses a genuinely non-regressive engine (Groszek–Slaman for the `MP ⟹ above-id` half); and it is where any
 > real proof must land.
+
+## 8. Engine-level localization of `escaping ⟹ MP` (traced through Groszek–Slaman)
+
+Reading the machine-checked `measurePreservingAboveId_of_groszekSlaman`, the `MP ⟹ above-id` engine uses
+measure-preservation at exactly two points:
+1. `MP ⟹ increasing modulus g` (`measurePreserving_hasModulus`) — the cofinal growth of the values;
+2. **`Tr.code ≤ᵀ F x`** on a cone (`hmp Tr.code`) — the values dominate the inverting tree's *fixed* code.
+
+Then modulus-inversion on a branch gives `x = g(h x) ≤ᵀ h x ⊕ Tr.code ≤ᵀ F x`, and invariance transports to
+`d ≤ᵀ F d`. So the engine's *only* obstruction to running on an escaping `F` is step 2: it needs
+`Tr.code ≤ᵀ F x` (i.e. `F x ≥ᵀ Tr.code`), whereas escaping gives only `F x ≰ᵀ Tr.code`. By cone-dichotomy on
+the invariant `{x : Tr.code ≤ᵀ F x}`, exactly one holds on a cone:
+- `F x ≥ᵀ Tr.code` (then GS runs → `x ≤ᵀ F x` → contradiction with incomparability → constant); or
+- `F x ⊥ᵀ Tr.code` (`Tr.code` is *avoided*) → GS stalls.
+
+> **Precise crux.** `escaping ⟹ MP` is exactly "**no inverting-tree code `Tr.code` is avoided by `F`**". The
+> Groszek–Slaman engine converts *non-avoidance of one specific code* into the full `x ≤ᵀ F x` — so the entire
+> open content is: for an escaping `F`, its values are not `⊥ᵀ`-incomparable to the (single, `F`-derived)
+> Groszek–Slaman inverting-tree code on a cone. That is the sharpest, most concrete form of the open crux,
+> and it is *not* a coordinated-tree/domination question — it is a value-vs-fixed-code comparison, exactly the
+> measure-theoretic content.

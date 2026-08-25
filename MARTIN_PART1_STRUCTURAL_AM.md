@@ -41,7 +41,10 @@ for Borel `F`:** the level is the *fixed* Baire rank `ρ`. So:
 So for Borel `F`, Lutz's obstruction is *absent*, and Part 1 reduces to a single bracketed step: the
 **level-`ρ` coordinated tree**. This is a genuine clarification — the Borel case was lumped with "the
 hard transfinite / Lutz-Turing gap", but it is not there; it is structurally the finite `Bm` case at a fixed
-transfinite level.
+transfinite level. **(⚠️ But see §2.6: this "reduction to a coordinated tree" is later shown to be
+*circular* for the incomparable core — its remaining bracket is core-equivalent, not easier. §2's value is
+the level-clarification and Theorem A; the coordinated tree is *not* a viable route. The viable route is
+measure-theoretic, §7–9.)**
 
 **Caveat — this does NOT make Borel `F` uniformly invariant (why Borel Part 1 stays open).** Theorem A gives
 uniformity **from the argument** (type A: `F X = Φ_e^{X^(ρ)}`, a single functional applied to the ρ-jump), which

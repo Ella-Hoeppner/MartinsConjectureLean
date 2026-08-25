@@ -190,9 +190,17 @@ to a **recognizable regime**:
   transfinite residue — the arithmetic-preserving-Turing-dropping phenomenon and the `ω₁`-decreasing
   case respectively, each with a precise obstruction below.
 
-So the incomparable core is not a monolith: two of its four faces are the two *known* Martin-conjecture
-regimes (Part-1-regressive and Part-2-increasing), and only the transfinite residue (`BnBm`/`AnAm`) is
-native to it.
+So the incomparable core is not a monolith. Organized by the **primary arithmetic divide** `F X ≤ₐ X`
+(`Bm`) vs `F X ≰ₐ X` (`Am`) — machine-checked lossless as `incomparableConstant_iff_arith_halves`, and
+lifted to the canonical open statement as `escapingMP_iff_arith_halves` (`escaping ⟹ MP` ⟺
+`ArithBelowHalf ∧ ArithEscapingHalf`):
+- the entire `Am` half (`BnAm ∪ AnAm`) **produces a transfinite-rank Part-2 object** via the graph
+  `X ⊕ F X` (`am_graph_not_finite_jump`) — Part-2-flavoured (structurally, not by reduction);
+- the `Bm` half is `AnBm` (the arithmetic **regressive** theorem, structured) together with `BnBm`.
+
+Hence the *single* face native to **neither** known Martin regime is **`BnBm`** (`F X ≡ₐ X`,
+arithmetic-preserving Turing-dropping) — the CBER/MSS heart. The other three faces each land in a
+recognizable regime (Part-1-regressive, or Part-2 via the graph).
 
 **Concrete open questions this raises:**
 1. *Does the arithmetic-degrees regressive theorem hold?* I.e. is a Turing-invariant `F` with

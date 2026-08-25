@@ -756,3 +756,11 @@ arithmetically equivalent, Turing-incomparable), then `(F X)^(ω) ≡ᵀ X^(ω)`
 hyperarithmetic level Lutz reaches (it does NOT preserve `ω₁^x`, since finite jumps strictly increase
 `ω₁^x`, so `X ≡ₐ F X` gives no `ω₁^x` control — confirming BnBm is invisible to the ω₁-engine, cf. B7).
 No crossing, but a clean characterization of the hardest residue sub-case.
+
+**Honesty correction (option-3 session).** The framing of `StrictArithRegressiveConstant` as "the
+arithmetic-degrees regressive theorem" conflated two invariance notions. It is a *Turing*-invariant
+statement (= the AnBm sub-case, `F X <ₐ X` for Turing-invariant `F`), which is *analogous to* but NOT
+literally the `≡ₐ`-invariant arithmetic Martin conjecture on `D_a` — Turing-invariance does not imply
+`≡ₐ`-invariance. So AnBm ↔ StrictArithRegressiveConstant is a *rephrasing in arithmetic-reducibility
+terms* (suggesting the Slaman–Steel method relative to finite jumps), not an identification with a
+recognized theorem. Corrected in `MARTIN_PART1_OPEN_CONTENT.md` §3-4 and the Lean docstring.

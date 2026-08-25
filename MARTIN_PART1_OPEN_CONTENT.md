@@ -72,22 +72,33 @@ regressive core:
 
 **Honest status of this reduction.** `StrictArithRegressiveConstant` is *strictly weaker than the full
 incomparable core* (it is one of the four sub-cases). But it is not weaker than AnBm — its own open
-content *is* AnBm. So this is a **classification**, not a reduction-to-something-easier: it identifies an
-ad-hoc jump-distance sub-case with a *recognizable* target, the arithmetic-degrees regressive theorem.
+content *is* AnBm. So this is a **rephrasing** of the sub-case (`F X <ₐ X` for `F`) in
+arithmetic-reducibility terms, not a reduction-to-something-easier.
 
-## 4. The three-level analogy, and why the arithmetic level is genuinely separate
+**Important caveat (an honesty correction).** `StrictArithRegressiveConstant` is a statement about
+*Turing*-invariant `F` (it inherits `F`'s Turing-invariance). It is therefore **not** literally "the
+arithmetic-degrees Martin conjecture," which would concern `≡ₐ`-**invariant** functions on the arithmetic
+degrees `D_a` (`X ≡ₐ Y ⟹ F X ≡ₐ F Y`). Turing-invariance does **not** imply `≡ₐ`-invariance (`X ≡ₐ Y` is
+weaker than `X ≡ᵀ Y`, so Turing-invariance says nothing about `≡ₐ`-equivalent inputs). So AnBm is a
+Turing-invariant, arithmetic-*regressive* statement — *analogous* to, but genuinely distinct from, the
+`≡ₐ`-invariant arithmetic Martin conjecture. Its value is that it suggests attacking AnBm by the
+Slaman–Steel *method* carried out relative to finite jumps (§4), while making the invariance subtlety
+explicit.
 
-The regressive question — "is a regressive invariant function constant on a cone?" — makes sense for
-each of three reducibilities, giving a natural hierarchy:
+## 4. Which *method* could reach AnBm, and why neither known one does
 
-| reducibility | regressive theorem | status |
-|---|---|---|
-| **Turing** `≤ᵀ` | Slaman–Steel 1988 | **theorem** |
-| **arithmetic** `≤ₐ` | `StrictArithRegressiveConstant` | **open** (= AnBm) |
-| **hyperarithmetic** `≤_h` | Lutz 2024 (`arXiv:2306.05746`) | **theorem** (on `D_h`) |
+The regressive theorem — "is a regressive invariant function constant on a cone?" — is settled at two
+*invariance* levels, by two different methods:
 
-So the arithmetic level is the *missing middle*. Two independent reasons it does not reduce to its
-neighbours:
+| invariance | domain | regressive theorem | method |
+|---|---|---|---|
+| **Turing** `≡ᵀ` | `D_T` | Slaman–Steel 1988 | coordinated tree + domination + growth-rate coding (§5) |
+| **hyperarithmetic** `≡_h` | `D_h` | Lutz 2024 (`arXiv:2306.05746`) | `ω₁^x` ordinal rank / Σ¹₁-bounding |
+
+AnBm is a **Turing**-invariant function that is *arithmetic*-regressive (`F X <ₐ X`). It is *not* the
+`≡ₐ`-invariant "arithmetic level" of this hierarchy (the §3 caveat — different invariance notion), but its
+arithmetic-reducibility hypothesis places it, in spirit, between the two rows, and — the point — **neither
+known method reaches it.** Two independent reasons:
 
 **(a) It does not collapse to the Turing theorem** (level induction fails). One might hope to prove
 `F X ≤ᵀ X^(k+1)` by relativizing the Turing theorem to `X'` (since `X^(k+1) = (X')^(k)`). This fails

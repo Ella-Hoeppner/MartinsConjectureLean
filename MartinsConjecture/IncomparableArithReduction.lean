@@ -23,9 +23,12 @@ open Cantor
 
 namespace Martin
 
-/-- **Strict arithmetic-regressive ⟹ constant** (a named, genuinely-open input; the arithmetic-degrees
-analogue of `RegressiveImpliesConstant`).  An invariant `F` with `F X ≤ₐ X` but `X ≰ₐ F X` on a cone —
-`F X` arithmetically strictly below `X` — is constant on a cone. -/
+/-- **Strict arithmetic-regressive ⟹ constant** (a named, genuinely-open input).  A *Turing-invariant*
+`F` with `F X ≤ₐ X` but `X ≰ₐ F X` on a cone — `F X` arithmetically strictly below `X` — is constant on a
+cone.  This is the `AnBm` sub-case of the incomparable core rephrased in arithmetic-reducibility terms.
+NOTE: it is a *Turing*-invariant statement, hence *analogous to* but NOT literally the arithmetic-degrees
+Martin conjecture (which concerns `≡ₐ`-invariant functions on `D_a`); Turing-invariance does not imply
+`≡ₐ`-invariance.  See `MARTIN_PART1_OPEN_CONTENT.md` §3-4. -/
 def StrictArithRegressiveConstant : Prop :=
   ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F →
     OnCone (fun X => arithLe (F X) X ∧ ¬ arithLe X (F X)) → ConstantOnCone F

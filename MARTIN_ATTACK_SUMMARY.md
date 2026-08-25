@@ -58,3 +58,17 @@ measure on `ω₁` (linear order) the analogue is trivially true (Fodor; no inco
   (`MartinOmega1Approach.lean`, `LevelCoordinatedTree.lean`, standard axioms only).
 - **Next session:** attack `escaping ⟹ MP` / the RK-statement measure-theoretically (is `U_M` RK-minimal
   known? then the open part is the rigidity `≡_RK U_M ⟹ = U_M`). **Do not** return to coordinated trees.
+
+## A concrete lead for the next attempt (connecting the pieces)
+The RK-rigidity frontier ("`U_M` has no nonprincipal RK-predecessor on the degrees but itself") **holds for
+the Turing degrees but FAILS for the enumeration degrees** — Nakid-Cordero (arXiv:2510.19147) build a
+definable non-uniform e-invariant function, i.e. a nonprincipal RK-predecessor of the e-analogue of `U_M`
+that is `≠` it. The pivot (my `ATTACK.md` B9+): the Turing **jump is increasing** (`A ≤ᵀ jump^[k] A`,
+machine-checked `self_le_jumpIter`), whereas the enumeration **skip is not** — and my Part-2 leak
+(`am_not_finite_jump_of_increasing`) consumes *exactly* the increasing property. So a proof of the RK-rigidity
+statement for the Turing degrees should **exploit the jump's increasing-ness as the feature the e-degree skip
+lacks** — this is where the Turing/e-degree asymmetry lives, made concrete. Combined with the non-linearity
+account (§10 of the structural note: ordinals are linear ⇒ Fodor ⇒ easy; degrees are partial ⇒ incomparable
+case), the target for a proof is: *use `A ≤ᵀ jump A` and the cone/ultrafilter structure to force an
+unbounded-below invariant pushforward of `U_M` to be cofinal-above (= `U_M`).* That is the sharpest concrete
+handle this attack produced on the actual open frontier.

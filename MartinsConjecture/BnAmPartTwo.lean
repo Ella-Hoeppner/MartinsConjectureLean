@@ -42,7 +42,33 @@ theorem bnAm_jumpComp_not_finite_jump {F : (ℕ → Bool) → ℕ → Bool} (k :
   have hBB := hB B (Cantor.le.refl B)
   exact hBB.1 j ((self_le_jumpIter (F B) k).trans hBB.2.1)
 
+/-- `jump^[k]` is monotone in `≤ᵀ`. -/
+theorem jumpIter_mono {A B : ℕ → Bool} (h : A ≤ₜ B) :
+    ∀ k, Cantor.jump^[k] A ≤ₜ Cantor.jump^[k] B
+  | 0 => h
+  | k + 1 => by
+      rw [Function.iterate_succ_apply', Function.iterate_succ_apply']
+      exact Cantor.jump_mono (jumpIter_mono h k)
+
+/-- **`BnBm` keeps `jump^[k]∘F` at FINITE Part-2 rank** — the exact contrast with `BnAm`.  On the `BnBm`
+cone (`X ≤ᵀ (F X)^(k)` from `Bn`, and `F X ≤ᵀ X^(m)` from `Bm` — the *negation* of `An`), the invariant
+above-identity function `G X := jump^[k](F X)` is bounded by a fixed finite jump: `X ≤ᵀ G X ≤ᵀ X^(k+m)`.
+So `G` has finite Part-2 rank on `BnBm`, whereas `bnAm_jumpComp_not_finite_jump` shows it has infinite
+rank on `BnAm`.  The `An`/`Bm` split — the sole difference between the two sub-cases — is *exactly* the
+infinite/finite Part-2-rank split of `jump^[k]∘F`. -/
+theorem bnBm_jumpComp_finite_bounded {F : (ℕ → Bool) → ℕ → Bool} (k m : ℕ)
+    (hBn : OnCone (fun X => X ≤ₜ Cantor.jump^[k] (F X)))
+    (hBm : OnCone (fun X => F X ≤ₜ Cantor.jump^[m] X)) :
+    OnCone (fun X => X ≤ₜ Cantor.jump^[k] (F X) ∧
+      Cantor.jump^[k] (F X) ≤ₜ Cantor.jump^[k + m] X) := by
+  obtain ⟨B, hB⟩ := onCone_and hBn hBm
+  refine ⟨B, fun X hX => ⟨(hB X hX).1, ?_⟩⟩
+  have hmono : Cantor.jump^[k] (F X) ≤ₜ Cantor.jump^[k] (Cantor.jump^[m] X) :=
+    jumpIter_mono (hB X hX).2 k
+  rwa [← Function.iterate_add_apply] at hmono
+
 #print axioms self_le_jumpIter
 #print axioms bnAm_jumpComp_not_finite_jump
+#print axioms bnBm_jumpComp_finite_bounded
 
 end Martin

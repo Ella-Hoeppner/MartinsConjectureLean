@@ -207,9 +207,16 @@ the invariant `{x : Tr.code ≤ᵀ F x}`, exactly one holds on a cone:
 - `F x ≥ᵀ Tr.code` (then GS runs → `x ≤ᵀ F x` → contradiction with incomparability → constant); or
 - `F x ⊥ᵀ Tr.code` (`Tr.code` is *avoided*) → GS stalls.
 
-> **Precise crux.** `escaping ⟹ MP` is exactly "**no inverting-tree code `Tr.code` is avoided by `F`**". The
-> Groszek–Slaman engine converts *non-avoidance of one specific code* into the full `x ≤ᵀ F x` — so the entire
-> open content is: for an escaping `F`, its values are not `⊥ᵀ`-incomparable to the (single, `F`-derived)
-> Groszek–Slaman inverting-tree code on a cone. That is the sharpest, most concrete form of the open crux,
-> and it is *not* a coordinated-tree/domination question — it is a value-vs-fixed-code comparison, exactly the
-> measure-theoretic content.
+**Correction — the two steps do not separate; the engine consumes MP *monolithically*.** Step 1's modulus is
+`g X = X ⊕ b(X)` where `b(X)` is the MP-witness base at `Z = X` (`measurePreserving_hasModulus`), so the
+modulus already packages the *entire* MP data (a witness for every `Z`), and `Tr.code` is derived from `g`.
+So one cannot isolate "MP at the single code `Tr.code`" — the code depends on all of MP. Hence:
+
+> **Honest crux (corrected).** The Groszek–Slaman engine is *entirely downstream of MP*: both the modulus and
+> the `Tr.code ≤ᵀ F x` step consume measure-preservation as a whole. So `escaping ⟹ MP` does **not** reduce
+> to a single value-vs-code comparison — it is the *monolithic* measure-theoretic gap "escaping values are
+> cofinal-above", with no engine-internal shortcut. What the trace *does* establish cleanly: the open content
+> is purely a **value-distribution** fact about `F` (are the values cofinal?), with **no** coordinated-tree /
+> `x ≤ᵀ F x`-coding content — GS supplies all of that for free once MP is in hand. This correctly separates
+> "the hard part" (MP itself, a statement about where `F`'s values land) from "the downstream part" (GS,
+> machine-checked). It is the measure-theoretic route, and it is monolithic.

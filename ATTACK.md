@@ -523,3 +523,26 @@ which is exactly where the uniformity barrier lives (`[F] ≤_M [G]` + uniformit
 Net: no crossing (none expected). One crisp new formalized clarification (B3) explaining why the
 RK/pushforward-descent route cannot work. The barrier (dichotomy vs uniformization / Martin-order-not-RK)
 stands.
+
+**(B4) MartinPPT as a NEW cone-native tool — a tempting crossing, precisely refuted.** The attack log
+above says "the dichotomy (`cone_theorem`) is determinacy's only cone-native tool." That is now OUT OF
+DATE: **`MartinPPT` (cofinal ⟹ pointed perfect tree) is a strictly stronger cone-native tool**, proved
+this session (`martinPPT_of_gameDeterminacy`). Does it cross the barrier? Tempting route:
+- For a counterexample `F` (`F X ⊥ X` on a cone), `H X := X ⊕ F X` is **above the identity** (`X ≤ᵀ H X`),
+  hence MP, hence `range(H)` is **cofinal**. So MartinPPT DOES apply to `range(H)`, giving a pointed
+  perfect tree `T ⊆ range(H)` whose branches `y ≡ᵀ x ⊕ F x` realize a cone of degrees, and on which
+  `F x = (second half of y)` is **computable from the branch `y`**. This looks like a uniformization of
+  `F` (a pointed perfect set on which `F` is computed by projection!).
+- **Refuted (sharpened reps→all-X gap).** The branch of degree `d` is `y = x ⊕ F x ≡ᵀ d`, but `deg(x)` is
+  only `≤ᵀ d`, NOT `= d`: a branch can have a *low* `x` with a *high* `F x ≡ᵀ d`. So the "representative"
+  `x` is not `≡ᵀ` the general degree-`d` real `X`, and `F(x) ≢ᵀ F(X)` (different degrees) — invariance
+  does not transfer. To force `x ≡ᵀ d` one would need `F x ≤ᵀ x` (regressive), which is the very thing
+  at issue (circular). So MartinPPT-on-`X⊕FX` reproduces the reps→all-X gap in an even sharper form (the
+  reps can be low). **No crossing.**
+
+Insight (updates the "only tool" statement): MartinPPT *is* a new, stronger cone-native tool, but it
+grips only *cofinal* sets, and a counterexample's own range is precisely NOT cofinal (non-MP, kernel
+bounded); the only cofinal set canonically built from `F` is `X⊕FX`, which is above-id and washes out
+`F`'s incomparability (the join computes any `Z` the argument does). So the barrier survives the strongest
+cone-native tool now available; the obstruction is confirmed to be the reps→all-X (uniform-good-rep)
+gap, not a missing regularity principle.

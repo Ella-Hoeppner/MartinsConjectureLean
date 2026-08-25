@@ -92,3 +92,36 @@ choice-free graph-orbit device (machine-checked), (iii) rules out the increasing
 self-defeating under AD, and (iv) shows the Fodor/ordinal approach fails at the identical `ω₁ ↪ ℝ` step —
 yielding a precise, unified reason the core resists elementary determinacy methods and must be attacked with
 structural (∞-Borel / inner-model) tools.
+
+## 7. Other approaches pressure-tested (all die at definability or ω₁↪ℝ)
+
+- **C — graph → Part 2.** `G = id ⊕ F` is strictly increasing invariant; if Part 2 classified it
+  (`G ≡ᵀ` a jump-iterate on a cone), then `F X ≤ᵀ X^(k)` (the `Bm` region, handled by the relativized
+  coordinated tree). But Part 2 (off the uniform class) is *itself open*, and a transfinite `G`-level lands
+  back in the `Am` region. Reduces one open problem to another — no crossing.
+- **D — escaping ⟹ MP directly.** `MP ⟺ F_*U = U` (pushforward of the cone measure equals it); escaping
+  `⟺ F_*U` is non-principal and avoids all lower cones. So the core is: *the only non-principal ultrafilter
+  of the form `F_*U` (F invariant) is `U`.* Faithful, connects to AD ultrafilter/Rudin–Keisler theory, but
+  the "why" is again: distinguishing `F_*U` from other unbounded ultrafilters needs `ω₁`-level info about F.
+- **E — a 2-dimensional cone partition** (colour increasing pairs `X <ᵀ Y` by "`F X ≤ᵀ F Y`?", seek a
+  homogeneous cone → F order-preserving or F-values pairwise-incomparable on a cone). Blocked twice: the
+  higher-dimensional cone partition theorem does not hold in the naive form, and even a *definable* version
+  wouldn't apply since "`F X ≤ᵀ F Y`" is not definable (F arbitrary). Same definability wall.
+- **Games referencing F.** Under full AD, games whose payoff references `F(play)` via invariant conditions
+  ARE determined — but winning strategies yield *cones/selectors*, never a *Turing code* for F (the
+  good-representative barrier). So even AD-determinacy of F-games gives only the {0,1}/cone information.
+
+## 8. The research question this surfaces (a genuine sharpening)
+
+The obstruction says the core needs an **∞-Borel code** for `F` (uniform `ω₁`-level info), which exists under
+**AD⁺** but is not known to exist under **AD + DC** alone (AD vs AD⁺ is a real, open distinction). Every
+solved case uses only weak determinacy because it has a *Turing* code. So:
+
+> **Is the incomparable core (equivalently Part 1 for general invariant `F`) provable in `ZF + AD + DC`, or
+> does it genuinely require `AD⁺` (∞-Borel codes) / inner-model hypotheses?**
+
+The attack above is concrete evidence for the latter: the two most natural elementary routes both fail at the
+identical `ω₁ ↪ ℝ` step, and the escape (a code) is exactly what `AD` alone need not provide. Pinning this
+down — even showing the core is *not* provable from the abstract cone-measure axioms alone (a model where
+cone dichotomy + countable completeness hold but the core fails) — would be a genuine limitative result and a
+natural next target.

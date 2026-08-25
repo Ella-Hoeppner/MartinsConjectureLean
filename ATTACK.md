@@ -476,3 +476,50 @@ realizing it.  `g` has *countable* range (`p ∈ ℕ`).  IF `g` were degree-inva
 — the only cone-native tools — cannot stabilize it.  This is wall 2 (non-invariant selection) pinned to
 the precise line where the formalized machinery breaks: *the bridge is one σ-pigeonhole away, blocked
 solely by the non-invariance of the reduction-code function.*
+
+---
+
+## Session 2026-08-25 (7-hour autonomous run) — plan
+
+State at start: Martin's Lemma 2.3 / MartinPPT now PROVED modulo determinacy (`martinPPT_of_gameDeterminacy`,
+this session's predecessor). So Thm 3.4, Part 1 ⟺ escaping⟹MP, order-preserving Part 1 all rest on
+determinacy + at most one named hypothesis. The barrier for the *general* open core (escaping⟹MP /
+incomparable core) is unchanged and exhaustively documented above (cone dichotomy vs cone uniformization).
+
+Two-track plan for the session:
+- **Track A (concrete formalization, subagents):** discharge the remaining named "known" hypotheses.
+  Highest value = `OrderPreservingUncountableCofinal` (the Groszek–Slaman–Kihara coding = order-preserving
+  Part 1). Now that MartinPPT (pointed perfect trees) is a theorem, the coding may be reachable through it.
+- **Track B (original research, main thread):** genuinely new angles on the open core; formalize new
+  constraints / sub-cases / reductions; document all findings (even inconclusive). Running log below.
+
+### Track B running log (2026-08-25)
+
+Fresh angles tried on escaping⟹MP (the open core), all documented honestly:
+
+**(B1) Iterated-cone / Fubini on pairs.** Analyze `F(X⊕Y)` for a `U×U`-generic pair via an iterated
+cone argument (available: `U` is countably complete). Any Fubini-style contradiction needs
+`F(X⊕Y) ≥ᵀ F X` (to "accumulate" values), which requires MONOTONICITY. A counterexample is not
+order-preserving (`counterexample_not_orderPreserving`), so `F(X⊕Y)` is a *fresh* value unrelated to
+`F X`. **Dies on non-monotonicity** — same wall as old Attempt A (exact pairs), now seen at the pair level.
+
+**(B2) Kernel-growth by joining fixed reals.** From a non-MP `F` (kernel bounded by `W₀`), form
+`φ = F ⊕ c` for fixed `c` to enlarge the kernel toward everything. `φ` is invariant and its kernel
+gains `{Z ≤ᵀ c}`, but stays bounded: `F` escapes every fixed real (`escaping`), so `φ` escapes
+`deg c` and remains non-MP. Taking an ω-join `⊕ₙ cₙ` is still a *single fixed real*, escaped by `F`.
+**Dies on "escaping escapes every fixed bound"** — no fixed modification of `F` reaches MP. This is the
+function-level shadow of "a single real has a fixed cone-below ideal, but `F`'s values escape it."
+
+**(B3) RK-order is trivial on pushforwards — a crisp clarification (NEW, formalized).** In the cone
+ultrapower, the Rudin–Keisler order on values `[F] = F_*U` is **trivial**: *every* `[F] ≤_RK [id]`
+(witness `h = F`, since `map F U = map F (map id U)`). So `[id] = U` is RK-top among all pushforwards
+and RK cannot distinguish them. This is the precise reason the "descend in RK: `[id] >_RK [F] >_RK …`"
+idea (old pushforward-descent note) was doomed — **Part 1 is about the *Martin* (pointwise `≤ᵀ`-on-a-cone)
+order, which is strictly finer than RK** (`[F] ≤_RK [G]` means `F ≡ h∘G` on a cone = "`F` factors through
+`G`", orthogonal to `F X ≤ᵀ G X`). Formalized `pushCone_rkle_id` (`MeasurePreservingFilter.lean`).
+Confirms: the pushforward/RK framework is a clean *reformulation* but the discriminating order is Martin,
+which is exactly where the uniformity barrier lives (`[F] ≤_M [G]` + uniformity ⟹ `[F] ≤_RK [G]`).
+
+Net: no crossing (none expected). One crisp new formalized clarification (B3) explaining why the
+RK/pushforward-descent route cannot work. The barrier (dichotomy vs uniformization / Martin-order-not-RK)
+stands.

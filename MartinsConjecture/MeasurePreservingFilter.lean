@@ -118,11 +118,40 @@ theorem partI_iff_pushforward_of_martinPPT (hM : MartinPPT) :
   forall_congr' fun F => imp_congr_right fun hF =>
     or_congr constantOnCone_iff_map_principal (aboveIdOnCone_iff_map_le_of_martinPPT hM hF)
 
+/-! ### The Rudin–Keisler order on pushforwards is trivial — why the RK-descent idea fails
+
+`f ≤_RK g` iff `f` is a pushforward of `g`.  A recurring (failed) idea for Part 1 was to descend in
+some order on the values `[Fⁿ] = F_*ⁿ U` and use well-foundedness.  The RK order is the natural
+candidate, but it is **trivial** on pushforwards of the Martin measure: every `[F] ≤_RK [id]`.  So RK
+cannot discriminate the values, and the discriminating order must be the *Martin* (pointwise
+`≤ᵀ`-on-a-cone) order — which is strictly finer than RK and is exactly where the uniformity barrier
+lives.  This localizes precisely why the pushforward/RK-descent route cannot work. -/
+
+/-- Rudin–Keisler preorder on filters over Cantor space: `f ≤_RK g` iff `f` is a pushforward of `g`. -/
+def RKle (f g : Filter (ℕ → Bool)) : Prop := ∃ h : (ℕ → Bool) → ℕ → Bool, f = Filter.map h g
+
+/-- **Every pushforward of the Martin measure is RK-below `[id]`.**  Since `[id] = coneFilter`, the
+value `[F] = Filter.map F coneFilter` of any invariant `F` satisfies `[F] ≤_RK [id]` (witness `h = F`).
+So `[id]` is RK-top among all pushforwards and the RK order is trivial on them — the reason a
+"descend in RK" proof of Part 1 is impossible; the Martin order (finer than RK) is what Part 1
+concerns. -/
+theorem pushCone_rkle_id (F : (ℕ → Bool) → ℕ → Bool) :
+    RKle (Filter.map F coneFilter) coneFilter :=
+  ⟨F, rfl⟩
+
+/-- **Principal pushforwards are RK-minimal.**  A constant `F` gives `[F] = pure c`, which is the
+pushforward of `coneFilter` by the constant map, so `pure c ≤_RK [id]` — the RK bottom.  With
+`pushCone_rkle_id`, the whole RK order on pushforwards collapses between `pure c` (constants) and
+`[id]`, carrying no Part-1 information. -/
+theorem pure_rkle_coneFilter (c : ℕ → Bool) : RKle (pure c) coneFilter :=
+  ⟨fun _ => c, (Filter.map_const).symm⟩
+
 #print axioms measurePreserving_iff_map_le
 #print axioms escaping_iff_map_avoids_lowerCone
 #print axioms constantOnCone_iff_map_principal
 #print axioms aboveIdOnCone_iff_map_le_of_martinPPT
 #print axioms partI_iff_pushforward_of_martinPPT
 #print axioms pushCone_congr_of_martinEquiv
+#print axioms pushCone_rkle_id
 
 end Martin

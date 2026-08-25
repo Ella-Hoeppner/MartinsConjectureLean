@@ -21,8 +21,16 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
   (`martinJoin_le`); precise reason MartinPPT cannot grip a counterexample.
 - **`OrderPreservingCore.lean`**: `uncountableCofinal_iff_avoiding` — the order-preserving branch rests
   on **exactly one** open coding lemma (its two named hypotheses are equivalent).
-- **`PosnerRobinson.lean`**: relativized Posner–Robinson (`A ⊕ G ≡ᵀ G'` on the cone above `0'`, via
-  Friedberg); full arbitrary-`A` case honestly left open (needs a read-back construction).
+- **`PosnerRobinson.lean`**: Posner–Robinson via the direct `G := jReal A` construction — the full
+  theorem `posnerRobinsonFull (A) (h : ReadBack A) : ∃ G, A ⊕ G ≡ᵀ G'` bracketed by an explicit
+  `ReadBack` Prop, with `readBack_iff` (bracket = exactly the hard read-back reduction), the cone case
+  `A ≥ᵀ 0'` as a corollary, and `not_readBack_of_computable` (the gap provably FAILS for computable `A` —
+  machine-checking it is a genuine obstruction, not accidentally provable).
+- **`IncomparableArithReduction.lean`**: **a finer classification of Part 1's sole open content** —
+  `partI_of_three_cases_and_arith`: Part 1 ⟸ `RegressiveSlamanSteel` (known) + `StrictArithRegressiveConstant`
+  (the arithmetic-degrees regressive theorem, discharging the `AnBm` jump-distance sub-case) + three
+  arithmetically-typed sub-cases (`AnAm`/`BnAm`/`BnBm`). Honest: a structural sharpening (one sub-case
+  identified with a recognized open theorem), not a crossing.
 - **`RegressiveSkeleton.lean`**: the KNOWN Slaman–Steel regressive theorem opened into its three steps
   (coordinated tree / branch domination / branch coding); assembly + downstream PROVED
   (`regressiveSlamanSteel_of_cores`, `regressiveImpliesConstant_of_cores`), the two hard steps bracketed.

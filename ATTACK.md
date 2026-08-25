@@ -681,3 +681,16 @@ where AD's continuity says nothing, so `F` may be wildly discontinuous on `T`. T
 that is both cone-realizing and Baire-continuous-for-`F`. This is wall 3 at the perfect-set level, and the
 crispest refutation of the natural "AD gives continuity ⟹ a code" hope: AD's continuity and Martin's cones
 occupy orthogonal (meager-vs-comeager) parts of `2^ω`. Confirms the barrier once more.
+
+### Structural reduction of the open core (2026-08-25, `IncomparableArithReduction.lean`)
+
+The four-way jump-distance decomposition of the incomparable core (`incomparableCore_of_cases`) is
+refined: the **`AnBm` sub-case** (`F X <ₐ X` — arithmetically strictly below the identity, Turing-
+incomparable) falls to `StrictArithRegressiveConstant`, the arithmetic-degrees analogue of the
+Slaman–Steel regressive theorem (a strictly weaker input than the open core; Lutz proved the
+*hyperarithmetic* case, the arithmetic case is intermediate/open). `incomparableCore_of_three_cases_and_arith`:
+the open core ⟸ three sub-cases (AnAm/BnAm/BnBm) + this arithmetic lemma. So the open core is not four
+independent problems but three plus one arithmetic-regressive theorem — the natural next target
+(mirrors how the finite/transfinite split organizes the regressive core). The dual `BnAm` (`X <ₐ F X`)
+would need an arithmetic *above-id* theorem; `BnBm` (`F X ≡ₐ X`) and `AnAm` (arithmetically incomparable)
+are the genuinely transfinite residue.

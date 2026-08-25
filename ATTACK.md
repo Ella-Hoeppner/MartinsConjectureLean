@@ -670,3 +670,14 @@ settles the regressive case.
 **Net:** the known Part-1 content is now fully structured/discharged-modulo-named-lemmas; the open core is
 precisely mapped and shown robust against the strongest available tools. No disproof/crossing (none
 expected under determinacy).
+
+**(B5) Continuity-on-a-perfect-set via AD's Baire property — fresh angle, refuted by wall 3.** Under AD
+every invariant `F` has the Baire property, hence is **continuous on a comeager set** `G`, which contains
+a **perfect set** `P` on which `F` is continuous — and a continuous `F` on a perfect set has a code
+(uniformization!). This LOOKS like a route to a code. **Refuted:** the comeager `G` (and its perfect
+subset `P`) is *orthogonal to cones* — cones are meager, so `P` lives in the meager-complement region and
+does NOT realize a cone; dually, a MartinPPT pointed perfect tree `T` (cone-realizing, hence meager) is
+where AD's continuity says nothing, so `F` may be wildly discontinuous on `T`. There is no perfect set
+that is both cone-realizing and Baire-continuous-for-`F`. This is wall 3 at the perfect-set level, and the
+crispest refutation of the natural "AD gives continuity ⟹ a code" hope: AD's continuity and Martin's cones
+occupy orthogonal (meager-vs-comeager) parts of `2^ω`. Confirms the barrier once more.

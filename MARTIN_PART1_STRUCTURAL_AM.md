@@ -366,13 +366,15 @@ Sharpening §10 with the known data points:
 - **Ordinals / normal measure on ω₁** (*linear* order): Part-1 analogue is **trivial** (Fodor; no incomparable case).
 - **Many-one degrees** (a *lattice* — meets exist): Part 1 is **proven** (Kihara–Montalbán, uniform Martin's
   conjecture for m-degrees).
-- **Turing degrees** (an upper-semilattice — joins but **no meets**): Part 1 is **open** (this project).
+- **Turing degrees** (an upper-semilattice — joins always exist, but **not a lattice**: meets fail to exist
+  for some incomparable pairs, Kleene–Post): Part 1 is **open** (this project).
 - **Enumeration degrees**: Part 1 **fails** (Nakid–Cordero build a definable non-uniform function).
 
 So the difficulty tracks the *loss of order structure*: linear ⇒ trivial, lattice ⇒ provable, no-meets ⇒ open,
 and further loss ⇒ false. The Turing incomparable core is exactly the regime where you have joins (so the
-graph `X ⊕ F X` is available, and above-id functions behave) but **no meets** (so `F X` and `X` can be
-genuinely incomparable with no infimum to exploit). (Hedged: I have not verified the Kihara–Montalbán proof
+graph `X ⊕ F X` is available, and above-id functions behave) but the order is **not a lattice** (so `F X`
+and `X` can be genuinely incomparable, forming a minimal pair or lacking an infimum, with no meet to
+exploit). (Hedged: I have not verified the Kihara–Montalbán proof
 uses meets specifically; but the structural spectrum is real, and it pinpoints "no meets" as the plausible
 locus of the Turing difficulty — a concrete refinement of the non-linearity account, and a lead: a proof
 might need a *meet-substitute* on a cone, e.g. via the ultrafilter, that the raw Turing order lacks.)

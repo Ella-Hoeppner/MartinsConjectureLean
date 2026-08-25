@@ -43,6 +43,15 @@ So for Borel `F`, Lutz's obstruction is *absent*, and Part 1 reduces to a single
 hard transfinite / Lutz-Turing gap", but it is not there; it is structurally the finite `Bm` case at a fixed
 transfinite level.
 
+**Caveat — this does NOT make Borel `F` uniformly invariant (why Borel Part 1 stays open).** Theorem A gives
+uniformity **from the argument** (type A: `F X = Φ_e^{X^(ρ)}`, a single functional applied to the ρ-jump), which
+is *not* uniform **invariance** (type B: a single functional reducing the *values* `F X ≤ᵀ F Y` from `X ≡ᵀ Y`).
+Indeed `F X = Φ_e^{X^(ρ)}` and `X ≡ᵀ Y` give `F X ≤ᵀ Y^(ρ)`, but **not** `F X ≤ᵀ F Y` — recovering `Y^(ρ)`
+from `F Y` fails because `F Y ≤ᵀ Y^(ρ)` *strictly* (F loses the jump information; this is exactly the
+incomparable case `F Y ⊥ᵀ Y`). So Slaman–Steel's uniform-invariance Part 1 does **not** apply, and the
+level-`ρ` coordinated tree (bridging type-A uniformity to Part 1 via domination+coding) is genuinely required.
+This `(A) ↛ (B)` gap is the reason Borel Part 1 is open despite Theorem A.
+
 ## 3. The graph confirms it: Borel `F` gives a hyp-preserving `BnBm`
 
 For Borel `F`, `G X = X ⊕ F X ≡_h X` (since `F X ≤ᵀ X^(ρ) ≤_h X`) while `G X >ᵀ X` (incomparability). So the

@@ -801,16 +801,16 @@ Nakid-Cordero (arXiv:2510.19147, Oct 2025) classify uniformly-invariant function
 degrees: they are "constant, increasing, or **above the skip operator**", AND there is a definable
 e-function equivalent to a uniformly-invariant one on NO cone. The "wider spectrum" (a genuinely new
 behavior class absent from the Turing degrees) hinges on the **skip** — the e-degree analogue of the jump —
-which, unlike the Turing jump, is **not strictly increasing** (`X <ᵀ X'` always holds on the Turing side;
-the e-degree skip does not have the corresponding strict increase). This is a *concrete* handle on B9's
-question "why doesn't the phenomenon transfer to Turing?": my formalized Part-2 leak
-`am_graph_not_finite_jump` — showing the whole `Am` region produces a transfinite-rank Part-2 object — is
-proved from `self_le_jumpIter` (`A ≤ᵀ jump^[k] A`), i.e. from the jump's monotone strict increase. That
-exact property is what the e-degree skip lacks. So the Turing incomparable core's conjectural rigidity, and
+which, unlike the Turing jump, is **not increasing**: on the Turing side `X ≤ᵀ X'` always (indeed
+`X <ᵀ X'`), whereas the e-degree skip can drop below its argument ("above the skip" is a genuinely new,
+regressive-flavoured behavior). This is a *concrete* handle on B9's question "why doesn't the phenomenon
+transfer to Turing?": my formalized Part-2 leak `am_graph_not_finite_jump` — showing the whole `Am` region
+produces a transfinite-rank Part-2 object — is proved from `self_le_jumpIter` (`A ≤ᵀ jump^[k] A`, the
+**≤** direction = the jump is *increasing*). That exact property is what the e-degree skip lacks. So the Turing incomparable core's conjectural rigidity, and
 specifically the Am-region-leaks-to-Part-2 mechanism, rest on the strict-increase of the jump; the
-enumeration degrees, whose skip is not strictly increasing, are precisely where the analogous rigidity
+enumeration degrees, whose skip is not increasing, are precisely where the analogous rigidity
 fails and non-uniform definable functions appear. (Honest scope: the paper's abstract gives the "above the
-skip" classification and the wider spectrum; the identification of *strict jump-increase* as the pivotal
-Turing-only property is my reading, grounded in that my own leak proof consumes exactly that property. Not
-a crossing — a sharpened articulation of the positive direction: a Turing-side proof must exploit
-`X <ᵀ X'` in a way that has no e-degree analogue.)
+skip" classification and the wider spectrum; the identification of *jump-increase* (`A ≤ᵀ jump A`) as the
+pivotal Turing-only property is my reading, grounded in that my own leak proof consumes exactly that
+property. Not a crossing — a sharpened articulation of the positive direction: a Turing-side proof of the
+`Am` region must exploit that the jump is increasing, in a way that has no e-degree analogue.)

@@ -167,3 +167,67 @@ None of these is a two-line corollary of the tools available; the incomparable c
 inner-model-theoretic in flavour (cf. Siskind, *Aspects of Martin's Conjecture and Inner Model Theory*),
 consistent with its ~50-year-open status. The value here is a **sharp, machine-checked map** of exactly
 what a proof of Part 1 must still supply.
+
+## 8. The barrier, precisely (why no available tool crosses)
+
+Every attempted proof of the incomparable core reduces to one demand on the (non-definable) invariant
+`F`, and the four sub-cases show *where* each demand fails. The demands, and the single obstruction
+underlying them:
+
+**The obstruction (one sentence):** determinacy provides *cone dichotomy* — Martin's cone theorem, that an
+invariant set contains a cone or its complement does — but Part 1 needs *cone uniformization*: an
+effective (Turing, on a cone) selection extracting a code `Φ_e` from `F`. Definable ≠ Turing-uniform, and
+no determinacy hypothesis (AD, AD_ℝ, AD⁺) manufactures a Turing functional; it manufactures definability.
+
+This splits into three "walls," each of which an arbitrary invariant `F` denies:
+1. **No code / effectiveness.** Recursion-theoretic arguments (Posner–Robinson, Steel's game, the
+   recursion theorem) need `F` as an oracle/code; but `F` is a function on *all* reals, not a single
+   real, so it cannot be oracle-ized without losing invariance.
+2. **Definable ≠ computable selection.** AD uniformizes the good-representative relation `G_e = {Y : F Y =
+   Φ_e^Y}` definably, never by a Turing functional. This is *orthogonal to determinacy strength*.
+3. **Regularity is orthogonal to cones.** AD's measure/Baire/perfect-set regularity lives on
+   conull/comeager sets; Turing cones are **null and meager**, so regularity never transfers to a cone.
+   (`(B5)` in the attack log: `F` is continuous on a comeager perfect set, but that set does not realize
+   a cone; a cone-realizing pointed perfect tree is where AD's continuity says nothing.)
+
+The **regressive core is settled** because regressivity supplies wall 1: `F X ≤ᵀ X` gives a code, and the
+Slaman–Steel coordinated tree + *domination* (which needs `x ≥ᵀ F x` — §5) + coding then run. The
+incomparable core denies wall 1 in the strongest way: `F X ⊥ᵀ X` gives no code *either direction*, and
+specifically no domination handle.
+
+## 9. Characterizations of the three residue sub-cases
+
+These are the machine-adjacent findings that pin *why* each residue sub-case resists (attack-log B7–B8):
+
+- **AnAm (arithmetically incomparable).** The ordinal-ultrapower engine
+  (`no_omega1_decreasing_conePreserving`, formalized) kills the `ω₁`-decreasing part — *but only under
+  cone-preservation*, and cone-preservation is **un-manufacturable** for an incomparable `F`: a fixed
+  base `G := F ⊕ base` floors the `ω₁`-descent at the fixed ordinal `ω₁^{base}` (so no *infinite* descent,
+  no contradiction), while incomparability forces a *bounded kernel*
+  (`nonMP_kernel_avoids_cone`, formalized), so no unbounded base below `F X` exists to avoid the floor.
+  The measure-theoretic obstruction (bounded kernel) and the ordinal one (cone-preservation caveat) are
+  **the same obstruction**.
+- **BnBm (arithmetically equivalent, Turing-incomparable).** Here `F` preserves the ω-jump:
+  `(F X)^(ω) ≡ᵀ X^(ω)` (from `F X ≤ᵀ X^(k)` ⟹ `(F X)^(n) ≤ᵀ X^(k+n)`, dually). So on this cone `F` is the
+  *identity on the ω-jump degrees* yet *Turing-nontrivial below the ω-jump* — a rigidity-relative-to-the-
+  ω-jump question, genuinely Turing-specific and **invisible to the ω₁-engine** (finite jumps strictly
+  increase `ω₁^x`, so arithmetic equivalence gives no `ω₁^x` control). This is the *arithmetic-preserving,
+  Turing-dropping* phenomenon: `F` shuffles the Turing degrees *inside a single arithmetic equivalence
+  class*, which is precisely the domain of Marks–Slaman–Steel's work on arithmetic equivalence `≡_A` and
+  countable Borel equivalence relations — the natural framework for attacking this sub-case.
+- **BnAm (arithmetically above, Turing-incomparable).** `F X >ₐ X`; the natural target would be an
+  "arithmetic above-identity" theorem, itself the arithmetic Part 1 for the above case — no strictly
+  weaker named reduction.
+
+## 10. Why no counterexample can be exhibited
+
+A final structural point, dual to the above. Under determinacy, **no *definable* `F` is a
+counterexample**: a Borel (indeed ∞-Borel-with-a-code) invariant `F` is *uniform on a cone*
+(Slaman–Steel), hence satisfies Part 1 (`partI_uniform`, formalized). So every *writable* candidate `F`
+must fail one of {invariant, incomparable, non-constant, definable}: the definable ones collapse to
+uniform-hence-Part-1 (a definable "leftmost incomparable value" is not degree-invariant — it depends on
+the real, not its degree); the AC-choice ones (`g(d) < d`) are non-measurable and vanish under
+determinacy. So the incomparable core is a statement one can neither *prove* with the available tools nor
+*refute* with an exhibited example — its content is exactly that determinacy forbids the non-definable
+choice, and understanding that impossibility is inner-model-theoretic (Siskind). This is why the value
+delivered is a sharp map of the open content rather than a resolution.

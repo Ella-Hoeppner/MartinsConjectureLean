@@ -716,3 +716,13 @@ assessment of this decomposition:
 Net: a genuine finer *classification* of the sole open Part-1 content into four arithmetically-typed
 pieces, one identified with a recognized open theorem — the sharpest structural map to date, honestly not
 a crossing.
+
+---
+
+## Session 2026-08-25 (option-3 continuation, work-until-2pm) — plan
+
+User directive: keep probing the open incomparable core with fresh ideas + write up the arithmetic
+decomposition. Rigorous writeup done: `MARTIN_PART1_OPEN_CONTENT.md`. Now: fresh probing of the three
+residue sub-cases (BnBm arith-preserving, BnAm arith-above, AnAm arith-incomparable) and the
+arithmetic-regressive theorem (AnBm), formalizing any clean structural results, documenting all attempts.
+Running probe log below.

@@ -29,18 +29,30 @@ theorem self_le_jumpIter (A : ℕ → Bool) : ∀ k, A ≤ₜ Cantor.jump^[k] A
       rw [Function.iterate_succ_apply']
       exact (self_le_jumpIter A k).trans (Cantor.le_jump _)
 
-/-- **`BnAm` forces infinite Part-2 rank.**  Under the `Am` hypothesis (`F X ≰ᵀ X^(m)` for all finite
-`m`, on a cone — i.e. `F X ≰ₐ X`), the invariant above-identity function `X ↦ jump^[k] (F X)` is `≡ᵀ`
-*no* finite jump `jump^[j]` on any cone: such an equivalence would give `F X ≤ᵀ (F X)^(k) ≡ᵀ X^(j)`,
-contradicting `Am` at `m = j`.  So the `BnAm` sub-case leaks into Part 2 — it requires a transfinite-rank
-increasing function.  (Only `Am` is used, so this equally covers the `AnAm` face, which also has `Am`.) -/
-theorem bnAm_jumpComp_not_finite_jump {F : (ℕ → Bool) → ℕ → Bool} (k : ℕ)
+/-- **The Part-2 leak, abstracted to its essential hypothesis: the operator is INCREASING.**  For *any*
+operator `op` that is increasing (`A ≤ᵀ op A` — the jump's `self_le_jumpIter` is one instance) and any `F`
+with `F X ≰ₐ X` on a cone (`Am`), `op (F X)` is `≡ᵀ` no finite jump `jump^[j]` on any cone: `op (F X) ≡ᵀ
+jump^[j] X` would give `F X ≤ᵀ op (F X) ≡ᵀ jump^[j] X`, contradicting `Am`.  Isolating `A ≤ᵀ op A` makes
+the Turing/enumeration-degree contrast precise (cf. `ATTACK.md` B9+): the Turing jump is increasing, so the
+leak fires; the enumeration-degree *skip* is **not** increasing, which is exactly where the analogous
+rigidity fails and non-uniform definable functions appear (Nakid-Cordero, arXiv:2510.19147). -/
+theorem am_not_finite_jump_of_increasing {F : (ℕ → Bool) → ℕ → Bool}
+    (op : (ℕ → Bool) → ℕ → Bool) (hincr : ∀ A, A ≤ₜ op A)
     (hAm : OnCone (fun X => ∀ m, ¬ F X ≤ₜ Cantor.jump^[m] X)) :
-    ¬ ∃ j, OnCone (fun X => Cantor.jump^[k] (F X) ≡ₜ Cantor.jump^[j] X) := by
+    ¬ ∃ j, OnCone (fun X => op (F X) ≡ₜ Cantor.jump^[j] X) := by
   rintro ⟨j, hEq⟩
   obtain ⟨B, hB⟩ := onCone_and hAm hEq
   have hBB := hB B (Cantor.le.refl B)
-  exact hBB.1 j ((self_le_jumpIter (F B) k).trans hBB.2.1)
+  exact hBB.1 j ((hincr (F B)).trans hBB.2.1)
+
+/-- **`BnAm` forces infinite Part-2 rank** — the jump instance of `am_not_finite_jump_of_increasing`
+(`op := jump^[k]`, increasing by `self_le_jumpIter`).  Under `Am` (`F X ≰ₐ X` on a cone), the above-identity
+function `X ↦ jump^[k] (F X)` is `≡ᵀ` no finite jump on any cone, so `BnAm` leaks into Part 2.  (Only `Am`
+is used, so this equally covers the `AnAm` face.) -/
+theorem bnAm_jumpComp_not_finite_jump {F : (ℕ → Bool) → ℕ → Bool} (k : ℕ)
+    (hAm : OnCone (fun X => ∀ m, ¬ F X ≤ₜ Cantor.jump^[m] X)) :
+    ¬ ∃ j, OnCone (fun X => Cantor.jump^[k] (F X) ≡ₜ Cantor.jump^[j] X) :=
+  am_not_finite_jump_of_increasing (fun A => Cantor.jump^[k] A) (fun A => self_le_jumpIter A k) hAm
 
 /-- `jump^[k]` is monotone in `≤ᵀ`. -/
 theorem jumpIter_mono {A B : ℕ → Bool} (h : A ≤ₜ B) :
@@ -84,6 +96,7 @@ theorem am_graph_not_finite_jump {F : (ℕ → Bool) → ℕ → Bool} (k : ℕ)
   exact ⟨B, fun X hX m hle => hB X hX m ((Cantor.right_le_join X (F X)).trans hle)⟩
 
 #print axioms self_le_jumpIter
+#print axioms am_not_finite_jump_of_increasing
 #print axioms bnAm_jumpComp_not_finite_jump
 #print axioms bnBm_jumpComp_finite_bounded
 #print axioms am_graph_not_finite_jump

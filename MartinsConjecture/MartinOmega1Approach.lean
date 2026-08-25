@@ -28,6 +28,7 @@ at a point returns to reals and reintroduces the limit-code need. That tension i
 -/
 import MartinsConjecture.GraphFunction
 import MartinsConjecture.RegressiveJumpDecomp
+import MartinsConjecture.PartIRecast
 
 open scoped Computability
 open Cantor
@@ -104,8 +105,28 @@ theorem incomparable_jump_not_below {F : (ℕ → Bool) → ℕ → Bool} {X : �
     (h : ¬ X ≤ₜ F X) : ¬ Cantor.jump X ≤ₜ F X :=
   fun hj => h ((Cantor.le_jump X).trans hj)
 
+/-- An invariant `F` incomparable to its argument on a cone is **not above the identity** on a cone:
+`AboveIdOnCone` needs `X ≤ᵀ F X` on a cone, which incomparability (`¬ X ≤ᵀ F X`) directly denies. -/
+theorem incomparable_not_aboveId {F : (ℕ → Bool) → ℕ → Bool}
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ¬ AboveIdOnCone F := by
+  rintro ⟨C, hC⟩
+  obtain ⟨B, hB⟩ := hinc
+  exact (hB _ (Cantor.left_le_join B C)).2 (hC _ (Cantor.right_le_join B C))
+
+/-- **A counterexample's measure-theoretic profile: it is NOT measure-preserving.**  Given `MartinPPT`,
+`MP ⟺ above-id` (`mp_iff_aboveId_of_martinPPT`); an incomparable `F` is not above-id
+(`incomparable_not_aboveId`), hence not MP.  Combined with `incomparable ⟹ escaping`, this pins the sole
+open content exactly: a counterexample is **escaping but not measure-preserving** — a direct witness that
+`escaping ⟹ MP` fails.  So the incomparable core *is* the value-distribution question, and the whole attack
+must establish measure-preservation of escaping functions (see `MARTIN_PART1_STRUCTURAL_AM.md` §7–9). -/
+theorem incomparable_not_measurePreserving (hM : MartinPPT) {F : (ℕ → Bool) → ℕ → Bool}
+    (hF : TuringInvariant F) (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) :
+    ¬ MeasurePreserving F :=
+  fun hmp => incomparable_not_aboveId hinc ((mp_iff_aboveId_of_martinPPT hM hF).mp hmp)
+
 #print axioms incomparableConstant_iff_noIncomparableSelfMap
 #print axioms graphOrbit_strictMono
 #print axioms incomparable_jump_not_below
+#print axioms incomparable_not_measurePreserving
 
 end Martin

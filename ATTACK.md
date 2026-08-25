@@ -764,3 +764,15 @@ literally the `≡ₐ`-invariant arithmetic Martin conjecture on `D_a` — Turin
 `≡ₐ`-invariance. So AnBm ↔ StrictArithRegressiveConstant is a *rephrasing in arithmetic-reducibility
 terms* (suggesting the Slaman–Steel method relative to finite jumps), not an identification with a
 recognized theorem. Corrected in `MARTIN_PART1_OPEN_CONTENT.md` §3-4 and the Lean docstring.
+
+**(B9) The enumeration-degree contrast (a research direction, not a result).** Nakid-Cordero (2025)
+proved that in the ENUMERATION degrees there IS a definable function not equivalent to a uniformly-
+invariant one — i.e. the definable-vs-uniform gap (the exact obstruction of the Turing incomparable core)
+is REALIZED there. So the e-degrees *allow* what the Turing incomparable core forbids (Turing Part 1
+believed true). The genuine question: *why does the e-degree construction not transfer to the Turing
+degrees?* The e-degrees are coarser (enumeration reducibility, `Σ⁰₂`-flavored) with a different global
+structure; understanding precisely which Turing-degree feature blocks the analogous non-uniform definable
+construction would be a concrete, positive handle on why the incomparable core should hold — a genuine
+line distinct from the (barriered) determinacy-tool attacks. Not pursued here (needs the e-degree
+construction details), but flagged as the most promising *positive* direction: contrast a structure where
+the phenomenon occurs against the Turing degrees where it (conjecturally) cannot.

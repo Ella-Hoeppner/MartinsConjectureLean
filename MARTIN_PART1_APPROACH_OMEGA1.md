@@ -136,3 +136,14 @@ the **only viable route is measure-theoretic** `escaping ⟹ MP`, whose engine (
 and whose cleanest form is `U`-preservation by invariant pushforwards (RK-minimality-adjacent), placing the
 open content in AD ultrafilter theory. Machine-checked: the reframing, the graph-orbit device,
 `incomparable_jump_not_below`, and `incomparable_not_measurePreserving` (a counterexample is escaping-not-MP).
+
+---
+**Literature validation of the obstruction (Lutz–Siskind, arXiv:2305.19646).** Their equivalence "Part 1 ⟺
+(nonprincipal `V ≤_RK U_M` on the degrees ⟹ `V = U_M`)" is stated under **ZF + AD + Uniformization_ℝ**. That
+hypothesis is exactly the **definable-choice / uniformization principle** this note identified as *required*:
+§2–5 showed the elementary AD tools give only countable/{0,1} info and the `Am` region has neither a Turing
+code nor (under AD alone) the ω₁-many choices needed — a uniformization/∞-Borel choice-substitute is the
+missing ingredient. Lutz–Siskind literally invoke `Uniformization_ℝ` to set up the equivalence, confirming
+the diagnosis; and the RK-statement remains **open even under AD + Unif_ℝ**, consistent with the
+AD-vs-AD⁺/inner-model depth flagged in §8. So the unified obstruction (need a code or a choice-substitute;
+AD alone supplies neither for `Am`) is corroborated by the actual hypotheses of the state-of-the-art theorem.

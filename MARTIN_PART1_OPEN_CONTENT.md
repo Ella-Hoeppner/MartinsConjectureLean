@@ -161,7 +161,17 @@ sharpest proof-level statement of why the one method that settles the regressive
 - **AnAm** (arithmetically incomparable): the transfinite residue. Splitting by `ω₁^{F X}` vs `ω₁^X` and
   invoking the project's ordinal-ultrapower engine (`no_omega1_decreasing_conePreserving`, formalized)
   would kill the `ω₁`-decreasing case — *but only under cone-preservation* (`base ≤ᵀ F X` on the cone),
-  which an incomparable `F` does not provide. This cone-preservation caveat is the barrier.
+  which an incomparable `F` does not provide. This cone-preservation caveat is the barrier. Like `BnAm`,
+  `AnAm` also **leaks to Part 2 via the graph** (`am_graph_not_finite_jump`): since `AnAm` has `Am`
+  (`F X ≰ₐ X`), the invariant above-identity function `X ↦ X ⊕ F X` has transfinite Part-2 rank. So the
+  whole `Am` region (`F X ≰ₐ X`, = `BnAm ∪ AnAm`) is Part-2-flavoured; only `BnBm` (inside the `Bm` region)
+  is native to neither Martin regime.
+
+**The primary divide is `Bm` vs `Am` (i.e. `F X ≤ₐ X` vs `F X ≰ₐ X`):**
+- `Bm` = `AnBm ∪ BnBm`: `F X ≤ᵀ X^(k)`. `AnBm` is the arithmetic-degrees **regressive** theorem
+  (Part-1 method, structured); `BnBm` is the arithmetic-preserving CBER residue.
+- `Am` = `BnAm ∪ AnAm`: the graph `X ⊕ F X` is a **transfinite-rank Part-2** object
+  (`am_graph_not_finite_jump`). Part-2-flavoured.
 
 ## 7. Summary and open questions
 

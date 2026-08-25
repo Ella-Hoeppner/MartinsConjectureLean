@@ -633,3 +633,40 @@ purchase. So the incomparable core is not just "no code" (barrier wall 1) but sp
 start because the argument needs the argument to dominate the value, and incomparability forbids exactly
 that. This is the crispest proof-level statement of why the sole open core resists the one method that
 settles the regressive case.
+
+---
+
+## Night synthesis (2026-08-25, 7-hour autonomous run)
+
+**Concrete formalization delivered (all std axioms, machine-checked):**
+- `MeasurePreservingFilter.lean`: functorial characterizations (MP/escaping/above-id/constant as
+  Martin-measure-pushforward statements; Part 1 in ultrafilter language) + `RKle` with
+  `pushCone_rkle_id` (RK order on pushforwards is trivial ⟹ RK-descent can't prove Part 1).
+- `GraphFunction.lean`: the graph `X ↦ X ⊕ F X` (= `id ⊔ F`), why MartinPPT can't grip a counterexample,
+  and the Martin order as an upper semilattice (`martinJoin_le`).
+- `OrderPreservingCore.lean`: `uncountableCofinal_iff_avoiding` — the OP branch rests on exactly ONE open
+  coding lemma (the two named OP hypotheses are equivalent).
+- `PosnerRobinson.lean` (subagent): relativized PR (`A ⊕ G ≡ᵀ G'` on the cone above `0'`, via Friedberg).
+- `RegressiveSkeleton.lean` (subagent): the KNOWN Slaman–Steel regressive theorem opened into its 3 steps
+  (coordinated tree / branch domination / branch coding), assembly proved, discharging the regressive core
+  outright given the 3 steps.
+
+**Original-research findings on the OPEN incomparable core (no crossing — expected; barrier is deep):**
+1. Every fresh angle (Fubini/iterated-cone B1, kernel-growth B2, RK-descent B3, MartinPPT-on-graph B4)
+   funnels to the same barrier: a counterexample's range is not cofinal, its canonical cofinal-ification
+   (the graph) is above-id and washes out incomparability, and no cone-native tool (not even the newly
+   proved MartinPPT) extracts a Turing code from a non-definable invariant `F`.
+2. **Sharpest proof-level localization (new):** the Slaman–Steel regressive method's *domination* step
+   needs `x ≥ᵀ f x` (so `x` can diagonalize against `f x = Φ_e^x`); the incomparable core is exactly where
+   `x ≱ᵀ f x`, so the one method that settles the regressive case has no purchase. The incomparable core
+   is decomposed four ways by arithmetic position (`incomparableCore_of_cases`); the "Bm" (arithmetic-
+   regressive) cases would need an *arithmetic-degrees* regressive theorem (reduces Bm→BnBm, not closed),
+   the arithmetic-escaping cases are the transfinite residual.
+3. Literature-confirmed: order-preserving/measure-preserving (Lutz–Siskind 2025) and regressive
+   (Slaman–Steel) are KNOWN; the incomparable core ("functions off to the side of the constants") is the
+   sole open Part-1 content, with no known technique; the crossing appears to need inner model theory
+   (Siskind). Consistent with the machine-checked barrier here.
+
+**Net:** the known Part-1 content is now fully structured/discharged-modulo-named-lemmas; the open core is
+precisely mapped and shown robust against the strongest available tools. No disproof/crossing (none
+expected under determinacy).

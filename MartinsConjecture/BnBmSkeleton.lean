@@ -154,9 +154,30 @@ theorem arithBelowHalf_of_all_tree_cores {D₁ D₂ : (ℕ → ℕ) → (ℕ →
     (arithRegressive_of_cores hTreeA hdomA hcodingA)
     (bnBm_of_cores hTreeB hdomB hcodingB)
 
+/-- **Headline capstone: Part 1 ⟸ two coordinated-tree brackets + the `Am` region.**  Assembling the
+whole analysis: `RegressiveSlamanSteel` (known) discharges the regressive core; the incomparable core
+splits (primary divide) into `ArithBelowHalf` and `ArithEscapingHalf`; `ArithBelowHalf` reduces to the
+`AnBm` and `BnBm` relativized-S-S coordinated-tree ingredients (`arithBelowHalf_of_all_tree_cores`); and
+`ArithEscapingHalf` (`= Am`) is supplied as the remaining input.  So Part 1 of Martin's conjecture holds
+given: the known regressive theorem, *one* relativized-Slaman–Steel coordinated-tree method (in two
+instances, `AnBm` and `BnBm`), and the `Am` region.  This is the sharpest machine-checked statement of what
+a proof of Part 1 must still supply. -/
+theorem partI_of_all_tree_cores_and_escaping {D₁ D₂ : (ℕ → ℕ) → (ℕ → ℕ) → Prop}
+    (hTD : TuringDeterminacy fun _ => True) (hSS : RegressiveSlamanSteel)
+    (hTreeA : HasArithRegressiveUniformTree)
+    (hdomA : ArithBranchDomination D₁) (hcodingA : ArithBranchCoding D₁)
+    (hTreeB : HasBnBmUniformTree)
+    (hdomB : BnBmBranchDomination D₂) (hcodingB : BnBmBranchCoding D₂)
+    (hAm : ArithEscapingHalf) :
+    ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F :=
+  partI_of_slamanSteel_incomparable hTD hSS
+    ((incomparableConstant_iff_arith_halves hTD).mpr
+      ⟨arithBelowHalf_of_all_tree_cores hTD hTreeA hdomA hcodingA hTreeB hdomB hcodingB, hAm⟩)
+
 #print axioms bnBmBranchAboveId_absurd
 #print axioms bnBm_of_cores
 #print axioms arithBelowHalf_of_bnBm_cores
 #print axioms arithBelowHalf_of_all_tree_cores
+#print axioms partI_of_all_tree_cores_and_escaping
 
 end Martin

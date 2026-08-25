@@ -151,8 +151,11 @@ sharpest proof-level statement of why the one method that settles the regressive
   `G ≡ᵀ jump^[j]` on a cone would give `F X ≤ᵀ (F X)^(k) ≡ᵀ X^(j)`, contradicting `Am` (`F X ≰ₐ X`, the
   defining `m`-component of `BnAm`) at `m = j`. So
   `BnAm` survives only by exhibiting a *transfinite*-rank increasing function — precisely a Part-2 object,
-  whose existence off the uniform class is itself open. `BnAm` is therefore not native to the incomparable
-  core; it is Part 2 in disguise.
+  whose existence off the uniform class is itself open. So `BnAm` *produces* a Part-2 object and is at
+  least as hard as understanding it. (Caveat, stated honestly: this is a structural leak, **not** a
+  reduction of `BnAm` to Part 2 — even granting Part 2 the graph/`jump^[k]∘F` equivalence `≡ᵀ X^(α)` does
+  not by itself force `F` constant, since recovering `F` from the derived object is the separate
+  non-invariant "odd-part" problem. The value is locating `BnAm` in Part-2 territory, not dissolving it.)
 - **BnBm** (`F X ≡ₐ X`, Turing-incomparable): the *arithmetic-preserving, Turing-dropping* phenomenon —
   `F` maps `X` to another Turing degree in the same arithmetic degree. This is genuinely `Turing`-specific
   (vacuous on `D_h`, where `F X <_h X` always strictly drops `ω₁^x`), which is precisely why Lutz's
@@ -180,8 +183,9 @@ to a **recognizable regime**:
 - **AnBm** (`F X <ₐ X`) is the arithmetic-degrees regressive theorem — the missing middle of the
   Turing/arithmetic/hyperarithmetic hierarchy — now structured via relativized Slaman–Steel
   (`ArithRegressiveSkeleton`).
-- **BnAm** (`X <ₐ F X`) is **Part 2 in disguise**: it forces `jump^[k]∘F` to be a transfinite-rank
-  above-identity function (`bnAm_jumpComp_not_finite_jump`).
+- **BnAm** (`X <ₐ F X`) **produces a Part-2 object**: it forces `jump^[k]∘F` to be a transfinite-rank
+  above-identity function (`bnAm_jumpComp_not_finite_jump`) — a structural leak into Part 2, not a
+  reduction (see §6 caveat).
 - **BnBm** (`F X ≡ₐ X`) and **AnAm** (arithmetically incomparable) are the genuinely Turing-specific
   transfinite residue — the arithmetic-preserving-Turing-dropping phenomenon and the `ω₁`-decreasing
   case respectively, each with a precise obstruction below.

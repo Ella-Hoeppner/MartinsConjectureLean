@@ -74,7 +74,8 @@ function (`X ≤ᵀ X ⊕ F X` always) whose Part-2 rank is not finite: `jump^[k
 cone would force `F X ≤ᵀ X ⊕ F X ≤ᵀ (X ⊕ F X)^(k) ≡ᵀ X^(j)`, contradicting `Am`.  Unlike `jump^[k]∘F`
 (above-id only on the `Bn` cone), the graph is *unconditionally* above-id, so this exhibits a genuine
 transfinite-rank Part-2 object for the whole `Am` region — the two "arithmetically-non-regressive"
-incomparable faces are Part-2 phenomena in disguise. -/
+incomparable faces *produce* Part-2 objects.  (This is a structural leak, not a reduction: recovering `F`
+constant from the graph is the separate non-invariant "odd-part" problem.) -/
 theorem am_graph_not_finite_jump {F : (ℕ → Bool) → ℕ → Bool} (k : ℕ)
     (hAm : OnCone (fun X => ∀ m, ¬ F X ≤ₜ Cantor.jump^[m] X)) :
     ¬ ∃ j, OnCone (fun X => Cantor.jump^[k] (Cantor.join X (F X)) ≡ₜ Cantor.jump^[j] X) := by

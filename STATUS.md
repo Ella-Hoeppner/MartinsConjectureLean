@@ -39,7 +39,8 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
   "above identity"), the three steps bracketed.
 - **`BnAmPartTwo.lean` + `OpenContentCapstone.lean`**: **the incomparable core has a COHERENT FOUR-FACE MAP.**
   For `G X := jump^[k](F X)` (invariant, above-id on the `Bn` cone): `bnAm_jumpComp_not_finite_jump` —
-  `BnAm` forces `G` to *infinite* Part-2 rank (Part 2 in disguise); `bnBm_jumpComp_finite_bounded` — `BnBm`
+  `BnAm` forces `G` to *infinite* Part-2 rank (a structural leak into Part 2, not a reduction);
+  `bnBm_jumpComp_finite_bounded` — `BnBm`
   keeps `G` at *finite* rank (`X ≤ᵀ G X ≤ᵀ X^(k+m)`). So the `Am`/`Bm` split (`F X ≰ₐ X` vs `F X ≤ₐ X`) IS
   the infinite/finite Part-2-rank split. Two of the four faces are the two known Martin regimes (AnBm=Part-1-regressive,
   BnAm=Part-2-increasing); only `BnBm`/`AnAm` (the transfinite residue) is native to the core.

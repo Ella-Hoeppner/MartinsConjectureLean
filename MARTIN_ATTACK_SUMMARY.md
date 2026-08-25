@@ -51,7 +51,12 @@ measure on `ω₁` (linear order) the analogue is trivially true (Fodor; no inco
 ## Honest bottom line
 - **Not solved.** The frontier — `U_M` has no nonprincipal RK-predecessor on the degrees other than itself —
   is a genuine open problem in **AD ultrafilter theory** (Steel–Woodin / Siskind's inner model theory), open
-  even under `AD + Uniformization_ℝ`; the AD-vs-AD⁺ depth question stands.
+  even under `AD + Uniformization_ℝ`; the AD-vs-AD⁺ depth question stands. *Where a proof must live (derived,
+  not just cited):* the Martin measure's ultrapower `Ult(V, U_M)` is well-founded (countable completeness),
+  and the RK-rigidity is a statement about the *generic degree* `[id]` and the ultrafilters it induces there —
+  which is exactly the terrain of **Steel's iterated-ultrapower / derived-model analysis of `L(ℝ)`**
+  (Siskind, *Aspects of Martin's Conjecture and Inner Model Theory*). Every elementary route in this attack
+  bottomed out precisely at the point where that machinery would be needed.
 - **Genuine contributions:** correctly identifying + precisely stating the frontier (independently matching
   the literature verbatim); ruling out the coordinated-tree approach with a proof (correcting earlier work);
   Theorem A (Borel = fixed level); the non-linearity account; and machine-checked substrate

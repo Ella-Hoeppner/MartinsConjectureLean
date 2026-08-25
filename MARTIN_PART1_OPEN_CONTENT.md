@@ -148,7 +148,8 @@ sharpest proof-level statement of why the one method that settles the regressive
   sub-case leaks into Part 2** (`BnAmPartTwo.bnAm_jumpComp_not_finite_jump`, formalized). The derived
   function `G X := jump^[k](F X)` is Turing-invariant and, on the `Bn` cone, above identity
   (`X ≤ᵀ (F X)^(k) = G X`), so Part 2 assigns it a jump-hierarchy rank. That rank cannot be *finite*:
-  `G ≡ᵀ jump^[j]` on a cone would give `F X ≤ᵀ (F X)^(k) ≡ᵀ X^(j)`, contradicting `An` at `m = j`. So
+  `G ≡ᵀ jump^[j]` on a cone would give `F X ≤ᵀ (F X)^(k) ≡ᵀ X^(j)`, contradicting `Am` (`F X ≰ₐ X`, the
+  defining `m`-component of `BnAm`) at `m = j`. So
   `BnAm` survives only by exhibiting a *transfinite*-rank increasing function — precisely a Part-2 object,
   whose existence off the uniform class is itself open. `BnAm` is therefore not native to the incomparable
   core; it is Part 2 in disguise.

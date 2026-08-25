@@ -91,10 +91,37 @@ theorem regressive_iff_graphFn_equiv_id :
   · rintro ⟨b, hb⟩
     exact ⟨b, fun X hX => (Cantor.right_le_join X (F X)).trans (hb X hX).1⟩
 
+/-! ### The Martin order is an upper semilattice; the graph is the join with the identity -/
+
+/-- The pointwise join `F ⊔ G` of two functions. -/
+def martinJoin (F G : (ℕ → Bool) → ℕ → Bool) (X : ℕ → Bool) : ℕ → Bool :=
+  Cantor.join (F X) (G X)
+
+theorem martinLE_left_join (F G : (ℕ → Bool) → ℕ → Bool) : MartinLE F (martinJoin F G) :=
+  ⟨fun _ => false, fun X _ => Cantor.left_le_join (F X) (G X)⟩
+
+theorem martinLE_right_join (F G : (ℕ → Bool) → ℕ → Bool) : MartinLE G (martinJoin F G) :=
+  ⟨fun _ => false, fun X _ => Cantor.right_le_join (F X) (G X)⟩
+
+/-- **`martinJoin F G` is the least upper bound of `F` and `G` in the Martin order.**  So the Martin
+order on invariant functions is an *upper semilattice*, with join computed pointwise by `⊕`.  (This is
+the structure Part 2 well-orders above the identity.) -/
+theorem martinJoin_le {F G H : (ℕ → Bool) → ℕ → Bool}
+    (hF : MartinLE F H) (hG : MartinLE G H) : MartinLE (martinJoin F G) H := by
+  obtain ⟨B, hB⟩ := onCone_and hF hG
+  exact ⟨B, fun X hX => Cantor.join_le (hB X hX).1 (hB X hX).2⟩
+
+/-- **The graph function is exactly the Martin-order join of the identity and `F`.**  So
+`graphFn F = id ⊔ F`, the least above-identity function dominating `F` — pinning its role in the
+Martin order. -/
+theorem graphFn_eq_martinJoin_id (F : (ℕ → Bool) → ℕ → Bool) :
+    graphFn F = martinJoin (fun X => X) F := rfl
+
 #print axioms graphFn_aboveId
 #print axioms graphFn_invariant
 #print axioms graphFn_rkle
 #print axioms aboveId_iff_graphFn_equiv
 #print axioms regressive_iff_graphFn_equiv_id
+#print axioms martinJoin_le
 
 end Martin

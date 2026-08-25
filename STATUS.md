@@ -45,6 +45,11 @@ This file is the current-state map. `ATTACK.md` is the living log of the open-pr
   the infinite/finite Part-2-rank split. Two of the four faces are the two known Martin regimes (AnBm=Part-1-regressive,
   BnAm=Part-2-increasing); only `BnBm`/`AnAm` (the transfinite residue) is native to the core.
   `escapingMP_of_three_cases_and_arith` ports the decomposition to the canonical `escaping⟹MP` phrasing.
+  The leak is abstracted to `am_not_finite_jump_of_increasing` (it uses *only* that the operator is
+  increasing, `A ≤ᵀ op A`) — the precise property the enumeration-degree *skip* lacks, machine-connecting
+  the analysis to Nakid-Cordero's e-degree contrast (arXiv:2510.19147; `ATTACK.md` B9+). Primary packaging
+  `partI_of_arith_bnBm_escaping`: Part 1 ⟸ known SS + arith-regressive theorem + `ArithEscapingHalf` (Am,
+  Part-2-flavoured) + `SubcaseBnBm` (the single face native to neither Martin regime).
 - **`RegressiveSkeleton.lean`**: the KNOWN Slaman–Steel regressive theorem opened into its three steps
   (coordinated tree / branch domination / branch coding); assembly + downstream PROVED
   (`regressiveSlamanSteel_of_cores`, `regressiveImpliesConstant_of_cores`), the two hard steps bracketed.

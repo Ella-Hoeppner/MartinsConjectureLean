@@ -9,7 +9,14 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
-### Session 2026-08-26b — the pointed-injectivity (Marks) route: countable-fiber case is DONE, open = uncountable
+### Session 2026-08-26b — the strict/equivalence halves in dominated-invertibility language
+> **⚠️ READ THE MACHINE-CHECKED CORRECTION BULLET BELOW FIRST.** The correct degree-level framing is the
+> **dominated-invertibility** organization (`MartinStrictHalf.lean`): Part 1 = (Q3) non-constant ⟹ DI ∧
+> (Q4) DI ⟹ MP; disproof targets `¬DI` (Q3) and *DI-incomparable* `F` (Q4); `incomparable_violates_a_half`.
+> The "pointed-injectivity / uncountable-fiber / pointed-Silver" bullets that follow are the *research trail*
+> and contain two errors (jump is bounded-fibered; no clean single-fiber characterization) — kept for the
+> record, superseded by the correction bullet.
+
 **→ `MARTIN_PART1_STRICT_MARKS.md` + memory `marks-pointed-injectivity.md`.** A combinatorial handle on the
 STRICT half (U_M RK-minimal), complementary to the measure route. Marks's conjecture (every f constant OR
 injective on a POINTED perfect tree) ⟹ strict half (Lutz thesis Prop 5.37). Sharpening this session:

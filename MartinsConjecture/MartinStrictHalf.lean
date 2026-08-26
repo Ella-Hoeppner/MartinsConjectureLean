@@ -89,6 +89,48 @@ theorem pointedInjectiveTree_fiber_le (Tr : PointedInjectiveTree F) {x y : ℕ �
   (Tr.recover y hy).trans
     (Cantor.join_le (h.1.trans (Cantor.left_le_join (F x) Tr.code)) (Cantor.right_le_join (F x) Tr.code))
 
+/-! ### Fiber-boundedness: the true content of Question 3, and a strict-half disproof target
+
+A cleaner reading of Q3 than "pointed-Silver".  Dominated-invertibility *bounds* every fiber; so an
+*unbounded* (equivalently uncountable) fiber makes `F` not dominated-invertible — a strict RK-predecessor,
+refuting Part 1.  Thus Q3 ⟺ *every non-constant invariant `F` is bounded-(= countable-)fibered on a cone*,
+and the open residue is the **existence question for unbounded-fiber invariant functions**, not a
+tree-fusion.  (Corrects the note that "the jump has uncountable fibers": the jump — like any increasing
+`F` — is bounded-fibered, `{d : d' ≡ᵀ c} ⊆ {d ≤ᵀ c}`.) -/
+
+/-- **Dominated-invertibility bounds every fiber.**  If invariant `g` gives `X ≤ᵀ g(F X)` on `cone(base)`,
+then for each value `c` the fiber `{d ≥ᵀ base : F d ≡ᵀ c}` is bounded above by `g c`: `d ≤ᵀ g(F d) ≡ᵀ g c`. -/
+theorem dominatedInvertible_fiber_bounded (hdi : DominatedInvertible F) :
+    ∃ (g : (ℕ → Bool) → ℕ → Bool) (base : ℕ → Bool), ∀ c d, base ≤ₜ d → F d ≡ₜ c → d ≤ₜ g c := by
+  obtain ⟨g, hg, base, hbase⟩ := hdi
+  exact ⟨g, base, fun c d hbd hFdc => (hbase d hbd).trans (hg (F d) c hFdc).1⟩
+
+/-- **An unbounded fiber refutes dominated-invertibility.**  If some value `c` has a fiber that, above any
+bound `w` and any base, still contains a degree `d` with `F d ≡ᵀ c` and `d ≰ᵀ w`, then `F` is not
+dominated-invertible (no `g c` could bound it). -/
+theorem not_dominatedInvertible_of_unbounded_fiber {c : ℕ → Bool}
+    (hunb : ∀ base w : ℕ → Bool, ∃ d, base ≤ₜ d ∧ F d ≡ₜ c ∧ ¬ d ≤ₜ w) : ¬ DominatedInvertible F := by
+  intro hdi
+  obtain ⟨g, base, hb⟩ := dominatedInvertible_fiber_bounded hdi
+  obtain ⟨d, hbd, hFdc, hdw⟩ := hunb base (g c)
+  exact hdw (hb c d hbd hFdc)
+
+/-- **An unbounded fiber REFUTES Part 1** (the strict-half disproof target).  A non-constant invariant `F`
+with an unbounded fiber is not measure-preserving — because MP ⟹ dominated-invertible (`g = id`, `MP ⟹
+above-id`), which bounds all fibers.  So `F` is neither constant-on-a-cone nor MP, refuting Part 1;
+equivalently `F_*U_M` is a nonprincipal **strict** RK-predecessor of `U_M` (Question 3 = YES).  Hence the true
+content of Q3 is: *can a non-constant invariant `F` have an unbounded (≡ uncountable) fiber?* — an existence
+question, NOT a pointed-Silver tree-fusion; the bounded/countable case is already proved
+(`strictHalf_of_countableFibered`). -/
+theorem partI_false_of_unbounded_fiber (hM : MartinPPT) (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F)
+    {c : ℕ → Bool} (hunb : ∀ base w : ℕ → Bool, ∃ d, base ≤ₜ d ∧ F d ≡ₜ c ∧ ¬ d ≤ₜ w) :
+    ¬ (∀ G, TuringInvariant G → ConstantOnCone G ∨ MeasurePreserving G) := by
+  intro hP
+  have hmp : MeasurePreserving F := (hP F hF).resolve_left hnc
+  have hdi : DominatedInvertible F :=
+    ⟨fun x => x, fun _ _ h => h, (mp_iff_aboveId_of_martinPPT hM hF).mp hmp⟩
+  exact not_dominatedInvertible_of_unbounded_fiber hunb hdi
+
 /-- **The equivalence half for `F`** (Lutz–Siskind open **Question 4**): if `F_*U_M` is RK-above `U_M`
 (`StrictHalfFor F`, so `U_M ≤_RK F_*U_M ≤_RK U_M`) then it equals `U_M` (`F` is measure-preserving).  The
 open content is the `g`-inversion gap (`gcomp_mp_recovers`): `g∘F` MP gives `g(F X) ≥ᵀ X`, which does not
@@ -155,6 +197,8 @@ theorem strictHalf_of_countableFibered (hMSS : CountableFiberMarks) (hM : Martin
 #print axioms strictHalf_of_pointedInjectiveTree
 #print axioms pointedInjectiveTree_fiber_le
 #print axioms partI_of_halves
+#print axioms partI_false_of_unbounded_fiber
+#print axioms dominatedInvertible_fiber_bounded
 #print axioms strictHalf_of_countableFibered
 
 end Martin

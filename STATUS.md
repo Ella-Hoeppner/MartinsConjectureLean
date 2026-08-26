@@ -9,6 +9,26 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26f — Lutz-thesis primary-source dive: corrections, the decisive mechanism, Q9.3 formalized
+**→ `MARTIN_BREAKTHROUGH_ATTEMPT.md` ("decisive mechanism" + "one object, three names").** Read the Lutz
+thesis (pdftotext) directly. Outcomes:
+- **`TwoUniform.lean`** (new, 3 thms, std axioms, build 3114 green): formalizes Lutz **open Question 9.3**
+  (Martin's conjecture for *2-uniformly invariant* `F`). `TwoUniformlyTuringInvariant`; `.of_uniform`
+  (uniform ⊆ 2-uniform); `.turingInvariant`; and **`partI_twoUniform_of_uniformize`** — Part 1 for all
+  2-uniform `F` reduces to "every 2-uniform `F` is Martin-equiv to a uniform `G`" (a sub-case of Steel's
+  Conj 9.4, plausibly more tractable), mirroring `incomparable_core_of_uniformization`. The hard collapse
+  (fix the `{1,2}` branch on a pointed tree via Lemma 2.10) is documented as next step, not assumed.
+- **The decisive mechanism (source-grounded):** under AD the ONLY "cofinal → uniform-on-a-pointed-tree"
+  engine is the countable-range trick (Lemma 2.10); Lemma 2.11/Cor 2.12 uniformize `R` to a functional iff
+  `R ⊆ ≥ᵀ`, because the ℕ-valued datum is the reduction index, existing iff `f(x)≤ᵀx`. So regressive/MP are
+  theorems; the incomparable core has NO ℕ-index (its separating invariants `ω₁ˣ` are ordinal-range, for which
+  2.10 provably fails ⟹ `ω₁↪ℝ`). Part 1's open content = exactly the **ℕ-range vs ordinal-range gap**; the
+  generic-ultrapower critical point (`x↦ω₁ˣ`) is the SAME object. Unifies W1/W2/W4.
+- **Corrections (primary-source verified):** (i) the "proper-forcing lead" was mis-directed — the worked
+  sketch proves `proper ⟹ not-RK-ABOVE U_M` (kills `U_L,U_B`; wrong direction); RK-BELOW is Lutz's open
+  speculation only. (ii) Thm 5.35 (Part 1 ⟺ RK-rigidity) is **ZF+AD_ℝ**; MP Part 1 is **AD+DC_ℝ** (confirms
+  the agent-B axiom correction). Catalogued Lutz's open questions 9.3, 9.9–9.14, 9.18–9.20 as concrete targets.
+
 ### Session 2026-08-26e — parallel frontier probes: two sharpenings + two hard no-gos
 **→ `MARTIN_BREAKTHROUGH_ATTEMPT.md` (second-round section), `MARTIN_COUNTABLE_KERNEL.md`,
 `MARTIN_VALUE_CLEANUP_AND_INDEPENDENCE.md`.** Two independent source-grounded deep-dives against the sharpest

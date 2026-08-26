@@ -110,6 +110,31 @@ theorem dominatedInvertible_fiber_bounded (hdi : DominatedInvertible F) :
   obtain ⟨g, hg, base, hbase⟩ := hdi
   exact ⟨g, base, fun c d hbd hFdc => (hbase d hbd).trans (hg (F d) c hFdc).1⟩
 
+/-- **An `F` injective on a cone is dominated-invertible**, via its (non-effective, invariant) inverse
+`g c = the x ≥ base with F x ≡ᵀ c`.  So injective-on-a-cone `⟹ DI ⟹ StrictHalfFor`.  Combined with
+`incomparable ⟹ ¬MP`, an *injective incomparable* invariant `F` would be `DI` yet not `MP` — the sharpest
+obstruction to Q4 (`DI ⟹ MP`).  This separates the two open questions in the DI-language: **Q3's hard case is
+*non-injective* `F`** (unbounded fibers, recoverability in question); **Q4's is *injective incomparable* `F`**
+(recoverable but sideways). -/
+theorem dominatedInvertible_of_injectiveOnCone (hF : TuringInvariant F) {base : ℕ → Bool}
+    (hinj : ∀ x y, base ≤ₜ x → base ≤ₜ y → F x ≡ₜ F y → x ≡ₜ y) : DominatedInvertible F := by
+  classical
+  refine ⟨fun c => if h : ∃ x, base ≤ₜ x ∧ F x ≡ₜ c then h.choose else c, ?_, base, ?_⟩
+  · intro c c' hcc'
+    by_cases h : ∃ x, base ≤ₜ x ∧ F x ≡ₜ c
+    · have h' : ∃ x, base ≤ₜ x ∧ F x ≡ₜ c' :=
+        h.imp (fun x hx => ⟨hx.1, hx.2.trans hcc'⟩)
+      simp only [dif_pos h, dif_pos h']
+      exact hinj _ _ h.choose_spec.1 h'.choose_spec.1
+        (h.choose_spec.2.trans (hcc'.trans h'.choose_spec.2.symm))
+    · have h' : ¬ ∃ x, base ≤ₜ x ∧ F x ≡ₜ c' :=
+        fun hh => h (hh.imp (fun x hx => ⟨hx.1, hx.2.trans hcc'.symm⟩))
+      simp only [dif_neg h, dif_neg h']; exact hcc'
+  · intro X hX
+    have hex : ∃ x, base ≤ₜ x ∧ F x ≡ₜ F X := ⟨X, hX, Cantor.equiv.refl _⟩
+    simp only [dif_pos hex]
+    exact (hinj _ _ hex.choose_spec.1 hX hex.choose_spec.2).2
+
 /-- **`¬DominatedInvertible` (for non-constant `F`) REFUTES Part 1 — the honest strict-half disproof target.**
 If `F` is invariant, non-constant, and *not* dominated-invertible, then `F` is not measure-preserving (MP ⟹
 dominated-invertible via `g = id` and `MP ⟹ above-id`), so `F` is neither constant-on-a-cone nor MP — Part 1
@@ -209,6 +234,7 @@ theorem strictHalf_of_countableFibered (hMSS : CountableFiberMarks) (hM : Martin
 #print axioms partI_of_halves
 #print axioms partI_of_DI_conditions
 #print axioms partI_false_of_not_dominatedInvertible
+#print axioms dominatedInvertible_of_injectiveOnCone
 #print axioms dominatedInvertible_fiber_bounded
 #print axioms strictHalf_of_countableFibered
 

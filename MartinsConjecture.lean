@@ -89,3 +89,4 @@ import MartinsConjecture.OrdinalUltrapower
 import MartinsConjecture.ChurchKleene
 import MartinsConjecture.CanonicalRepresentative
 import MartinsConjecture.ValueCleanup
+import MartinsConjecture.TwoUniform

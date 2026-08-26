@@ -200,9 +200,26 @@ set bounded by a real it need not contain (no maximum), and the countability sha
 "one kernel degree" without already solving the uniformity problem. The wall is self-similar: it reappears
 inside the very sharpening meant to reduce it.
 
-**The one live lead (not through Goldberg's inapplicable apparatus):** Lutz thesis §5.11 — if the
-`I`-positive-set forcing `P_I` for the dual ideal `I = {A | A ∉ V}` is *proper* (does not collapse `𝔠`), then
-`V ⋠_RK U_M`. The new "kernel bounded by one real `r_K`" fact makes `P_I` a highly constrained, single-real-
-parametrized forcing — exactly the regime where a properness argument has a foothold. Turning "case-2 ⟹ `P_I`
-proper" into a theorem would close RK-rigidity. That is the concrete next target; it is genuinely inner-model /
-forcing-theoretic but does **not** require the (AD-inapplicable) Ketonen/UA machinery.
+**The "live lead" — corrected by reading the primary source (Lutz thesis, ch. 5 "Proper Forcing"),
+and it is weaker than the paraphrase claimed.** The precise text says two *different* things:
+- **Worked (but admittedly incomplete) sketch** (AD + V=L(ℝ); Lutz: *"we are not currently able to give a
+  complete proof"*): *if forcing with the associated `I`-positive sets is proper, then `U` is not
+  Rudin-Keisler **ABOVE** the Martin measure.* The engine is: proper ⟹ every `f : 2^ω → ω₁` is constant on an
+  `I`-positive set ⟹ `U` cannot push `U_M`'s ω₁-structure forward to a countably-complete ultrafilter on ω₁ ⟹
+  `U ⋠_RK`-above `U_M`. This is the tool that kills the Lebesgue and Baire ultrafilters `U_L, U_B` — which sit
+  *above*. **Wrong direction for the incomparable core.**
+- **The `RK-below` direction — the one Part 1 actually needs (kill nonprincipal predecessors `V ≤_RK U_M`) —
+  is pure speculation in the source:** Lutz writes only that one might *"identify features of forcing so that …
+  the ultrafilter is not Rudin-Keisler **below** Martin measure. Properness is one candidate … Slaman has
+  suggested that not collapsing 𝔠 might also be such a feature."* No argument is given for the `below`
+  direction; it is flagged as an open research program with *two* candidate features (properness, non-collapse
+  of 𝔠), not a path.
+
+So the second-round paraphrase ("proper ⟹ `V ⋠_RK U_M`, a concrete next target") **conflated `above` with
+`below`**: the worked argument goes the wrong way, and the right-direction version is Lutz's own open
+speculation. Net honest status: there is **no worked lead** into the incomparable core; even the aspirational
+forcing route is undischarged and directionally unaimed. The rigorous object closest to the earlier
+factor-map/critical-point sketch is Woodin's **generic ultrapower** (V=L(𝒫ℝ), Θ regular, AD_ℝ): if
+well-founded it satisfies Łoś and gives an elementary `j : V → Ult`, with — for the Martin-measure ideal — `j`
+*not* the identity on ordinals and **critical point exactly ω₁**. That is the correct home for a future attack,
+but it too is open at the rigidity step.

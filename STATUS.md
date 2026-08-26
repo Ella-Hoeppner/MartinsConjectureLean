@@ -28,9 +28,14 @@ target (kill Siskind case-2 / prove Steel 1.4). Still open (as expected), but ge
   ZF-absent in `D_T`, so it is evidence *for* the Turing conjecture, not an independence route. Working
   verdict: Part 1 is **true under AD**; no independence is known or conjectured.
 - **Synthesis** (both sides, machine-stated): a minimal counterexample is **"thin-below, sideways-valued"** —
-  domination kernel bounded by one real `r_K`, yet `¬(F X ≤ᵀ X ⊕ r_K)` on every cone. One live lead: Lutz
-  thesis §5.11 (properness of the `I`-positive forcing ⟹ `⋠_RK U_M`), now with a single-real-parametrized
-  ideal — inner-model but *not* through Goldberg's inapplicable apparatus.
+  domination kernel bounded by one real `r_K`, yet `¬(F X ≤ᵀ X ⊕ r_K)` on every cone. The kernel bound has
+  **no maximum** (r_K bounds it but `r_K ∉` kernel — that would need the obstructed uniform join), so the
+  sharpening is self-similar and cannot collapse to one degree.
+- **Corrected a mis-promoted lead** (read Lutz thesis ch. 5 directly): the proper-forcing argument proves
+  *`proper ⟹ U not RK-**above** U_M`* (kills `U_L, U_B`; wrong direction for the incomparable core). The
+  `RK-below` version Part 1 needs is Lutz's explicit **open speculation** ("properness is one candidate …
+  Slaman: non-collapse of 𝔠 another"), not a worked path. So there is **no worked lead** into the core; the
+  rigorous frame for a future attack is Woodin's generic ultrapower (crit `= ω₁`), open at the rigidity step.
 
 ### Session 2026-08-26d — "invent the machinery" breakthrough attempt on the incomparable core
 **→ `MARTIN_BREAKTHROUGH_ATTEMPT.md`.** Genuinely tried ~22 ideas + 8 research dives to crack the core; NOT

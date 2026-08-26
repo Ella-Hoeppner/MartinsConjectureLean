@@ -1,5 +1,17 @@
 # The pointed-injectivity (Marks) route to the STRICT half of Part 1
 
+> ⚠️ **CORRECTIONS (machine-checked, 2026-08-26 — see `MartinStrictHalf.lean` + STATUS.md 2026-08-26b).** Two
+> claims below are wrong: (1) **"the jump has uncountable fibers" is FALSE** — the jump (like any increasing
+> `F`) is *bounded*-fibered, `{d : d' ≡ᵀ c} ⊆ {d ≤ᵀ c}`, and is trivially dominated-invertible; the
+> "jump test case" is trivial (jump is reals-injective, `x ≤ᵀ x'`). (2) **The degree-level strict half is
+> `DominatedInvertible F`** (∃ inv `g`, `X ≤ᵀ g(F X)` on a cone, machine-checked `strictHalf_iff_dominatedInvertible`),
+> NOT reals-injectivity; the pointed-Silver "make the perfect set pointed" step targets a *stronger, separate*
+> reals-injective statement. DI bounds fibers only on *the* DI-cone (not globally: `F d = if d ⊥ 0' then 0'
+> else d` is DI yet has an unbounded fiber). So there is **no clean uncountable-fiber characterization**; the
+> honest open Q3 = "is every non-constant invariant `F` dominated-invertible?", disproof target `¬DI`. The
+> **countable-fiber MSS fragment is real and now formalized** (`strictHalf_of_countableFibered`, sufficient not
+> necessary). Read the rest as the *reals-injectivity Marks* analysis, keeping these corrections in mind.
+
 *Session 2026-08-26. A combinatorial route to "U_M RK-minimal" (V ≤_RK U_M nonprincipal ⟹ U_M ≤_RK V),
 complementary to the measure-theoretic `escaping ⟹ MP` route. Main content: the countable-fiber case is
 ALREADY a theorem (Marks–Slaman–Steel), so the entire open content is UNCOUNTABLE cone-null fibers, and the

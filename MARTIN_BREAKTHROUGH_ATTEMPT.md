@@ -256,3 +256,15 @@ ordinal-range side (its value is Turing-incomparable to every fixed ℕ-indexed 
 (non-uniformity), W2 (fat ordinal fibers) and W4 (countability) under the *single* mechanism of Lemma 2.10,
 and explains — from the primary source — why *every* route (measure, Marks pointed-tree, coding, ultrafilter)
 converges here: they all ultimately need 2.10, and 2.10 needs a reduction index the core does not have.
+
+**One object, three names (the total convergence).** Woodin's generic ultrapower for the Martin-measure ideal
+has **critical point ω₁, represented by the function `x ↦ ω₁ˣ`** (Lutz thesis, "Generic Ultrapower"). That is
+the *same* `ω₁ˣ` that is the canonical **ordinal-range invariant** blocking Lemma 2.10 in the paragraph above,
+and the *same* `ω₁ˣ` of W2's fat fibers. So the three "correct homes" for an attack — (i) the generic
+ultrapower's action at its critical point, (ii) the ordinal-invariant `ω₁ˣ`, (iii) the failure of the
+uniformization engine on ordinal-range data — are literally one mathematical object seen through three lenses.
+The honest terminal conclusion of this whole attempt is therefore not merely "open," but the sharper: **the
+frontier is a single, precisely-located point** (control of `f` at the ω₁-critical-point / ordinal-invariant
+level), and a genuine breakthrough is exactly a new AD tool that uniformizes ordinal-range invariants on a
+pointed tree — which is what Lemma 2.10 cannot do and what the generic-ultrapower rigidity would need. No
+elementary move, and no currently-worked inner-model move, crosses it.

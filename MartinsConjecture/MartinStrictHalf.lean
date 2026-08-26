@@ -135,6 +135,13 @@ theorem dominatedInvertible_of_injectiveOnCone (hF : TuringInvariant F) {base : 
     simp only [dif_pos hex]
     exact (hinj _ _ hex.choose_spec.1 hX hex.choose_spec.2).2
 
+/-- **MP ⟹ dominated-invertible** (`g = id`, via `MP ⟹ above-id`).  With `DI ⟹ StrictHalfFor` and
+`StrictHalfFor ⟹ DI`, this places `DI` exactly between MP and non-constant: `MP ⟹ DI` always, and Part 1
+reverses it via Q4 (`DI ⟹ MP`).  So `DI` is the pivot of the whole decomposition. -/
+theorem dominatedInvertible_of_measurePreserving (hM : MartinPPT) (hF : TuringInvariant F)
+    (hmp : MeasurePreserving F) : DominatedInvertible F :=
+  ⟨fun x => x, fun _ _ h => h, (mp_iff_aboveId_of_martinPPT hM hF).mp hmp⟩
+
 /-- **`¬DominatedInvertible` (for non-constant `F`) REFUTES Part 1 — the honest strict-half disproof target.**
 If `F` is invariant, non-constant, and *not* dominated-invertible, then `F` is not measure-preserving (MP ⟹
 dominated-invertible via `g = id` and `MP ⟹ above-id`), so `F` is neither constant-on-a-cone nor MP — Part 1

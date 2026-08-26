@@ -9,6 +9,23 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26h — NEW attack on Q4: partition by order-behavior; order-reversing horn KILLED
+**→ `OrderReversing.lean` (std axioms, build green).** A genuinely new angle on the sharpest Q4 target
+(injective incomparable invariant `F`): partition `F`'s behavior on `≤ᵀ`-comparable branch pairs into
+**order-preserving / order-reversing / scrambling**, and kill the non-scrambling horns.
+- **`orderReversing_constant` (NEW, unconditional):** an order-reversing invariant `F` is constant on a cone.
+  Mechanism: taking the minimum argument `X = base`, order-reversing gives `F Y ≤ᵀ F base` for ALL `Y ≥ base`,
+  so `F` is bounded by the single degree `F base` ⟹ constant (`bounded_implies_constant`). This horn had NOT
+  been excluded. (Cleaner than the OP horn `incomparable_orderPreserving_constant`, which needs the coding
+  hypothesis; mine needs only `TuringDeterminacy`.) `incomparable_not_orderReversing` packages it.
+- **Localization:** with OP⟹constant, a Q4 counterexample must be genuinely **scrambling** (`X <ᵀ Y ⟹
+  F X ⊥ᵀ F Y`) on every cone. **Honest crux:** scrambling resists every elementary angle (bounded-range fails;
+  `F` and its inverse `g` are BOTH scrambling, so it is `F↔g`-symmetric; measure-theoretically it just restates
+  the equivalence half `V=F_*U_M ≡_RK U_M`). So the partition attack localizes the *entire* Q4-injective
+  obstruction to scrambling = the inner-model core. The remaining gaps: (a) the partition property (a Ramsey
+  statement for `D_T`-pairs under AD, to get the trichotomy on a subtree — unproved); (b) excluding scrambling
+  (= the core). Genuine partial progress, not literature.
+
 ### Session 2026-08-26g — the pointed-tree engine + Marks route (Prop 5.37) machine-checked
 **→ `Lemma210.lean`, `Lemma211.lean`, `MarksBridge.lean`.** Built the pointed-perfect-tree uniformization
 engine as clean general lemmas and used it to formalize the Marks route to the incomparable core.

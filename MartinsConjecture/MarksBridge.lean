@@ -94,7 +94,7 @@ Part 1's core are **Marks's conjecture** (the strict half / Q3) and the **equiva
 theorem partI_of_marksConjecture_and_equivHalf (hM : MartinPPT) (hMarks : MarksConjecture)
     (hequiv : ∀ G, TuringInvariant G → EquivHalfFor G) :
     ∀ G, TuringInvariant G → ConstantOnCone G ∨ MeasurePreserving G :=
-  partI_of_halves (fun G hG hnc => strictHalf_of_marksConjecture hM hMarks hG hnc) hequiv
+  partI_of_halves (fun _G hG hnc => strictHalf_of_marksConjecture hM hMarks hG hnc) hequiv
 
 /-- **Marks's conjecture holds for functions injective on a cone.**  If `F` is injective on
 `cone(base)` then any pointed perfect tree inside that cone (supplied by `MartinPPT`, since a cone is

@@ -9,6 +9,23 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26d — "invent the machinery" breakthrough attempt on the incomparable core
+**→ `MARTIN_BREAKTHROUGH_ATTEMPT.md`.** Genuinely tried ~22 ideas + 8 research dives to crack the core; NOT
+solved (open even for experts). Three machine-checked by-products (std axioms, green):
+- **`canonicalRepresentative_no_gain`** (`CanonicalRepresentative.lean`): `F∘c` uniform ⟺ `F` uniform for
+  fixed computable degree-preserving `c` — input-reparametrization is uniformity-**neutral**; the obstruction
+  is entirely in `F`'s **values**.
+- **`incomparable_not_uniform`** (`MartinResults.lean`): incomparable `F` ⟹ ¬uniformly-invariant. So the
+  incomparable core is exactly the (unknown!) source of non-uniform `T`-invariant functions.
+- **`measurePreserving_iff_hasModulus`** (`MeasurePreserving.lean`): MP ⟺ `F` has an increasing modulus — the
+  converse of Lemma 3.3, capturing the **convergence**: a Marks pointed *injective* tree needs a computable
+  witness ⟺ a modulus ⟺ MP, so the Marks/combinatorial and measure routes bottom out at the *same* wall.
+- **6-wall obstruction map** (W1 cone-orthogonality — PROVED: incomparable `F` is nowhere-continuous on the
+  cone; W2 fat fibers; W3 definable≠computable; W4 countability; W5 invariance-mismatch; W6 circularity) and
+  the precise inner-model target: RK-rigidity ⟺ `U_M`'s HOD-iterate minimal among `D_T`-ultrafilter iterates
+  (factor map `k`). All routes converge on "no invariant control of `F`'s value-distribution" — open even at
+  the Steel–Siskind–Goldberg frontier.
+
 ### Session 2026-08-26c — Steel's Conjecture 9.4 (uniform-representative) attack: canonical coding launders nothing
 
 > **New angle, distinct from the measure (RK-rigidity) and Marks (pointed-injectivity) routes.**

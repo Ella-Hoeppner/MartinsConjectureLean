@@ -28,6 +28,12 @@ This file gives elementary but sharpening constraints on both disproof targets. 
 **Q3 side.**
 * `notDominatedInvertible_escapes_jump` — a `¬DI` counterexample has `X ≰ᵀ (F X)′` on every cone
   (jump is a valid invariant witness); iterating, `X` escapes *every* jump-iterate of `F X`.
+* `notDI_incomparable_jumpSymmetric` — jump-symmetric: also `(jump X) ≰ᵀ F X`, so neither of `X, F X`
+  sits below the other's jump.
+
+**Dynamics of any incomparable `F`.**
+* `incomparable_conePreserving_orbitIncomparable` — for a cone-preserving incomparable `F`, consecutive
+  orbit iterates are incomparable (`F X ⊥ᵀ F²X`), so the orbit never becomes self-dominating.
 
 Net picture: a Part-1 counterexample is either `¬DI` (Q3: `F X` loses `X` below all jumps) or
 DI-incomparable (Q4: `X` recovered from `F X` by a **jump-type** `g` while `F X ⊥ᵀ X`).  `MP ⟹ DI` uses

@@ -139,6 +139,20 @@ theorem escaping_ck_nondecreasing_of_partI (hTD : TuringDeterminacy fun _ => Tru
     OnCone (fun X => churchKleene X ≤ churchKleene (F X)) :=
   measurePreserving_ck_nondecreasing hM hF ((partI_iff_escapingMP hTD hM hSS).mp hPartI F hF hesc)
 
+/-- **The equivalence-half mechanism, machine-checked (the `g`-inversion recovery).**  If an invariant `g`
+"inverts" `F` up to the Martin measure — i.e. `g ∘ F` is measure-preserving (equivalently `F_*U_M ≡_RK U_M`
+via `g`) — then by Thm 3.4 the composite is above the identity, so `g(F X) ≥ᵀ X` on a cone.  This is exactly
+the stall point of the *equivalence half* of RK-rigidity (`U_M ≤_RK V ≤_RK U_M ⟹ V = U_M`): the recovery
+`g(F X) ≥ᵀ X` gives **no** comparison between `X` and `F X` itself, because the arbitrary invariant `g` is
+free to *lift* a sideways value `F X ⊥ᵀ Z_0` up above `Z_0`.  So `∃ g, g∘F` MP does NOT force `F` MP — that
+residue is the equivalence half (Lutz–Siskind Prop 5.24 / Siskind ultrapower), distinct from the strict half
+(Marks's conjecture).  What IS machine-checked here is the recovery inequality; the gap is that it is not a
+`≤ᵀ`-reduction. -/
+theorem gcomp_mp_recovers (hM : MartinPPT) {g : (ℕ → Bool) → ℕ → Bool} (hg : TuringInvariant g)
+    (hF : TuringInvariant F) (hmp : MeasurePreserving (fun X => g (F X))) :
+    OnCone (fun X => X ≤ₜ g (F X)) :=
+  (mp_iff_aboveId_of_martinPPT hM (fun X Y hXY => hg _ _ (hF X Y hXY))).mp hmp
+
 /-- **Part 1 splits EXACTLY into its two Church–Kleene branches.**  Given `MartinPPT` + the known
 regressive theorem, Martin's Conjecture Part 1 is equivalent to the conjunction of:
 (1) **no** invariant escaping `F` is CK-regressive (`ω₁^{F X} < ω₁ˣ` on a cone) — the *disproof* branch is
@@ -172,5 +186,6 @@ theorem partI_iff_ck_split (hTD : TuringDeterminacy fun _ => True) (hM : MartinP
 #print axioms partI_false_of_ckRegressive_escaping
 #print axioms escaping_ck_nondecreasing_of_partI
 #print axioms partI_iff_ck_split
+#print axioms gcomp_mp_recovers
 
 end Martin

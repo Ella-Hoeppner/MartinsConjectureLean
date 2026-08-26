@@ -1112,3 +1112,187 @@ characterization of Q3**, and the "pointed-Silver / make the perfect set pointed
 *reals*-injectivity — a stronger, separate statement, not the degree-level strict half.  Net honest open
 content: **Q3 = "is every non-constant invariant `F` dominated-invertible (recoverable)?"** (combinatorial
 existence) and **Q4 = "DI ⟹ MP"** (inner-model, the g-inversion gap) — genuinely different walls.
+
+---
+
+# B19 (2026-08-26) — GENUINE ATTEMPT at the pointed INJECTIVE fusion (Marks's conjecture)
+
+*Target: Marks's Conjecture (Lutz thesis Conj 5.36) — under ZF+AD every `f:2^ω→2^ω` is **constant on a
+pointed perfect tree OR injective on a pointed perfect tree**. This implies the strict half of Part 1
+(Prop 5.37). The non-pointed version is trivial (Lutz p.92: "Marks's conjecture is true if 'pointed perfect
+tree' is replaced by 'perfect tree' — the argument is just a version of the tree thinning lemma"). The whole
+difficulty is **pointedness**. This section: read the exact mechanisms from primary sources (Lutz thesis
+§2.1, §2.3, §5.3–5.4, §5.9; Marks essay; Nakid-Cordero arXiv:2510.19147), attempted the fusion five ways,
+and pins the exact obstruction. Honest verdict: NOT solved; the obstruction is now located much more sharply
+than before and one of the five framings (the prior "GS-coding vs Silver collision") is CORRECTED.*
+
+## B19.0 The exact mechanisms (verbatim from Lutz thesis, this session's read)
+
+Three tools, precisely:
+
+- **Lemma 2.7 (Tree thinning).** `T` pointed perfect, `Φ` a Turing functional **total on [T]** (Φ is a fixed
+  computable functional, computable *from T*): EITHER `Φ` is constant on some `[T_σ]`, OR `T` thins to a
+  pointed `S⊆T` with `Φ` injective on `[S]`. **Pointedness of `S` is FREE** because the thinning is
+  computable-in-`T` (`S≤ᵀT`) so every branch of `[S]⊆[T]` computes `T` hence `S`. *This is Sacks/Spector
+  forcing.* Requires `Φ` **computable**.
+- **Lemma 2.3 (Inverting).** `Φ` computable, total + injective on `[T]` ⟹ `Φ(x)⊕T ≥ᵀ x` for `x∈[T]`
+  (compactness). So a computable injective functional below `f` on a pointed tree ⟹ `f` above-id there.
+- **Thm 2.19 (Groszek–Slaman coding, the basis theorem).** Perfect `A`, countable dense `B⊆A`, `c` with
+  `b≤ᵀc ∀b∈B`: for every `x`, ∃ `y0,y1,y2,y3∈A` with `c⊕y0⊕y1⊕y2⊕y3 ≥ᵀ x`. **4 branches.** The bits of `x`
+  are coded into *least-program-index comparisons* `e_i` (which program computes `b_i∈B` from `c`), NOT into
+  the geometric left/right turns (that was the *un*-strengthened GS Thm 2.18 / the regressive-degrees proof).
+
+**★ KEY STRUCTURAL CORRECTION to the prior "collision" framing (`MARTIN_PART1_STRICT_MARKS.md` §3).** In
+**every** successful pointedness-preserving proof in the thesis (regressive Thm 5.10, order-preserving
+Thm 6.3, measure-preserving Thm 5.15/5.18), **pointedness is delivered by Lemma 2.7 (tree-thinning), NOT by
+GS-coding.** GS-coding (Thm 2.19) is used only to prove *above-identity* for **order-preserving** `f`, via
+Cor 2.21: an order-preserving `f` has a **range that is countably-directed for `≤ᵀ`**, so the range is
+cofinal and the coding fires. The coding is NOT the "pointedness engine." Therefore the prior framing —
+"Silver value-separation *fights* Groszek–Slaman pointed-coding over branch positions" — **mis-identifies the
+collision.** GS-coding and Silver are not the two combatants. **The real tension is:** tree-thinning
+(Lemma 2.7), the actual pointedness engine, **requires a *computable* functional to thin against**, and for
+the general injective case there is no computable injective witness below `f`.
+
+## B19.1 The sharpened obstruction (what actually breaks)
+
+The template that WORKS (regressive/OP/MP): (1) produce a **computable** `Φ` below `f` on a pointed `T`
+(computable uniformization Lemma 2.11 + Martin cofinal→pointed Lemma 2.9); (2) **thin** to make `Φ` injective
+(Lemma 2.7 — pointedness free); (3) **invert** (Lemma 2.3) ⟹ `f` above-id.
+
+For a **general non-constant invariant `f`** (uncountable cone-null fibers, e.g. an *escaping/incomparable*
+`f` if one exists), the strict half wants **injectivity**, and Silver's dichotomy gives `f` injective on a
+**perfect** `P` — but:
+
+> **THE OBSTRUCTION, precisely.** Silver injectivity is injectivity of **`f` itself**, and `f` is an
+> *arbitrary invariant, non-continuous* function. Lemma 2.7 (the only pointedness-free thinning) applies
+> **only to a computable `Φ`**. To make `P` pointed we would need a *computable-in-`T`* functional to thin
+> against; Silver hands us no such witness. **The pointedness engine (2.7) and the injectivity source
+> (Silver) are incompatible at the interface: 2.7 needs computability, Silver produces none.**
+
+This is the SAME wall, restated, as "no computable injective witness below a general `f`." For MP `f` the
+witness comes from the increasing **modulus** (Lemma 5.14, needs `AD_ℝ`/`AD⁺`) inverted by Cor 2.12. **A
+general injective `f` has no modulus** (modulus ⟺ measure-preserving), so this source is gone. This is why
+the countable-fiber case (§B19.2) is the exact boundary of what elementary tools reach.
+
+## B19.2 Why COUNTABLE fibers is the exact boundary (and it is NOT about "countable = easy pointedness")
+
+Refined understanding of the MSS countable-fiber theorem (`strictHalf_of_countableFibered`): with countable
+fibers, **Lusin–Novikov** writes `f = ⋃ₙ (injective Borel `fₙ`)` — the pieces `fₙ` are **Borel, hence
+computable relative to a fixed real (a Borel code)**. So the piece-selector `π(x)=` "the `n` with `x∈Bₙ`" is a
+function to `ℕ` (countable range), and **Martin's pointed-tree lemma (2.10 / MSS 3.5)** makes `π` constant on
+a pointed `[T]⊆Bₙ`. On `[T]`, `f=fₙ` is Borel-injective — **and now `fₙ` IS a computable-relative-to-a-fixed-
+oracle functional**, so we are back in the tree-thinning regime (or injectivity is already witnessed by the
+Borel code + Lemma 2.3 relativized). **The countable case works precisely because Lusin–Novikov manufactures
+a COMPUTABLE (Borel) injective witness — exactly the thing the general case lacks.** The boundary is not
+"countable range is combinatorially nice"; it is "countable fibers ⟹ a *Borel/computable* injective
+decomposition exists (LN) ⟹ tree-thinning applies." **Uncountable fibers ⟹ LN fails ⟹ no computable injective
+witness ⟹ no purchase for Lemma 2.7.** This is the crux, now correctly attributed.
+
+## B19.3 The five requested angles, worked and adjudicated
+
+**(1) Recursion theorem for self-reference.** Idea: build `T` so its code is available during construction,
+baking `f`-separation in while branches read off `T`. *Verdict: does NOT bridge the gap.* The recursion
+theorem gives self-reference to the *construction's own index*, i.e. lets the thinning rule mention `T`'s
+code. But the thing being separated is `f`-**values**, and `f` is non-continuous: at a splitting node σ we can
+separate `f` on two *finite* extensions (find `τ0,τ1⊇σ` with `f(τ0⌢·), f(τ1⌢·)` disagreeing at some finite
+level for SOME branches), but `f` depends on the whole branch and the finite disagreement **need not persist
+to the limit branches** (the modulus problem). The recursion theorem controls the *tree*'s self-knowledge,
+NOT `f`'s modulus. To make finite separation persist you need an `f`-modulus, which for injective-not-MP `f`
+provably does not exist (modulus ⟺ MP). **The recursion theorem is orthogonal to the finite-vs-limit tension;
+it addresses pointedness-self-reference (already handled by 2.7's computability), not `f`-continuity.**
+
+**(2) Residual freedom (sparse coded skeleton).** Idea: GS-coding pins only 2–4 branches; the generic branch
+is free, so a sparse skeleton carries pointedness while other branches steer `f`-values apart. *Verdict:
+based on the corrected mechanism (B19.0), this is a CATEGORY ERROR.* Pointedness is NOT carried by the coded
+branches — **every** branch of a pointed tree must compute `T`, and that is delivered wholesale by
+2.7-thinning (`S≤ᵀT`), not by coding 2–4 branches. The GS-coding's 4 branches establish *above-identity for
+order-preserving `f`* (range-cofinality), a different goal. So "spend the coded branches on pointedness, free
+branches on separation" does not typecheck: pointedness is a *global* property of *all* branches, automatic
+under thinning, and needs no branch budget. The residual-freedom intuition was answering the wrong question.
+**However** there is a salvageable kernel (see B19.4): the coding IS a way to force branch *degrees* upward
+compatibly with a prescribed geometric skeleton — relevant if one tries to *manufacture* a computable
+injective witness, which is the real need.
+
+**(3) Pointed Silver / pointed Galvin–Prikry.** Idea: a Ramsey/perfect-set partition theorem that delivers a
+*pointed* homogeneous set. *Verdict: this is the correct shape of what's needed, and it is EXACTLY Marks's
+conjecture — no shortcut, no known such theorem.* Martin's pointed-tree lemma (2.10) IS "pointed Ramsey for
+**countable**-valued colorings" (a countable-range `h` is constant on a pointed `[T]`). Marks's conjecture is
+the **2-valued-but-continuum-target** analogue (constant-or-injective). Silver's theorem for `E_f` gives a
+perfect homogeneous (= transversal) set; the pointed upgrade is open. Searched: no "pointed Silver/Galvin–
+Prikry" exists in the literature; the Mathias/Ellentuck generic that witnesses Ramsey is a *generic* real,
+and generics **avoid cones** (Lutz §5.6: "generic reals avoid a cone"), i.e. are the *opposite* of pointed
+(pointed = computes-the-tail-structure; generic = decided-by-no-tail). **This is a genuine structural reason
+the Ramsey route resists pointing: the large-set witness is generic, and generic ⊥ pointed.** New observation
+this session, and it is a real (if negative) insight: *any* proof of Marks via a Ramsey-generic homogeneous
+set must fight the generic-vs-pointed antagonism; the pointed witnesses live in a measure/category-null cone
+that the generic construction actively avoids (this is precisely W1 from `MARTIN_BREAKTHROUGH_ATTEMPT.md` —
+the cone is meager+null — re-surfacing in the Marks framing).
+
+**(4) Reduce to invariant `f` (use invariance + cone-nullness).** Idea: for the strict-half application `f`
+is invariant; invariance makes fibers cone-null; drive separation-with-pointedness from that. *Verdict: gives
+a GENUINE usable lemma (below) but not the fusion.* Real content extracted: **no pointed perfect tree is
+`E_f`-monochromatic** for non-constant invariant `f`. Proof: if `f` were `≡ᵀ`-constant on a pointed `[T']`,
+that fiber ⊇ `cone(deg T')` (pointed ⟹ realizes a cone), contradicting cone-null. So on **every** pointed
+tree the *constant* alternative of Marks is already false — meaning for invariant `f` the Marks dichotomy is
+**forced into the injective branch on every pointed tree**. This SHARPENS the target: we don't need "constant
+OR injective," we need, on *some* pointed tree, to upgrade "not-monochromatic" (2 inequivalent branches
+exist) to "fully injective" (all branches pairwise inequivalent). But this upgrade is a fusion through ω
+levels maintaining pairwise `E_f`-separation of the limit branches — and **`E_f`-separation of *limits* is
+again the non-continuity/modulus wall** (finite separation at a node ≠ limit separation). Cone-nullness gives
+separation *exists* locally; it does not give a *computable modulus* forcing it to the limit. Same wall.
+
+**(5) High-stakes: is there an invariant `f` with NO pointed injective AND no pointed constant tree
+(disproof)?** *Verdict: STRONG evidence AGAINST a disproof — the natural disproof template provably fails in
+the Turing degrees.* The one place in the literature where the analogous dichotomy is DISPROVED is the
+**enumeration degrees** (Nakid-Cordero 2025, arXiv:2510.19147): he builds a definable e-invariant function
+not equivalent to any uniformly-invariant one. **But his construction's engine is the FAILURE of the Cone
+Theorem in the e-degrees** ("the ultimate culprit of this difference is the lack of a Cone Theorem for the
+enumeration degrees"), exploiting the **quasiminimal (non-total) e-degrees** which have **no Turing
+analogue**, and the **skip is not increasing** (whereas the jump is). All three enabling features — no cone
+theorem, non-total degrees, non-increasing skip — are **absent in the Turing degrees** (Turing has the cone
+theorem, all degrees "total", jump increasing). So the sole known counterexample template is **structurally
+blocked** in the Turing setting. This is positive evidence Marks is TRUE, and it localizes *why* the Turing
+case is hard-but-plausibly-true: the cone theorem is exactly the tool that would have to be leveraged, and it
+is a *global* (measure) tool that (W1) is orthogonal to the cone the pointed witness lives in. Net: a Turing
+disproof would need a fundamentally new mechanism not present in the e-degree counterexample.
+
+## B19.4 The one concrete forward lead this session produces
+
+The corrected obstruction (B19.1–2) says the whole game is: **manufacture a computable injective functional
+below `f` on a pointed tree.** For MP `f` this is the inverted modulus; for countable-fiber `f` it is the
+Lusin–Novikov Borel piece. The open case is uncountable fibers with no modulus. **Lead:** the GS-coding
+(Thm 2.19, salvaged from angle 2) is precisely a device that makes branch *degrees* recover a prescribed real
+using finitely many branches of a *given* perfect set — i.e. it can *build* a functional `Ψ` with
+`Ψ(y0⊕…⊕y3) = x` that is computable and injective-in-a-generalized-sense on the coded branches. The question
+this reframes to: **can one code the `E_f`-class of a branch into the branch itself** (a "self-coding"
+tree) so that `f(x)` computes enough of the coding to recover `x`'s position — turning `f` into its own
+computable injective witness? This is a *coding-against-`f`* rather than coding-against-a-target-real. It is
+not obviously circular (unlike the incomparable-core coordinated-tree route, B12), because it targets
+injectivity (a Silver-type separation) not domination. **Whether `f`-value-coding can be maintained to the
+limit is, once more, gated by an `f`-modulus** — so this lead does not escape the wall either, but it is the
+sharpest concrete formulation: *Marks-for-invariant-`f` ⟺ every non-constant invariant `f` admits an
+`f`-value self-coding perfect tree convergent to the limit* — a single modulus-existence question.
+
+## B19.5 Honest verdict on pointed injectivity
+
+**NOT achievable by any elementary fusion, for a precise and now-correctly-attributed reason:** the only
+pointedness-preserving thinning (Lemma 2.7) consumes a **computable** injective witness, and Silver's
+theorem — the sole unconditional source of injectivity for a general invariant `f` — produces **no computable
+witness** (it separates `f` itself, which is non-continuous). Every source of a computable injective witness
+that the literature knows (modulus for MP `f`; Lusin–Novikov for countable-fiber `f`; range-cofinality/GS-
+coding for order-preserving `f`) requires a **special structural property of `f`** that a general (uncountable-
+fiber, non-MP) invariant function lacks. The four prior "cautious optimism" handles (recursion theorem,
+residual freedom, pointed Ramsey, invariance) each dissolve into the **same** underlying wall — the absence
+of an `f`-**modulus** to push finite `f`-value separation to the limit — which is provably equivalent to `f`
+being measure-preserving. **Corrections booked:** (i) the "GS-coding vs Silver" collision was mis-framed
+(GS-coding is not the pointedness engine; tree-thinning is); (ii) "residual freedom of coded branches" is a
+category error (pointedness is global/automatic under thinning, not a branch-budget); (iii) the pointed-
+Ramsey route faces a real *generic-vs-pointed* antagonism (generics avoid the cone the pointed witness needs).
+**Disproof (angle 5) is strongly disfavored:** the only known counterexample (e-degrees) runs on the failure
+of the Cone Theorem + non-total degrees + non-increasing skip, all absent in the Turing degrees. **Net:
+pointed injectivity for general invariant `f` is open, reduces cleanly to a single `f`-modulus-existence /
+`f`-value-self-coding question (B19.4), and every elementary route bottoms out at modulus-existence ⟺ MP —
+i.e. it is not a shortcut around the measure-theoretic frontier but the SAME frontier wearing combinatorial
+clothes.** This matches, and independently re-derives via the Marks framing, the measure-route bottom line
+(`MARTIN_PART1_RK_MEASURE.md`): both walls are "no invariant control of `f`'s value-distribution," which is
+the inner-model-theoretic RK-rigidity of `U_M`.

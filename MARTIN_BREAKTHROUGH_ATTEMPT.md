@@ -107,6 +107,16 @@ All three need the **fine-structural / ultrafilter-theoretic** machinery of Stee
 (iterated ultrapowers of `HOD`, the Ketonen/Rudin–Keisler order), and even there the RK-rigidity of `U_M` is
 open. This is not an elementary gap; it is at the edge of what set theory currently knows.
 
+**The precise inner-model target (derived this session).** `V ≤_RK U_M` via `f` gives a factor map
+`k : Ult(V) → Ult(U_M)` elementary, with `k([id]_V) = [f]_{U_M}`; `V = U_M ⟺ k = id`. By
+Goldberg–Sargsyan–Siskind, `Ult(U_M)` is an iterate of `HOD` (`AD + V=L(𝒫ℝ)`), and iterates are linearly
+ordered (Ketonen). So **RK-rigidity ⟺ `U_M`'s `HOD`-iterate is minimal/isolated among the iterates arising
+from countably-complete ultrafilters *on `D_T`***. A case-2 `V` yields a *proper* iteration `k` (critical
+point moves `[id]` to the sideways `[f]`) — internally consistent, no contradiction — so the rigidity is
+exactly the (open) statement that no such proper factor map from a `D_T`-ultrafilter into `Ult(U_M)` exists.
+This is Siskind's "classify the countably-complete ultrafilters on `D_T`", which he flags as *possibly* more
+tractable but which no one has done. That is the sharp target for a genuine breakthrough.
+
 ## Honest structural conclusion (so far)
 
 The incomparable core is equivalent to **cone-specific regularity of `F`** (uniformity / continuity on a

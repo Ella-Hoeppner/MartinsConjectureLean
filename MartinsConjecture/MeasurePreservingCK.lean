@@ -23,6 +23,7 @@ ruled out here. The residual degree-level `{0,1}`-content is the inner-model-the
 -/
 import MartinsConjecture.ChurchKleene
 import MartinsConjecture.PartIRecast
+import MartinsConjecture.CounterexampleConstraints
 
 open scoped Computability
 open Cantor
@@ -89,9 +90,36 @@ theorem escaping_ck_cases (hTD : TuringDeterminacy fun _ => True) (hM : MartinPP
     OnCone (fun X => churchKleene X ≤ churchKleene (F X)) :=
   (ck_dichotomy hTD hF).imp (fun h => ⟨h, ck_regressive_not_measurePreserving hM hF h⟩) id
 
+/-- **A CK-regressive escaping function would REFUTE Martin's Conjecture Part 1.**  Since Part 1 ⟺
+`escaping ⟹ MP` (`partI_iff_escapingMP`, given `MartinPPT` + the known regressive theorem), and a
+CK-regressive `F` is not MP (`ck_regressive_not_measurePreserving`), any *escaping* CK-regressive invariant
+`F` is a genuine counterexample: it is escaping but not measure-preserving.  This turns the CK constraint
+into a **concrete disproof target** — Part 1 fails iff some invariant `F` is escaping (equivalently
+non-constant) yet *lowers the Church–Kleene ordinal* on a cone. -/
+theorem partI_false_of_ckRegressive_escaping (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F) (hesc : Escaping F)
+    (hreg : OnCone (fun X => churchKleene (F X) < churchKleene X)) :
+    ¬ (∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G → ConstantOnCone G ∨ AboveIdOnCone G) := by
+  intro hPartI
+  exact ck_regressive_not_measurePreserving hM hF hreg
+    ((partI_iff_escapingMP hTD hM hSS).mp hPartI F hF hesc)
+
+/-- **The clean CK-disjunction on the open branch.**  Under Part 1's hypotheses, an escaping invariant `F`
+is EITHER a Part-1 refutation (CK-regressive) OR CK-non-decreasing.  Equivalently: *if* Part 1 holds, then
+every escaping `F` is CK-non-decreasing (`ω₁ˣ ≤ ω₁^{F X}` on a cone) — a necessary condition any proof must
+route through.  Combines `escaping_ck_cases` with `partI_false_of_ckRegressive_escaping`. -/
+theorem escaping_ck_nondecreasing_of_partI (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hSS : RegressiveSlamanSteel)
+    (hPartI : ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G → ConstantOnCone G ∨ AboveIdOnCone G)
+    (hF : TuringInvariant F) (hesc : Escaping F) :
+    OnCone (fun X => churchKleene X ≤ churchKleene (F X)) :=
+  measurePreserving_ck_nondecreasing hM hF ((partI_iff_escapingMP hTD hM hSS).mp hPartI F hF hesc)
+
 #print axioms measurePreserving_ck_nondecreasing
 #print axioms ck_regressive_not_measurePreserving
 #print axioms ck_dichotomy
 #print axioms escaping_ck_cases
+#print axioms partI_false_of_ckRegressive_escaping
+#print axioms escaping_ck_nondecreasing_of_partI
 
 end Martin

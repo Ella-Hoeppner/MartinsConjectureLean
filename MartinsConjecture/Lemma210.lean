@@ -77,8 +77,8 @@ theorem exists_constant_pointedTree_bool (hPPT : MartinPPT') (b : (ℕ → Bool)
   refine ⟨decide (n = 1), T, fun x hx => ?_⟩
   have hn : cond (b x) 1 0 = n := hT x hx
   cases hbx : b x with
-  | false => simp only [hbx, cond_false] at hn; simp [hbx, ← hn]
-  | true => simp only [hbx, cond_true] at hn; simp [hbx, ← hn]
+  | false => rw [hbx, Bool.cond_false] at hn; subst hn; simp
+  | true => rw [hbx, Bool.cond_true] at hn; subst hn; simp
 
 #print axioms cofinal_fiber
 #print axioms lemma210_of_martinPPT'

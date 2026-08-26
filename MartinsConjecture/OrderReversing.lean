@@ -19,12 +19,16 @@ So an injective incomparable `F` (which is non-constant) can be **neither** orde
 order-reversing on any cone: it must be genuinely **scrambling** (order-*incomparable* values on
 `≤ᵀ`-comparable arguments) everywhere.  This reduces the injective-Q4 target to the pure scrambling case.
 
-**Honest status of the reduction.**  Discharging the OP and reversing horns is unconditional (above).
-Turning "injective `F` is OP / reversing / scrambling on a pointed subtree" into a genuine trichotomy
-needs a **partition property** for the induced `∞`-Borel `3`-coloring of `≤ᵀ`-comparable branch pairs —
-a Ramsey-type statement for `D_T`-pairs under AD.  That partition step is *not* proved here (it is the
-remaining hard content); what is new and unconditional is that the order-reversing horn collapses, so
-the Q4 obstruction — if any — lives entirely in scrambling functions.
+**Honest status (a partial result, not a reduction).**  What is proved: `orderReversing_constant` is
+unconditional and new; and (with the coding hypothesis) `F` is not order-preserving on a cone either.  So a
+counterexample is *not* order-reversing (nor OP) on any cone.  **But the clean "scrambling on every cone" does
+NOT follow** — that needs "comparability-preserving-on-a-cone ⟹ constant", and I could not prove it: splitting
+`F base`-comparability gives a bounded-*above* case (⟹ constant, = the reversing result) *or* an increasing
+"always-`U`" case that only yields `F` bounded *below* (survives).  The full trichotomy needs a Ramsey property
+for `D_T`-pairs under AD, which is unproved.  **Deeper:** scrambling ⟺ `V = F_*U_M ≡_RK U_M`, `≠ U_M` — *exactly*
+the equivalence half (RK-rigidity) — and `F` and its inverse `g` are BOTH scrambling, so every elementary angle
+merely restates it.  So there is almost certainly no elementary scrambling obstruction; `orderReversing_constant`
+is the genuine (partial) gain of this attack.
 -/
 import MartinsConjecture.BoundedCase
 

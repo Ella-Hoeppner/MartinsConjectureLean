@@ -35,6 +35,26 @@ IS blocked is defining a regressive `g : ω₁ → ω₁` on the ordinals — *t
   So the disproof route is concrete: exhibit a non-constant invariant `F` with `ω₁^{F X} < ω₁ˣ` cofinally.
 - **`escaping_ck_nondecreasing_of_partI`** (the dual necessary condition): *if* Part 1 holds, every escaping
   `F` is CK-non-decreasing — any proof must route through establishing `ω₁ˣ ≤ ω₁^{F X}`.
+- **`partI_iff_ck_split`** (capstone): Part 1 ⟺ [(no escaping CK-regressive `F`) ∧ (every escaping
+  CK-non-decreasing `F` is MP)] — the open content partitioned exactly by `ω₁^{F X}` vs `ω₁ˣ`.
+
+### CK-position IS the Slaman–Steel / Lutz stratification (refines B12, no coordinated trees)
+Branch (b) (CK-non-decreasing escaping) refines further via the graph `G := X ⊕ F X` (above-id, MP). *If*
+Part 2 pins `G ≡ᵀ X^{(α)}` on a cone (needs uniformity — Slaman–Steel Part 2), then `F X ≤ᵀ X^{(α)}`, and:
+- **`α < ω₁ˣ`** ⟺ `G` is hyperarithmetic-in-`X` ⟺ `ω₁^{F X} = ω₁ˣ` (**CK-preserving**) ⟺ `F X ≤_h X`.
+  Here `F` is *hyp-regressive*, i.e. regressive on the **hyperarithmetic degrees** `D_h` — **Lutz's proved
+  territory** (his continuous-reduction method kills the regressive case on `D_h`): non-constant is
+  impossible, contradicting escaping. So *this sub-case is closed* (modulo Part-2-for-the-graph).
+- **`α ≥ ω₁ˣ`** ⟺ `ω₁^{F X} > ω₁ˣ` (**CK-increasing**) ⟺ `G` beyond hyperarithmetic — **genuinely open**.
+
+So the CK-position (`ω₁^{F X}` vs `ω₁ˣ`) *is* the finite/`<ω₁`/`≥ω₁` stratification of B12, obtained cleanly
+from the machine-checked `ck_dichotomy` **without** the coordinated-tree machinery (which B12-correction
+flagged as circular for the incomparable core). The residual open core is exactly **CK-increasing escaping
+`F`** (graph beyond hyperarithmetic). *Honest scope:* this reduction consumes Part 2 for the graph, i.e.
+uniformity — the same uniform→general wall; for non-uniform `F`, `α` is not pinned and the stratification is
+unavailable. Not formalized (needs the transfinite jump hierarchy + Lutz's `D_h` theorem). But it identifies
+the sharpest open residue — CK-*increasing* escaping — and ties this session's CK results to both known
+Martin-conjecture methods (Slaman–Steel finite jumps, Lutz hyperarithmetic).
 
 Whether branch (a) is empty is itself open and **beyond the ordinal engine**, confirmed at the code level:
 `no_regressive_of_ordinal_rank` (the only descent engine) requires `base ≤ᵀ F X` on the cone, which is

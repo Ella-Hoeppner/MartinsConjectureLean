@@ -47,6 +47,24 @@ theorem incomparable_uniform (hTD : TuringDeterminacy fun _ => True)
     (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ConstantOnCone F :=
   incomparable_uniform_of_steel (steelUniformKernel_holds hTD) F hF hinc
 
+/-- **An incomparable invariant `F` is NOT uniformly invariant** (given Turing determinacy).  If it were
+uniform, `incomparable_uniform` would make it constant on a cone — but a constant `F ≡ᵀ C` satisfies
+`F X ≤ᵀ C ≤ᵀ X` on the cone above `C`, contradicting incomparability `¬ F X ≤ᵀ X`.  So the incomparable core,
+*if nonempty*, is exactly a source of **non-uniformly-invariant** Turing-invariant functions — of which (per
+Nakid-Cordero) *no example is currently known*; so this pins Steel's Conjecture 1.4 (`invariant ⟹ uniform on
+a cone`) to the incomparable core.  (A by-product of the 2026-08-26 breakthrough attempt, see
+`MARTIN_BREAKTHROUGH_ATTEMPT.md`.) -/
+theorem incomparable_not_uniform (hTD : TuringDeterminacy fun _ => True)
+    {F : (ℕ → Bool) → ℕ → Bool}
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ¬ UniformlyTuringInvariant F := by
+  intro hU
+  obtain ⟨C, B2, hB2⟩ := incomparable_uniform hTD F hU hinc
+  obtain ⟨B1, hB1⟩ := hinc
+  refine (hB1 (Cantor.join (Cantor.join B1 B2) C)
+    ((Cantor.left_le_join B1 B2).trans (Cantor.left_le_join _ C))).1 ?_
+  exact (hB2 _ ((Cantor.right_le_join B1 B2).trans (Cantor.left_le_join _ C))).1.trans
+    (Cantor.right_le_join _ C)
+
 /-- **Lachlan's theorem for r.e. operators, bare-uniformity form**: a
 *uniformly*-invariant r.e. operator above the identity on a cone satisfies, on a
 cone, `Wˣ ≡ᵀ X` or `Wˣ ≡ᵀ X′`.  (Bard 3.4 removes the computable-uniformity

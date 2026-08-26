@@ -115,11 +115,37 @@ theorem escaping_ck_nondecreasing_of_partI (hTD : TuringDeterminacy fun _ => Tru
     OnCone (fun X => churchKleene X ≤ churchKleene (F X)) :=
   measurePreserving_ck_nondecreasing hM hF ((partI_iff_escapingMP hTD hM hSS).mp hPartI F hF hesc)
 
+/-- **Part 1 splits EXACTLY into its two Church–Kleene branches.**  Given `MartinPPT` + the known
+regressive theorem, Martin's Conjecture Part 1 is equivalent to the conjunction of:
+(1) **no** invariant escaping `F` is CK-regressive (`ω₁^{F X} < ω₁ˣ` on a cone) — the *disproof* branch is
+empty; and
+(2) every invariant escaping CK-non-decreasing `F` is measure-preserving — the *proof* obligation.
+This is the complete CK-characterization: the sole open content of Part 1, partitioned by the position of
+`ω₁^{F X}` relative to `ω₁ˣ`.  (In the presence of (1), (2)'s CK-hypothesis is automatic, so (2) alone
+carries the weight — but the split names precisely the two independent tasks.) -/
+theorem partI_iff_ck_split (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hSS : RegressiveSlamanSteel) :
+    (∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G → ConstantOnCone G ∨ AboveIdOnCone G)
+      ↔ ((∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G → Escaping G →
+            OnCone (fun X => churchKleene (G X) < churchKleene X) → False)
+          ∧ (∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G → Escaping G →
+            OnCone (fun X => churchKleene X ≤ churchKleene (G X)) → MeasurePreserving G)) := by
+  constructor
+  · intro hPartI
+    refine ⟨fun G hG hesc hreg => partI_false_of_ckRegressive_escaping hTD hM hSS hG hesc hreg hPartI,
+      fun G hG hesc _ => (partI_iff_escapingMP hTD hM hSS).mp hPartI G hG hesc⟩
+  · rintro ⟨h1, h2⟩
+    refine (partI_iff_escapingMP hTD hM hSS).mpr (fun G hG hesc => ?_)
+    rcases ck_dichotomy hTD hG with hreg | hnd
+    · exact absurd (h1 G hG hesc hreg) not_false
+    · exact h2 G hG hesc hnd
+
 #print axioms measurePreserving_ck_nondecreasing
 #print axioms ck_regressive_not_measurePreserving
 #print axioms ck_dichotomy
 #print axioms escaping_ck_cases
 #print axioms partI_false_of_ckRegressive_escaping
 #print axioms escaping_ck_nondecreasing_of_partI
+#print axioms partI_iff_ck_split
 
 end Martin

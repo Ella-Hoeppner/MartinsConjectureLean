@@ -38,7 +38,11 @@ engine as clean general lemmas and used it to formalize the Marks route to the i
   (every invariant `F` is below the MP function `(X⊕F X)′`, so "below MP" is vacuous) vs
   `dominatedInvertible_mpFactorsThroughF` (the real content: the MP dominator factors through `F X` alone).
   So a Q4 counterexample recovers `X` from an invariant *jump-type lift* of `deg(F X)` — matching `X ≤ᵀ (F X)′`
-  while `F X ⊥ᵀ X`. Std axioms, full build 3118 green.
+  while `F X ⊥ᵀ X`. **Q3 side:** `notDI_escapes_jumpIter` (¬DI ⟹ `X ≰ᵀ (F X)^{(n)}` for every finite jump-iterate),
+  `notDI_incomparable_jumpSymmetric`. **Capstones:** `measurePreserving_iff_regressive_diWitness`
+  (`MP ⟺ DI-via-regressive-witness`, separating solved side from open core) and **`incomparable_dichotomy`**
+  (an incomparable `F` is either Q4 value-lifting-DI or Q3 jump-transcendently-lossy — the two disproof horns
+  in one statement). Std axioms, full build 3118 green.
 
 ### Session 2026-08-26f — Lutz-thesis primary-source dive: corrections, the decisive mechanism, Q9.3 formalized
 **→ `MARTIN_BREAKTHROUGH_ATTEMPT.md` ("decisive mechanism" + "one object, three names").** Read the Lutz

@@ -1087,3 +1087,28 @@ every `f:2^ω→ω₁` is constant on a positive-measure set), used to show `U_L
 (ii) Whether `U_L/U_B` are RK-*below* `U_M` is open **Q5** (special case of Q3); Marks–Day: under AD_ℝ,
 `U_L ≤_RK U_M ⟺ ∃` Turing-invariant `f` with `f(x)` always `x`-random. (iii) `U_M` non-selective (jump
 non-1-1 on cones yet MP) — so "prove `U_M` selective" is a dead end, confirmed.
+
+**(B18, 2026-08-26) The DOMINATED-INVERTIBILITY reformulation — cleanest machine-checked capstone for both halves.**
+Both Lutz–Siskind open questions collapse to one notion.  `DominatedInvertible F` := `∃` invariant `g`,
+`X ≤ᵀ g(F X)` on a cone ("`F` is *recoverable*").  Machine-checked (`MartinStrictHalf.lean`,
+`MeasurePreservingCK.lean`, std axioms):
+- `strictHalf_iff_dominatedInvertible`: `StrictHalfFor F (U_M ≤_RK F_*U_M) ⟺ DominatedInvertible F`.
+- **`partI_of_DI_conditions`** (capstone): **Part 1 = (Q3) every non-constant invariant `F` is
+  dominated-invertible ∧ (Q4) DI ⟹ MP.**  I.e. *"non-constant ⟹ recoverable"* ∧ *"recoverable ⟹ above-id"*.
+- **Q3 fragments/handles:** `PointedInjectiveTree F ⟹ DI` (explicit `g y = y⊕code`);
+  `strictHalf_of_countableFibered` = the countable-fiber case PROVED (named MSS input `CountableFiberMarks`);
+  `dominatedInvertible_fiber_bounded` (DI bounds fibers *on its cone* — necessary);
+  `partI_false_of_not_dominatedInvertible` (`¬DI ∧ non-const ⟹ Part 1 false` — honest disproof target).
+- **Q4:** `EquivHalfFor` = `DI ⟹ MP`; `gcomp_mp_recovers` (`g∘F` MP ⟹ `g(F X) ≥ᵀ X`) is exactly the stall —
+  it makes `g∘F` above-id, not `F`; `equivHalf_of_rangeInKernel` = concentrated fragment PROVED (Prop 5.24).
+
+**Two honesty corrections made while formalizing (superseding B13/agent framing):** (i) **the "jump has
+uncountable fibers" claim is FALSE** — the jump (any increasing `F`) is *bounded*-fibered
+(`{d : d' ≡ᵀ c} ⊆ {d ≤ᵀ c}`) and trivially DI (`g = id`); the "jump reals-injective on a pointed tree" test
+is trivial (`x ≤ᵀ x'`). (ii) **"unbounded fiber ⟹ ¬DI" is FALSE** — `dominatedInvertible_fiber_bounded`
+bounds fibers only on *the* DI-cone, not globally (`F d = if d ⊥ 0' then 0' else d` has a globally-unbounded
+fiber `{d ⊥ 0'}` yet is the identity on `cone(0')`, so DI).  So there is **no clean single-fiber
+characterization of Q3**, and the "pointed-Silver / make the perfect set pointed" framing targets
+*reals*-injectivity — a stronger, separate statement, not the degree-level strict half.  Net honest open
+content: **Q3 = "is every non-constant invariant `F` dominated-invertible (recoverable)?"** (combinatorial
+existence) and **Q4 = "DI ⟹ MP"** (inner-model, the g-inversion gap) — genuinely different walls.

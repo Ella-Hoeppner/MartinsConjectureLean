@@ -34,6 +34,15 @@ plausibly-more-tractable target than full Steel: the natural attack is to fix th
 which `F` is uniform on that tree.  Formalizing that collapse (which needs determinacy in the
 Lemma-2.10 form) is left as the concrete next step; it is *not* discharged here, and nothing
 below assumes it.
+
+**Precisely what is missing (next-session engineering target).**  The branch-choice
+"`u₁` or `u₂`?" is a function of the *pair* `(X, Y, i, j)` — it is **not** Turing invariant, so
+the repo's `cone_theorem_onCone` (which requires an invariant set) does not apply.  Collapsing
+it needs the repo to gain **Lutz Lemma 2.10** — *a cofinal non-invariant set with a
+countable-range function has a pointed perfect subtree on which the function is constant* — i.e.
+the pointed-perfect-tree machinery (Def 2.4, Lemmas 2.5/2.7/2.9/2.10) that the project does not
+yet formalize.  Building that engine is the prerequisite for discharging the hypothesis above
+(and, more broadly, for the Marks-conjecture route to the incomparable core via Prop 5.37).
 -/
 import MartinsConjecture.MartinResults
 import MartinsConjecture.RegressiveReduction

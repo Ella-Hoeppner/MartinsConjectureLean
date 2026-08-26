@@ -64,8 +64,39 @@ theorem diWitness_nonRegressive_of_incomparable
   push_neg at hall
   exact not_regressive_diWitness_of_incomparable hinc hall hg_cone
 
+/-! ### Localizing the lift to `F`'s values (a sharper form) -/
+
+/-- **Regressivity only *at `F`'s values* already forces above-identity.**  If `g(F X) ≤ᵀ F X` on a
+cone (the witness does not lift `F`'s own values), then `X ≤ᵀ g(F X) ≤ᵀ F X` on a cone. -/
+theorem aboveId_of_diWitness_regressive_onValues {g : (ℕ → Bool) → ℕ → Bool}
+    (hval : OnCone (fun X => g (F X) ≤ₜ F X)) (hdi : OnCone (fun X => X ≤ₜ g (F X))) :
+    AboveIdOnCone F := by
+  obtain ⟨b1, h1⟩ := hval
+  obtain ⟨b2, h2⟩ := hdi
+  refine ⟨Cantor.join b1 b2, fun X hX => ?_⟩
+  exact (h2 X ((Cantor.right_le_join _ _).trans hX)).trans
+    (h1 X ((Cantor.left_le_join _ _).trans hX))
+
+/-- **A dominated-invertible incomparable `F` has a witness that lifts its values cofinally.**  There
+is an invariant witness `g` with `X ≤ᵀ g(F X)` on a cone but `g(F X) ≰ᵀ F X` on a *cofinal* set — `g(F X)`
+strictly exceeds `F X` in degree infinitely often.  Since `g` is invariant, `g(F X)` is an invariant
+degree-lift of `deg(F X)` that nonetheless computes `X`: the extra information recovering `X` comes from
+lifting `deg(F X)` (jump-style), not from `F X` itself.  This is the precise shape of a Q4 counterexample. -/
+theorem diWitness_liftsValues_of_incomparable
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (hDI : DominatedInvertible F) :
+    ∃ g, TuringInvariant g ∧ OnCone (fun X => X ≤ₜ g (F X)) ∧
+      ¬ OnCone (fun X => g (F X) ≤ₜ F X) := by
+  obtain ⟨g, hg_inv, hg_cone⟩ := hDI
+  refine ⟨g, hg_inv, hg_cone, fun hval => ?_⟩
+  obtain ⟨b1, hb1⟩ := hinc
+  obtain ⟨b2, hb2⟩ := aboveId_of_diWitness_regressive_onValues hval hg_cone
+  exact (hb1 (Cantor.join b1 b2) (Cantor.left_le_join _ _)).2
+    (hb2 (Cantor.join b1 b2) (Cantor.right_le_join _ _))
+
 #print axioms aboveId_of_regressive_diWitness
 #print axioms not_regressive_diWitness_of_incomparable
 #print axioms diWitness_nonRegressive_of_incomparable
+#print axioms aboveId_of_diWitness_regressive_onValues
+#print axioms diWitness_liftsValues_of_incomparable
 
 end Martin

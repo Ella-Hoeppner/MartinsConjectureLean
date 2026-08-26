@@ -35,18 +35,17 @@ which `F` is uniform on that tree.  Formalizing that collapse (which needs deter
 Lemma-2.10 form) is left as the concrete next step; it is *not* discharged here, and nothing
 below assumes it.
 
-**Precisely what is missing (next-session engineering target).**  The branch-choice
-"`u₁` or `u₂`?" is a function of the *pair* `(X, Y, i, j)` — it is **not** Turing invariant, so
-the repo's `cone_theorem_onCone` (which requires an invariant set) does not apply.  Collapsing
-it needs the repo to gain **Lutz Lemma 2.10** — *a cofinal non-invariant set with a
-countable-range function has a pointed perfect subtree on which the function is constant* — i.e.
-the pointed-perfect-tree machinery.  **The single-real form of that engine is now in the repo**
-(`Lemma210.lean`: `lemma210_of_martinPPT'` / `exists_constant_pointedTree` — a countable-range
-function is constant on a pointed perfect tree, from `MartinPPT'`).  What remains for the collapse
-is the *pair/relation* form (Lutz Lemma 2.11: a relation `R ⊆ ≥ᵀ` is uniformized to a functional
-on a pointed tree), which applies Lemma 2.10 to `h(x) =` the least reduction index — needing the
-repo's `OracleCode`/`eval` index machinery.  That is the sharpened next step (and the same engine
-unlocks the Marks-conjecture route to the incomparable core via Prop 5.37).
+**Precisely what is missing (corrected analysis).**  For a **fixed** `(i, j)`, the witness `Y` is
+`Φ_i^X` — *determined by `X`* — so the branch-choice "`u₁` or `u₂`?" is a function of the **single
+real `X`**, and the repo's single-real Lemma 2.10 (`Lemma210.lean`: `exists_constant_pointedTree_bool`)
+**does** fix it on a pointed perfect tree, per `(i, j)`.  The genuine obstruction is *across all
+`(i, j)`*: the full branch-assignment `(i, j) ↦ branch` is a function of `X` with range in
+`2^{ℕ²}` — **uncountable** — so no single pointed tree can fix every branch at once (Lemma 2.10
+provably fails for uncountable range, `⟹ ω₁↪ℝ`).  This is the *same* `ℕ`-range-vs-uncountable-range
+wall as the incomparable core (`uniformization-engine-wall`): the 2-uniform collapse is easy for any
+finite set of `(i, j)` and open precisely at the simultaneous (uncountable) combination.  A genuine
+route would fix the branch on a per-`(i, j)` cone and combine via a diagonal/Slaman–Steel-kernel
+argument, not a single tree.
 -/
 import MartinsConjecture.MartinResults
 import MartinsConjecture.RegressiveReduction

@@ -90,6 +90,21 @@ theorem measurePreserving_of_regressive_diWitness (hM : MartinPPT) (hF : TuringI
     (hdi : OnCone (fun X => X ≤ₜ g (F X))) : MeasurePreserving F :=
   (mp_iff_aboveId_of_martinPPT hM hF).mpr (aboveId_of_regressive_diWitness hreg hdi)
 
+/-- **Measure-preservation ⟺ dominated-invertibility via a *regressive* witness.**  `MP F` iff `F` has
+a dominated-inverting witness that never lifts a degree (the identity `g = id` works, since `MP ⟹`
+above-id).  So the "solved" side of the DI hierarchy is exactly the regressive-witness (`ℕ`-handle) case;
+the incomparable core is precisely where no such regressive witness exists
+(`not_regressive_diWitness_of_incomparable`). -/
+theorem measurePreserving_iff_regressive_diWitness (hM : MartinPPT) (hF : TuringInvariant F) :
+    MeasurePreserving F ↔
+      ∃ g, TuringInvariant g ∧ (∀ c, g c ≤ₜ c) ∧ OnCone (fun X => X ≤ₜ g (F X)) := by
+  constructor
+  · intro hmp
+    exact ⟨fun c => c, fun _ _ h => h, fun c => Cantor.le.refl c,
+      (mp_iff_aboveId_of_martinPPT hM hF).mp hmp⟩
+  · rintro ⟨g, _, hreg, hcone⟩
+    exact measurePreserving_of_regressive_diWitness hM hF hreg hcone
+
 /-! ### The Q3 side: a `¬DI` counterexample escapes even `F`'s jump -/
 
 /-- **A non-dominated-invertible `F` has `F X`'s jump fail to recover `X` on every cone.**  Since the

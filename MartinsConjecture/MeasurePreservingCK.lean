@@ -169,6 +169,28 @@ theorem gcomp_mp_recovers (hM : MartinPPT) {g : (ℕ → Bool) → ℕ → Bool}
     OnCone (fun X => X ≤ₜ g (F X)) :=
   (mp_iff_aboveId_of_martinPPT hM (fun X Y hXY => hg _ _ (hF X Y hXY))).mp hmp
 
+/-- `F` is **dominated-invertible**: some invariant `g` recovers a degree `≥ᵀ X` from `F X`, on a cone. -/
+def DominatedInvertible (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
+  ∃ g, TuringInvariant g ∧ OnCone (fun X => X ≤ₜ g (F X))
+
+/-- The **strict half** of RK-rigidity for `F` (`U_M ≤_RK F_*U_M`): some invariant `g` inverts `F` up to the
+Martin measure, i.e. `g ∘ F` is measure-preserving (`(g∘F)_*U_M = U_M`, so `g_*(F_*U_M) = U_M`). -/
+def StrictHalfFor (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
+  ∃ g, TuringInvariant g ∧ MeasurePreserving (fun X => g (F X))
+
+/-- **The strict half ⟺ dominated-invertibility** (given `MartinPPT`).  `U_M ≤_RK F_*U_M` holds iff some
+invariant `g` dominates the identity through `F` (`X ≤ᵀ g(F X)` on a cone).  (⟸) is `aboveId ⟹ MP`
+(`aboveId_measurePreserving`); (⟹) is `gcomp_mp_recovers`.  So the strict half's *entire* open content is:
+**construct a dominating inverse `g`** — which Marks's conjecture supplies via a pointed perfect tree on which
+`F` is injective (recover the branch from `F`-value + tree, then join).  For the incomparable core (`F X ⊥ᵀ X`)
+`g` canNOT be a Turing reduction (`F X` does not compute `X`), so it must be a genuinely non-effective
+invariant map — exactly the pointed-tree recovery, and exactly the strict half that Marks's conjecture buys. -/
+theorem strictHalf_iff_dominatedInvertible (hM : MartinPPT) (hF : TuringInvariant F) :
+    StrictHalfFor F ↔ DominatedInvertible F := by
+  constructor
+  · rintro ⟨g, hg, hmp⟩; exact ⟨g, hg, gcomp_mp_recovers hM hg hF hmp⟩
+  · rintro ⟨g, hg, hdom⟩; exact ⟨g, hg, aboveId_measurePreserving hdom⟩
+
 /-- **Part 1 splits EXACTLY into its two Church–Kleene branches.**  Given `MartinPPT` + the known
 regressive theorem, Martin's Conjecture Part 1 is equivalent to the conjunction of:
 (1) **no** invariant escaping `F` is CK-regressive (`ω₁^{F X} < ω₁ˣ` on a cone) — the *disproof* branch is
@@ -204,5 +226,6 @@ theorem partI_iff_ck_split (hTD : TuringDeterminacy fun _ => True) (hM : MartinP
 #print axioms partI_iff_ck_split
 #print axioms gcomp_mp_recovers
 #print axioms mp_rangeInKernel
+#print axioms strictHalf_iff_dominatedInvertible
 
 end Martin

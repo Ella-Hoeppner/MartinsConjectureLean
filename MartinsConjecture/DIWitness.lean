@@ -147,6 +147,18 @@ theorem notDI_escapes_jumpIter (n : ℕ) (h : ¬ DominatedInvertible F) :
     ¬ OnCone (fun X => X ≤ₜ (Cantor.jump^[n]) (F X)) :=
   fun hcone => h ⟨Cantor.jump^[n], turingInvariant_jumpIter n, hcone⟩
 
+/-- **An incomparable `F` is doubly jump-incomparable to its argument** (unconditional).  On a cone,
+`(jump X) ≰ᵀ F X` *and* `(jump (F X)) ≰ᵀ X` — neither of `X, F X` has its **jump** below the other.  Both
+follow from incomparability alone (`Z ≤ᵀ jump Z`): applied to `¬ X ≤ᵀ F X` and to `¬ F X ≤ᵀ X`
+respectively.  (Symmetric, `DI`-free companion of `notDI_incomparable_jumpSymmetric`.) -/
+theorem incomparable_doublyJumpIncomparable
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) :
+    OnCone (fun X => ¬ Cantor.jump X ≤ₜ F X ∧ ¬ Cantor.jump (F X) ≤ₜ X) := by
+  obtain ⟨b, hb⟩ := hinc
+  exact ⟨b, fun X hX =>
+    ⟨fun hj => (hb X hX).2 ((Cantor.le_jump X).trans hj),
+     fun hj => (hb X hX).1 ((Cantor.le_jump (F X)).trans hj)⟩⟩
+
 /-! ### A dynamical constraint: consecutive orbit iterates are incomparable -/
 
 /-- **For a cone-preserving incomparable `F`, consecutive orbit iterates are incomparable.**  If `F`
@@ -282,6 +294,7 @@ theorem incomparable_dichotomy (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X
 #print axioms notDI_escapes_jumpIter
 #print axioms incomparable_dichotomy
 #print axioms notDI_incomparable_jumpSymmetric
+#print axioms incomparable_doublyJumpIncomparable
 #print axioms incomparable_conePreserving_orbitIncomparable
 #print axioms incomparableDI_strictlyBelow_mp
 #print axioms not_regressive_diWitness_of_incomparable

@@ -986,3 +986,21 @@ Borel e-invariant `f` equivalent to no uniformly-invariant `f` on any cone, via 
 i.e. the "invariant ⟹ uniform on a cone" bridge is outright **FALSE in `D_e`**. So the Turing uniformity
 bridge (our genuine crux) genuinely *requires* Turing-specific input (the cone theorem) and cannot follow from
 soft/general reasoning — confirming the crux is exactly non-uniform→uniform, cone-dichotomy-vs-uniformization.
+
+**(B14, 2026-08-26) CBER/superrigidity rigidity provably does NOT reach the incomparable core (sourced).**
+Surveying Marks–Slaman–Steel (arXiv:1109.1875), Thomas "Martin's conjecture and strong ergodicity" (2009),
+and Lutz's thesis: **every** MC↔CBER theorem runs one way, `MC ⟹ CBER-consequence` (Thomas's results are all
+stamped "(MC)"; Popa cocycle superrigidity supplies *inputs* to MC-conditional theorems, never outputs a case
+of MC). MSS state it outright: Martin's conjecture is *"a dimension of analysis completely orthogonal to
+measure theory… all other known techniques for non-hyperfinite CBERs are measure-theoretic."* Two precise
+facts: (i) ergodicity of `≡_T` under the Martin measure gives **only** `Δ`-ergodicity = the cone dichotomy
+(the known-insufficient `{0,1}` coarseness); the stronger `E_0`-ergodicity that would constrain `≡_T → ≡_T`
+homomorphisms is *itself* open and MC-conditional. (ii) Structural no-go: CBER/superrigidity tools see the
+*equivalence relation* `≡_T` and its Borel-homomorphism/reducibility structure up to Martin-measure `0/1`, but
+are **blind to the `≤_T` order between a class and its image** — which is the entire content of the
+incomparable core. (Plus a hard mismatch: the Martin measure is not induced by any Borel probability measure
+(Marks), so cocycle-superrigidity theorems — stated for pmp actions of rigid groups — do not even consume the
+relevant measure.) **Verdict:** do not pursue CBER superrigidity as a forward tool; it is provably on the
+wrong side of the MC↔CBER arrow. This independently re-confirms the RK-rigidity of `U_M`
+(`escaping ⟹ MP` = "`U_M` has no nonprincipal RK-predecessor but itself", Lutz–Siskind §5.9) as the **sole
+live route** — exactly the frame this session's `MeasurePreservingCK.lean` works in.

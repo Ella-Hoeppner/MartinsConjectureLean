@@ -84,8 +84,37 @@ theorem strictHalf_of_marksConjecture (hM : MartinPPT) (hMarks : MarksConjecture
     (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) : StrictHalfFor F :=
   (constantOrStrictHalf_of_marksTree hM hF (hMarks F hF)).resolve_left hnc
 
+/-- **Part 1 from Marks's conjecture and the equivalence half** (Lutz–Siskind Thm 5.15 route).  Marks's
+conjecture supplies the strict half for every non-constant invariant `F` (Prop 5.37); with the
+equivalence half (Q4) for every `F`, `partI_of_halves` yields Part 1 in the `escaping ⟹ MP` form:
+every invariant `F` is constant on a cone or measure-preserving.  So the two honest open inputs to
+Part 1's core are **Marks's conjecture** (the strict half / Q3) and the **equivalence half** (Q4). -/
+theorem partI_of_marksConjecture_and_equivHalf (hM : MartinPPT) (hMarks : MarksConjecture)
+    (hequiv : ∀ G, TuringInvariant G → EquivHalfFor G) :
+    ∀ G, TuringInvariant G → ConstantOnCone G ∨ MeasurePreserving G :=
+  partI_of_halves (fun G hG hnc => strictHalf_of_marksConjecture hM hMarks hG hnc) hequiv
+
+/-- **Marks's conjecture holds for functions injective on a cone.**  If `F` is injective on
+`cone(base)` then any pointed perfect tree inside that cone (supplied by `MartinPPT`, since a cone is
+cofinal) is a Marks tree — its branches lie in the cone, where `F` is injective.  So the *only* open
+content of Marks's conjecture is the case where `F` is injective on **no** cone: one must find a
+pointed tree on which a globally-non-injective `F` becomes injective (the tree-thinning Lemma 2.7,
+which needs `F` to be a Turing functional — the wall). -/
+theorem marksTree_of_injectiveOnCone (hM : MartinPPT) {base : ℕ → Bool}
+    (hinj : ∀ x y, base ≤ₜ x → base ≤ₜ y → F x ≡ₜ F y → x ≡ₜ y) : MarksTree F := by
+  obtain ⟨T, hTsub⟩ :=
+    hM (fun x => base ≤ₜ x)
+      (fun z => ⟨Cantor.join base z, Cantor.right_le_join _ _, Cantor.left_le_join _ _⟩)
+  exact ⟨T, Or.inr fun x y hx hy hFxy => hinj x y (hTsub x hx) (hTsub y hy) hFxy⟩
+
+/-- **Sanity / non-vacuity: the identity has a Marks tree** (it is injective on every cone). -/
+theorem marksTree_id (hM : MartinPPT) : MarksTree (fun x => x) :=
+  marksTree_of_injectiveOnCone hM (base := fun _ => false) (fun _ _ _ _ h => h)
+
 #print axioms constantOrDominatedInvertible_of_marksTree
 #print axioms constantOrStrictHalf_of_marksTree
 #print axioms strictHalf_of_marksConjecture
+#print axioms partI_of_marksConjecture_and_equivHalf
+#print axioms marksTree_of_injectiveOnCone
 
 end Martin

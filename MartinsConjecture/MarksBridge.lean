@@ -25,6 +25,7 @@ functional, which the incomparable core is not — the `ℕ`-range wall of `unif
 -/
 import MartinsConjecture.MartinStrictHalf
 import MartinsConjecture.MartinTree
+import MartinsConjecture.MartinOmega1Approach
 
 open scoped Computability
 open Cantor
@@ -111,10 +112,36 @@ theorem marksTree_of_injectiveOnCone (hM : MartinPPT) {base : ℕ → Bool}
 theorem marksTree_id (hM : MartinPPT) : MarksTree (fun x => x) :=
   marksTree_of_injectiveOnCone hM (base := fun _ => false) (fun _ _ _ _ h => h)
 
+/-- **An incomparable `F` is not constant on a cone.**  If `F X ≡ᵀ C` on a cone, then above `C` we get
+`F X ≡ᵀ C ≤ᵀ X`, so `F X ≤ᵀ X` — contradicting `¬ F X ≤ᵀ X`. -/
+theorem incomparable_not_constantOnCone
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ¬ ConstantOnCone F := by
+  rintro ⟨C, ceqBase, hceq⟩
+  obtain ⟨incBase, hinc'⟩ := hinc
+  set b := Cantor.join C (Cantor.join ceqBase incBase) with hb
+  have hCb : C ≤ₜ b := Cantor.left_le_join _ _
+  have hceqb : ceqBase ≤ₜ b :=
+    (Cantor.left_le_join _ _).trans (Cantor.right_le_join C _)
+  have hincb : incBase ≤ₜ b :=
+    (Cantor.right_le_join _ _).trans (Cantor.right_le_join C _)
+  exact (hinc' b hincb).1 (((hceq b hceqb).1).trans hCb)
+
+/-- **The incomparable core from Marks's conjecture and the equivalence half.**  If Marks's conjecture
+holds and every invariant `F` satisfies the equivalence half (Q4), then **no** invariant `F` is
+incomparable to its argument on a cone — Part 1's sole open content.  (Marks + Q4 give constant-or-MP;
+an incomparable `F` is neither.) -/
+theorem no_incomparable_of_marksConjecture_and_equivHalf (hM : MartinPPT) (hMarks : MarksConjecture)
+    (hequiv : ∀ G, TuringInvariant G → EquivHalfFor G) (hF : TuringInvariant F)
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : False := by
+  rcases partI_of_marksConjecture_and_equivHalf hM hMarks hequiv F hF with hc | hmp
+  · exact incomparable_not_constantOnCone hinc hc
+  · exact incomparable_not_measurePreserving hM hF hinc hmp
+
 #print axioms constantOrDominatedInvertible_of_marksTree
 #print axioms constantOrStrictHalf_of_marksTree
 #print axioms strictHalf_of_marksConjecture
 #print axioms partI_of_marksConjecture_and_equivHalf
 #print axioms marksTree_of_injectiveOnCone
+#print axioms no_incomparable_of_marksConjecture_and_equivHalf
 
 end Martin

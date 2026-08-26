@@ -112,6 +112,17 @@ theorem marksTree_of_injectiveOnCone (hM : MartinPPT) {base : ℕ → Bool}
 theorem marksTree_id (hM : MartinPPT) : MarksTree (fun x => x) :=
   marksTree_of_injectiveOnCone hM (base := fun _ => false) (fun _ _ _ _ h => h)
 
+/-- **Marks's conjecture also holds for constant-on-a-cone `F`** (via the constant disjunct on any
+pointed tree inside the cone).  Together with `marksTree_of_injectiveOnCone`, Marks holds whenever `F`
+is *constant on a cone* OR *injective on a cone*; so its sole open content is an `F` that is **neither**
+— exactly the incomparable core. -/
+theorem marksTree_of_constantOnCone (hM : MartinPPT) (hc : ConstantOnCone F) : MarksTree F := by
+  obtain ⟨C, cbase, hC⟩ := hc
+  obtain ⟨T, hTsub⟩ :=
+    hM (fun x => cbase ≤ₜ x)
+      (fun z => ⟨Cantor.join cbase z, Cantor.right_le_join _ _, Cantor.left_le_join _ _⟩)
+  exact ⟨T, Or.inl fun x y hx hy => (hC x (hTsub x hx)).trans (hC y (hTsub y hy)).symm⟩
+
 /-- **An incomparable `F` is not constant on a cone.**  If `F X ≡ᵀ C` on a cone, then above `C` we get
 `F X ≡ᵀ C ≤ᵀ X`, so `F X ≤ᵀ X` — contradicting `¬ F X ≤ᵀ X`. -/
 theorem incomparable_not_constantOnCone

@@ -1004,3 +1004,27 @@ relevant measure.) **Verdict:** do not pursue CBER superrigidity as a forward to
 wrong side of the MC↔CBER arrow. This independently re-confirms the RK-rigidity of `U_M`
 (`escaping ⟹ MP` = "`U_M` has no nonprincipal RK-predecessor but itself", Lutz–Siskind §5.9) as the **sole
 live route** — exactly the frame this session's `MeasurePreservingCK.lean` works in.
+
+**(B15, 2026-08-26) Marks's conjecture attacks only the STRICT half — the frontier splits in two (sourced).**
+Deep-dive on Marks's conjecture (Lutz thesis Conj 5.36, ZF+AD): *every function `f : 2^ω → 2^ω` (ARBITRARY,
+not invariant) is constant on a pointed perfect tree or injective on a pointed perfect tree.* Status: **OPEN**
+("surprisingly difficult", Lutz p.91); the non-pointed "perfect tree" version is TRUE (Sacks/Spector
+tree-thinning, Lemma 2.7) — the whole difficulty is preserving **pointedness** (`T ≤_T x` for every branch)
+through the fusion. **Key structural payoff — the RK-rigidity frontier is TWO independent halves**
+(Lutz–Siskind Thm 5.15): (1) **strict half** `V ≤_RK U_M ⟹ U_M ≤_RK V` (= `U_M` RK-minimal), and (2)
+**equivalence half** `U_M ≤_RK V ≤_RK U_M ⟹ V = U_M`. **Marks's conjecture ⟹ the STRICT half ONLY** (Prop
+5.37: apply Marks to the invariant `f` inducing `V`; constant ⟹ `V` principal, injective ⟹ build `G` with
+`G∘F = id` on the cone ⟹ `U_M ≤_RK V`). The **equivalence half is exactly this session's `g`-inversion gap**
+(`V ≡_RK U_M, V≠U_M`) and its only known tool is Prop 5.24 (`{x : Cone(x) ∈ V} ∈ V ⟹ V = U_M`) / Siskind
+ultrapower theory — a *separate*, non-Marks, inner-model problem. Converse (RK-rigidity ⟹ Marks) is NOT known;
+Marks is plausibly strictly stronger. **CK-trichotomy does NOT attack Marks** (confirmed): (i) Marks's `f` is
+non-invariant so `ω₁^{f x}` is not a degree-invariant — the cone theorem / `ck_dichotomy` (needs
+`TuringInvariant`) don't even apply; (ii) even for invariant `f`, an ordinal rank can't yield injectivity on
+degrees (can't separate incomparable degrees; `ω₁↪ℝ` forbidden) — and the naive "increasing↔injective,
+preserving↔constant" pairing is *inverted* (Lutz's hyp-regressive case is CK-**preserving** yet concludes
+`f x ≥_H x`, the injective/above side). The CK results live at the **measure/MP** level; Marks lives one level
+below (tree/combinatorial), where the ordinal has no grip. **Genuinely novel operationalizable lead** (nothing
+in the literature has traction): a **pointedness-preserving partition/fusion theorem** — a "pointed
+Galvin–Prikry/Silver" or "pointed Sacks fusion" — is exactly where Marks's difficulty concentrates. Net: the
+two halves need *different* tools (strict = pointed-tree combinatorics; equivalence = Siskind ultrapower);
+even a full proof of Marks leaves the equivalence half open.

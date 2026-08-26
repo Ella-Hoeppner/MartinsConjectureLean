@@ -7,21 +7,31 @@ Part 1's open core reduces (Lutz–Siskind) to two questions about `DominatedInv
 * **Q4** — does `DominatedInvertible F ⟹ MeasurePreserving F`?  (Equivalently: is there a
   dominated-invertible *incomparable* `F`? — the sharp Q4 disproof target.)
 
-This file adds an elementary but sharpening constraint on the *witness* `g` in the Q4 target.  A
-witness is **regressive** if `g c ≤ᵀ c` for every `c` (it computes its output *from* its input, never
-lifting the degree — the "continuous / below" behaviour).  We show:
+This file gives elementary but sharpening constraints on both disproof targets.  A witness is
+**regressive** if `g c ≤ᵀ c` for every `c` (it never lifts the degree).  Contents:
 
-* `aboveId_of_regressive_diWitness` — a *regressive* witness forces `F` above the identity on a cone
-  (hence measure-preserving): `X ≤ᵀ g(F X) ≤ᵀ F X`.
-* `not_regressive_diWitness_of_incomparable` — therefore an *incomparable* `F` admits **no** regressive
-  dominated-inverting witness.
+**Q4 side (the witness of a DI-incomparable `F` is jump-type).**
+* `aboveId_of_regressive_diWitness` — a regressive witness forces `F` above the identity
+  (`X ≤ᵀ g(F X) ≤ᵀ F X`), hence measure-preserving.
+* `not_regressive_diWitness_of_incomparable` / `diWitness_nonRegressive_of_incomparable` — an
+  incomparable `F` admits **no** regressive witness; its witness `g` has `g c ≰ᵀ c` somewhere.
+* `measurePreserving_of_regressive_diWitness` — *positive* Q4: DI via a regressive witness ⟹ MP, so
+  Q4's open content is exactly the non-regressive-witness case.
+* `aboveId_of_diWitness_regressive_onValues` / `diWitness_liftsValues_of_incomparable` — the lift is
+  *at `F`'s values*: `g(F X) ≰ᵀ F X` cofinally.
+* `dominatedInvertible_inflationary` — WLOG the witness is inflationary (`c ≤ᵀ g c`).
+* `incomparableDI_strictlyBelow_mp` — a DI-incomparable `F` is *strictly* Martin-below its invariant MP
+  dominator `g ∘ F`.
+* Honesty pair: `everyInvariant_below_mp` (below an MP function is *universal*, hence vacuous) vs
+  `dominatedInvertible_mpFactorsThroughF` (the real content: the MP dominator factors through `F X`).
 
-So a hypothetical dominated-invertible incomparable `F` (the Q4 counterexample) must be inverted by a
-**non-regressive** `g` — one that genuinely *lifts* the degree of `F X` (a jump-type operator),
-recovering `X` from information the value `F X` does *not* itself contain.  This matches the intuition
-that `X ≤ᵀ (F X)'` while `F X ⊥ᵀ X` is the shape of such a counterexample: the witness must be at least
-as strong as a jump.  It also explains why `MP ⟹ DI` uses the *identity* witness (`g = id`, regressive)
-and why that route is blocked in the incomparable case — the identity is regressive.
+**Q3 side.**
+* `notDominatedInvertible_escapes_jump` — a `¬DI` counterexample has `X ≰ᵀ (F X)′` on every cone
+  (jump is a valid invariant witness); iterating, `X` escapes *every* jump-iterate of `F X`.
+
+Net picture: a Part-1 counterexample is either `¬DI` (Q3: `F X` loses `X` below all jumps) or
+DI-incomparable (Q4: `X` recovered from `F X` by a **jump-type** `g` while `F X ⊥ᵀ X`).  `MP ⟹ DI` uses
+the *identity* (regressive) witness — exactly the route blocked in the incomparable case.
 -/
 import MartinsConjecture.MeasurePreservingCK
 import MartinsConjecture.JumpInvariance

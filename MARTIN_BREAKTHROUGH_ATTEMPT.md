@@ -117,6 +117,18 @@ exactly the (open) statement that no such proper factor map from a `D_T`-ultrafi
 This is Siskind's "classify the countably-complete ultrafilters on `D_T`", which he flags as *possibly* more
 tractable but which no one has done. That is the sharp target for a genuine breakthrough.
 
+## Convergence (the routes are one wall)
+
+A refinement from this attempt's parallel probes: the two routes I earlier called "different walls" are the
+**same** wall. The **Marks / pointed-tree (combinatorial)** route: building a pointed tree on which invariant
+`f` is *injective* requires a **computable injective witness** to thin against (pointedness comes from
+tree-thinning à la Sacks/Spector, *not* Groszek–Slaman coding — a corrected attribution); such a witness
+exists iff `f` has a **modulus** iff `f` is **measure-preserving**. So the strict-half (Marks) route bottoms
+out at exactly the **measure/RK-rigidity** content, not a separate combinatorial gap. Every route — measure,
+Marks, coding, games, partition, reflection, ultrafilter — converges on the single statement: *there is no
+invariant control of an arbitrary invariant function's Turing-value-distribution on a cone.* That statement is
+RK-rigidity of `U_M` / Steel's Conjecture 1.4, and it is open even with current inner-model theory.
+
 ## Honest structural conclusion (so far)
 
 The incomparable core is equivalent to **cone-specific regularity of `F`** (uniformity / continuity on a

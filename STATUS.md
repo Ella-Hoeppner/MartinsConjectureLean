@@ -25,8 +25,10 @@ engine as clean general lemmas and used it to formalize the Marks route to the i
   to a cone + `dominatedInvertible_of_injectiveOnCone`. Packaged: `constantOrStrictHalf_of_marksTree`,
   `strictHalf_of_marksConjecture` (Marks ⟹ strict half of RK-rigidity), and the **capstone**
   `partI_of_marksConjecture_and_equivHalf` (Marks conjecture + equivalence half Q4 ⟹ Part 1, via
-  `partI_of_halves`). `marksTree_of_injectiveOnCone` pins the wall: Marks holds whenever `F` is injective on a
-  cone, so the ONLY open content is `F` injective on **no** cone (needs tree-thinning Lemma 2.7 for a functional).
+  `partI_of_halves`) and `no_incomparable_of_marksConjecture_and_equivHalf` (Marks + Q4 ⟹ **no incomparable
+  invariant `F`** = Part 1's sole open content directly). `marksTree_of_injectiveOnCone` pins the wall: Marks
+  holds whenever `F` is injective on a cone, so the ONLY open content is `F` injective on **no** cone (needs
+  tree-thinning Lemma 2.7 for a functional).
   All std axioms, full build 3117 green.
 - **`DIWitness.lean` (new — characterizes the Q4 disproof target).** A *dominated-inverting witness* `g`
   (`X ≤ᵀ g(F X)` on a cone) for an **incomparable** `F` must be **non-regressive / jump-type**:

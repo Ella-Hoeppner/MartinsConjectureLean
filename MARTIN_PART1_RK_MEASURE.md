@@ -86,3 +86,22 @@ Friedberg jump-inversion, every cone contains continuum-many `X` with the same j
 
 This closes off "prove `U_M` selective/RK-minimal" as a route and confirms the target is the value-distribution
 rigidity, whose degree-level `{0,1}` content is the inner-model-theoretic crux.
+
+## The mechanism: why even RK-minimality would be insufficient (the `g`-inversion gap)
+Trace the RK-minimality argument to see *exactly* where it stalls (this is the mechanism behind
+Lutz–Siskind's "rigidity is strictly stronger than RK-minimal"). Suppose `U_M` were RK-minimal and let `F`
+be a counterexample: `V := F_*U_M` is nonprincipal and `≠ U_M`, so RK-minimality gives `V ≡_RK U_M`, i.e. an
+invariant `g` with `g_*V = U_M`. Then `(g∘F)_*U_M = U_M`, so `g∘F` is measure-preserving, and by **Thm 3.4
+for `U_M`** (`mp_iff_aboveId`), `g(F X) ≥ᵀ X` on a cone. One hopes for a contradiction with `F X ⊥ Z_0`.
+**It doesn't come:** for `X ≥ Z_0`, `g(F X) ≥ X ≥ Z_0`, so `g` maps the `⊥ Z_0` value `F X` to something
+`≥ Z_0` — but `g` is an *arbitrary invariant function*, free to **lift** a sideways value above `Z_0`. Since
+`g` need not be a Turing reduction (`g(Y) ≰ᵀ Y` in general), `g(F X) ≥ X` gives **no** comparison between `X`
+and `F X`. So RK-minimality (`V ≡_RK U_M` via arbitrary `g`) is genuinely weaker than the needed `V = U_M`;
+the residue is precisely: **no invariant `g` "inverts" a ¬MP `F` back to `U_M`.** That non-invertibility is
+the degree-level rigidity — the inner-model crux — and this trace shows it is not evadable by the
+`≡_RK`-level (selectivity/RK-minimality) tools, matching Lutz–Siskind exactly.
+
+*(Aside, correcting a mis-step: `U_M` non-selective does NOT by itself give `U_M` non-RK-minimal. The
+ω-ultrafilter lemma "`f` non-1-1 on every `U`-set ⟹ `f_*U <_RK U` strictly" fails for `U_M`: the jump is
+non-1-1 on every cone yet `jump_*U_M = U_M` — `U_M` carries nontrivial `≡_RK`-self-maps, so `≡_RK` and `=`
+part ways here, which is the same gap the `g`-inversion trace exposes.)*

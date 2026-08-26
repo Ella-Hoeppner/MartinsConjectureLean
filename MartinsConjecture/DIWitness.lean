@@ -24,6 +24,7 @@ as strong as a jump.  It also explains why `MP ⟹ DI` uses the *identity* witne
 and why that route is blocked in the incomparable case — the identity is regressive.
 -/
 import MartinsConjecture.MeasurePreservingCK
+import MartinsConjecture.JumpInvariance
 
 open scoped Computability
 open Cantor
@@ -110,22 +111,38 @@ theorem dominatedInvertible_inflationary (hDI : DominatedInvertible F) :
   · obtain ⟨b, hb⟩ := hg₀cone
     exact ⟨b, fun X hX => (hb X hX).trans (Cantor.right_le_join _ _)⟩
 
-/-- **Every dominated-invertible `F` is Martin-below an invariant measure-preserving function that
-dominates both `F` and the identity.**  Take the inflationary witness `g`; then `H := g ∘ F` is
-invariant, above the identity (`X ≤ᵀ g(F X)`) hence measure-preserving, and `F X ≤ᵀ H X` (inflationarity
-at the value `F X`).  Applied to the Q4 target: a sideways *incomparable* counterexample `F` sits
-*underneath* a genuine MP (jump-type) function `H`, with `X, F X ≤ᵀ H X` — the disproof must exhibit an
-invariant `F` strictly below such an `H` yet incomparable to the argument.  (The statement itself needs
-no incomparability; it holds for every dominated-invertible `F`.) -/
-theorem dominatedInvertible_below_mp (hM : MartinPPT) (hF : TuringInvariant F)
-    (hDI : DominatedInvertible F) :
+/-- **Every invariant `F` is Martin-below an invariant measure-preserving function** — namely
+`H X = (X ⊕ F X)′`, the jump of the join.  So lying *below* an MP function is **universal**: it holds for
+*every* invariant `F` and hence carries no information.  This is exactly why "below an MP function" is the
+*wrong* reading of dominated-invertibility; the real content is that the recovery of `X` **factors through
+`F X` alone** (`dominatedInvertible_mpFactorsThroughF`). -/
+theorem everyInvariant_below_mp (hM : MartinPPT) (hF : TuringInvariant F) :
     ∃ H, TuringInvariant H ∧ MeasurePreserving H ∧
       OnCone (fun X => F X ≤ₜ H X) ∧ OnCone (fun X => X ≤ₜ H X) := by
-  obtain ⟨g, hginv, hinfl, hcone⟩ := dominatedInvertible_inflationary hDI
+  have hHinv : TuringInvariant (fun X => jump (Cantor.join X (F X))) := by
+    intro X Y hXY
+    exact jump_congr ⟨Cantor.join_le (hXY.1.trans (Cantor.left_le_join _ _))
+          ((hF X Y hXY).1.trans (Cantor.right_le_join _ _)),
+        Cantor.join_le (hXY.2.trans (Cantor.left_le_join _ _))
+          ((hF X Y hXY).2.trans (Cantor.right_le_join _ _))⟩
+  have haboveId : OnCone (fun X => X ≤ₜ jump (Cantor.join X (F X))) :=
+    ⟨fun _ => false, fun X _ => (Cantor.left_le_join X (F X)).trans (Cantor.le_jump _)⟩
+  exact ⟨fun X => jump (Cantor.join X (F X)), hHinv,
+    (mp_iff_aboveId_of_martinPPT hM hHinv).mpr haboveId,
+    ⟨fun _ => false, fun X _ => (Cantor.right_le_join X (F X)).trans (Cantor.le_jump _)⟩, haboveId⟩
+
+/-- **The DI-specific content: the measure-preserving dominator factors through `F`.**  For a
+dominated-invertible `F`, the inflationary witness `g` makes `H := g ∘ F` invariant and measure-preserving
+with `X ≤ᵀ H X` — and `H` is a function of `F X` **alone**.  Contrast `everyInvariant_below_mp`: *below* an
+MP function is free, but a dominator *depending only on `F X`* that still recovers `X` is exactly
+`StrictHalfFor F` — the genuine strict-half content, here with a single witness `g` realizing both. -/
+theorem dominatedInvertible_mpFactorsThroughF (hM : MartinPPT) (hF : TuringInvariant F)
+    (hDI : DominatedInvertible F) :
+    ∃ g, TuringInvariant g ∧ MeasurePreserving (fun X => g (F X)) ∧
+      OnCone (fun X => X ≤ₜ g (F X)) := by
+  obtain ⟨g, hginv, _, hcone⟩ := dominatedInvertible_inflationary hDI
   have hHinv : TuringInvariant (fun X => g (F X)) := fun X Y hXY => hginv (F X) (F Y) (hF X Y hXY)
-  refine ⟨fun X => g (F X), hHinv,
-    (mp_iff_aboveId_of_martinPPT hM hHinv).mpr hcone,
-    ⟨fun _ => false, fun X _ => hinfl (F X)⟩, hcone⟩
+  exact ⟨g, hginv, (mp_iff_aboveId_of_martinPPT hM hHinv).mpr hcone, hcone⟩
 
 #print axioms aboveId_of_regressive_diWitness
 #print axioms not_regressive_diWitness_of_incomparable
@@ -133,6 +150,7 @@ theorem dominatedInvertible_below_mp (hM : MartinPPT) (hF : TuringInvariant F)
 #print axioms aboveId_of_diWitness_regressive_onValues
 #print axioms diWitness_liftsValues_of_incomparable
 #print axioms dominatedInvertible_inflationary
-#print axioms dominatedInvertible_below_mp
+#print axioms everyInvariant_below_mp
+#print axioms dominatedInvertible_mpFactorsThroughF
 
 end Martin

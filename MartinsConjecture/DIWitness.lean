@@ -114,6 +114,22 @@ theorem notDI_incomparable_jumpSymmetric
   obtain ⟨b, hb⟩ := hinc
   exact ⟨b, fun X hX hj => (hb X hX).2 ((Cantor.le_jump X).trans hj)⟩
 
+/-- **Every finite jump-iterate is Turing invariant** (`jump^[n]`), by induction: `jump^[0] = id` and
+`jump^[n+1] = jump ∘ jump^[n]`, and `jump` preserves `≡ᵀ` (`jump_congr`). -/
+theorem turingInvariant_jumpIter : ∀ n : ℕ, TuringInvariant (Cantor.jump^[n])
+  | 0 => fun _ _ h => by simpa using h
+  | (n + 1) => fun X Y h => by
+      simp only [Function.iterate_succ', Function.comp_apply]
+      exact Cantor.jump_congr (turingInvariant_jumpIter n X Y h)
+
+/-- **A `¬DI` counterexample escapes *every finite jump-iterate* of `F X`.**  For each `n`, the map
+`jump^[n]` is invariant, so `X ≤ᵀ (F X)^{(n)}` on a cone would witness `DominatedInvertible F`.  Hence
+`¬DI ⟹ X ≰ᵀ (F X)^{(n)}` cofinally, for all `n`: the value's whole finite jump-tower fails to recover
+`X` — the rigorous form of the information-loss demand on the Q3 disproof target. -/
+theorem notDI_escapes_jumpIter (n : ℕ) (h : ¬ DominatedInvertible F) :
+    ¬ OnCone (fun X => X ≤ₜ (Cantor.jump^[n]) (F X)) :=
+  fun hcone => h ⟨Cantor.jump^[n], turingInvariant_jumpIter n, hcone⟩
+
 /-! ### A dynamical constraint: consecutive orbit iterates are incomparable -/
 
 /-- **For a cone-preserving incomparable `F`, consecutive orbit iterates are incomparable.**  If `F`
@@ -229,6 +245,8 @@ theorem incomparableDI_strictlyBelow_mp (hM : MartinPPT) (hF : TuringInvariant F
 #print axioms aboveId_of_regressive_diWitness
 #print axioms measurePreserving_of_regressive_diWitness
 #print axioms notDominatedInvertible_escapes_jump
+#print axioms turingInvariant_jumpIter
+#print axioms notDI_escapes_jumpIter
 #print axioms notDI_incomparable_jumpSymmetric
 #print axioms incomparable_conePreserving_orbitIncomparable
 #print axioms incomparableDI_strictlyBelow_mp

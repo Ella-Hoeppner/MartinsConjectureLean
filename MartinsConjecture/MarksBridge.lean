@@ -115,7 +115,9 @@ theorem marksTree_id (hM : MartinPPT) : MarksTree (fun x => x) :=
 /-- **Marks's conjecture also holds for constant-on-a-cone `F`** (via the constant disjunct on any
 pointed tree inside the cone).  Together with `marksTree_of_injectiveOnCone`, Marks holds whenever `F`
 is *constant on a cone* OR *injective on a cone*; so its sole open content is an `F` that is **neither**
-— exactly the incomparable core. -/
+constant nor injective on any cone.  (Within the incomparable core this is the *non-injective* case: an
+injective-incomparable `F` — the Q4 target — is injective on a cone, so Marks already gives it a tree;
+the genuinely open Marks case is the *non-injective* incomparable `F`, i.e. the Q3/`¬DI` hard case.) -/
 theorem marksTree_of_constantOnCone (hM : MartinPPT) (hc : ConstantOnCone F) : MarksTree F := by
   obtain ⟨C, cbase, hC⟩ := hc
   obtain ⟨T, hTsub⟩ :=

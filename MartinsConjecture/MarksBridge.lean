@@ -26,6 +26,7 @@ functional, which the incomparable core is not — the `ℕ`-range wall of `unif
 import MartinsConjecture.MartinStrictHalf
 import MartinsConjecture.MartinTree
 import MartinsConjecture.MartinOmega1Approach
+import MartinsConjecture.Lemma210
 
 open scoped Computability
 open Cantor
@@ -108,6 +109,28 @@ theorem marksTree_of_injectiveOnCone (hM : MartinPPT) {base : ℕ → Bool}
       (fun z => ⟨Cantor.join base z, Cantor.right_le_join _ _, Cantor.left_le_join _ _⟩)
   exact ⟨T, Or.inr fun x y hx hy hFxy => hinj x y (hTsub x hx) (hTsub y hy) hFxy⟩
 
+/-- **Marks's conjecture holds for `F` with a countable degree-range** (via the constant disjunct).  If
+every value `F X` is `≡ᵀ` to one of countably many reals `e n`, then the value-index `X ↦ (the n with
+F X ≡ᵀ e n)` is **ℕ-valued**, so by Lemma 2.10 (`cofinal_fiber` + `MartinPPT`) it is constant `= n` on a
+pointed perfect tree — on which `F` is constant (`≡ᵀ e n`).  This is the engine of
+`uniformization-engine-wall` in action: countable range ⟹ the value collapses on a pointed tree.  (It is
+exactly *un*countable value-range that the incomparable core forces, defeating this route.) -/
+theorem marksTree_of_countableDegreeRange (hM : MartinPPT)
+    (e : ℕ → (ℕ → Bool)) (hrange : ∀ X, ∃ n, F X ≡ₜ e n) : MarksTree F := by
+  classical
+  obtain ⟨n, hcof⟩ :=
+    cofinal_fiber (fun _ => True) (fun z => ⟨z, Cantor.le.refl z, trivial⟩)
+      (fun X => (hrange X).choose)
+  obtain ⟨T, hTsub⟩ := hM (fun X => True ∧ (fun X => (hrange X).choose) X = n) hcof
+  refine ⟨T, Or.inl fun x y hx hy => ?_⟩
+  have hFx : F x ≡ₜ e ((hrange x).choose) := (hrange x).choose_spec
+  have hFy : F y ≡ₜ e ((hrange y).choose) := (hrange y).choose_spec
+  have hxn : (hrange x).choose = n := (hTsub x hx).2
+  have hyn : (hrange y).choose = n := (hTsub y hy).2
+  rw [hxn] at hFx
+  rw [hyn] at hFy
+  exact hFx.trans hFy.symm
+
 /-- **Sanity / non-vacuity: the identity has a Marks tree** (it is injective on every cone). -/
 theorem marksTree_id (hM : MartinPPT) : MarksTree (fun x => x) :=
   marksTree_of_injectiveOnCone hM (base := fun _ => false) (fun _ _ _ _ h => h)
@@ -155,6 +178,7 @@ theorem no_incomparable_of_marksConjecture_and_equivHalf (hM : MartinPPT) (hMark
 #print axioms strictHalf_of_marksConjecture
 #print axioms partI_of_marksConjecture_and_equivHalf
 #print axioms marksTree_of_injectiveOnCone
+#print axioms marksTree_of_countableDegreeRange
 #print axioms no_incomparable_of_marksConjecture_and_equivHalf
 
 end Martin

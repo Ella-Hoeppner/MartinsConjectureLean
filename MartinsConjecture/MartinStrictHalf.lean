@@ -114,8 +114,9 @@ theorem dominatedInvertible_fiber_bounded (hdi : DominatedInvertible F) :
 If `F` is invariant, non-constant, and *not* dominated-invertible, then `F` is not measure-preserving (MP ⟹
 dominated-invertible via `g = id` and `MP ⟹ above-id`), so `F` is neither constant-on-a-cone nor MP — Part 1
 fails.  Equivalently `F_*U_M` is a nonprincipal strict RK-predecessor of `U_M` (**Question 3 = YES**).  So Q3
-holds iff every non-constant invariant `F` is dominated-invertible (⟺ uniformly bounded-fibered, ⟺
-countable-fibered on a cone) — the existence question, replacing the vacuous "cofinal fiber" phrasing. -/
+holds iff every non-constant invariant `F` is dominated-invertible — this `¬DominatedInvertible` is the honest
+disproof target (replacing the vacuous "cofinal fiber" phrasing; note DI only requires fibers bounded on
+*some* cone, so it is not a global fiber-countability condition). -/
 theorem partI_false_of_not_dominatedInvertible (hM : MartinPPT) (hF : TuringInvariant F)
     (hnc : ¬ ConstantOnCone F) (hnDI : ¬ DominatedInvertible F) :
     ¬ (∀ G, TuringInvariant G → ConstantOnCone G ∨ MeasurePreserving G) := by
@@ -154,13 +155,13 @@ theorem pointedInjectiveTree_id : Nonempty (PointedInjectiveTree (fun x => x)) :
 
 /-! ### The countable-fiber case — the STRICT half's *combinatorial* fragment (Marks–Slaman–Steel)
 
-Localization (this session): `strict half for F ⟺ DominatedInvertible F`, and
-`DominatedInvertible F ⟸ F bounded-(= countable-)fibered on a cone` (via MSS, below) while
-`DominatedInvertible F ⟹ F bounded-fibered on a cone` (`dominatedInvertible_fiber_bounded`).  So the countable
-case is **proved** (MSS), and open Question 3 is exactly: *is every non-constant invariant `F` bounded-fibered
-(⟺ dominated-invertible)?*  A non-constant invariant `F` has cone-null fibers (no fiber contains a cone);
-whether some can be *unbounded* is the crux.  (Increasing `F` — e.g. the jump — are bounded-fibered,
-`{d : d' ≡ᵀ c} ⊆ {d ≤ᵀ c}`.) -/
+Localization (this session): `strict half for F ⟺ DominatedInvertible F`.  Sufficient: `F` countable-fibered
+`⟹ DominatedInvertible F` (via MSS, below).  Necessary: `DominatedInvertible F ⟹` every fiber is bounded *on
+the DI-cone* (`dominatedInvertible_fiber_bounded`) — note this is on *a* cone, not globally (e.g.
+`F d = if d ⊥ 0' then 0' else d` has a globally-unbounded fiber `{d ⊥ 0'}` yet is the identity on `cone(0')`,
+so DI).  So there is no clean single-fiber characterization; **open Question 3 is exactly: is every
+non-constant invariant `F` dominated-invertible?**  The countable-fibered case is proved (MSS); the honest
+disproof target is `¬DominatedInvertible`. -/
 
 /-- `F` has **countable fibers**: each `≡ᵀ`-fiber `{x | F x ≡ᵀ c}` is countable (i.e. countably many degrees
 map to any value `c`; recall each `≡ᵀ`-class of reals is itself countable). -/
@@ -179,10 +180,10 @@ def CountableFiberMarks : Prop :=
 /-- **The strict half for countable-fibered `F`** — the *combinatorial* fragment of Lutz–Siskind Question 3,
 complementary to the measure-theoretic route.  From the classically-proved `CountableFiberMarks` input and
 the machine-checked `strictHalf_of_pointedInjectiveTree`, a countable-fibered invariant `F` satisfies the
-strict half `U_M ≤_RK F_*U_M`.  **The residual open content of Q3 is the existence question**: can a
-non-constant invariant `F` have an *unbounded* (uncountable) fiber?  (By `dominatedInvertible_fiber_bounded`
-such an `F` would fail the strict half — refuting Part 1.)  A combinatorial existence wall, genuinely
-different from the equivalence half's inner-model wall. -/
+strict half `U_M ≤_RK F_*U_M`.  **The residual open content of Q3** is whether *every* non-constant invariant
+`F` is dominated-invertible (`strictHalf_iff_dominatedInvertible`); the honest disproof target is
+`¬DominatedInvertible` (`partI_false_of_not_dominatedInvertible`).  A combinatorial wall, genuinely different
+from the equivalence half's inner-model wall. -/
 theorem strictHalf_of_countableFibered (hMSS : CountableFiberMarks) (hM : MartinPPT)
     (hF : TuringInvariant F) (hcf : CountableFibered F) : StrictHalfFor F :=
   strictHalf_of_pointedInjectiveTree hM hF (hMSS F hF hcf).some

@@ -7,16 +7,16 @@ a **strict half** (`V ≤_RK U_M ⟹ U_M ≤_RK V`, i.e. `U_M` is RK-minimal) an
 `V = F_*U_M` was characterized as **dominated-invertibility** `DominatedInvertible F`
 (`∃` invariant `g`, `X ≤ᵀ g(F X)` on a cone), via `strictHalf_iff_dominatedInvertible`.
 
-This file reduces that — exactly as `PointedTree.lean` reduces Theorem 3.4 to `GroszekSlaman` — to a single
-named tree-existence statement: **`PointedInjectiveTree F`**, a pointed perfect tree realizing a cone on
-which `F` is *effectively injective* (the branch is recovered from its `F`-value plus the tree).  This is the
-recursion-theoretic output of **Marks's conjecture** (invariant `F` injective on a pointed perfect tree),
-the standard/open construction the strict half rests on.  Everything else — the passage from the tree to the
-dominating inverse `g y = y ⊕ code`, hence to `U_M ≤_RK F_*U_M` — is machine-checked here.
-
-The interface is the injectivity analogue of `InvertingTree` (which handled *increasing* `F` by
-right-inverting a modulus); here `F` is arbitrary and we use only that its value plus the tree recovers the
-branch, so the explicit dominating map is simply "join with the tree code".
+This file formalizes the **countable-fiber fragment** of the strict half.  It introduces a pointed recovery
+tree `PointedInjectiveTree F` (a pointed perfect tree realizing a cone with the Lemma-2.1 *recovery*
+`x ≤ᵀ F x ⊕ code`) and shows, machine-checked, `PointedInjectiveTree F ⟹ DominatedInvertible F ⟹ StrictHalfFor F`
+via the explicit dominating map `g y = y ⊕ code`.  Crucially (`pointedInjectiveTree_fiber_le`), the degree-level
+`recover` **forces `F` to be countable-fibered on the cone** — so this interface fits *exactly* the case
+Marks–Slaman–Steel already **prove** (countable fibers, `strictHalf_of_countableFibered`), and does **not**
+reach the open part of Lutz–Siskind Question 3, which is *uncountable* cone-null fibers (there recovery must be
+reals-level).  It is the injectivity analogue of `InvertingTree` (which handled *increasing* `F` by
+right-inverting a modulus); here we use only the recovery inequality, so the dominating map is just
+"join with the tree code".
 -/
 import MartinsConjecture.MeasurePreservingCK
 

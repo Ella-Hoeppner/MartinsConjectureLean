@@ -9,6 +9,26 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26g — the pointed-tree engine + Marks route (Prop 5.37) machine-checked
+**→ `Lemma210.lean`, `Lemma211.lean`, `MarksBridge.lean`.** Built the pointed-perfect-tree uniformization
+engine as clean general lemmas and used it to formalize the Marks route to the incomparable core.
+- **`Lemma210.lean`** (Lutz Lemma 2.10, from `MartinPPT'`): a countable-range `h` is constant on a pointed
+  perfect subtree of any cofinal set (`lemma210_of_martinPPT'`, `exists_constant_pointedTree`,
+  `exists_constant_pointedTree_bool`). The single-real "countable-range constancy" engine.
+- **`Lemma211.lean`** (Lutz Lemma 2.11 + Cor 2.12): a relation `R ⊆ ≥ᵀ` with cofinal domain is uniformized
+  by one Turing functional on a pointed tree (`lemma211_of_martinPPT'`); increasing `f` has a computable
+  right inverse on a pointed tree (`cor212_of_martinPPT'`). *(NB: the GroszekSlaman-specific content of these
+  was already inlined in the repo's `groszekSlaman_of_martinPPT`; these are the clean general restatements.)*
+- **`MarksBridge.lean` (the genuinely new piece): Lutz Prop 5.37 machine-checked.** `MarksTree F` (a pointed
+  perfect tree on whose branch-degrees `F` is constant-or-injective) ⟹ `ConstantOnCone F ∨ DominatedInvertible F`
+  (`constantOrDominatedInvertible_of_marksTree`), via `PPT.realizes` transporting branch-constancy/injectivity
+  to a cone + `dominatedInvertible_of_injectiveOnCone`. Packaged: `constantOrStrictHalf_of_marksTree`,
+  `strictHalf_of_marksConjecture` (Marks ⟹ strict half of RK-rigidity), and the **capstone**
+  `partI_of_marksConjecture_and_equivHalf` (Marks conjecture + equivalence half Q4 ⟹ Part 1, via
+  `partI_of_halves`). `marksTree_of_injectiveOnCone` pins the wall: Marks holds whenever `F` is injective on a
+  cone, so the ONLY open content is `F` injective on **no** cone (needs tree-thinning Lemma 2.7 for a functional).
+  All std axioms, full build 3117 green.
+
 ### Session 2026-08-26f — Lutz-thesis primary-source dive: corrections, the decisive mechanism, Q9.3 formalized
 **→ `MARTIN_BREAKTHROUGH_ATTEMPT.md` ("decisive mechanism" + "one object, three names").** Read the Lutz
 thesis (pdftotext) directly. Outcomes:

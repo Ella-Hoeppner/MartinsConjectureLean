@@ -54,3 +54,17 @@ argument reaches, and whose resolution is the inner-model-theoretic frontier (St
 open cases, refined by this session: escaping `F` that is CK-regressive, CK-preserving, or CK-increasing-but-
 Turing-sideways — all beyond the ordinal method. A proof needs the fine RK-structure of `U_M` **on the
 degrees**, not on the ordinals `U_M` pushes to.
+
+## Clarification: the frontier is NOT selectivity (`U_M` is not RK-minimal in the selective sense)
+`RK-minimal ⟺ selective` (every function is constant or 1-1 on a set in the ultrafilter). **`U_M` is not
+selective:** the Turing jump is a *non-constant* invariant function that is *not injective on any cone* — by
+Friedberg jump-inversion, every cone contains continuum-many `X` with the same jump degree `X'`. Yet
+`jump_*U_M = U_M` (the jump is measure-preserving: `{X : Z ≤ᵀ X'} ⊇ cone(Z)`). So:
+- the RK-rigidity frontier (`V ≤_RK U_M` nonprincipal `⟹ V = U_M`, Lutz–Siskind) is **stronger than, and
+  different from, selectivity** — it is satisfied by *non-injective* MP functions like the jump, and it rules
+  out sideways ¬MP predecessors, not "collapsing" ones;
+- so one cannot attack the frontier by proving `U_M` selective (that is false) — the target is genuinely the
+  `= U_M` rigidity, which is exactly `escaping ⟹ MP`.
+
+This closes off "prove `U_M` selective/RK-minimal" as a route and confirms the target is the value-distribution
+rigidity, whose degree-level `{0,1}` content is the inner-model-theoretic crux.

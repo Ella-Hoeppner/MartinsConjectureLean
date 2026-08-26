@@ -124,6 +124,22 @@ theorem measurePreserving_hasModulus (hmp : MeasurePreserving F) :
   intro X Y hXY
   exact hb X Y ((Cantor.right_le_join X (b X)).trans hXY)
 
+/-- **Converse of Lemma 3.3: an increasing modulus forces measure-preservation.**  If `g` is an increasing
+modulus for `F`, then for each `Z`, taking `X := Z` in the modulus property gives `Z ≤ᵀ F Y` whenever
+`g Z ≤ᵀ Y` — i.e. `F` is above `Z` on the cone above `g Z`.  Hence **`MeasurePreserving F ⟺ F has an increasing
+modulus`** (`measurePreserving_iff_hasModulus`).  This is the recursion-theoretic content behind the
+2026-08-26 convergence finding: building a Marks pointed *injective* tree needs a computable injective witness,
+which exists iff `F` has a modulus iff `F` is measure-preserving — so the combinatorial (Marks) and measure
+routes to Part 1 bottom out at the *same* wall. -/
+theorem measurePreserving_of_hasModulus {g : (ℕ → Bool) → (ℕ → Bool)}
+    (hg : IncreasingModulus F g) : MeasurePreserving F :=
+  fun Z => ⟨g Z, fun X hX => hg.2 Z X hX⟩
+
+/-- **`F` is measure-preserving iff it has an increasing modulus** (Lutz–Siskind Lemma 3.3 + its converse). -/
+theorem measurePreserving_iff_hasModulus :
+    MeasurePreserving F ↔ ∃ g, IncreasingModulus F g :=
+  ⟨measurePreserving_hasModulus, fun ⟨_, hg⟩ => measurePreserving_of_hasModulus hg⟩
+
 /-- If an increasing modulus has a degree fixed point on a cone (`g X ≡ᵀ X`),
 then `F` is above the identity there. -/
 theorem aboveId_of_modulus_fixed {g : (ℕ → Bool) → (ℕ → Bool)}

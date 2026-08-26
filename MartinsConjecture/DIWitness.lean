@@ -145,22 +145,6 @@ theorem notDI_escapes_jumpIter (n : ℕ) (h : ¬ DominatedInvertible F) :
     ¬ OnCone (fun X => X ≤ₜ (Cantor.jump^[n]) (F X)) :=
   fun hcone => h ⟨Cantor.jump^[n], turingInvariant_jumpIter n, hcone⟩
 
-/-- **The complete counterexample dichotomy** (synthesis of the Q3 and Q4 characterizations).  An
-incomparable invariant `F` is exactly one of:
-* **Q4** — dominated-invertible via an invariant witness `g` that **lifts `F`'s values** (`g(F X) ≰ᵀ F X`
-  cofinally, a jump-type operator recovering `X` from a lift of `deg(F X)`); or
-* **Q3** — *not* dominated-invertible, in which case `X` escapes **every finite jump-iterate** of `F X`.
-
-So any Part-1 counterexample is a "value-lifting-recoverable" (Q4) or "jump-transcendently-lossy" (Q3)
-invariant sideways function — the two horns, both open only at the level of *invariant realizability*. -/
-theorem incomparable_dichotomy (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) :
-    (∃ g, TuringInvariant g ∧ OnCone (fun X => X ≤ₜ g (F X)) ∧
-        ¬ OnCone (fun X => g (F X) ≤ₜ F X))
-      ∨ (∀ n, ¬ OnCone (fun X => X ≤ₜ (Cantor.jump^[n]) (F X))) := by
-  by_cases hDI : DominatedInvertible F
-  · exact Or.inl (diWitness_liftsValues_of_incomparable hinc hDI)
-  · exact Or.inr (fun n => notDI_escapes_jumpIter n hDI)
-
 /-! ### A dynamical constraint: consecutive orbit iterates are incomparable -/
 
 /-- **For a cone-preserving incomparable `F`, consecutive orbit iterates are incomparable.**  If `F`
@@ -272,6 +256,22 @@ theorem incomparableDI_strictlyBelow_mp (hM : MartinPPT) (hF : TuringInvariant F
   obtain ⟨b2, hb2⟩ := aboveId_of_diWitness_regressive_onValues hval hcone
   exact (hb1 (Cantor.join b1 b2) (Cantor.left_le_join _ _)).2
     (hb2 (Cantor.join b1 b2) (Cantor.right_le_join _ _))
+
+/-- **The complete counterexample dichotomy** (synthesis of the Q3 and Q4 characterizations).  An
+incomparable invariant `F` is exactly one of:
+* **Q4** — dominated-invertible via an invariant witness `g` that **lifts `F`'s values** (`g(F X) ≰ᵀ F X`
+  cofinally, a jump-type operator recovering `X` from a lift of `deg(F X)`); or
+* **Q3** — *not* dominated-invertible, in which case `X` escapes **every finite jump-iterate** of `F X`.
+
+So any Part-1 counterexample is a "value-lifting-recoverable" (Q4) or "jump-transcendently-lossy" (Q3)
+invariant sideways function — the two horns, both open only at the level of *invariant realizability*. -/
+theorem incomparable_dichotomy (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) :
+    (∃ g, TuringInvariant g ∧ OnCone (fun X => X ≤ₜ g (F X)) ∧
+        ¬ OnCone (fun X => g (F X) ≤ₜ F X))
+      ∨ (∀ n, ¬ OnCone (fun X => X ≤ₜ (Cantor.jump^[n]) (F X))) := by
+  by_cases hDI : DominatedInvertible F
+  · exact Or.inl (diWitness_liftsValues_of_incomparable hinc hDI)
+  · exact Or.inr (fun n => notDI_escapes_jumpIter n hDI)
 
 #print axioms aboveId_of_regressive_diWitness
 #print axioms measurePreserving_of_regressive_diWitness

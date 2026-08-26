@@ -56,7 +56,18 @@ theorem lemma210_of_martinPPT' (hPPT : MartinPPT') (A : (ℕ → Bool) → Prop)
   obtain ⟨T, hT⟩ := hPPT (fun x => A x ∧ h x = n) hcof
   exact ⟨n, T, hT⟩
 
+/-- **Corollary (the clean form): any ℕ-valued function is constant on some pointed perfect
+tree.**  The `A = ⊤` case of Lemma 2.10 — "countable range ⟹ constant on a pointed tree," the
+statement used throughout the Martin-conjecture literature as a stand-in for the cone theorem on
+non-invariant data. -/
+theorem exists_constant_pointedTree (hPPT : MartinPPT') (h : (ℕ → Bool) → ℕ) :
+    ∃ (n : ℕ) (T : RawPPT), ∀ x, IsBranch (treeMem T.code) x → h x = n := by
+  obtain ⟨n, T, hT⟩ :=
+    lemma210_of_martinPPT' hPPT (fun _ => True) (fun z => ⟨z, Cantor.le.refl z, trivial⟩) h
+  exact ⟨n, T, fun x hx => (hT x hx).2⟩
+
 #print axioms cofinal_fiber
 #print axioms lemma210_of_martinPPT'
+#print axioms exists_constant_pointedTree
 
 end Martin

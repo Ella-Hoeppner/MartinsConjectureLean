@@ -40,9 +40,13 @@ below assumes it.
 the repo's `cone_theorem_onCone` (which requires an invariant set) does not apply.  Collapsing
 it needs the repo to gain **Lutz Lemma 2.10** — *a cofinal non-invariant set with a
 countable-range function has a pointed perfect subtree on which the function is constant* — i.e.
-the pointed-perfect-tree machinery (Def 2.4, Lemmas 2.5/2.7/2.9/2.10) that the project does not
-yet formalize.  Building that engine is the prerequisite for discharging the hypothesis above
-(and, more broadly, for the Marks-conjecture route to the incomparable core via Prop 5.37).
+the pointed-perfect-tree machinery.  **The single-real form of that engine is now in the repo**
+(`Lemma210.lean`: `lemma210_of_martinPPT'` / `exists_constant_pointedTree` — a countable-range
+function is constant on a pointed perfect tree, from `MartinPPT'`).  What remains for the collapse
+is the *pair/relation* form (Lutz Lemma 2.11: a relation `R ⊆ ≥ᵀ` is uniformized to a functional
+on a pointed tree), which applies Lemma 2.10 to `h(x) =` the least reduction index — needing the
+repo's `OracleCode`/`eval` index machinery.  That is the sharpened next step (and the same engine
+unlocks the Marks-conjecture route to the incomparable core via Prop 5.37).
 -/
 import MartinsConjecture.MartinResults
 import MartinsConjecture.RegressiveReduction

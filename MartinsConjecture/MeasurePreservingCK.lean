@@ -58,7 +58,40 @@ theorem measurePreserving_not_ck_regressive (hM : MartinPPT) (hF : TuringInvaria
     (hmp : MeasurePreserving F) : ¬ OnCone (fun X => churchKleene (F X) < churchKleene X) :=
   fun hreg => ck_regressive_not_measurePreserving hM hF hreg hmp
 
+/-- **The Church–Kleene dichotomy for any invariant function** (generalizing `regressive_omega1_dichotomy`
+off the regressive hypothesis).  On a cone, either `ω₁^{F X} < ω₁ˣ` (CK-regressive) or `ω₁ˣ ≤ ω₁^{F X}`
+(CK-non-decreasing).  The cone-theorem applies to the invariant set `{X : ω₁^{F X} < ω₁ˣ}`. -/
+theorem ck_dichotomy (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvariant F) :
+    OnCone (fun X => churchKleene (F X) < churchKleene X) ∨
+    OnCone (fun X => churchKleene X ≤ churchKleene (F X)) := by
+  have hTI : TuringInvariantSet {X | churchKleene (F X) < churchKleene X} := by
+    intro X Y hXY
+    have hFeq : churchKleene (F X) = churchKleene (F Y) := churchKleene_invariant (hF X Y hXY)
+    have hXeq : churchKleene X = churchKleene Y := churchKleene_invariant hXY
+    constructor
+    · intro h; rw [Set.mem_setOf_eq, ← hFeq, ← hXeq]; exact h
+    · intro h; rw [Set.mem_setOf_eq, hFeq, hXeq]; exact h
+  rcases cone_theorem _ hTI (hTD _ trivial hTI) with ⟨W, hW⟩ | ⟨W, hW⟩
+  · exact Or.inl ⟨W, fun X hX => hW hX⟩
+  · exact Or.inr ⟨W, fun X hX => not_lt.mp (hW hX)⟩
+
+/-- **The CK-decomposition of `escaping ⟹ MP`.**  Combining `ck_dichotomy` with the constraint: for an
+invariant `F`, either it is CK-regressive on a cone — in which case it is automatically **not** MP
+(`ck_regressive_not_measurePreserving`), so an escaping such `F` is a counterexample — or it is
+CK-non-decreasing (`ω₁ˣ ≤ ω₁^{F X}`).  So `escaping ⟹ MP` reduces to exactly two tasks:
+(a) rule out CK-regressive escaping functions (the `ω₁`-decreasing case, which evades
+`no_omega1_decreasing_conePreserving` because `¬MP` makes the kernel non-cofinal — no cone-preserving base);
+(b) prove CK-non-decreasing escaping functions are MP (the `ω₁`-preserving/increasing case).
+Both remain open at the degree level; this is the measure-theoretic/ordinal *decomposition*, machine-checked. -/
+theorem escaping_ck_cases (hTD : TuringDeterminacy fun _ => True) (hM : MartinPPT)
+    (hF : TuringInvariant F) :
+    (OnCone (fun X => churchKleene (F X) < churchKleene X) ∧ ¬ MeasurePreserving F) ∨
+    OnCone (fun X => churchKleene X ≤ churchKleene (F X)) :=
+  (ck_dichotomy hTD hF).imp (fun h => ⟨h, ck_regressive_not_measurePreserving hM hF h⟩) id
+
 #print axioms measurePreserving_ck_nondecreasing
 #print axioms ck_regressive_not_measurePreserving
+#print axioms ck_dichotomy
+#print axioms escaping_ck_cases
 
 end Martin

@@ -861,3 +861,128 @@ The whole earlier "four-face map / BnBmSkeleton reduces the core to coordinated 
 by this: those are valid implications with circular (core-equivalent) hypotheses. Net honest state: the
 incomparable core is a **value-distribution / ultrafilter** problem (`U`-preservation by invariant
 pushforwards), NOT a coordinated-tree problem.
+
+---
+
+## SESSION 2026-08-26 — the DISPROOF direction, seriously investigated (could Part 1 be FALSE under ZF+AD?)
+
+**Bottom line: construction and proof share the IDENTICAL wall, and that wall is now stated precisely with
+literature receipts. The disproof direction is not "off the table" for a soft reason (AC counterexamples
+vanish) — it is off the table for a SHARP reason: every AD-available construction tool for a sideways
+invariant F, when made degree-invariant, is exactly `V ≤_RK U_M, V ≠ U_M` — the thing Part 1 asserts is
+impossible. So a construction would BE a disproof of Part 1, and vice versa; there is no asymmetry.**
+
+### The decisive comparative datum: the ZFC counterexample (Lutz thesis, Thm 5.27)
+In **ZFC** there IS a measure-preserving Turing-invariant `F` with `F(x) ≱ᵀ x` for all uncomputable `x`
+(so Part 1 is FALSE in ZFC on a cone; only the cofinal ZFC form survives, Slaman–Steel Thm 5.11). The
+construction: wellorder `D_T` in order type `2^{ℵ₀}`; write `D_T = ⋃_α I_α` as a strictly increasing
+tower of Turing ideals; set `F(x)` = a minimal upper bound (Spector exact pair) for `I_x = {y <ᵀ x : y`
+enters a strictly earlier ideal than `x}`, chosen NOT to compute `x` (Lemma 5.26). This is genuinely
+"sideways": `F(x)` computes everything below `x` that appeared "before" `x`, but not `x` itself.
+**This is the honest disproof template.** It uses THREE ingredients, and pinpointing which one AD kills
+is the whole question:
+  1. a **wellorder of `D_T`** (to index the ideal tower and pick "least α with x ∈ I_α");
+  2. a **per-degree choice** of a minimal-upper-bound / exact pair that avoids computing `x`;
+  3. Spector exact pairs (this one is AD-safe — pure computability).
+Ingredients (1) and (2) are `ω₁ ↪ ℝ` / `AC`-flavored: a wellorder of the degrees is exactly a
+choice-of-representative per ordinal, and AD proves **no** wellorder of ℝ (hence of `D_T`) exists. So the
+ZFC counterexample is destroyed at ingredients (1)+(2), which are the SAME object the proof-direction
+memory identified as blocked: "an invariant ordinal/degree selection = `ω₁ ↪ ℝ`, AD-forbidden."
+
+### Enumeration-degrees: the phenomenon IS realizable next door — isolates the missing Turing ingredient
+Nakid-Cordero (arXiv:2510.19147) DISPROVES Martin's conjecture in the **enumeration** degrees under the
+same set-theoretic strength: there is a Borel e-invariant `h` (Example 3.1) that is nonconstant, not
+increasing, and incomparable to both jump and skip on every cone — a genuine invariant SIDEWAYS function.
+It exists because `D_e` has (a) **no cone theorem** — Thm 3.2 (w/ Jacobsen-Grocott) partitions `D_e` into
+continuum-many *disjoint cofinal* classes (impossible for `D_T`: countably many cones meet in a cone, and
+any invariant set or its complement contains a cone), and (b) **𝒦-pairs** (a complementation/pairing
+combinatorics with no Turing analog). **This is the cleanest possible evidence that the intuition "sideways
+info has no invariant source" is NOT a logical truth — it is a special property of `D_T` conferred exactly
+by Martin's cone theorem + the absence of cofinal partitions.** Turing resists the construction *because it
+has the cone theorem*; the cone theorem is also the ONLY tool the proof direction has. Same object, both
+directions.
+
+### Tool-by-tool audit of AD-available sideways constructions (all fail at the SAME point)
+- **(a) Uniformization_ℝ on `R(X,Y) = "Y ⊥ᵀ X"`** (nonempty ∀X). Uniformization_ℝ gives a *function*
+  `X ↦ Y_X` with `Y_X ⊥ᵀ X`, but it is uniformization of a relation on REALS, not on degrees; the
+  selector is **not degree-invariant** (`X ≡ᵀ X' ⇏ Y_X ≡ᵀ Y_{X'}`). Making it invariant = uniformizing
+  the induced relation on `D_T` = choosing one degree per degree-class coherently = exactly a section of
+  `D_T`, i.e. `ω₁ ↪ ℝ`. **Invariant uniformization is precisely what AD does NOT give** (Uniformization_ℝ
+  uniformizes definable subsets of `ℝ × ℝ`; the `≡ᵀ`-invariant quotient relation is not thereby
+  uniformized invariantly — this is the `definable ≠ invariant` barrier, already in memory).
+- **(b) Wadge/scale selectors.** A scale gives a definable-uniformizing selector, same defect as (a):
+  definable ≠ `≡ᵀ`-invariant. No scale respects Turing equivalence classes as points.
+- **(c) Posner–Robinson complements.** For `X ≥ᵀ 0'`, P-R gives `G ⊥ᵀ X` with `X ⊕ G ≡ᵀ X'` (indeed
+  `G' ≡ᵀ G ⊕ X ≡ᵀ X'`). The map `X ↦ [G]` would be a sideways invariant function IF an invariant choice
+  of the P-R generic `G` existed on a cone. **No such invariant choice is known, and the obstruction is
+  identical:** P-R `G` is built by forcing/below-`X'` genericity — a *per-real* construction; the P-R set
+  for `X` is a nonempty relation `P(X,G)`, and an invariant selector is again a section of `≡ᵀ`. Lutz's
+  Prop 3.14 (thesis) shows the closely-related "canonical oracle" selection fails already for `y ↦ (x⊕y)'`
+  on a single degree (1-generic diagonalization) — the same non-canonicity that blocks a local Part 2.
+  **No published invariant/OD Posner–Robinson complement exists** (searched; the P-R literature is entirely
+  per-real: Shore–Slaman generalization, Woodin's hyperjump P-R, Solecki-dichotomy≈P-R — none produce a
+  degree-invariant complement). This is a clean, correctly-scoped negative.
+- **(d) Martin-measure ultrapower.** `[F] ∈ Ult(D_T, U_M)` is a genuine "new" degree, and `[F] ⊥ [id]`
+  is expressible. But extracting a *real* representative of `[F]` (to get an actual invariant `F`) is a
+  choice of a function `D_T → D_T` — you must already HAVE the sideways `F` to name `[F]`. The ultrapower
+  reformulates, it does not construct: "is there a nonstandard `[F]` that is `U_M`-sideways" = "is there a
+  counterexample" verbatim (= `F_*U_M ≤_RK U_M`, `≠ U_M`).
+
+### The precise shared wall (statement)
+Both directions reduce to the SAME degree-level object, which AD neither supplies nor refutes by its
+cone-native tools:
+> **WALL.** There is no `ZF+AD(+Unif_ℝ)`-definable way to select, `≡ᵀ`-invariantly and on a cone, one
+> degree "off to the side" of `X` (i.e. a section of an invariant multifunction `D_T ⇉ D_T` whose values
+> are `⊥ᵀ`-to-argument). Equivalently (Lutz Thm 5.35 / Siskind): no nonprincipal `V ≤_RK U_M` with
+> `V ≠ U_M`. A DISPROOF supplies such a section (a counterexample `F`, `F_*U_M = V`); a PROOF shows no
+> such section exists. **The section IS the counterexample IS the RK-predecessor.** There is no gap
+> between "construct" and "refute-nonexistence" — they are one statement, negated.
+
+**Why neither side is more tractable (the symmetry is genuine, not a failure of imagination).** The
+proof side wants to *rule out* `V <_RK U_M` and `V ≡_RK U_M, V≠U_M` (Lutz's two sub-statements, §5.9);
+Marks's conjecture ("every `f` is constant or injective on a pointed perfect tree", ZF+AD) would settle
+the first (Prop 5.37) but is itself open and, per Lutz, "a proof or disproof would be a major advance."
+The disproof side wants to *exhibit* such a `V`, i.e. an `f` that is neither constant nor injective on any
+pointed perfect tree in the required way — the **exact negation** of Marks's conjecture localized to
+`U_M`-predecessors. So the two directions are the two sides of Marks's conjecture. This is why the problem
+is stuck *symmetrically*: it is not that proof is hard and disproof easy (or vice versa) — it is one
+conjecture (Marks / RK-rigidity of `U_M`) whose truth = Part 1 and whose failure = a counterexample, with
+AD's cone theorem giving a `{0,1}`-measure on invariant sets but no lever on the `≤_RK`-below structure.
+
+### Honest verdict for the orchestrator
+- The intuition "sideways info has no invariant source" is **TRUE on `D_T` but is a theorem-shaped
+  statement, not a tautology** — it FAILS on `D_e` (Nakid-Cordero) and FAILS in ZFC on `D_T` (Thm 5.27).
+  Its truth on `D_T` under AD is *exactly* Part 1; it is powered by the cone theorem's suppression of
+  cofinal partitions + non-existence of a degree wellorder.
+- **No construction survives.** Every AD tool (Unif_ℝ, scales, P-R, ultrapower) yields a selector that is
+  definable-but-not-`≡ᵀ`-invariant, and invariantizing it = a section of `≡ᵀ` = `ω₁ ↪ ℝ`, AD-false. I did
+  NOT find or fabricate a counterexample; I found the precise reason none is available.
+- **No invariant/OD Posner–Robinson complement is known** in AD or `L(ℝ)`; the P-R literature is per-real
+  only. This is the sharpest concrete sub-question and its answer is "open, believed unavailable, same wall."
+- **Finding of record:** construction ≡ disproof ≡ negation-of-proof, all = "`U_M` has a nonprincipal
+  RK-predecessor ≠ itself" = "Marks's pointed-perfect-tree dichotomy fails." The wall is symmetric; this
+  explains the 50-year stall as a single locked object, not two independent hard directions.
+
+**(B13, 2026-08-26) The e-degree counterexample is UNIFORM — it does NOT touch the open Turing core (sourced).**
+Nakid-Cordero, "Martin's Conjecture in the Enumeration Degrees" (arXiv:2510.19147v2, Nov 2025), settles the
+B9 question precisely. (i) The **skip** `A♦ = K̄_A` satisfies `A♦ ≰_e A` *always*, and `A ≤_e A♦ ⟺ A`
+cototal `⟺ A♦ ≡_e A'`. The counterexample (Example 3.1) stitches `h(A)=A` on cototal / `A♦` on non-cototal
+degrees — a Borel e-invariant function that is sideways on a cofinal class. (ii) The load-bearing step is
+**Thm 5.1**: a *uniformly* e-invariant nonconstant `f` gives `A ≤_e f(A)` **or** `A♦ ≤_e f(A)`; the skip
+branch appears because `≤_e` uses only **positive** information, so decoding on the "wrong side of the
+symmetric difference" recovers the complement `K̄_A`. (iii) It **dies on Turing** because total degrees = the
+Turing copy and every total degree is *cototal*, so there `A♦ ≡_e A'` and `A ≤_e A♦` (skip = jump,
+increasing) — the sideways fork collapses, recovering the KNOWN uniform Turing result (Cor 5.5 = UMC 1).
+**Two decisive honest points for our attack:** (a) the e-counterexample is **uniformly invariant**, hence
+bears only on the *already-proved* uniform Turing case — it is NOT a counterexample-template for the open
+*non-uniform* incomparable core; the increasing-jump fact is already fully consumed by our
+`above-jump ⟹ above-id` (Groszek–Slaman) reduction, which still stalls at `escaping ⟹ MP`. (b) The *deeper*
+Turing/e divide is **the absence of a Cone Theorem** for `D_e` (e-reducibility is not locally countable →
+continuum-many cofinal pairwise-disjoint invariant classes → piecewise "stitching"); the Turing Cone Theorem
+forbids exactly this partition, so Example 3.1 has no Turing analog *even before* the skip. The counterexample
+is thus **over-determined** by Turing-specific facts (cone theorem + totality/cototality + no K-pairs), none
+isolating a positive proof principle. Note also: Nakid-Cordero **refute Steel's conjecture for `D_e`** (a
+Borel e-invariant `f` equivalent to no uniformly-invariant `f` on any cone, via maximal Kalimullin pairs) —
+i.e. the "invariant ⟹ uniform on a cone" bridge is outright **FALSE in `D_e`**. So the Turing uniformity
+bridge (our genuine crux) genuinely *requires* Turing-specific input (the cone theorem) and cannot follow from
+soft/general reasoning — confirming the crux is exactly non-uniform→uniform, cone-dichotomy-vs-uniformization.

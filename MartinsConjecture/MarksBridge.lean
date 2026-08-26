@@ -113,8 +113,13 @@ theorem marksTree_of_injectiveOnCone (hM : MartinPPT) {base : ℕ → Bool}
 every value `F X` is `≡ᵀ` to one of countably many reals `e n`, then the value-index `X ↦ (the n with
 F X ≡ᵀ e n)` is **ℕ-valued**, so by Lemma 2.10 (`cofinal_fiber` + `MartinPPT`) it is constant `= n` on a
 pointed perfect tree — on which `F` is constant (`≡ᵀ e n`).  This is the engine of
-`uniformization-engine-wall` in action: countable range ⟹ the value collapses on a pointed tree.  (It is
-exactly *un*countable value-range that the incomparable core forces, defeating this route.) -/
+`uniformization-engine-wall` in action: countable range ⟹ the value collapses on a pointed tree.
+
+*Scope:* this needs no invariance, so it is a genuine instance of the **full** Marks conjecture (all
+functions).  For an *invariant* `F` it adds nothing new — a countable-degree-range invariant `F` is
+already constant on a cone (cone theorem), so it coincides with `marksTree_of_constantOnCone`.  Its point
+here is the mechanism: the incomparable core is invariant *and non-constant*, hence has **uncountable**
+value-range, which is exactly what defeats this (and every `ℕ`-range) route. -/
 theorem marksTree_of_countableDegreeRange (hM : MartinPPT)
     (e : ℕ → (ℕ → Bool)) (hrange : ∀ X, ∃ n, F X ≡ₜ e n) : MarksTree F := by
   classical

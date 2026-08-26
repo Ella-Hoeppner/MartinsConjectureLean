@@ -76,6 +76,30 @@ theorem ck_dichotomy (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvaria
   · exact Or.inl ⟨W, fun X hX => hW hX⟩
   · exact Or.inr ⟨W, fun X hX => not_lt.mp (hW hX)⟩
 
+/-- **The Church–Kleene trichotomy.**  Refining `ck_dichotomy`: on a cone, an invariant `F` is exactly one
+of CK-**regressive** (`ω₁^{F X} < ω₁ˣ`), CK-**preserving** (`ω₁^{F X} = ω₁ˣ`), or CK-**increasing**
+(`ω₁ˣ < ω₁^{F X}`).  For the open core (escaping `F`) these name the three sub-regimes: regressive ⟹ ¬MP
+(a Part-1 refutation, `ck_regressive_not_measurePreserving`); preserving ⟹ `F X ≤_h X` on the graph, i.e.
+regressive on the *hyperarithmetic* degrees — Lutz's proved territory; increasing ⟹ the graph is beyond
+hyperarithmetic — the sharpest genuinely-open residue (the `ω₁`-level). -/
+theorem ck_trichotomy (hTD : TuringDeterminacy fun _ => True) (hF : TuringInvariant F) :
+    OnCone (fun X => churchKleene (F X) < churchKleene X) ∨
+    OnCone (fun X => churchKleene (F X) = churchKleene X) ∨
+    OnCone (fun X => churchKleene X < churchKleene (F X)) := by
+  rcases ck_dichotomy hTD hF with hreg | hnd
+  · exact Or.inl hreg
+  · have hTI : TuringInvariantSet {X | churchKleene X < churchKleene (F X)} := by
+      intro X Y hXY
+      have hFeq : churchKleene (F X) = churchKleene (F Y) := churchKleene_invariant (hF X Y hXY)
+      have hXeq : churchKleene X = churchKleene Y := churchKleene_invariant hXY
+      constructor
+      · intro h; rw [Set.mem_setOf_eq, ← hFeq, ← hXeq]; exact h
+      · intro h; rw [Set.mem_setOf_eq, hFeq, hXeq]; exact h
+    rcases cone_theorem _ hTI (hTD _ trivial hTI) with ⟨W, hW⟩ | ⟨W, hW⟩
+    · exact Or.inr (Or.inr ⟨W, fun X hX => hW hX⟩)
+    · obtain ⟨B, hB⟩ := onCone_and hnd ⟨W, fun X hX => hW hX⟩
+      exact Or.inr (Or.inl ⟨B, fun X hX => le_antisymm (not_lt.mp (hB X hX).2) (hB X hX).1⟩)
+
 /-- **The CK-decomposition of `escaping ⟹ MP`.**  Combining `ck_dichotomy` with the constraint: for an
 invariant `F`, either it is CK-regressive on a cone — in which case it is automatically **not** MP
 (`ck_regressive_not_measurePreserving`), so an escaping such `F` is a counterexample — or it is
@@ -143,6 +167,7 @@ theorem partI_iff_ck_split (hTD : TuringDeterminacy fun _ => True) (hM : MartinP
 #print axioms measurePreserving_ck_nondecreasing
 #print axioms ck_regressive_not_measurePreserving
 #print axioms ck_dichotomy
+#print axioms ck_trichotomy
 #print axioms escaping_ck_cases
 #print axioms partI_false_of_ckRegressive_escaping
 #print axioms escaping_ck_nondecreasing_of_partI

@@ -84,8 +84,52 @@ theorem partI_twoUniform_of_uniformize (hTD : TuringDeterminacy fun _ => True)
   obtain ⟨G, hGu, hFG⟩ := huniformize F h2
   exact partI_conclusion_of_martinEquiv hFG (partI_uniform_general hTD G hGu)
 
+/-! ### The finite (`k`-ary) generalization
+
+Question 9.3's proof used nothing about the number `2`: at each equivalence, *some* member of a
+*fixed finite* list of transformers works.  We record the general finite version; Question 9.3 is `n = 2`. -/
+
+/-- `F` is **finitely-uniformly invariant** if there is a fixed finite list of transformers
+`u 0, …, u (n-1)` such that for every equivalence witness `(i, j)`, one of them witnesses
+`F X ≡ᵀ F Y`.  Question 9.3 (`TwoUniformlyTuringInvariant`) is the case `n = 2`. -/
+def FinitelyUniformlyTuringInvariant (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
+  ∃ (n : ℕ) (u : ℕ → ℕ × ℕ → ℕ × ℕ), ∀ X Y i j, EquivVia X Y i j →
+    ∃ k, k < n ∧ EquivVia (F X) (F Y) (u k (i, j)).1 (u k (i, j)).2
+
+/-- 2-uniform ⟹ finitely-uniform (`n = 2`). -/
+theorem FinitelyUniformlyTuringInvariant.of_twoUniform
+    (h : TwoUniformlyTuringInvariant F) : FinitelyUniformlyTuringInvariant F := by
+  obtain ⟨u₁, u₂, hu⟩ := h
+  refine ⟨2, fun k => if k = 0 then u₁ else u₂, fun X Y i j hxy => ?_⟩
+  rcases hu X Y i j hxy with h1 | h2
+  · exact ⟨0, by decide, by simpa using h1⟩
+  · exact ⟨1, by decide, by simpa using h2⟩
+
+/-- A finitely-uniformly invariant function is Turing invariant. -/
+theorem FinitelyUniformlyTuringInvariant.turingInvariant
+    (h : FinitelyUniformlyTuringInvariant F) : TuringInvariant F := by
+  obtain ⟨n, u, hu⟩ := h
+  intro X Y hXY
+  obtain ⟨i, j, hij⟩ := equiv_iff_exists_equivVia.mp hXY
+  obtain ⟨k, _, hk⟩ := hu X Y i j hij
+  exact hk.equiv
+
+/-- **The reduction, finite version.**  If every finitely-uniformly invariant function is
+Martin-equivalent to a uniformly-invariant one, then Part 1 holds for all of them.  Same
+one-line transfer as the 2-uniform case — the arity is irrelevant to the reduction. -/
+theorem partI_finitelyUniform_of_uniformize (hTD : TuringDeterminacy fun _ => True)
+    (huniformize : ∀ F, FinitelyUniformlyTuringInvariant F →
+      ∃ G, UniformlyTuringInvariant G ∧ MartinEquiv F G) :
+    ∀ F, FinitelyUniformlyTuringInvariant F → ConstantOnCone F ∨ AboveIdOnCone F := by
+  intro F hf
+  obtain ⟨G, hGu, hFG⟩ := huniformize F hf
+  exact partI_conclusion_of_martinEquiv hFG (partI_uniform_general hTD G hGu)
+
 #print axioms TwoUniformlyTuringInvariant.of_uniform
 #print axioms TwoUniformlyTuringInvariant.turingInvariant
 #print axioms partI_twoUniform_of_uniformize
+#print axioms FinitelyUniformlyTuringInvariant.of_twoUniform
+#print axioms FinitelyUniformlyTuringInvariant.turingInvariant
+#print axioms partI_finitelyUniform_of_uniformize
 
 end Martin

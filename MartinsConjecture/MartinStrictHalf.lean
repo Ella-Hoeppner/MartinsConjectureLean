@@ -135,20 +135,6 @@ theorem dominatedInvertible_of_injectiveOnCone (hF : TuringInvariant F) {base : 
     simp only [dif_pos hex]
     exact (hinj _ _ hex.choose_spec.1 hX hex.choose_spec.2).2
 
-/-- **An injective incomparable `F` refutes the equivalence half (Q4) — the sharpest Q4-obstruction.**
-An `F` injective on a cone is dominated-invertible (`dominatedInvertible_of_injectiveOnCone`), hence (given
-`MartinPPT`) satisfies `StrictHalfFor F`; if it is also incomparable on a cone it is *not* measure-preserving
-(`incomparable_not_measurePreserving`).  So `EquivHalfFor F` (`StrictHalfFor F → MP F`) fails.  Thus Q4
-(`DI ⟹ MP`) holds only if **no invariant `F` is injective-and-incomparable on a cone** — the concrete
-Q4-disproof target, dual to `¬DominatedInvertible` for Q3. -/
-theorem not_equivHalf_of_injective_incomparable (hM : MartinPPT) (hF : TuringInvariant F) {base : ℕ → Bool}
-    (hinj : ∀ x y, base ≤ₜ x → base ≤ₜ y → F x ≡ₜ F y → x ≡ₜ y)
-    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ¬ EquivHalfFor F := by
-  intro hEq
-  have hSH : StrictHalfFor F :=
-    (strictHalf_iff_dominatedInvertible hM hF).mpr (dominatedInvertible_of_injectiveOnCone hF hinj)
-  exact incomparable_not_measurePreserving hM hF hinc (hEq hSH)
-
 /-- **`¬DominatedInvertible` (for non-constant `F`) REFUTES Part 1 — the honest strict-half disproof target.**
 If `F` is invariant, non-constant, and *not* dominated-invertible, then `F` is not measure-preserving (MP ⟹
 dominated-invertible via `g = id` and `MP ⟹ above-id`), so `F` is neither constant-on-a-cone nor MP — Part 1
@@ -168,6 +154,22 @@ theorem partI_false_of_not_dominatedInvertible (hM : MartinPPT) (hF : TuringInva
 open content is the `g`-inversion gap (`gcomp_mp_recovers`): `g∘F` MP gives `g(F X) ≥ᵀ X`, which does not
 force `F` MP. -/
 def EquivHalfFor (F : (ℕ → Bool) → ℕ → Bool) : Prop := StrictHalfFor F → MeasurePreserving F
+
+/-- **An injective incomparable `F` refutes the equivalence half (Q4) — the sharpest Q4-obstruction.**
+An `F` injective on a cone is dominated-invertible (`dominatedInvertible_of_injectiveOnCone`), hence (given
+`MartinPPT`) satisfies `StrictHalfFor F`; if it is also incomparable on a cone it is *not* measure-preserving
+(MP ⟹ above-id contradicts `¬ X ≤ᵀ F X`).  So `EquivHalfFor F` (`StrictHalfFor F → MP F`) fails.  Thus Q4
+(`DI ⟹ MP`) holds only if **no invariant `F` is injective-and-incomparable on a cone** — the concrete
+Q4-disproof target, dual to `¬DominatedInvertible` for Q3. -/
+theorem not_equivHalf_of_injective_incomparable (hM : MartinPPT) (hF : TuringInvariant F) {base : ℕ → Bool}
+    (hinj : ∀ x y, base ≤ₜ x → base ≤ₜ y → F x ≡ₜ F y → x ≡ₜ y)
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) : ¬ EquivHalfFor F := by
+  intro hEq
+  have hSH : StrictHalfFor F :=
+    (strictHalf_iff_dominatedInvertible hM hF).mpr (dominatedInvertible_of_injectiveOnCone hF hinj)
+  obtain ⟨B, hB⟩ := hinc
+  obtain ⟨C, hC⟩ := (mp_iff_aboveId_of_martinPPT hM hF).mp (hEq hSH)
+  exact (hB _ (Cantor.left_le_join B C)).2 (hC _ (Cantor.right_le_join B C))
 
 /-- **Part 1 in dominated-invertibility language** (the cleanest capstone).  Since `StrictHalfFor ⟺
 DominatedInvertible`, the two open questions read: **Q3** — every non-constant invariant `F` is

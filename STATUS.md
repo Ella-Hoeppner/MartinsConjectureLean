@@ -28,6 +28,15 @@ engine as clean general lemmas and used it to formalize the Marks route to the i
   `partI_of_halves`). `marksTree_of_injectiveOnCone` pins the wall: Marks holds whenever `F` is injective on a
   cone, so the ONLY open content is `F` injective on **no** cone (needs tree-thinning Lemma 2.7 for a functional).
   All std axioms, full build 3117 green.
+- **`DIWitness.lean` (new — characterizes the Q4 disproof target).** A *dominated-inverting witness* `g`
+  (`X ≤ᵀ g(F X)` on a cone) for an **incomparable** `F` must be **non-regressive / jump-type**:
+  `aboveId_of_regressive_diWitness` (regressive `g c ≤ᵀ c` ⟹ above-id, since `X ≤ᵀ g(F X) ≤ᵀ F X`);
+  `not_regressive_diWitness_of_incomparable`; `diWitness_liftsValues_of_incomparable` (`g(F X) ≰ᵀ F X`
+  cofinally). `dominatedInvertible_inflationary` (WLOG `c ≤ᵀ g c`). Honesty pair: `everyInvariant_below_mp`
+  (every invariant `F` is below the MP function `(X⊕F X)′`, so "below MP" is vacuous) vs
+  `dominatedInvertible_mpFactorsThroughF` (the real content: the MP dominator factors through `F X` alone).
+  So a Q4 counterexample recovers `X` from an invariant *jump-type lift* of `deg(F X)` — matching `X ≤ᵀ (F X)′`
+  while `F X ⊥ᵀ X`. Std axioms, full build 3118 green.
 
 ### Session 2026-08-26f — Lutz-thesis primary-source dive: corrections, the decisive mechanism, Q9.3 formalized
 **→ `MARTIN_BREAKTHROUGH_ATTEMPT.md` ("decisive mechanism" + "one object, three names").** Read the Lutz

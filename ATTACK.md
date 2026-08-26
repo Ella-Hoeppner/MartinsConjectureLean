@@ -1028,3 +1028,37 @@ in the literature has traction): a **pointedness-preserving partition/fusion the
 Galvin–Prikry/Silver" or "pointed Sacks fusion" — is exactly where Marks's difficulty concentrates. Net: the
 two halves need *different* tools (strict = pointed-tree combinatorics; equivalence = Siskind ultrapower);
 even a full proof of Marks leaves the equivalence half open.
+
+**(B16, 2026-08-26) The EQUIVALENCE half = kill case (2) of the Siskind trichotomy; g-inversion is irreducible; a novel un-closed avenue (sourced).**
+Deep-dive on the equivalence half `U_M ≤_RK V ≤_RK U_M ⟹ V = U_M` (Lutz–Siskind §5; Siskind thesis §1.5–1.6;
+Goldberg "Ultrapowers as iteration trees on HOD"):
+- **Prop 5.24 (AD):** if `{x | Cone(x) ∈ V} ∈ V` then `V = U_M`. Proof: `A := {x | Cone(x)∈V} ∈ V` is uncountable
+  (nonprincipal + ctbly-complete) so `Ã` is perfect (PSP), and countably-directed (`⋂ₙ Cone(xₙ) ∈ V` by ctble
+  completeness meets `A`); **perfect + countably-directed ⟹ ≤ᵀ-cofinal** (Cor 4.5) ⟹ every cone ∈ V ⟹ `V=U_M`.
+- **Siskind trichotomy Thm 1.5.8 (AD⁺):** a ctbly-complete ultrafilter `W` on `D_T` is (1) principal, (2)
+  `{x | C̄_x ∈ W} ∈ W` (concentrates on **complements of cones**), or (3) `W = U_M`. **The equivalence half ⟺
+  KILL CASE (2):** no nonprincipal `V ≡_RK U_M` concentrates on complements of cones. RK-equivalence does NOT
+  supply Prop 5.24's hypothesis — case (2) is the un-excluded escape. This is a **clean self-contained target,
+  more tractable than the full conjecture.** (For `V = F_*U_M`, the concentration hypothesis `{x|Cone(x)∈V}∈V`
+  translates to "`F`'s range is `U_M`-upward-directed" `F X ≤ᵀ F X'` for `U_M×U_M`-most pairs; a ¬MP escaping
+  `F` lands in case (2) — but directed+unbounded ⇏ cofinal for a mere tower, so an *elementary* kill fails;
+  Prop 5.24's PSP + Cor 4.5 is essential, and RK-equivalence doesn't hand it to you.)
+- **g-inversion = irreducible obstruction (verdict):** thesis **Thm 1.6.1** classifies factorization
+  `f ≡_M h∘g` on a cone by a pure *fiber-refinement* criterion (`g(x)≡g(y) ⟹ f(x)≡f(y)`), with **NO** requirement
+  `g,h ≤ id`; its worked example has `g = hyperjump`, both above id, `h` a measure-preserving *jump-lift* — so
+  the invariant `g` witnessing `g_*V = U_M` is in general an **upward** MP map, the opposite of `g(y) ≤ᵀ y`.
+  Part 2 (even if granted) gives `g(y) ≥ᵀ y`, the wrong direction. So `g∘F` MP ⟹ `g(F X) ≥ᵀ X` (machine-checked
+  here as `gcomp_mp_recovers`) genuinely gives no `X`-vs-`F X` comparison. Not a hidden triviality.
+- **Inner-model status (honest):** `Ult(HOD, U_M)` is well-founded and fine-structural (Goldberg with
+  Schlutzenberg–Siskind, under AD+V=L(𝒫(ℝ))); Kunen's Thm 5.27 puts **all** ultrafilters on ordinals `< Θ`
+  RK-below `U_M`. **But none of this yields RK-rigidity** — the ordinal-ultrafilter classification (solved) does
+  NOT transfer to `D_T` (size continuum, non-ordinal). **The equivalence half is proved under NO hypothesis —
+  not AD, AD_ℝ, nor AD+V=L(𝒫(ℝ)).** Siskind: a complete analysis of ctbly-complete ultrafilters on `D_T` would
+  decide Part 1 and "may be a site of more tractable problems". `U_M` is **not commutative** (Fubini fails via
+  `R(x,y) ⟺ x ∉ C_y`), and commutativity is `≤_RK`-downward-closed — cuts the wrong way for the equivalence half.
+- **NOVEL un-closed avenue (the one genuine forward lead):** don't analyze `g` in isolation. In a real
+  counterexample you have the **pair** `(F,g)` with `V = F_*U_M` (so `V` is NOT arbitrary — it concentrates on
+  `F[cone]`) and `g_*V = U_M`. Combining "`V` concentrates on the `F`-image" with "`g` sends `V` to `U_M`" to
+  force `{y | Cone(y) ∈ V} ∈ V` (i.e. NOT case (2)) is the place with slack the single-function analysis
+  ignores — and it is not closed off in the literature. **This is the concrete next target for the equivalence
+  half.**

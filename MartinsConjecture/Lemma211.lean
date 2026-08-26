@@ -54,6 +54,36 @@ theorem lemma211_of_martinPPT' (hPPT : MartinPPT')
   have hspec := (hex x).choose_spec hxdom
   rwa [show (hex x).choose = n from hxn] at hspec
 
+/-- **Corollary 2.12 (Lutz thesis): an increasing function has a computable right inverse on a
+pointed perfect tree.**  If `x ≤ᵀ f x` for every `x`, then there is a fixed code `e` and a pointed
+perfect tree `T` such that on every branch `x ∈ [T]`, `Φ_e(x)` is a preimage of `x` under `f`
+(`f (Φ_e(x)) = x`).  (`f` is *not* required to be Turing invariant.)
+
+Immediate from Lemma 2.11 applied to `R x y := (f y = x)`: the domain is cofinal because `f z ≥ᵀ z`
+puts `f z` in the range above any `z`; and `R ⊆ ≥ᵀ` because `f y = x` together with `y ≤ᵀ f y` gives
+`y ≤ᵀ x`.  This is the inversion step used in the Marks pointed-injective-tree route (Prop 5.37): on
+a tree where an invariant `f` is injective, inverting it shows `U_M ≤_RK f_*U_M`. -/
+theorem cor212_of_martinPPT' (hPPT : MartinPPT') (f : (ℕ → Bool) → (ℕ → Bool))
+    (hf : ∀ x, x ≤ₜ f x) :
+    ∃ (e : ℕ) (T : RawPPT), ∀ x, IsBranch (treeMem T.code) x →
+      ∃ y, eval (toPFun x) (ofNatCode e) = toPFun y ∧ f y = x :=
+  lemma211_of_martinPPT' hPPT (fun x y => f y = x)
+    (fun z => ⟨f z, hf z, z, rfl⟩)
+    (fun _ y hxy => hxy ▸ hf y)
+
+/-- **The right inverse computes the preimage from below.**  Repackaging `cor212_of_martinPPT'`:
+on the tree, every branch `x` has a preimage `y ≤ᵀ x` with `f y = x`.  (Drops the explicit code in
+favour of the degree statement `y ≤ᵀ x`, the form used downstream.) -/
+theorem cor212_preimage_below (hPPT : MartinPPT') (f : (ℕ → Bool) → (ℕ → Bool))
+    (hf : ∀ x, x ≤ₜ f x) :
+    ∃ T : RawPPT, ∀ x, IsBranch (treeMem T.code) x → ∃ y, y ≤ₜ x ∧ f y = x := by
+  obtain ⟨e, T, hT⟩ := cor212_of_martinPPT' hPPT f hf
+  refine ⟨T, fun x hx => ?_⟩
+  obtain ⟨y, hcomp, hfy⟩ := hT x hx
+  exact ⟨y, hfy ▸ hf y, hfy⟩
+
 #print axioms lemma211_of_martinPPT'
+#print axioms cor212_of_martinPPT'
+#print axioms cor212_preimage_below
 
 end Martin

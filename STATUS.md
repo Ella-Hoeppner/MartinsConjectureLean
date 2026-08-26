@@ -18,6 +18,13 @@ thesis (pdftotext) directly. Outcomes:
   2-uniform `F` reduces to "every 2-uniform `F` is Martin-equiv to a uniform `G`" (a sub-case of Steel's
   Conj 9.4, plausibly more tractable), mirroring `incomparable_core_of_uniformization`. The hard collapse
   (fix the `{1,2}` branch on a pointed tree via Lemma 2.10) is documented as next step, not assumed.
+- **`Lemma210.lean`** (new, 3 thms, std axioms, build 3115 green): derives **Lutz Lemma 2.10** (a
+  countable-range `h` is constant on a pointed perfect subtree of any cofinal set) from the repo's
+  `MartinPPT'` (Lemma 2.9). `cofinal_fiber` (some fiber `A∩{h=n}` stays cofinal, via `joinFam` of the
+  fiber-bounds), `lemma210_of_martinPPT'`, and the clean `exists_constant_pointedTree` (`A=⊤` form). This is
+  the engine under the whole regressive/MP uniformization (Lemma 2.11 = this applied to the reduction index);
+  it supplies the single-real form of the "countable-range constancy" tool flagged missing for Q9.3. The
+  pair/relation form (Lemma 2.11, needs `OracleCode`/`eval`) is the sharpened remaining step.
 - **The decisive mechanism (source-grounded):** under AD the ONLY "cofinal → uniform-on-a-pointed-tree"
   engine is the countable-range trick (Lemma 2.10); Lemma 2.11/Cor 2.12 uniformize `R` to a functional iff
   `R ⊆ ≥ᵀ`, because the ℕ-valued datum is the reduction index, existing iff `f(x)≤ᵀx`. So regressive/MP are

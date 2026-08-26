@@ -130,6 +130,21 @@ open content is the `g`-inversion gap (`gcomp_mp_recovers`): `g∘F` MP gives `g
 force `F` MP. -/
 def EquivHalfFor (F : (ℕ → Bool) → ℕ → Bool) : Prop := StrictHalfFor F → MeasurePreserving F
 
+/-- **Part 1 in dominated-invertibility language** (the cleanest capstone).  Since `StrictHalfFor ⟺
+DominatedInvertible`, the two open questions read: **Q3** — every non-constant invariant `F` is
+*dominated-invertible* (recoverable: `∃` inv `g`, `X ≤ᵀ g(F X)` on a cone); **Q4** — every dominated-invertible
+invariant `F` is *measure-preserving* (recoverable ⟹ above-id).  Their conjunction gives Part 1:
+`non-constant ⟹ DI ⟹ MP`.  The `g`-inversion gap (`gcomp_mp_recovers`) is exactly why Q4 (`DI ⟹ MP`) is
+open — `g(F X) ≥ᵀ X` makes `g∘F` above-id, not `F` itself. -/
+theorem partI_of_DI_conditions (hM : MartinPPT)
+    (hQ3 : ∀ G, TuringInvariant G → ¬ ConstantOnCone G → DominatedInvertible G)
+    (hQ4 : ∀ G, TuringInvariant G → DominatedInvertible G → MeasurePreserving G) :
+    ∀ G, TuringInvariant G → ConstantOnCone G ∨ MeasurePreserving G := by
+  intro G hG
+  by_cases hc : ConstantOnCone G
+  · exact Or.inl hc
+  · exact Or.inr (hQ4 G hG (hQ3 G hG hc))
+
 /-- **Both halves ⟹ Part 1** (Lutz–Siskind Thm 5.15: *"a negative answer to Questions 3 and 4 together would
 imply Part 1"*), machine-checked.  If every non-constant invariant `F` satisfies the strict half (Q3:
 `U_M ≤_RK F_*U_M`) and every invariant `F` satisfies the equivalence half (Q4), then every invariant `F` is
@@ -192,6 +207,7 @@ theorem strictHalf_of_countableFibered (hMSS : CountableFiberMarks) (hM : Martin
 #print axioms strictHalf_of_pointedInjectiveTree
 #print axioms pointedInjectiveTree_fiber_le
 #print axioms partI_of_halves
+#print axioms partI_of_DI_conditions
 #print axioms partI_false_of_not_dominatedInvertible
 #print axioms dominatedInvertible_fiber_bounded
 #print axioms strictHalf_of_countableFibered

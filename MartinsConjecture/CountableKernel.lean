@@ -22,7 +22,9 @@ than the repo's `nonMP_kernel_avoids_cone` (which only gives *some* upper bound 
 real).
 
 We state this precisely (`Prop524Countable`, the named classical PSP/Cor-4.5 input) and derive:
-* `case2_kernel_bounded_of_countable` — countable kernel ⟹ single-real bound `r_K` (elementary, `DC_ℝ`);
+* `countableUpperBound` — any countable family of reals has a single Turing upper bound (proved in-repo
+  via `Cantor.joinFam` / `component_le_joinFam`, standard axioms — no `DC_ℝ` assumption);
+* `case2_kernel_bounded_of_countable` — countable kernel ⟹ single-real bound `r_K` (fully elementary);
 * `values_escape_kernel` — case (2) ⟹ `F X ∉ kernel` for `U_M`-a.e. `X` (the antichain/escaping content);
 * the **collision analysis** (`kernel_bound_gives_no_regressivity`): why the single-real bound `r_K`, even
   fed to the KNOWN Slaman–Steel machinery (`incomparable_escapes_params`), does **not** contradict case (2):
@@ -61,13 +63,13 @@ the same pushforward membership. -/
 theorem coneInPushforward_iff_belowF (d : ℕ → Bool) :
     OnCone (fun X => d ≤ₜ F X) ↔ BelowF F d := Iff.rfl
 
-/-- **A countable set of degrees is bounded by a single degree.**  If `S : ℕ → (ℕ → Bool)` enumerates a
-countable family of reals, the join `⨁ₙ S n` (interleaving) computes every `S n`.  We take this as the
-elementary `DC_ℝ`-level fact `CountableUpperBound`: any countable subfamily of degrees has a Turing upper
-bound.  (In-repo `Cantor.join` is the binary join; the countable join is standard but not yet in this repo,
-so we name the consequence we need.) -/
-def CountableUpperBound : Prop :=
-  ∀ S : ℕ → (ℕ → Bool), ∃ r : ℕ → Bool, ∀ n, S n ≤ₜ r
+/-- **A countable set of degrees is bounded by a single degree** — now a THEOREM, not an assumption.
+The recursive join `Cantor.joinFam S ⟨n,k⟩ = S n k` computes every column `S n` (`component_le_joinFam`),
+so any countable family of reals has a Turing upper bound.  This discharges what was previously threaded as
+a `DC_ℝ`-level hypothesis (`CountableUpperBound`): the "countable ⟹ single real" step is fully elementary
+and machine-checked in-repo (standard axioms), needing only a computable pairing, not choice on reals. -/
+theorem countableUpperBound (S : ℕ → (ℕ → Bool)) : ∃ r : ℕ → Bool, ∀ n, S n ≤ₜ r :=
+  ⟨Cantor.joinFam S, fun n => Cantor.component_le_joinFam S n⟩
 
 /-! ### The named classical input: Prop 5.24 in countable-kernel form
 
@@ -91,11 +93,11 @@ def Prop524Countable : Prop :=
 countable upper bound `r_K` of `{e n}` then dominates every kernel degree.  So an escaping non-MP invariant
 `F` has its *entire domination kernel below one real* `r_K` — a strict sharpening of the repo's
 `nonMP_kernel_avoids_cone` (mere cone-avoidance) to *single-real boundedness*. -/
-theorem case2_kernel_bounded_of_countable (hCUB : CountableUpperBound) (hP : Prop524Countable)
+theorem case2_kernel_bounded_of_countable (hP : Prop524Countable)
     (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F) (hnmp : ¬ MeasurePreserving F) :
     ∃ rK : ℕ → Bool, ∀ Z, BelowF F Z → Z ≤ₜ rK := by
   obtain ⟨e, he⟩ := hP F hF hnc hnmp
-  obtain ⟨rK, hrK⟩ := hCUB e
+  obtain ⟨rK, hrK⟩ := countableUpperBound e
   refine ⟨rK, fun Z hZ => ?_⟩
   obtain ⟨n, hn⟩ := he Z hZ
   exact hn.trans (hrK n)
@@ -154,17 +156,18 @@ kernel bounded by a single real `rK`; yet its values remain not-`X`-plus-`rK`-co
 is pinned between "dominates only `≤ᵀ rK`" (below) and "value not computable from `X ⊕ rK`" (above), with the
 value itself sideways — consistent, not contradictory.  This is the precise machine-stated form of why the
 countability sharpening does not close case (2). -/
-theorem case2_sharpened_profile (hCUB : CountableUpperBound) (hP : Prop524Countable)
+theorem case2_sharpened_profile (hP : Prop524Countable)
     (hSS : RegressiveSlamanSteel) (hF : TuringInvariant F) (hnc : ¬ ConstantOnCone F)
     (hnmp : ¬ MeasurePreserving F)
     (hincomp : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) :
     ∃ rK : ℕ → Bool,
       (∀ Z, BelowF F Z → Z ≤ₜ rK) ∧
       (∀ p : ℕ → Bool, ¬ OnCone (fun X => F X ≤ₜ Cantor.join X p)) := by
-  obtain ⟨rK, hrK⟩ := case2_kernel_bounded_of_countable hCUB hP hF hnc hnmp
+  obtain ⟨rK, hrK⟩ := case2_kernel_bounded_of_countable hP hF hnc hnmp
   exact ⟨rK, hrK, fun p => incomparable_escapes_params hSS hF hincomp p⟩
 
 #print axioms coneInPushforward_iff_belowF
+#print axioms countableUpperBound
 #print axioms case2_kernel_bounded_of_countable
 #print axioms escapes_above_kernel_bound
 #print axioms kernel_bound_gives_no_regressivity

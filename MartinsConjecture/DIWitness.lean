@@ -93,10 +93,46 @@ theorem diWitness_liftsValues_of_incomparable
   exact (hb1 (Cantor.join b1 b2) (Cantor.left_le_join _ _)).2
     (hb2 (Cantor.join b1 b2) (Cantor.right_le_join _ _))
 
+/-! ### The witness may be taken inflationary, and the induced MP dominator -/
+
+/-- **WLOG the dominated-inverting witness is inflationary** (`c ≤ᵀ g c`).  Replacing any witness `g₀`
+by `g c := c ⊕ g₀ c` keeps it invariant and dominating (`X ≤ᵀ g₀(F X) ≤ᵀ g(F X)`) while making it lie
+above the identity.  So `DominatedInvertible F` always has a witness that never *lowers* a degree. -/
+theorem dominatedInvertible_inflationary (hDI : DominatedInvertible F) :
+    ∃ g, TuringInvariant g ∧ (∀ c, c ≤ₜ g c) ∧ OnCone (fun X => X ≤ₜ g (F X)) := by
+  obtain ⟨g₀, hg₀inv, hg₀cone⟩ := hDI
+  refine ⟨fun c => Cantor.join c (g₀ c), ?_, fun c => Cantor.left_le_join _ _, ?_⟩
+  · intro X Y hXY
+    exact ⟨Cantor.join_le (hXY.1.trans (Cantor.left_le_join _ _))
+            ((hg₀inv X Y hXY).1.trans (Cantor.right_le_join _ _)),
+           Cantor.join_le (hXY.2.trans (Cantor.left_le_join _ _))
+            ((hg₀inv X Y hXY).2.trans (Cantor.right_le_join _ _))⟩
+  · obtain ⟨b, hb⟩ := hg₀cone
+    exact ⟨b, fun X hX => (hb X hX).trans (Cantor.right_le_join _ _)⟩
+
+/-- **Every dominated-invertible `F` is Martin-below an invariant measure-preserving function that
+dominates both `F` and the identity.**  Take the inflationary witness `g`; then `H := g ∘ F` is
+invariant, above the identity (`X ≤ᵀ g(F X)`) hence measure-preserving, and `F X ≤ᵀ H X` (inflationarity
+at the value `F X`).  Applied to the Q4 target: a sideways *incomparable* counterexample `F` sits
+*underneath* a genuine MP (jump-type) function `H`, with `X, F X ≤ᵀ H X` — the disproof must exhibit an
+invariant `F` strictly below such an `H` yet incomparable to the argument.  (The statement itself needs
+no incomparability; it holds for every dominated-invertible `F`.) -/
+theorem dominatedInvertible_below_mp (hM : MartinPPT) (hF : TuringInvariant F)
+    (hDI : DominatedInvertible F) :
+    ∃ H, TuringInvariant H ∧ MeasurePreserving H ∧
+      OnCone (fun X => F X ≤ₜ H X) ∧ OnCone (fun X => X ≤ₜ H X) := by
+  obtain ⟨g, hginv, hinfl, hcone⟩ := dominatedInvertible_inflationary hDI
+  have hHinv : TuringInvariant (fun X => g (F X)) := fun X Y hXY => hginv (F X) (F Y) (hF X Y hXY)
+  refine ⟨fun X => g (F X), hHinv,
+    (mp_iff_aboveId_of_martinPPT hM hHinv).mpr hcone,
+    ⟨fun _ => false, fun X _ => hinfl (F X)⟩, hcone⟩
+
 #print axioms aboveId_of_regressive_diWitness
 #print axioms not_regressive_diWitness_of_incomparable
 #print axioms diWitness_nonRegressive_of_incomparable
 #print axioms aboveId_of_diWitness_regressive_onValues
 #print axioms diWitness_liftsValues_of_incomparable
+#print axioms dominatedInvertible_inflationary
+#print axioms dominatedInvertible_below_mp
 
 end Martin

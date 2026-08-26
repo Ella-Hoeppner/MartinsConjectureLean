@@ -62,6 +62,21 @@ Both targets survive elementary attack, consistent with the problem's inner-mode
   legitimate degree configuration; the open question is whether an **invariant** `F` realizes it on a
   cone — a genuine construction/forcing question, the inner-model frontier.
 
+## Why not just construct the counterexample?
+
+A Q4 counterexample (invariant `F` with `F X ⊥ᵀ X` and `X ≤ᵀ g(F X)`) **is** constructible in **ZFC**
+(Lutz Thm 5.27): well-order the degrees and build `F` by a Spector-style exact-pair recursion, choosing
+each value sideways-below its jump. The construction uses the well-order of `D_T` essentially — to make
+the *choice of a sideways value invariant* (the same for every real of a degree). Under **AD** the
+well-order is gone, and invariantizing any such choice is a **section of `≡ᵀ`**, i.e. `ω₁ ↪ ℝ`, which AD
+refutes. So:
+- the elementary constraints (this file's lemmas + `incomparable_escapes_params` etc.) are all
+  *consistent* — they describe a genuine ZFC-realizable degree configuration;
+- the sole obstruction under AD is **invariant realizability** — precisely the RK-rigidity of `U_M`.
+
+This is why *every* elementary/measure/combinatorial route converges here and none crosses: the missing
+ingredient is either a well-order (AD kills) or the fine structure of `L(ℝ)`'s degree ultrafilters (open).
+
 **Net:** the reduction of Part 1 to Q3/Q4 and to Marks's conjecture is now fully machine-checked, and
 both disproof targets are sharply characterized (jump-type witness / jump-escaping value). The residue is
 exactly the inner-model content — the RK-rigidity of `U_M` — open even under AD⁺.

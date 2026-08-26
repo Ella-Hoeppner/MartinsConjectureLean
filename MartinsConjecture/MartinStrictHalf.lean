@@ -176,6 +176,18 @@ theorem not_equivHalf_of_injective_incomparable (hM : MartinPPT) (hF : TuringInv
   not_equivHalf_of_dominatedInvertible_incomparable hM hF
     (dominatedInvertible_of_injectiveOnCone hF hinj) hinc
 
+/-- **An incomparable `F` violates one of the two halves** — the DI-dichotomy on the incomparable core.
+If `F` is dominated-invertible it violates the equivalence half (Q4, recoverable-but-sideways); if not, it
+violates the strict half (Q3, `¬DI`).  So Part 1's central open object — an invariant `F` incomparable to its
+argument on a cone — is exactly what `StrictHalfFor`-for-all ∧ `EquivHalfFor`-for-all forbid: the two halves
+cover the incomparable core with no gap. -/
+theorem incomparable_violates_a_half (hM : MartinPPT) (hF : TuringInvariant F)
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) :
+    ¬ StrictHalfFor F ∨ ¬ EquivHalfFor F := by
+  by_cases hdi : DominatedInvertible F
+  · exact Or.inr (not_equivHalf_of_dominatedInvertible_incomparable hM hF hdi hinc)
+  · exact Or.inl (fun hSH => hdi ((strictHalf_iff_dominatedInvertible hM hF).mp hSH))
+
 /-- **Part 1 in dominated-invertibility language** (the cleanest capstone).  Since `StrictHalfFor ⟺
 DominatedInvertible`, the two open questions read: **Q3** — every non-constant invariant `F` is
 *dominated-invertible* (recoverable: `∃` inv `g`, `X ≤ᵀ g(F X)` on a cone); **Q4** — every dominated-invertible
@@ -254,6 +266,8 @@ theorem strictHalf_of_countableFibered (hMSS : CountableFiberMarks) (hM : Martin
 #print axioms pointedInjectiveTree_fiber_le
 #print axioms partI_of_halves
 #print axioms partI_of_DI_conditions
+#print axioms incomparable_violates_a_half
+#print axioms not_equivHalf_of_dominatedInvertible_incomparable
 #print axioms partI_false_of_not_dominatedInvertible
 #print axioms dominatedInvertible_of_injectiveOnCone
 #print axioms not_equivHalf_of_injective_incomparable

@@ -27,10 +27,13 @@ namespace Martin
 
 variable {F : (ℕ → Bool) → ℕ → Bool}
 
-/-- **The output of a Marks-style pointed injective tree** for `F`.  A pointed perfect tree (code `code`,
-branches `mem`) that realizes a cone of degrees, on which `F` is *effectively injective*: the branch is
-recovered from its `F`-value together with the tree (`recover`, the Lemma-2.1 conclusion applied to `F`).
-Its existence is exactly the (open) Marks pointed-perfect-tree construction. -/
+/-- **A pointed recovery tree** for `F` (the degree-level, countable-fiber interface).  A pointed perfect
+tree (code `code`, branches `mem`) that realizes a cone of degrees, with `F` *effectively recoverable*: the
+branch is `≤ᵀ` its `F`-value joined with the tree (`recover`, the Lemma-2.1 domination conclusion applied to
+`F`).  By `pointedInjectiveTree_fiber_le` this forces `F` to be **countable-fibered on the cone**, so its
+existence is exactly the **MSS-proved countable-fiber case** (not the open uncountable one — for which
+recovery would have to be reals-level).  Named `PointedInjectiveTree` because for such `F` a Marks
+pointed *injective* tree yields it (via the effective inverse); but the interface only records `recover`. -/
 structure PointedInjectiveTree (F : (ℕ → Bool) → ℕ → Bool) where
   /-- The tree code — a real every branch computes. -/
   code : ℕ → Bool
@@ -61,16 +64,30 @@ theorem dominatedInvertible_of_pointedInjectiveTree (hF : TuringInvariant F)
       (Cantor.right_le_join (F X) Tr.code)
 
 /-- **The strict half from a pointed injective tree** (given `MartinPPT`): `PointedInjectiveTree F`
-⟹ `StrictHalfFor F` (`U_M ≤_RK F_*U_M`).  So — mirroring `partI_of_groszekSlaman` — the strict half (for
-`F_*U_M`) *rests on* the single named existence statement `Nonempty (PointedInjectiveTree F)`, the standard
-(open) Marks pointed-perfect-tree construction.  (This is a *sufficient* route: it factors through
-`DominatedInvertible F`, to which the strict half is equivalent by `strictHalf_iff_dominatedInvertible`; a
-dominating inverse could in principle exist without a tree, but Marks's tree is the classical way to get one.)
-The residual open content is thus isolated to `Nonempty (PointedInjectiveTree F)` for non-constant invariant
-`F` — the strict-half analogue of `GroszekSlaman`, and exactly Lutz–Siskind's open **Question 3**. -/
+⟹ `StrictHalfFor F` (`U_M ≤_RK F_*U_M`).  A *sufficient* route: it factors through `DominatedInvertible F`,
+to which the strict half is equivalent (`strictHalf_iff_dominatedInvertible`).
+
+**Honest scope (delimited by `pointedInjectiveTree_fiber_le` below): this interface captures exactly the
+COUNTABLE-fiber case.**  The `recover` field forces every fiber of `F` restricted to the cone to be *bounded*
+(`≤ᵀ F x ⊕ code`), hence countable — so `Nonempty (PointedInjectiveTree F)` implies `F` is countable-fibered,
+the case already **proved** by MSS (`strictHalf_of_countableFibered`).  It does **not** reach the open part of
+Question 3, which is *uncountable* cone-null fibers (e.g. the jump), where recovery must be *reals*-level
+(distinguishing same-degree reals by their `F`-values) rather than the degree-level `≤ᵀ` here.  So this is the
+combinatorial-`countable` fragment made an interface, not a reduction of open Q3. -/
 theorem strictHalf_of_pointedInjectiveTree (hM : MartinPPT) (hF : TuringInvariant F)
     (Tr : PointedInjectiveTree F) : StrictHalfFor F :=
   (strictHalf_iff_dominatedInvertible hM hF).mpr (dominatedInvertible_of_pointedInjectiveTree hF Tr)
+
+/-- **`recover` bounds the fibers: the interface only fits COUNTABLE-fibered `F`.**  Any two branches `x, y`
+with `F y ≡ᵀ F x` satisfy `y ≤ᵀ F x ⊕ code` (recover for `y`, then `F y ≡ᵀ F x`).  So the `F`-fiber through a
+branch is bounded by `F x ⊕ code`, hence has only countably many degrees (a degree has countably many
+predecessors).  This *delimits* `PointedInjectiveTree`: it exists only when `F` is countable-fibered — exactly
+the MSS-proved case — confirming the open Q3 residue (uncountable fibers) lies genuinely outside this
+degree-level recovery interface. -/
+theorem pointedInjectiveTree_fiber_le (Tr : PointedInjectiveTree F) {x y : ℕ → Bool}
+    (hy : Tr.mem y) (h : F y ≡ₜ F x) : y ≤ₜ Cantor.join (F x) Tr.code :=
+  (Tr.recover y hy).trans
+    (Cantor.join_le (h.1.trans (Cantor.left_le_join (F x) Tr.code)) (Cantor.right_le_join (F x) Tr.code))
 
 /-- **The equivalence half for `F`** (Lutz–Siskind open **Question 4**): if `F_*U_M` is RK-above `U_M`
 (`StrictHalfFor F`, so `U_M ≤_RK F_*U_M ≤_RK U_M`) then it equals `U_M` (`F` is measure-preserving).  The
@@ -136,6 +153,7 @@ theorem strictHalf_of_countableFibered (hMSS : CountableFiberMarks) (hM : Martin
 
 #print axioms dominatedInvertible_of_pointedInjectiveTree
 #print axioms strictHalf_of_pointedInjectiveTree
+#print axioms pointedInjectiveTree_fiber_le
 #print axioms partI_of_halves
 #print axioms strictHalf_of_countableFibered
 

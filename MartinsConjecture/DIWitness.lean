@@ -96,6 +96,18 @@ theorem notDominatedInvertible_escapes_jump (h : ¬ DominatedInvertible F) :
     ¬ OnCone (fun X => X ≤ₜ Cantor.jump (F X)) :=
   fun hcone => h ⟨Cantor.jump, turingInvariant_jump, hcone⟩
 
+/-- **A `¬DI` incomparable `F` is jump-symmetrically incomparable to its argument.**  On a cone,
+`X ≰ᵀ (F X)′` (the value's jump does not recover `X` — `¬DI`) *and* `(jump X) ≰ᵀ F X` (the argument's
+jump is not below the value — incomparability, since `X ≤ᵀ jump X`).  So neither of `X, F X` sits below
+the other's jump: the Q3 disproof target is genuinely two-sided at the jump level. -/
+theorem notDI_incomparable_jumpSymmetric
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (h : ¬ DominatedInvertible F) :
+    ¬ OnCone (fun X => X ≤ₜ Cantor.jump (F X)) ∧
+      OnCone (fun X => ¬ Cantor.jump X ≤ₜ F X) := by
+  refine ⟨notDominatedInvertible_escapes_jump h, ?_⟩
+  obtain ⟨b, hb⟩ := hinc
+  exact ⟨b, fun X hX hj => (hb X hX).2 ((Cantor.le_jump X).trans hj)⟩
+
 /-! ### Localizing the lift to `F`'s values (a sharper form) -/
 
 /-- **Regressivity only *at `F`'s values* already forces above-identity.**  If `g(F X) ≤ᵀ F X` on a
@@ -197,6 +209,7 @@ theorem incomparableDI_strictlyBelow_mp (hM : MartinPPT) (hF : TuringInvariant F
 #print axioms aboveId_of_regressive_diWitness
 #print axioms measurePreserving_of_regressive_diWitness
 #print axioms notDominatedInvertible_escapes_jump
+#print axioms notDI_incomparable_jumpSymmetric
 #print axioms incomparableDI_strictlyBelow_mp
 #print axioms not_regressive_diWitness_of_incomparable
 #print axioms diWitness_nonRegressive_of_incomparable

@@ -60,9 +60,14 @@ theorem dominatedInvertible_of_pointedInjectiveTree (hF : TuringInvariant F)
     exact Cantor.join_le (((hF x X hxX).1).trans (Cantor.left_le_join (F X) Tr.code))
       (Cantor.right_le_join (F X) Tr.code)
 
-/-- **The strict half from a pointed injective tree** (given `MartinPPT`): `Nonempty (PointedInjectiveTree F)`
-⟹ `StrictHalfFor F` (`U_M ≤_RK F_*U_M`).  So — mirroring `partI_of_groszekSlaman` — the *entire* open content
-of the strict half is the single named existence statement (Marks's construction). -/
+/-- **The strict half from a pointed injective tree** (given `MartinPPT`): `PointedInjectiveTree F`
+⟹ `StrictHalfFor F` (`U_M ≤_RK F_*U_M`).  So — mirroring `partI_of_groszekSlaman` — the strict half (for
+`F_*U_M`) *rests on* the single named existence statement `Nonempty (PointedInjectiveTree F)`, the standard
+(open) Marks pointed-perfect-tree construction.  (This is a *sufficient* route: it factors through
+`DominatedInvertible F`, to which the strict half is equivalent by `strictHalf_iff_dominatedInvertible`; a
+dominating inverse could in principle exist without a tree, but Marks's tree is the classical way to get one.)
+The residual open content is thus isolated to `Nonempty (PointedInjectiveTree F)` for non-constant invariant
+`F` — the strict-half analogue of `GroszekSlaman`, and exactly Lutz–Siskind's open **Question 3**. -/
 theorem strictHalf_of_pointedInjectiveTree (hM : MartinPPT) (hF : TuringInvariant F)
     (Tr : PointedInjectiveTree F) : StrictHalfFor F :=
   (strictHalf_iff_dominatedInvertible hM hF).mpr (dominatedInvertible_of_pointedInjectiveTree hF Tr)

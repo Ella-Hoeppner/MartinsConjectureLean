@@ -1062,3 +1062,28 @@ Goldberg "Ultrapowers as iteration trees on HOD"):
   force `{y | Cone(y) ∈ V} ∈ V` (i.e. NOT case (2)) is the place with slack the single-function analysis
   ignores — and it is not closed off in the literature. **This is the concrete next target for the equivalence
   half.**
+
+**(B17, 2026-08-26) BOTH halves are Lutz–Siskind's explicit open Questions 3 & 4 (JAMS 2025) — strict half NOT separately known; + a machine-checked reduction.**
+The published Lutz–Siskind (JAMS 38(2), 2025) lists, verbatim, the two halves as open questions:
+- **Question 3 = STRICT half** = "`U_M` RK-minimal on `D_T`": *"Is there any ultrafilter on the Turing degrees
+  strictly RK-below the Martin measure?"* — OPEN, not proved under any hypothesis (AD/AD_ℝ/AD⁺/AD+V=L(𝒫ℝ)).
+- **Question 4 = EQUIVALENCE half**: *"any ultrafilter besides `U_M` weakly RK-equivalent to it?"* — OPEN.
+- *"A negative answer to Questions 3 and 4 together would imply Part 1."*
+So neither half is separately settled; the post-2023 activity is inner-model-theoretic (Siskind–Lutz
+"order-preserving beyond Borel via IMT"; Goldberg–Sargsyan–Siskind HOD-ultrapower/meta-iteration machinery),
+not yet delivering Q3/Q4. Nuance: `U_M` is NOT RK-minimal over ultrafilters on *ordinals* (Kunen Thm 5.27: all
+`<Θ` ordinal-ultrafilters are RK-below `U_M`); Q3 is specifically about ultrafilters *on `D_T`*.
+**This session's machine-checked reduction of the strict half** (`MartinStrictHalf.lean`, `MeasurePreservingCK.lean`):
+`StrictHalfFor F (U_M ≤_RK F_*U_M) ⟺ DominatedInvertible F (∃ inv g, X ≤ᵀ g(F X) on a cone)`
+(`strictHalf_iff_dominatedInvertible`, via `aboveId⟹MP` and `gcomp_mp_recovers`); and
+`PointedInjectiveTree F ⟹ DominatedInvertible F` with the explicit map `g y = y⊕code`
+(`dominatedInvertible_of_pointedInjectiveTree`). So Q3 (for pushforwards `F_*U_M`) is reduced to a single
+named tree-existence `Nonempty (PointedInjectiveTree F)` — the injective analogue of `GroszekSlaman`, the
+recursion-theoretic output of **Marks's pointed-perfect-tree conjecture**. Everything except that tree
+construction is now machine-checked.
+**Corrections (from the JAMS-2025 read):** (i) "`U_M` is not commutative" is a *thesis*-level statement, NOT
+in the published paper — the published tool is the ω₁-pushforward + **Fubini** argument (Thm 5.22/Lemma 5.20:
+every `f:2^ω→ω₁` is constant on a positive-measure set), used to show `U_L, U_B` are not RK-*above* `U_M`.
+(ii) Whether `U_L/U_B` are RK-*below* `U_M` is open **Q5** (special case of Q3); Marks–Day: under AD_ℝ,
+`U_L ≤_RK U_M ⟺ ∃` Turing-invariant `f` with `f(x)` always `x`-random. (iii) `U_M` non-selective (jump
+non-1-1 on cones yet MP) — so "prove `U_M` selective" is a dead end, confirmed.

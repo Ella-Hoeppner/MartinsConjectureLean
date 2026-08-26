@@ -26,6 +26,24 @@ Since `MP ⟹ above-id` and `ω₁ˣ` is monotone (`churchKleene_mono`):
 representative choice — the cone-dichotomy applies to the invariant set `{X : ω₁^{F X} < ω₁ˣ}` directly. (What
 IS blocked is defining a regressive `g : ω₁ → ω₁` on the ordinals — *that* needs a representative per ordinal.)
 
+### The CK-decomposition and a concrete disproof target (machine-checked, same file)
+- **`ck_dichotomy`**: any invariant `F` is CK-regressive (`ω₁^{F X} < ω₁ˣ`) or CK-non-decreasing on a cone.
+- **`escaping_ck_cases`**: `escaping ⟹ MP` decomposes into (a) rule out CK-regressive escaping `F`, and
+  (b) prove CK-non-decreasing escaping `F` is MP.
+- **`partI_false_of_ckRegressive_escaping`** (the headline): via `partI_iff_escapingMP`, an invariant
+  *escaping* (≡ non-constant) `F` that **lowers the Church–Kleene ordinal on a cone would REFUTE Part 1**.
+  So the disproof route is concrete: exhibit a non-constant invariant `F` with `ω₁^{F X} < ω₁ˣ` cofinally.
+- **`escaping_ck_nondecreasing_of_partI`** (the dual necessary condition): *if* Part 1 holds, every escaping
+  `F` is CK-non-decreasing — any proof must route through establishing `ω₁ˣ ≤ ω₁^{F X}`.
+
+Whether branch (a) is empty is itself open and **beyond the ordinal engine**, confirmed at the code level:
+`no_regressive_of_ordinal_rank` (the only descent engine) requires `base ≤ᵀ F X` on the cone, which is
+exactly kernel-membership of `base`; for a ¬MP (escaping) `F` the kernel is non-cofinal, so no admissible
+`base` exists — the engine cannot fire. Symmetrically, *constructing* a CK-regressive escaping `F` needs an
+**invariant** choice of a CK-lowering value per degree (invariant uniformization of the incomparable-value
+relation), unavailable even under `Uniformization_ℝ`. So proof and disproof of branch (a) hit the *same*
+degree-level rigidity wall — the fine RK-structure of `U_M`, inner-model territory.
+
 ## Why the ordinal handle stops short (precise barriers)
 Having localized the CK-regressive escaping case, the natural kill is the ordinal-ultrapower well-foundedness
 `no_omega1_decreasing_conePreserving`: a degree-invariant CK-*decreasing* + *cone-preserving* function is

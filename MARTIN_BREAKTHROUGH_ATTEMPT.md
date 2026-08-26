@@ -89,6 +89,24 @@ The target is razor-sharp (repo's `incomparable_core_of_uniformization`): the en
 - Under full AD in `L(ℝ)` there is **provably no counterexample within `L(ℝ)`**; the RK-rigidity of `U_M`
   (Lutz–Siskind Thm 5.15) is the un-stratified equivalent, open even with current inner-model theory.
 
+## The actual open mathematical content (what a real breakthrough must deliver)
+
+Stripped of reformulations, the one thing needed is **cone-specific fine control of the Turing degrees of an
+arbitrary AD-invariant object**, in one of these equivalent forms:
+- **Kill case-2 of the Siskind trichotomy** (thesis Thm 1.5.8): no nonprincipal `V ≤_RK U_M` on `D_T`
+  concentrates on complements of cones. Prop 5.24 is the *only* known `V = U_M` tool and needs the
+  concentration hypothesis, which RK-equivalence doesn't supply. Siskind: *"a complete analysis of the
+  countably-complete ultrafilters on `D_T` would decide Part 1 … may be a site of more tractable problems"* —
+  the honest frontier, open even under AD⁺ / AD+V=L(𝒫ℝ).
+- **Prove Steel's Conjecture 1.4** for one invariant `F` at a time via *value*-cleanup (input-side is
+  machine-checked neutral). No canonical value-selection exists without `ω₁↪ℝ`.
+- **Prove Marks's conjecture** (constant-or-injective on a *pointed* perfect tree) — the strict half; the open
+  step is a pointedness-preserving Silver/Galvin–Prikry fusion.
+
+All three need the **fine-structural / ultrafilter-theoretic** machinery of Steel–Siskind–Goldberg on `L(ℝ)`
+(iterated ultrapowers of `HOD`, the Ketonen/Rudin–Keisler order), and even there the RK-rigidity of `U_M` is
+open. This is not an elementary gap; it is at the edge of what set theory currently knows.
+
 ## Honest structural conclusion (so far)
 
 The incomparable core is equivalent to **cone-specific regularity of `F`** (uniformity / continuity on a

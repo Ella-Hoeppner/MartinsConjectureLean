@@ -223,3 +223,36 @@ factor-map/critical-point sketch is Woodin's **generic ultrapower** (V=L(𝒫ℝ
 well-founded it satisfies Łoś and gives an elementary `j : V → Ult`, with — for the Martin-measure ideal — `j`
 *not* the identity on ordinals and **critical point exactly ω₁**. That is the correct home for a future attack,
 but it too is open at the rigidity step.
+
+## The decisive mechanism (Lutz thesis §2.1, read verbatim): why the incomparable core is *the* core
+
+This dive pinned the wall to a single lemma, sharper than the repo's prior "no invariant value-control"
+heuristic. Under AD the **only** engine that turns a merely *cofinal* (generic) property into one holding
+*uniformly on a pointed perfect tree* is the **countable-range trick**:
+- **Lemma 2.10 (Martin; MSS 3.5):** if `A` is cofinal and `h` has **countable range**, some pointed perfect
+  tree `T` has `[T] ⊆ A` and `h` constant on `[T]`.
+- **Lemma 2.11 / Cor 2.12 (computable uniformization):** a relation `R` with cofinal domain and `R ⊆ ≥ᵀ`
+  (values Turing-*below* arguments) is uniformized by a single Turing functional `Φ` on a pointed tree. The
+  proof *is* Lemma 2.10 applied to `h(x) = eₓ :=` the least index with `Φ_{eₓ}(x) ∈ R(x)` — an **ℕ-valued**
+  datum. It exists **iff a reduction `f(x) ≤ᵀ x` exists.**
+- **Lemma 2.7 (tree thinning):** once `f` is a *functional* `Φ` on a pointed tree, thin to make it constant or
+  injective — **staying pointed** (the thinning is computable in `T`).
+
+Chaining these: for a **regressive / measure-preserving** `f` (`f(x) ≤ᵀ x`), the index `eₓ` is ℕ-valued, so
+2.10 → 2.11 → 2.7 deliver const-or-injective **on a pointed tree**, i.e. Part 1 (this is exactly why the
+regressive and MP cases are *theorems*, and it matches the repo's `measurePreserving_iff_hasModulus`: MP ⟺ a
+computable modulus ⟺ a functional on a pointed tree).
+
+For the **incomparable core** (`f(x) ⊥ᵀ x` on a cone) the chain breaks at the first link: **no reduction index
+`eₓ` exists** (there is no `Φ` with `Φ(x) = f(x)`), so there is *no ℕ-valued invariant* for 2.10 to fix. The
+invariants that *do* separate `f`'s values — `ω₁ˣ`, the value-degree itself — are **ordinal / uncountable
+range**, and 2.10 **provably fails** for those (a pointed tree on which an injective ordinal-invariant is
+constant would embed `ω₁ ↪ ℝ`). 
+
+**Net, the sharpest true statement of the wall:** Part 1's open content is exactly the **gap between ℕ-range
+invariants (uniformizable by Lemma 2.10) and ordinal-range invariants (not)**. The regressive/MP/order-
+preserving cases live on the ℕ-range side and are solved; the incomparable core is definitionally on the
+ordinal-range side (its value is Turing-incomparable to every fixed ℕ-indexed handle). This unifies W1
+(non-uniformity), W2 (fat ordinal fibers) and W4 (countability) under the *single* mechanism of Lemma 2.10,
+and explains — from the primary source — why *every* route (measure, Marks pointed-tree, coding, ultrafilter)
+converges here: they all ultimately need 2.10, and 2.10 needs a reduction index the core does not have.

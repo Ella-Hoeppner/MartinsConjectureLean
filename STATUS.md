@@ -35,8 +35,18 @@ injective on a POINTED perfect tree) ⟹ strict half (Lutz thesis Prop 5.37). Sh
   fragment PROVED (named `CountableFiberMarks` = MSS Thm 3.6); soundness `pointedInjectiveTree_id`.
   **Q4 (equivalence):** `EquivHalfFor`; **`equivHalf_of_rangeInKernel`** = concentrated fragment PROVED
   (named `Prop524`); `gcomp_mp_recovers` = the g-inversion stall. **`partI_of_halves`**: both halves ⟹ Part 1
-  (= Thm 5.15). Net: Q3 residue = combinatorial (pointed-Silver, finite-vs-limit fusion gap needing an
-  f-modulus absent for incomparable f); Q4 residue = inner-model (Siskind ultrapower) — genuinely different walls.
+  (= Thm 5.15). Q4 residue = inner-model (Siskind ultrapower).
+- **⚠️ CORRECTION (machine-checked, supersedes the "uncountable fibers / pointed-Silver" bullets above):** the
+  degree-level strict half is `DominatedInvertible F` (∃ inv `g`, `X ≤ᵀ g(F X)` on a cone), NOT reals-injectivity.
+  (i) **The claim "the jump has uncountable fibers" is FALSE** — the jump, like any increasing `F`, is
+  *bounded*-fibered (`{d : d' ≡ᵀ c} ⊆ {d ≤ᵀ c}`, countable), and is trivially DI (`g = id`). (ii)
+  `dominatedInvertible_fiber_bounded`: DI bounds every fiber *on the DI-cone* — but only there, NOT globally
+  (`F d = if d ⊥ 0' then 0' else d` has a globally-unbounded fiber `{d ⊥ 0'}` yet is the identity on `cone(0')`,
+  hence DI). So there is **no clean single-fiber / uncountable-fiber characterization**, and the "make Silver's
+  perfect set pointed" framing targets *reals*-injectivity, which is not what the degree-level strict half needs.
+  (iii) **The honest open Q3 = "is every non-constant invariant `F` dominated-invertible?"**; the disproof
+  target is `¬DominatedInvertible` (`partI_false_of_not_dominatedInvertible`); countable-fibered ⟹ DI (MSS,
+  sufficient not necessary). The jump-injectivity "test case" is trivial (jump is reals-injective: `x ≤ᵀ x'`).
 
 ### Session 2026-08-26 — the Church–Kleene characterization of Part 1 + convergent frontier
 **→ `MeasurePreservingCK.lean` (9 theorems, machine-checked, standard axioms) + `MARTIN_PART1_RK_MEASURE.md`.**

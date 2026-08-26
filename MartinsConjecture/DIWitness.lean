@@ -30,6 +30,7 @@ This file gives elementary but sharpening constraints on both disproof targets. 
   (jump is a valid invariant witness); iterating, `X` escapes *every* jump-iterate of `F X`.
 * `notDI_incomparable_jumpSymmetric` — jump-symmetric: also `(jump X) ≰ᵀ F X`, so neither of `X, F X`
   sits below the other's jump.
+* `incomparable_doublyJumpIncomparable` — unconditional (DI-free): `(jump X) ≰ᵀ F X` and `(jump (F X)) ≰ᵀ X`.
 
 **Dynamics of any incomparable `F`.**
 * `incomparable_conePreserving_orbitIncomparable` — for a cone-preserving incomparable `F`, consecutive

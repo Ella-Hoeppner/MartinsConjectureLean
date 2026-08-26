@@ -186,10 +186,19 @@ between two provable facts:
 - **Sideways valued:** yet `¬(F X ≤ᵀ X ⊕ r_K)` on every cone (`no_regressivity_relative_to_kernel_bound`,
   from the KNOWN Slaman–Steel escaping theorem) — the value is not computed by the argument-plus-`r_K` either.
 
-So `F X` is a "generic-looking" degree: it dominates essentially nothing fixed, and is computed by essentially
+So `F X` is a "generic-looking" degree: it dominates only `≤ r_K`-degrees, and is computed by essentially
 nothing fixed relative to `X`. This is the exact machine-stated shape of the obstruction — the per-`X`,
 per-degree `{0,1}` fact `F X ⊥ᵀ d` that no countably-complete / ordinal / measure tool can aggregate (doing so
 would embed `ω₁ ↪ ℝ`). Both sides converge here; neither can cross.
+
+**Why the kernel can't be collapsed further (the gap reappears).** One is tempted to relativize to `r_K` and
+make the kernel *trivial* (base only). This fails, and instructively so: `r_K = joinFam e` set-*bounds* the
+kernel (`d ≤ᵀ r_K` for each kernel `d`), but `r_K` is **not itself in the kernel** — `r_K ≤ᵀ F X` on a cone
+would require `F X` to compute the join `⨁ₙ dₙ`, i.e. a *uniform* (`F X`-computable) enumeration of the
+reduction indices `dₙ ≤ᵀ F X`. That uniformity is exactly the obstructed thing. So the kernel is a countable
+set bounded by a real it need not contain (no maximum), and the countability sharpening cannot be pushed to
+"one kernel degree" without already solving the uniformity problem. The wall is self-similar: it reappears
+inside the very sharpening meant to reduce it.
 
 **The one live lead (not through Goldberg's inapplicable apparatus):** Lutz thesis §5.11 — if the
 `I`-positive-set forcing `P_I` for the dual ideal `I = {A | A ∉ V}` is *proper* (does not collapse `𝔠`), then

@@ -108,6 +108,20 @@ theorem notDI_incomparable_jumpSymmetric
   obtain ⟨b, hb⟩ := hinc
   exact ⟨b, fun X hX hj => (hb X hX).2 ((Cantor.le_jump X).trans hj)⟩
 
+/-! ### A dynamical constraint: consecutive orbit iterates are incomparable -/
+
+/-- **For a cone-preserving incomparable `F`, consecutive orbit iterates are incomparable.**  If `F`
+maps `cone(base)` into itself and is incomparable to its argument there, then applying incomparability
+*at the value* `F X` (which lies in the cone) gives `F X ⊥ᵀ F(F X)`.  So the orbit `X, F X, F²X, …` of a
+cone-preserving counterexample consists of consecutively-incomparable degrees — it cannot become
+self-dominating (`F(F X) ≤ᵀ F X` is impossible on the cone).  Complements the repo's
+`graphOrbit_strictMono` (the orbit *joins* strictly increase). -/
+theorem incomparable_conePreserving_orbitIncomparable {base : ℕ → Bool}
+    (hpres : ∀ X, base ≤ₜ X → base ≤ₜ F X)
+    (hinc : ∀ X, base ≤ₜ X → ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X) :
+    ∀ X, base ≤ₜ X → ¬ F (F X) ≤ₜ F X ∧ ¬ F X ≤ₜ F (F X) :=
+  fun X hX => hinc (F X) (hpres X hX)
+
 /-! ### Localizing the lift to `F`'s values (a sharper form) -/
 
 /-- **Regressivity only *at `F`'s values* already forces above-identity.**  If `g(F X) ≤ᵀ F X` on a
@@ -210,6 +224,7 @@ theorem incomparableDI_strictlyBelow_mp (hM : MartinPPT) (hF : TuringInvariant F
 #print axioms measurePreserving_of_regressive_diWitness
 #print axioms notDominatedInvertible_escapes_jump
 #print axioms notDI_incomparable_jumpSymmetric
+#print axioms incomparable_conePreserving_orbitIncomparable
 #print axioms incomparableDI_strictlyBelow_mp
 #print axioms not_regressive_diWitness_of_incomparable
 #print axioms diWitness_nonRegressive_of_incomparable

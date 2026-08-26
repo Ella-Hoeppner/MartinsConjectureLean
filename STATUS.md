@@ -9,6 +9,35 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26b — the pointed-injectivity (Marks) route: countable-fiber case is DONE, open = uncountable
+**→ `MARTIN_PART1_STRICT_MARKS.md` + memory `marks-pointed-injectivity.md`.** A combinatorial handle on the
+STRICT half (U_M RK-minimal), complementary to the measure route. Marks's conjecture (every f constant OR
+injective on a POINTED perfect tree) ⟹ strict half (Lutz thesis Prop 5.37). Sharpening this session:
+- **Marks-for-invariant-f is ALREADY PROVED when fibers are COUNTABLE** — Marks–Slaman–Steel Thm 3.6 route
+  (verified from ar5iv 1109.1875): **Lusin–Novikov** (Kechris 18.10, needs countable sections) splits into
+  countably many injective Borel pieces; **Martin's pointed-tree Lemma 3.5** lands a pointed set in one piece.
+- **So the SOLE open content of Marks-for-invariant-f is UNCOUNTABLE fibers** (MSS explicitly restrict to
+  countable Borel equiv rels; Silver's dichotomy "receives no mention"). A non-constant invariant f has
+  cone-null fibers, but cone-null ≠ countable (the jump has uncountable fibers in every cone).
+- **Exact open step (localized this session):** Silver's dichotomy (Thm 21.1, holds ∀f under AD) gives f
+  injective on a *perfect* set P even for uncountable fibers; the ONLY gap is making P **pointed**. The
+  collision: Groszek–Slaman pointed-coding (Lutz Thm 2.18/2.19) forces branch *positions* (to code the tree
+  into left/right turns), while Silver injectivity needs *freedom* to steer f-values apart. Compatibility of
+  these two for uncountable cone-null fibers = the open crux. No literature theorem does this.
+- **Sharpest concrete test case:** *is the Turing jump injective on a pointed perfect tree?* (jump = the
+  canonical non-constant, non-injective-on-any-cone invariant; a NO would disprove Marks; separated by a thin
+  pointed tree it could be YES). This is a decidable-looking sub-question, unlike the inner-model wall.
+- **MACHINE-CHECKED framework (`MartinStrictHalf.lean` + `MeasurePreservingCK.lean`, std axioms, green):** both
+  Lutz–Siskind open questions now have a "proved fragment + open residue" structure.
+  **Q3 (strict):** `strictHalf_iff_dominatedInvertible` (strict half ⟺ `DominatedInvertible F`);
+  `PointedInjectiveTree F ⟹ DominatedInvertible` (explicit `g y = y⊕code`; `recover` = Lemma-2.1
+  domination-recovery, mirrors `InvertingTree`); **`strictHalf_of_countableFibered`** = countable-fiber
+  fragment PROVED (named `CountableFiberMarks` = MSS Thm 3.6); soundness `pointedInjectiveTree_id`.
+  **Q4 (equivalence):** `EquivHalfFor`; **`equivHalf_of_rangeInKernel`** = concentrated fragment PROVED
+  (named `Prop524`); `gcomp_mp_recovers` = the g-inversion stall. **`partI_of_halves`**: both halves ⟹ Part 1
+  (= Thm 5.15). Net: Q3 residue = combinatorial (pointed-Silver, finite-vs-limit fusion gap needing an
+  f-modulus absent for incomparable f); Q4 residue = inner-model (Siskind ultrapower) — genuinely different walls.
+
 ### Session 2026-08-26 — the Church–Kleene characterization of Part 1 + convergent frontier
 **→ `MeasurePreservingCK.lean` (9 theorems, machine-checked, standard axioms) + `MARTIN_PART1_RK_MEASURE.md`.**
 The measure-theoretic attack on `escaping ⟹ MP` (= `U_M` RK-rigidity), via the relativized Church–Kleene

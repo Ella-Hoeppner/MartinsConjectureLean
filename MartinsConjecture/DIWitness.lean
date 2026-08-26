@@ -144,7 +144,27 @@ theorem dominatedInvertible_mpFactorsThroughF (hM : MartinPPT) (hF : TuringInvar
   have hHinv : TuringInvariant (fun X => g (F X)) := fun X Y hXY => hginv (F X) (F Y) (hF X Y hXY)
   exact ⟨g, hginv, (mp_iff_aboveId_of_martinPPT hM hHinv).mpr hcone, hcone⟩
 
+/-- **A dominated-invertible incomparable `F` is *strictly* Martin-below its invariant measure-preserving
+dominator.**  With the inflationary witness `g`, set `H := g ∘ F` (invariant, MP).  Then `F X ≤ᵀ H X` on a
+cone (inflationarity) but `H X ≰ᵀ F X` cofinally (else `H`'s regressivity at values would force `F`
+above-identity, contradicting incomparability).  So `F <_Martin H` strictly: the sideways counterexample
+sits *properly beneath* a genuine MP (jump-type) function — the gap `H \ F` is precisely the invariant
+degree-lift that recovers `X`.  (Uses incomparability, unlike `everyInvariant_below_mp`.) -/
+theorem incomparableDI_strictlyBelow_mp (hM : MartinPPT) (hF : TuringInvariant F)
+    (hinc : OnCone (fun X => ¬ F X ≤ₜ X ∧ ¬ X ≤ₜ F X)) (hDI : DominatedInvertible F) :
+    ∃ H, TuringInvariant H ∧ MeasurePreserving H ∧
+      OnCone (fun X => F X ≤ₜ H X) ∧ ¬ OnCone (fun X => H X ≤ₜ F X) := by
+  obtain ⟨g, hginv, hinfl, hcone⟩ := dominatedInvertible_inflationary hDI
+  have hHinv : TuringInvariant (fun X => g (F X)) := fun X Y hXY => hginv (F X) (F Y) (hF X Y hXY)
+  refine ⟨fun X => g (F X), hHinv, (mp_iff_aboveId_of_martinPPT hM hHinv).mpr hcone,
+    ⟨fun _ => false, fun X _ => hinfl (F X)⟩, fun hval => ?_⟩
+  obtain ⟨b1, hb1⟩ := hinc
+  obtain ⟨b2, hb2⟩ := aboveId_of_diWitness_regressive_onValues hval hcone
+  exact (hb1 (Cantor.join b1 b2) (Cantor.left_le_join _ _)).2
+    (hb2 (Cantor.join b1 b2) (Cantor.right_le_join _ _))
+
 #print axioms aboveId_of_regressive_diWitness
+#print axioms incomparableDI_strictlyBelow_mp
 #print axioms not_regressive_diWitness_of_incomparable
 #print axioms diWitness_nonRegressive_of_incomparable
 #print axioms aboveId_of_diWitness_regressive_onValues

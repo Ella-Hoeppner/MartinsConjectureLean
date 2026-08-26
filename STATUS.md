@@ -43,6 +43,16 @@ engine as clean general lemmas and used it to formalize the Marks route to the i
   (`MP ⟺ DI-via-regressive-witness`, separating solved side from open core) and **`incomparable_dichotomy`**
   (an incomparable `F` is either Q4 value-lifting-DI or Q3 jump-transcendently-lossy — the two disproof horns
   in one statement). Std axioms, full build 3118 green.
+- **Net + next steps.** The reduction of Part 1's incomparable core to `[Marks conjecture ∧ equivalence-half
+  Q4]` is now fully machine-checked, and both disproof targets are sharply characterized. Confirmed (multiple
+  fresh attempts) that the residue is *invariant realizability* = RK-rigidity of `U_M`, not crossable by
+  elementary/measure/combinatorial means (a counterexample is ZFC-constructible via a wellorder, AD-blocked at
+  the invariant-selector step = `ω₁↪ℝ`). **Sharpest concrete engineering next-step:** build the
+  **pointed-perfect-tree machinery *for binary relations*** (Lemma 2.9/2.10 on `2^ω×2^ω`) — it would unlock
+  BOTH the Q9.3 2-uniform branch-collapse (`TwoUniform`'s open hypothesis) AND tree-thinning Lemma 2.7
+  (Marks-for-functionals). **Sharpest math frontier:** Woodin's generic ultrapower for the Martin-measure
+  ideal (crit `= ω₁`, repr. `x↦ω₁ˣ`), open at the rigidity step — see `uniformization-engine-wall`,
+  `di-witness-q4-target` memories and `MARTIN_STRICT_HALF_AND_Q4.md`.
 
 ### Session 2026-08-26f — Lutz-thesis primary-source dive: corrections, the decisive mechanism, Q9.3 formalized
 **→ `MARTIN_BREAKTHROUGH_ATTEMPT.md` ("decisive mechanism" + "one object, three names").** Read the Lutz

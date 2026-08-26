@@ -66,8 +66,23 @@ theorem exists_constant_pointedTree (hPPT : MartinPPT') (h : (ℕ → Bool) → 
     lemma210_of_martinPPT' hPPT (fun _ => True) (fun z => ⟨z, Cantor.le.refl z, trivial⟩) h
   exact ⟨n, T, fun x hx => (hT x hx).2⟩
 
+/-- **The `{1,2}`-branch specialization.**  Any `Bool`-valued function of a single real is
+constant on a pointed perfect tree.  Consequence for Question 9.3: if the branch-choice
+"`u₁` or `u₂`?" in a 2-uniform collapse depended only on the real `X` (not on the pair `X, Y`),
+this would fix the branch on a pointed tree and uniformize `F` there — so *pair-dependence of the
+branch is the sole remaining obstacle* to `TwoUniform.partI_twoUniform_of_uniformize`'s hypothesis. -/
+theorem exists_constant_pointedTree_bool (hPPT : MartinPPT') (b : (ℕ → Bool) → Bool) :
+    ∃ (v : Bool) (T : RawPPT), ∀ x, IsBranch (treeMem T.code) x → b x = v := by
+  obtain ⟨n, T, hT⟩ := exists_constant_pointedTree hPPT (fun x => cond (b x) 1 0)
+  refine ⟨decide (n = 1), T, fun x hx => ?_⟩
+  have hn : cond (b x) 1 0 = n := hT x hx
+  cases hbx : b x with
+  | false => simp only [hbx, cond_false] at hn; simp [hbx, ← hn]
+  | true => simp only [hbx, cond_true] at hn; simp [hbx, ← hn]
+
 #print axioms cofinal_fiber
 #print axioms lemma210_of_martinPPT'
 #print axioms exists_constant_pointedTree
+#print axioms exists_constant_pointedTree_bool
 
 end Martin

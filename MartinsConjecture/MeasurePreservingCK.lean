@@ -155,6 +155,25 @@ case (2), the un-excluded escape).  So `RangeInKernel ⟹ MP` is the machine-sta
 theorem mp_rangeInKernel (hmp : MeasurePreserving F) : RangeInKernel F :=
   ⟨(fun _ => false), fun X _ => (mp_iff_belowF_univ.mp hmp) (F X)⟩
 
+/-- **Lutz–Siskind Prop 5.24** (the *proved* fragment of the equivalence half / Question 4), as a named
+classical input: a non-constant invariant `F` whose pushforward satisfies the concentration hypothesis
+(`RangeInKernel F`, = `{x | Cone(x) ∈ F_*U_M} ∈ F_*U_M`) is measure-preserving (`F_*U_M = U_M`).  Proved in
+ZF+AD by the perfect-set property + "perfect ∧ countably-directed ⟹ cofinal"; named here pending its DST
+formalization. -/
+def Prop524 : Prop :=
+  ∀ G : (ℕ → Bool) → ℕ → Bool, TuringInvariant G → ¬ ConstantOnCone G → RangeInKernel G → MeasurePreserving G
+
+/-- **The equivalence half for concentrated `F`** — the fragment of Question 4 that IS proved (Prop 5.24):
+`RangeInKernel F ⟹ MP F`.  With `mp_rangeInKernel` (`MP ⟹ RangeInKernel`) this gives, under `Prop524`,
+`MP F ⟺ RangeInKernel F`.  **The residual open content of Q4 is exactly the NON-concentrated case** —
+Siskind-trichotomy case (2), `F_*U_M` concentrating on complements of cones — the `g`-inversion / inner-model
+wall.  This is *dual* to `strictHalf_of_countableFibered`: **both halves = a proved fragment + an open
+residue** (Q3: countable / uncountable-cone-null fibers, combinatorial; Q4: concentrated / case-2,
+inner-model). -/
+theorem equivHalf_of_rangeInKernel (hP : Prop524) (hF : TuringInvariant F)
+    (hnc : ¬ ConstantOnCone F) (hrk : RangeInKernel F) : MeasurePreserving F :=
+  hP F hF hnc hrk
+
 /-- **The equivalence-half mechanism, machine-checked (the `g`-inversion recovery).**  If an invariant `g`
 "inverts" `F` up to the Martin measure — i.e. `g ∘ F` is measure-preserving (equivalently `F_*U_M ≡_RK U_M`
 via `g`) — then by Thm 3.4 the composite is above the identity, so `g(F X) ≥ᵀ X` on a cone.  This is exactly
@@ -227,5 +246,6 @@ theorem partI_iff_ck_split (hTD : TuringDeterminacy fun _ => True) (hM : MartinP
 #print axioms gcomp_mp_recovers
 #print axioms mp_rangeInKernel
 #print axioms strictHalf_iff_dominatedInvertible
+#print axioms equivHalf_of_rangeInKernel
 
 end Martin

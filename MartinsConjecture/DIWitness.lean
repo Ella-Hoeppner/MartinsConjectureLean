@@ -65,6 +65,15 @@ theorem diWitness_nonRegressive_of_incomparable
   push_neg at hall
   exact not_regressive_diWitness_of_incomparable hinc hall hg_cone
 
+/-- **Q4 holds for the regressive-witness subclass.**  If `F` is dominated-invertible via a *regressive*
+witness, then `F` is measure-preserving.  So the open content of Q4 (`DI ⟹ MP`) is entirely the
+**non-regressive-witness** case: a dominated-invertible `F` all of whose witnesses genuinely lift degrees.
+(Positive companion to `not_regressive_diWitness_of_incomparable`.) -/
+theorem measurePreserving_of_regressive_diWitness (hM : MartinPPT) (hF : TuringInvariant F)
+    {g : (ℕ → Bool) → ℕ → Bool} (hreg : ∀ c, g c ≤ₜ c)
+    (hdi : OnCone (fun X => X ≤ₜ g (F X))) : MeasurePreserving F :=
+  (mp_iff_aboveId_of_martinPPT hM hF).mpr (aboveId_of_regressive_diWitness hreg hdi)
+
 /-! ### Localizing the lift to `F`'s values (a sharper form) -/
 
 /-- **Regressivity only *at `F`'s values* already forces above-identity.**  If `g(F X) ≤ᵀ F X` on a
@@ -164,6 +173,7 @@ theorem incomparableDI_strictlyBelow_mp (hM : MartinPPT) (hF : TuringInvariant F
     (hb2 (Cantor.join b1 b2) (Cantor.right_le_join _ _))
 
 #print axioms aboveId_of_regressive_diWitness
+#print axioms measurePreserving_of_regressive_diWitness
 #print axioms incomparableDI_strictlyBelow_mp
 #print axioms not_regressive_diWitness_of_incomparable
 #print axioms diWitness_nonRegressive_of_incomparable

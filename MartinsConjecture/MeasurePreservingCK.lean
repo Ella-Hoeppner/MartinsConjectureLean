@@ -139,6 +139,22 @@ theorem escaping_ck_nondecreasing_of_partI (hTD : TuringDeterminacy fun _ => Tru
     OnCone (fun X => churchKleene X ≤ churchKleene (F X)) :=
   measurePreserving_ck_nondecreasing hM hF ((partI_iff_escapingMP hTD hM hSS).mp hPartI F hF hesc)
 
+/-- **`F`'s values eventually land in the kernel.**  This is exactly the Lutz–Siskind / Prop 5.24
+*concentration hypothesis* `{x | Cone(x) ∈ F_*U_M} ∈ F_*U_M`, translated to the kernel `BelowF`: unfolding
+the pushforward, `Cone(x) ∈ F_*U_M ⟺ BelowF F x` (`x` is dominated by `F` on a cone), so the concentration
+hypothesis is `F X ∈ kernel` for `U_M`-most `X`. -/
+def RangeInKernel (F : (ℕ → Bool) → ℕ → Bool) : Prop := OnCone (fun X => BelowF F (F X))
+
+/-- **MP ⟹ `RangeInKernel`** (trivial direction).  If `F` is measure-preserving the kernel is everything
+(`mp_iff_belowF_univ`), so in particular every value `F X` lies in it.  **The CONVERSE is the equivalence
+half of RK-rigidity** (`U_M ≤_RK V ≤_RK U_M ⟹ V = U_M`): by Lutz–Siskind Prop 5.24, the concentration
+hypothesis `RangeInKernel F` forces `F_*U_M = U_M`, i.e. `F` MP — but that proof needs the perfect-set
+property + "perfect ∧ countably-directed ⟹ cofinal" (Cor 4.5), and is **open** at this generality (a mere
+unbounded Turing ideal need not be cofinal, so it is NOT elementary — this is exactly Siskind trichotomy
+case (2), the un-excluded escape).  So `RangeInKernel ⟹ MP` is the machine-stated open equivalence half. -/
+theorem mp_rangeInKernel (hmp : MeasurePreserving F) : RangeInKernel F :=
+  ⟨(fun _ => false), fun X _ => (mp_iff_belowF_univ.mp hmp) (F X)⟩
+
 /-- **The equivalence-half mechanism, machine-checked (the `g`-inversion recovery).**  If an invariant `g`
 "inverts" `F` up to the Martin measure — i.e. `g ∘ F` is measure-preserving (equivalently `F_*U_M ≡_RK U_M`
 via `g`) — then by Thm 3.4 the composite is above the identity, so `g(F X) ≥ᵀ X` on a cone.  This is exactly
@@ -187,5 +203,6 @@ theorem partI_iff_ck_split (hTD : TuringDeterminacy fun _ => True) (hM : MartinP
 #print axioms escaping_ck_nondecreasing_of_partI
 #print axioms partI_iff_ck_split
 #print axioms gcomp_mp_recovers
+#print axioms mp_rangeInKernel
 
 end Martin

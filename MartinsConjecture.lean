@@ -86,3 +86,4 @@ import MartinsConjecture.CounterexampleConstraints
 import MartinsConjecture.RegressiveJumpDecomp
 import MartinsConjecture.OrdinalUltrapower
 import MartinsConjecture.ChurchKleene
+import MartinsConjecture.CanonicalRepresentative

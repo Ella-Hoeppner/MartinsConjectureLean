@@ -9,6 +9,64 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26c — Steel's Conjecture 9.4 (uniform-representative) attack: canonical coding launders nothing
+
+> **New angle, distinct from the measure (RK-rigidity) and Marks (pointed-injectivity) routes.**
+> Target: **Steel's Conjecture** (Nakid-Cordero Conj. 1.4; a survey's 9.4) — *under AD, every T-invariant `F`
+> is Martin-equivalent on a cone to a UNIFORMLY invariant `G`*; it implies MC Part 1, and its Borel form is
+> *equivalent* to Borel MC (Marks). Five constructions of `G` from an arbitrary invariant `F` were attempted;
+> the naive "canonical representative" is **machine-checked dead** and the rest are localized.
+
+**→ `MartinsConjecture/CanonicalRepresentative.lean`** (new, sorry-free, standard axioms; in root build).
+
+- **Construction #1 (canonical branch via pointed tree) — RIGOROUSLY KILLED.** Take a *fixed computable*
+  degree-preserving coding `c` (e.g. even-bits `c x = join x 0`, coding `deg x` into a pointed perfect tree),
+  set `G = F∘c`. `G x ≡ᵀ F x` for free (invariance), so Martin-equivalence is automatic. The hope that the
+  fixed procedure `c` launders `F`'s non-uniformity is **provably false**: `canonicalRepresentative_no_gain`
+  — for any uniformly-degree-preserving computable `c` with a fixed section, `F∘c` is uniformly invariant
+  **iff** `F` is. Mechanism: coding steps are *fixed* equivalences, so composing through them is only a
+  **fixed computable index-shift** (`EquivVia.trans_trE`, built on Bard's composable-functionals `trE`).
+  The "x_x depends on the real x" worry in the prompt is *dissolved* by using a fixed computable `c` — and
+  the deeper truth is worse: the coding contributes **zero** uniformity either way. **The entire obstruction
+  lives in `F`'s values, never in the choice of representative.** Any reparametrization of *inputs* is
+  Martin-equivalent-for-free but uniformity-neutral; a genuine `G` must alter `F`'s **values** off a cone.
+- **Construction #3 (clean up `F` on a small set) — same wall.** Modifying `F` on a cone-null/measure-zero
+  set to force uniformity is exactly "alter values," which #1's verdict says is the *only* place progress can
+  come from — but there is no handle: the fibers are cone-null but (jump!) uncountable, and no canonical
+  value-selection is available without already solving the uniformity question. Not machine-checked (it is
+  the open content), but sharply localized by #1: reparametrization is useless, so #3 is where the difficulty
+  actually is, and it is the same difficulty as the conjecture.
+- **Construction #2 (uniformize the reduction via a game / Martin measure) — the honest obstruction, verified
+  against the e-degree counterexample.** The standard determinacy proof of Part I *needs* the uniformity
+  function `u` at the step where it feeds a *single* index (valid on a cone) into the Martin-measure/pressing-
+  down argument; a *bare* reduction-index `ι(x)` for `Fx ≤ᵀ Fy` that depends on the real `x` (not just its
+  degree) cannot be fed in, because the measure sees only degrees. A "uniformity game" that tries to *select*
+  `ι` uniformly is exactly what fails: Nakid-Cordero's **e-degree counterexample** (Thm 6.5, Kalimullin pairs)
+  is a *definable* invariant function whose non-uniformity is an **asymmetry** — "determining `0∈A` needs
+  positive information not recoverable symmetrically from the indices witnessing `A≡B`". That asymmetry is
+  possible **because the e-degrees lack a cone theorem**; the Turing cone theorem is precisely the extra
+  structure a Turing proof must exploit (and the game cannot manufacture it). Verdict: no elementary game
+  circumvents this — it is the crux, and it is Turing-cone-specific.
+- **Construction #4 (injective-on-pointed-tree ⟹ uniform?) — NO, but instructive.** By Lutz–Siskind Lemma 2.1
+  (`g` computable+injective on perfect `T` ⟹ `g(x)⊕T ≥ᵀ x`), injectivity on a *pointed* tree gives
+  `Fx ≥ᵀ x` on a cone (above-identity), i.e. it discharges the *Part-I dichotomy value*, **not uniformity**.
+  Injectivity is a statement about `F`'s graph on one tree; uniformity is about transforming *index witnesses*
+  across *all* equivalences. A function can be injective on a pointed tree yet have `u` fail off that tree.
+  So Marks's conjecture routes to *above-identity / RK-minimality* (the strict half), **not** to Steel 9.4.
+  These are genuinely different targets; #4 conflates them.
+- **Construction #5 (novel devices).** The one structural fact that survives: the e-degree analogue of Steel
+  9.4 is **FALSE** (Nakid-Cordero), and the *sole* named reason is the **cone theorem** (Turing has it,
+  e-degrees don't) + **no Kalimullin pairs in the Turing degrees**. So any correct Turing construction must
+  be **cone-theorem-driven** and must break where Kalimullin asymmetry lives. This is a real design
+  constraint, and it points back to the measure route (the cone theorem = the Martin measure), consistent
+  with the memory's frontier: Steel 9.4 is not easier than MC — its Borel form is *equivalent* to Borel MC.
+
+**Net:** Steel 9.4 is a genuine reframing but **not a shortcut**. The canonical-representative family (#1,#3-input-
+side, #4) is machine-checked or argued to be uniformity-neutral or off-target; the live content (#2/#3-value-side)
+is the same Turing-cone-specific asymmetry the measure and Marks routes already bottom out at. New machine-checked
+lemmas: `EquivVia.trans_trE`, `uniform_precomp_of_uniform`, `uniform_of_uniform_precomp_section`,
+`canonicalRepresentative_no_gain`.
+
 ### Session 2026-08-26b — the strict/equivalence halves in dominated-invertibility language
 > **⚠️ READ THE MACHINE-CHECKED CORRECTION BULLET BELOW FIRST.** The correct degree-level framing is the
 > **dominated-invertibility** organization (`MartinStrictHalf.lean`): Part 1 = (Q3) non-constant ⟹ DI ∧

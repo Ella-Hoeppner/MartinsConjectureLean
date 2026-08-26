@@ -47,10 +47,13 @@ engine as clean general lemmas and used it to formalize the Marks route to the i
   Q4]` is now fully machine-checked, and both disproof targets are sharply characterized. Confirmed (multiple
   fresh attempts) that the residue is *invariant realizability* = RK-rigidity of `U_M`, not crossable by
   elementary/measure/combinatorial means (a counterexample is ZFC-constructible via a wellorder, AD-blocked at
-  the invariant-selector step = `ω₁↪ℝ`). **Sharpest concrete engineering next-step:** build the
-  **pointed-perfect-tree machinery *for binary relations*** (Lemma 2.9/2.10 on `2^ω×2^ω`) — it would unlock
-  BOTH the Q9.3 2-uniform branch-collapse (`TwoUniform`'s open hypothesis) AND tree-thinning Lemma 2.7
-  (Marks-for-functionals). **Sharpest math frontier:** Woodin's generic ultrapower for the Martin-measure
+  the invariant-selector step = `ω₁↪ℝ`). **Concrete next-steps (corrected):** (a) tree-thinning Lemma 2.7
+  (functional ⟹ const-or-injective on a pointed subtree; a Sacks fusion) — would give Marks-for-functionals;
+  (b) the Q9.3 2-uniform collapse is NOT a pair-tree problem — for fixed `(i,j)`, `Y=Φ_i^X` is single-real, so
+  Lemma 2.10 (`exists_constant_pointedTree_bool`) fixes the branch per-`(i,j)`; the wall is *across* all
+  `(i,j)` (the full assignment is `2^{ℕ²}`-valued = uncountable = the same core wall), needing a
+  diagonal/Slaman–Steel-kernel combination, not a single tree. **Sharpest math frontier:** Woodin's generic
+  ultrapower for the Martin-measure
   ideal (crit `= ω₁`, repr. `x↦ω₁ˣ`), open at the rigidity step — see `uniformization-engine-wall`,
   `di-witness-q4-target` memories and `MARTIN_STRICT_HALF_AND_Q4.md`.
 

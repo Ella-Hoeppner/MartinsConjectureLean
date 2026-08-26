@@ -9,6 +9,34 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26 — the Church–Kleene characterization of Part 1 + convergent frontier
+**→ `MeasurePreservingCK.lean` (9 theorems, machine-checked, standard axioms) + `MARTIN_PART1_RK_MEASURE.md`.**
+The measure-theoretic attack on `escaping ⟹ MP` (= `U_M` RK-rigidity), via the relativized Church–Kleene
+ordinal `ω₁ˣ`. Since `MP ⟹ above-id` (Thm 3.4) and `ω₁ˣ` is monotone:
+- **`measurePreserving_ck_nondecreasing`**: MP ⟹ `ω₁ˣ ≤ ω₁^{F X}` on a cone.
+- **`ck_trichotomy`**: every invariant `F` is CK-regressive / CK-preserving / CK-increasing on a cone.
+- **`partI_false_of_ckRegressive_escaping`** (headline): an escaping (≡ non-constant) `F` that **lowers `ω₁ˣ`
+  on a cone would REFUTE Part 1** — a concrete disproof target.
+- **`partI_iff_ck_split`** (capstone): Part 1 ⟺ [(no escaping CK-regressive `F`) ∧ (every escaping
+  CK-non-decreasing `F` is MP)] — the open content partitioned exactly by `ω₁^{F X}` vs `ω₁ˣ`.
+- The CK-position **IS** the Slaman–Steel/Lutz stratification (via the graph's Part-2 rank, no coordinated
+  trees): CK-preserving escaping = `F X ≤_h X` = **Lutz's `D_h` territory** (closed mod Part-2-for-graph);
+  **CK-increasing escaping = the sharpest open residue (ω₁-level)**.
+- Honest scope: a genuine machine-checked *characterization/localization*, NOT a solve; both split-branches
+  need degree-level (inner-model) info. The `g`-inversion trace (note) shows why RK-minimality is
+  insufficient — Lutz–Siskind's "rigidity > RK-minimal", at mechanism level.
+
+**Convergent frontier (three parallel deep-dives + own analysis, all agree — `ATTACK.md` B13/B14 + "SESSION
+2026-08-26 DISPROOF"):** the incomparable core is stuck **symmetrically** — construction ≡ disproof ≡
+negation-of-proof are **one object** = "`U_M` has a nonprincipal RK-predecessor ≠ itself" = **Marks's
+pointed-perfect-tree conjecture fails at `U_M`**. (i) ZFC counterexample (Lutz Thm 5.27) dies under AD at
+exactly the `ω₁↪ℝ` ingredient the proof needs; every AD construction tool (Uniformization_ℝ, scales,
+Posner–Robinson complements, ultrapower) yields a definable-but-not-invariant selector (no invariant/OD P–R
+complement is known). (ii) The e-degree counterexample (Nakid-Cordero) is **uniform** — bears only on the
+KNOWN uniform Turing case; enabled by `D_e` lacking a cone theorem. (iii) CBER/superrigidity provably can't
+reach it (MC ⊥ measure theory; tools see `≡_T` but not the `≤_T` order). **Net: RK-rigidity of `U_M` is the
+sole live route; concrete named target = Marks's conjecture.**
+
 ### Session 2026-08-25 — GENUINE ATTACK on the open core (not bookkeeping)
 **→ Entry point: `MARTIN_ATTACK_SUMMARY.md`** (1-page honest summary: the 5 approaches tried, coordinated
 trees ruled out as circular, the frontier `escaping⟹MP` = `U_M` RK-rigidity validated verbatim against

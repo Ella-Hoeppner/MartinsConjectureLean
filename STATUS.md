@@ -9,6 +9,29 @@ axiomatized: it is threaded as an explicit hypothesis `TuringDeterminacy Γ` (wi
 This file is the current-state map. `ATTACK.md` is the living log of the open-problem attack
 (constraints + counterexample attempts). Everything below is in namespace `Martin`.
 
+### Session 2026-08-26e — parallel frontier probes: two sharpenings + two hard no-gos
+**→ `MARTIN_BREAKTHROUGH_ATTEMPT.md` (second-round section), `MARTIN_COUNTABLE_KERNEL.md`,
+`MARTIN_VALUE_CLEANUP_AND_INDEPENDENCE.md`.** Two independent source-grounded deep-dives against the sharpest
+target (kill Siskind case-2 / prove Steel 1.4). Still open (as expected), but genuine machine-checked output:
+- **`CountableKernel.lean`** (std axioms): for a case-2 predecessor `V = F_*U_M`, the Prop-5.24 concentration
+  set `{d | Cone(d) ∈ V}` **is** `BelowF F`, and it is **countable — bounded by a single real `r_K`**
+  (`case2_kernel_bounded_of_countable`). Sharper than the prior "kernel avoids a cone." The "countable ⟹ one
+  real" step is now proved in-repo (`countableUpperBound` via `Cantor.joinFam`) — the earlier `DC_ℝ`
+  hypothesis was discharged, so it rests on a single named classical input `Prop524Countable`.
+- **`ValueCleanup.lean`** (std axioms): value-side twin of `canonicalRepresentative_no_gain`. A fixed
+  binary-uniform value-preserving cleanup `G x = Ψ x (F x)` is Martin-equiv to `F` and uniform iff `F` is
+  (`valueCleanup_no_gain`); the degree-changing join cleanup breaks Martin-equiv on the core
+  (`join_cleanup_breaks_equiv`). Trichotomy sharpens W6 to the value side.
+- **Two hard no-gos:** (a) Goldberg UA/Ketonen is defined only for ultrafilters on *wellordered* sets, so it
+  does not type-check for `U_M` under AD — the "obvious" inner-model weapon is inapplicable; (b) the
+  enumeration-degree failure of the analogous statement needs Kalimullin pairs + quasiminimal degrees, both
+  ZF-absent in `D_T`, so it is evidence *for* the Turing conjecture, not an independence route. Working
+  verdict: Part 1 is **true under AD**; no independence is known or conjectured.
+- **Synthesis** (both sides, machine-stated): a minimal counterexample is **"thin-below, sideways-valued"** —
+  domination kernel bounded by one real `r_K`, yet `¬(F X ≤ᵀ X ⊕ r_K)` on every cone. One live lead: Lutz
+  thesis §5.11 (properness of the `I`-positive forcing ⟹ `⋠_RK U_M`), now with a single-real-parametrized
+  ideal — inner-model but *not* through Goldberg's inapplicable apparatus.
+
 ### Session 2026-08-26d — "invent the machinery" breakthrough attempt on the incomparable core
 **→ `MARTIN_BREAKTHROUGH_ATTEMPT.md`.** Genuinely tried ~22 ideas + 8 research dives to crack the core; NOT
 solved (open even for experts). Three machine-checked by-products (std axioms, green):

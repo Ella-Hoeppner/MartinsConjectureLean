@@ -138,3 +138,62 @@ every reformulation is circular (W6). The one tool that overcomes W1–W5 — **
 Turing degrees of definable reals inside `L(ℝ)`** (Steel–Siskind mouse/ultrapower theory) — is exactly what
 the community uses, and even there the RK-rigidity of `U_M` is *open*. So the problem is open *even with*
 inner model theory, not merely beyond an elementary attack.
+
+## Second round (2026-08-26, parallel frontier probes) — two sharpenings, two hard no-gos
+
+Two independent deep-dives against the sharpest target (kill Siskind case-2 / prove Steel 1.4), each reading
+fresh primary sources. Both bottomed out at the *same* wall from opposite sides, but each produced a genuine,
+machine-checked contribution and a genuine no-go that removes a route.
+
+**(A) Ultrafilter / inner-model side — `CountableKernel.lean`, `MARTIN_COUNTABLE_KERNEL.md`.**
+- **Hard no-go (verified verbatim against Goldberg's book):** the Ketonen order / UA / Dodd-sound comparison
+  machinery is defined *only for ultrafilters on a wellordered set* (Def 3.5.10). Under AD, `D_T` is not
+  wellorderable, so this apparatus **does not even type-check for `U_M`** — the "obvious" inner-model weapon
+  is inapplicable. GSS iteration trees reach `Ult(HOD, U_M)` but represent a *single* ultrapower with **no
+  comparison/rigidity theory between two `D_T`-ultrafilters**. Commutativity/Fubini is RK-*downward* closed,
+  so it constrains ultrafilters *above* `U_M` and gives nothing about predecessors below.
+- **Machine-checked sharpening:** for a case-2 predecessor `V = F_*U_M`, the Prop-5.24 concentration set
+  `{d | Cone(d) ∈ V}` **equals** the repo kernel `BelowF F` exactly, and (Prop 5.24 + PSP + Cor 4.5) it is
+  **countable — bounded by a single real `r_K`** (`case2_kernel_bounded_of_countable`; the "countable ⟹ one
+  real" step is now fully in-repo via `Cantor.joinFam`, no `DC_ℝ`). Strictly sharper than the prior "kernel
+  avoids a cone."
+
+**(B) Value-cleanup / independence side — `ValueCleanup.lean`, `MARTIN_VALUE_CLEANUP_AND_INDEPENDENCE.md`.**
+- **Machine-checked value-side no-go:** the input-side neutrality (`canonicalRepresentative_no_gain`) now has a
+  value-side twin. A *fixed, binary-uniformly-invariant, value-preserving* cleanup `G x = Ψ x (F x)` is
+  Martin-equivalent to `F` and **uniform iff `F` is** (`valueCleanup_no_gain`) — `Ψ` can only *forward* `F`'s
+  witness. The degree-changing join cleanup `x ⊕ F x` provably **breaks** Martin-equivalence on the
+  incomparable core (`join_cleanup_breaks_equiv`). **Trichotomy:** a value-cleanup is neutral, or breaks
+  equivalence, or is itself as non-uniform as Steel 1.4. This sharpens W6 (circularity) to the value side.
+- **Independence verdict — NO (and why):** the two known ways Part 1 *fails* both need structure `D_T` lacks.
+  The ZFC failure (Lutz Thm 5.27) needs a wellorder of the degrees — refuted by AD. The enumeration-degree
+  failure (Nakid-Cordero, arXiv:2510.19147, a ZF theorem and the exact `e`-analogue of the incomparable core)
+  needs **nontrivial Kalimullin pairs + non-total (quasiminimal) degrees**, both **ZF-provably absent in
+  `D_T`** (semicomputable pair-halves `{A, Ā}` are Turing-*equal*; every Turing degree is total). So the
+  `e`-failure exploits precisely what `D_T` lacks — evidence *for* the Turing conjecture. No AD-model failure
+  is known or conjectured; the working verdict is Part 1 is **true under AD**, open content = RK-rigidity.
+- **Sourced correction (flag, not yet reconciled across memory):** (B) reports Lutz–Siskind order-preserving
+  Part 1 as a theorem of **ZF + AD + DC_ℝ** (Thm 3.7), *not* requiring Uniformization_ℝ. This contradicts the
+  older memory note ("under AD+Unif_ℝ"). Recorded as the agent's source-read; I did **not** independently
+  re-verify the citation, so both are flagged rather than one silently overwritten.
+
+## Synthesis: the sharpened profile of a minimal counterexample ("thin-below, sideways-valued")
+
+Combining the two machine-checked sides, a case-2 / escaping counterexample `F` (if one exists) is pinned
+between two provable facts:
+- **Thin below:** its entire domination kernel `BelowF F` is bounded by a *single* real `r_K`
+  (`case2_kernel_bounded_of_countable`) — `F X` cofinally computes no fixed real above `r_K`.
+- **Sideways valued:** yet `¬(F X ≤ᵀ X ⊕ r_K)` on every cone (`no_regressivity_relative_to_kernel_bound`,
+  from the KNOWN Slaman–Steel escaping theorem) — the value is not computed by the argument-plus-`r_K` either.
+
+So `F X` is a "generic-looking" degree: it dominates essentially nothing fixed, and is computed by essentially
+nothing fixed relative to `X`. This is the exact machine-stated shape of the obstruction — the per-`X`,
+per-degree `{0,1}` fact `F X ⊥ᵀ d` that no countably-complete / ordinal / measure tool can aggregate (doing so
+would embed `ω₁ ↪ ℝ`). Both sides converge here; neither can cross.
+
+**The one live lead (not through Goldberg's inapplicable apparatus):** Lutz thesis §5.11 — if the
+`I`-positive-set forcing `P_I` for the dual ideal `I = {A | A ∉ V}` is *proper* (does not collapse `𝔠`), then
+`V ⋠_RK U_M`. The new "kernel bounded by one real `r_K`" fact makes `P_I` a highly constrained, single-real-
+parametrized forcing — exactly the regime where a properness argument has a foothold. Turning "case-2 ⟹ `P_I`
+proper" into a theorem would close RK-rigidity. That is the concrete next target; it is genuinely inner-model /
+forcing-theoretic but does **not** require the (AD-inapplicable) Ketonen/UA machinery.

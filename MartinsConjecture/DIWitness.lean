@@ -35,9 +35,11 @@ This file gives elementary but sharpening constraints on both disproof targets. 
 * `incomparable_conePreserving_orbitIncomparable` — for a cone-preserving incomparable `F`, consecutive
   orbit iterates are incomparable (`F X ⊥ᵀ F²X`), so the orbit never becomes self-dominating.
 
-Net picture: a Part-1 counterexample is either `¬DI` (Q3: `F X` loses `X` below all jumps) or
-DI-incomparable (Q4: `X` recovered from `F X` by a **jump-type** `g` while `F X ⊥ᵀ X`).  `MP ⟹ DI` uses
-the *identity* (regressive) witness — exactly the route blocked in the incomparable case.
+Net picture (`incomparable_dichotomy`): a Part-1 counterexample is either `¬DI` (Q3: `F X` loses `X`
+below every finite jump-iterate) or DI-incomparable (Q4: `X` recovered from `F X` by a **jump-type** `g`
+lifting `F`'s values, while `F X ⊥ᵀ X`).  `MP ⟹ DI` uses the *identity* (regressive) witness — exactly the
+route blocked in the incomparable case; and `MP ⟺` DI-via-a-regressive-witness
+(`measurePreserving_iff_regressive_diWitness`) crisply separates the solved side from the open core.
 -/
 import MartinsConjecture.MeasurePreservingCK
 import MartinsConjecture.JumpInvariance

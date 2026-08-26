@@ -72,6 +72,26 @@ theorem strictHalf_of_pointedInjectiveTree (hM : MartinPPT) (hF : TuringInvarian
     (Tr : PointedInjectiveTree F) : StrictHalfFor F :=
   (strictHalf_iff_dominatedInvertible hM hF).mpr (dominatedInvertible_of_pointedInjectiveTree hF Tr)
 
+/-- **The equivalence half for `F`** (Lutz–Siskind open **Question 4**): if `F_*U_M` is RK-above `U_M`
+(`StrictHalfFor F`, so `U_M ≤_RK F_*U_M ≤_RK U_M`) then it equals `U_M` (`F` is measure-preserving).  The
+open content is the `g`-inversion gap (`gcomp_mp_recovers`): `g∘F` MP gives `g(F X) ≥ᵀ X`, which does not
+force `F` MP. -/
+def EquivHalfFor (F : (ℕ → Bool) → ℕ → Bool) : Prop := StrictHalfFor F → MeasurePreserving F
+
+/-- **Both halves ⟹ Part 1** (Lutz–Siskind Thm 5.15: *"a negative answer to Questions 3 and 4 together would
+imply Part 1"*), machine-checked.  If every non-constant invariant `F` satisfies the strict half (Q3:
+`U_M ≤_RK F_*U_M`) and every invariant `F` satisfies the equivalence half (Q4), then every invariant `F` is
+constant-on-a-cone or measure-preserving — Part 1 (in the `escaping ⟹ MP` form).  This is the per-`F`
+composition; combined with `partI_iff_escapingMP` it is Part 1 proper. -/
+theorem partI_of_halves
+    (hstrict : ∀ G, TuringInvariant G → ¬ ConstantOnCone G → StrictHalfFor G)
+    (hequiv : ∀ G, TuringInvariant G → EquivHalfFor G) :
+    ∀ G, TuringInvariant G → ConstantOnCone G ∨ MeasurePreserving G := by
+  intro G hG
+  by_cases hc : ConstantOnCone G
+  · exact Or.inl hc
+  · exact Or.inr (hequiv G hG (hstrict G hG hc))
+
 /-- **Soundness / non-vacuity**: the identity admits a pointed injective tree (the full space, `code`
 computable), so the interface is not jointly contradictory.  `recover` for `F = id` is `x ≤ᵀ x ⊕ code`. -/
 theorem pointedInjectiveTree_id : Nonempty (PointedInjectiveTree (fun x => x)) :=
@@ -81,7 +101,42 @@ theorem pointedInjectiveTree_id : Nonempty (PointedInjectiveTree (fun x => x)) :
      realizes := fun d _ => ⟨d, trivial, Cantor.equiv.refl d⟩
      recover := fun x _ => Cantor.left_le_join x _ }⟩
 
+/-! ### The countable-fiber case — the STRICT half's *combinatorial* fragment (Marks–Slaman–Steel)
+
+Localization (this session, via the pointed-injectivity route): for invariant `F`,
+`strict half ⟺ Marks-for-invariant-F = [countable fibers: a THEOREM] + [uncountable cone-null fibers: OPEN]`.
+The countable case is already proved (MSS), and plugs into the reduction above; the open residue is precisely
+the uncountable-fiber pointed-Silver step (Silver gives injectivity on a *perfect* set; making it *pointed*
+is open).  A non-constant invariant `F` always has cone-null fibers (no fiber contains a cone), but cone-null
+`≠` countable — the Turing jump has uncountable fibers in every cone. -/
+
+/-- `F` has **countable fibers**: each `≡ᵀ`-fiber `{x | F x ≡ᵀ c}` is countable (i.e. countably many degrees
+map to any value `c`; recall each `≡ᵀ`-class of reals is itself countable). -/
+def CountableFibered (F : (ℕ → Bool) → ℕ → Bool) : Prop :=
+  ∀ c, {x | F x ≡ₜ c}.Countable
+
+/-- **Marks–Slaman–Steel countable-fiber theorem** (MSS arXiv:1109.1875, Thm 3.6): a Turing-invariant `F`
+with countable fibers admits a pointed injective tree — via **Lusin–Novikov** (countable sections ⟹ `F` is a
+countable union of injective Borel pieces) and **Martin's pointed-tree lemma** (an `ℕ`-valued function is
+constant on a pointed perfect tree, landing one inside a single injective piece).  Unlike `GroszekSlaman`,
+this is a *proved* classical theorem; it is named here as the classical input, its descriptive-set-theoretic
+content being future formalization. -/
+def CountableFiberMarks : Prop :=
+  ∀ F : (ℕ → Bool) → ℕ → Bool, TuringInvariant F → CountableFibered F → Nonempty (PointedInjectiveTree F)
+
+/-- **The strict half for countable-fibered `F`** — the *combinatorial* fragment of Lutz–Siskind Question 3,
+complementary to the measure-theoretic route.  From the classically-proved `CountableFiberMarks` input and
+the machine-checked `strictHalf_of_pointedInjectiveTree`, a countable-fibered invariant `F` satisfies the
+strict half `U_M ≤_RK F_*U_M`.  **The residual open content of Q3 is exactly UNCOUNTABLE cone-null fibers**
+(the pointed-Silver step) — a combinatorial wall, genuinely different from the equivalence half's inner-model
+wall. -/
+theorem strictHalf_of_countableFibered (hMSS : CountableFiberMarks) (hM : MartinPPT)
+    (hF : TuringInvariant F) (hcf : CountableFibered F) : StrictHalfFor F :=
+  strictHalf_of_pointedInjectiveTree hM hF (hMSS F hF hcf).some
+
 #print axioms dominatedInvertible_of_pointedInjectiveTree
 #print axioms strictHalf_of_pointedInjectiveTree
+#print axioms partI_of_halves
+#print axioms strictHalf_of_countableFibered
 
 end Martin

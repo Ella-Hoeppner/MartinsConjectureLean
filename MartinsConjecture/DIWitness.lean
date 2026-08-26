@@ -74,6 +74,18 @@ theorem measurePreserving_of_regressive_diWitness (hM : MartinPPT) (hF : TuringI
     (hdi : OnCone (fun X => X ≤ₜ g (F X))) : MeasurePreserving F :=
   (mp_iff_aboveId_of_martinPPT hM hF).mpr (aboveId_of_regressive_diWitness hreg hdi)
 
+/-! ### The Q3 side: a `¬DI` counterexample escapes even `F`'s jump -/
+
+/-- **A non-dominated-invertible `F` has `F X`'s jump fail to recover `X` on every cone.**  Since the
+Turing jump is an invariant map, `X ≤ᵀ (F X)′` on a cone would witness `DominatedInvertible F` (via
+`g = jump`).  So `¬DominatedInvertible F ⟹ ¬OnCone(X ≤ᵀ (F X)′)`.  Iterating (each finite/transfinite
+jump-iterate is invariant), a `¬DI` counterexample — the Q3 disproof target — must satisfy
+`X ≰ᵀ (F X)^{(α)}` cofinally for **every** jump-iterate `α`: `F X` loses `X` so thoroughly that no
+invariant jump recovers it.  A strong information-loss demand, matching why `¬DI` is hard to realize. -/
+theorem notDominatedInvertible_escapes_jump (h : ¬ DominatedInvertible F) :
+    ¬ OnCone (fun X => X ≤ₜ Cantor.jump (F X)) :=
+  fun hcone => h ⟨Cantor.jump, turingInvariant_jump, hcone⟩
+
 /-! ### Localizing the lift to `F`'s values (a sharper form) -/
 
 /-- **Regressivity only *at `F`'s values* already forces above-identity.**  If `g(F X) ≤ᵀ F X` on a
@@ -174,6 +186,7 @@ theorem incomparableDI_strictlyBelow_mp (hM : MartinPPT) (hF : TuringInvariant F
 
 #print axioms aboveId_of_regressive_diWitness
 #print axioms measurePreserving_of_regressive_diWitness
+#print axioms notDominatedInvertible_escapes_jump
 #print axioms incomparableDI_strictlyBelow_mp
 #print axioms not_regressive_diWitness_of_incomparable
 #print axioms diWitness_nonRegressive_of_incomparable
